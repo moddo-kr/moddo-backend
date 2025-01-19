@@ -1,0 +1,30 @@
+name: "2-bug-report"
+description: "프로젝트에서 발견한 버그를 작성하세요."
+title: "fix: bug title"
+labels:["🛠️BE", "🐛fix"]
+body:
+  - type: textarea
+    attributes:
+      value: |
+        ## 🐛 버그 설명
+        발생한 버그에 대해 간단하고 명확하게 설명해주세요.
+  - type: input
+    attributes:
+      label: 재현 방법
+      description: 버그를 재현할 수 있는 단계를 순서대로 작성해주세요.
+      placeholder: 재현 방법을 적어주세요!
+  - type: textarea
+    attributes:
+      label: 기대한 동작
+      description: 원래 기대했던 동작에 대해 설명해주세요.
+      placeholder: 기대한 동작을 작성하세요!
+  - type: textarea
+    attributes:
+      label: 실제 동작
+      description: 실제로 발생한 동작에 대해 설명해주세요.
+      placeholder: 실제 동작을 작성하세요!
+  - type: textarea
+    attributes:
+      label: 추가 정보
+      description: 문제에 대한 로그, 스크린샷, 관련 파일 링크 등 추가 정보를 입력해주세요.
+      placeholder: 추가 정보를 적어주세요!
