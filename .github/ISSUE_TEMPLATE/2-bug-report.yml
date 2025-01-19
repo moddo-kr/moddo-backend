@@ -4,7 +4,7 @@ title: "fix: bug title"
 labels: ["🛠️BE","🐛fix"]
 
 body:
-  - type: textarea
+  - type: markdown
     attributes:
       value: |
         ## 🐛 버그 설명
