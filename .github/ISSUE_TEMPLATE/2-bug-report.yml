@@ -1,7 +1,7 @@
 name: "2-bug-report"
 description: "프로젝트에서 발견한 버그를 작성하세요."
 title: "fix: bug title"
-labels: ["🐛fix","🛠️BE"]
+labels: ["🛠️BE","🐛fix"]
 
 body:
   - type: textarea
