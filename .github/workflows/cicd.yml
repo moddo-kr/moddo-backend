@@ -5,7 +5,7 @@ on:
     branches:
       - develop
 env:
-  DOCKER_IMAGE_NAME: moddo
+  DOCKER_IMAGE_NAME: ${{  secrets.DOCKER_HUB_USERNAME  }}/moddo
   EC2_HOST: ${{  secrets.EC2_HOST  }}
   EC2_SSH_USER: ${{  secrets.EC2_USER  }}
   PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
@@ -33,16 +33,13 @@ jobs:
 
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag ${{ env.DOCKER_IMAGE_NAME }}:latest
-
-      - name: Tag Docker image with proper repository name
-        run: docker tag moddo ${{ secrets.DOCKER_HUB_USERNAME  }}/moddo:latest
         
       - name: Login to Docker Hub using Access Token
         run: |
           echo ${{ env.DOKCER_HUB_TOKEN }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
 
       - name: Push the Docker image
-        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{env.DOCKER_IMAGE_NAME}}:latest
+        run: docker push ${{env.DOCKER_IMAGE_NAME}}:latest
 
   deploy-to-ec2:
 
@@ -53,16 +50,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install sshpass
-        run: sudo apt-get install -y sshpass
-
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
           host: ${{ env.EC2_HOST }}
           username: ${{ env.EC2_SSH_USER }}
+          password: ${{ secrets.EC2_PASSWORD }}
           script: |
-            sshpass -p "${{ secrets.EC2_PASSWORD }}" ssh -o StrictHostKeyChecking=no "${{ secrets.EC2_USER }}"@${{ secrets.EC2_HOST }}            
             cd dnd-7th-12-backend
             sudo docker-compose stop
             sudo docker-compose rm -f
