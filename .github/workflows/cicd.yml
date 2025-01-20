@@ -24,6 +24,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          
       - name: Make gradlew executable
         run: chmod +x gradlew
         
@@ -33,6 +34,9 @@ jobs:
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag ${{ env.DOCKER_IMAGE_NAME }}:latest
 
+      - name: Tag Docker image with proper repository name
+        run: docker tag moddo ${{ secrets.DOCKER_HUB_USERNAME  }}/moddo:latest
+        
       - name: Login to Docker Hub using Access Token
         run: |
           echo ${{ env.DOKCER_HUB_TOKEN }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
