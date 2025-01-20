@@ -9,7 +9,7 @@ env:
   EC2_HOST: ${{  secrets.EC2_HOST  }}
   EC2_SSH_USER: ${{  secrets.EC2_USER  }}
   PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
-
+  DOKCER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN}}
 jobs:
   build-and-push-docker:
 
@@ -35,7 +35,7 @@ jobs:
 
       - name: Login to Docker Hub using Access Token
         run: |
-          echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+          echo ${{ env.DOKCER_HUB_TOKEN }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
 
       - name: Push the Docker image
         run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{env.DOCKER_IMAGE_NAME}}:latest
