@@ -35,7 +35,7 @@ jobs:
         run: echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
 
       - name: Push the Docker image
-        run: docker push ${{ env.DOCKER_IMAGE_NAME }}:latest
+        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{env.DOCKER_IMAGE_NAME}}:latest
 
   deploy-to-ec2:
 
