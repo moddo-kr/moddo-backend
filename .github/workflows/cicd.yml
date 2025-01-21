@@ -49,8 +49,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Check if SSH private key is set
-        run: echo "$PRIVATE_KEY"
         
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
