@@ -3,7 +3,7 @@ name: Deploy to AWS EC2 using Docker
 on:
   push:
     branches:
-      - develop
+      - main
 env:
   DOCKER_IMAGE_NAME: ${{  secrets.DOCKER_HUB_USERNAME  }}/moddo
   EC2_HOST: ${{  secrets.EC2_HOST  }}
