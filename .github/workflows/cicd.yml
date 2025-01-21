@@ -49,15 +49,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
-      - name: Setup SSH agent
-        run: |
-          eval $(ssh-agent -s)  # Start the ssh-agent
-          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" | ssh-add -  # Add the private key to the agent
-          
-          # If the key has a password, you can provide it here
-          echo "${{ secrets.SSH_PRIVATE_KEY_PASSWORD }}" | ssh-add -p
-      
+        
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
