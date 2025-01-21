@@ -59,7 +59,7 @@ jobs:
           port: 22
           envs: GITHUB_SHA
           script: |
-            cd dnd-7th-12-backend
+            cd dnd-12th-7-backend
             sudo docker-compose stop
             sudo docker-compose rm -f
             sudo docker rmi ${{ secrets.DOCKER_HUB_USERNAME }}/${{env.DOCKER_IMAGE_NAME}}:latest
