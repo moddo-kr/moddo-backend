@@ -1,0 +1,27 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        default_batch_fetch_size: 30
+        format_sql: true
+        jdbc.time_zone: Asia/Seoul
+    show-sql: true
+
+---
+
+spring:
+  config:
+    import: classpath:config/application-dev.yml
+    activate:
+      on-profile: dev
+
+---
+
+spring:
+  config:
+    import: classpath:config/application-prod.yml
+    activate:
+      on-profile: prod
+
