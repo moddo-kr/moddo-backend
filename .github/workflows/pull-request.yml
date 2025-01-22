@@ -47,6 +47,7 @@ jobs:
         if: always()
         with:
           files: '**/build/test-results/test/TEST-*.xml'
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       #실패시 실패 코드에 코멘트
       - name: If the test fails, register a check comment in the failed code line
@@ -54,7 +55,7 @@ jobs:
         if: always()
         with:
           report_paths: '**/build/test-results/test/TEST-*.xml'
-          token: ${{ github.token }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Add coverage to PR
         id: jacoco
@@ -62,6 +63,6 @@ jobs:
         with:
           title: 📝 테스트 커버리지 리포트입니다
           paths: ${{ github.workspace }}/backend/build/reports/jacoco/test/jacocoTestReport.xml
-          token: ${{ secrets.TEST_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 50
           min-coverage-changed-files: 50
