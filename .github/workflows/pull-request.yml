@@ -1,8 +1,6 @@
-name: Backend CI Test Automation
+name: Build and Test with Coverage
+
 on:
-  push:
-    branches:
-      - develop
   pull_request:
     branches:
       - main
@@ -11,6 +9,7 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -27,16 +26,28 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
-      - name: Test with Gradle Wrapper
-        run: ./gradlew clean build
+      #라이브러리 캐싱
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
-      - name: Publish Unit Test Results #성공시 테스트 결과 출력
+      #Gradle 빌드 및 테스트
+      - name: Build and Test with Gradle
+        run: ./gradlew clean build test jacocoTestReport
+
+      #테스트 결과 출력
+      - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           files: '**/build/test-results/test/TEST-*.xml'
 
-      - name: If the test fails, register a check comment in the failed code line #실패시 실패 코드에 코멘트
+      #실패시 실패 코드에 코멘트
+      - name: If the test fails, register a check comment in the failed code line
         uses: mikepenz/action-junit-report@v3
         if: always()
         with:
