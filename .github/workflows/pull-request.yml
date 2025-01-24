@@ -64,22 +64,17 @@ jobs:
         id: check_coverage
         run: |
           FILE_PATH="${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml"
-          if [ -f "$FILE_PATH" ]; then #파일 존재 여부
-            if [ -s "$FILE_PATH" ]; then #파일 내부존재 여부
-              echo "Coverage report exists and is not empty."
-              echo "::set-output name=exists::true"
-            else
-              echo "Coverage report is empty."
-              echo "::set-output name=exists::false"
-            fi
+          if [ -s "$FILE_PATH" ] && grep -q "<counter type=\"LINE\" missed=\"0\"" "$FILE_PATH"; then
+            echo "Coverage report exists and is not empty with coverage."
+            echo "::set-output name=exists::true"
           else
-            echo "Coverage report does not exist."
+            echo "Coverage report exists but has no coverage or is empty."
             echo "::set-output name=exists::false"
           fi
             
       #테스트 커버리지 리포트 출력
       - name: Add coverage to PR
-        if: env.exists == 'true'
+        if: steps.check_coverage.outputs.exists == 'true'
         id: jacoco
         uses: madrapps/jacoco-report@v1.2
         with:
