@@ -60,13 +60,21 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           
       #테스트 커버리지 리포트 생성 확인
-      - name: Check if coverage report exists
+      - name: Check if coverage report exists and is valid
         id: check_coverage
         run: |
-          if [ -f "${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml" ]; then
-            echo "exists=true" >> $GITHUB_ENV
+          FILE_PATH="${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml"
+          if [ -f "$FILE_PATH" ]; then #파일 존재 여부
+            if [ -s "$FILE_PATH" ]; then #파일 내부존재 여부
+              echo "Coverage report exists and is not empty."
+              echo "::set-output name=exists::true"
+            else
+              echo "Coverage report is empty."
+              echo "::set-output name=exists::false"
+            fi
           else
-            echo "exists=false" >> $GITHUB_ENV
+            echo "Coverage report does not exist."
+            echo "::set-output name=exists::false"
           fi
             
       #테스트 커버리지 리포트 출력
