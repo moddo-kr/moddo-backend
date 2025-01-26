@@ -43,14 +43,6 @@ jobs:
       - name: Build and Test with Gradle
         run: ./gradlew clean build test jacocoTestReport
 
-      #테스트 결과 출력
-      - name: Publish Unit Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
-        with:
-          files: '**/build/test-results/test/TEST-*.xml'
-          token: ${{ secrets.GITHUB_TOKEN }}
-
       #실패시 실패 코드에 코멘트
       - name: If the test fails, register a check comment in the failed code line
         uses: mikepenz/action-junit-report@v3
