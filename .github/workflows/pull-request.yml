@@ -1,0 +1,77 @@
+name: Build and Test with Coverage
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+      checks: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{secrets.CONFIG_SUBMODULE_TOKEN}}
+          submodules: recursive
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      #라이브러리 캐싱
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      #Gradle 빌드 및 테스트
+      - name: Build and Test with Gradle
+        run: ./gradlew clean build test jacocoTestReport
+
+      #실패시 실패 코드에 코멘트
+      - name: If the test fails, register a check comment in the failed code line
+        uses: mikepenz/action-junit-report@v3
+        if: always()
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      #테스트 커버리지 리포트 생성 확인
+      - name: Check if coverage report exists and is valid
+        id: check_coverage
+        run: |
+          FILE_PATH="${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml"
+          if [ -s "$FILE_PATH" ] && grep -q "<counter type=\"LINE\" missed=\"0\"" "$FILE_PATH"; then
+            echo "Coverage report exists and is not empty with coverage."
+            echo "::set-output name=exists::true"
+          else
+            echo "Coverage report exists but has no coverage or is empty."
+            echo "::set-output name=exists::false"
+          fi
+            
+      #테스트 커버리지 리포트 출력
+      - name: Add coverage to PR
+        if: steps.check_coverage.outputs.exists == 'true'
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.2
+        with:
+          title: 📝 테스트 커버리지 리포트입니다!
+          paths: ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 50
+          min-coverage-changed-files: 50
