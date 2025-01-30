@@ -1,20 +1,20 @@
 package com.dnd.moddo.domain.groupMember.entity;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.AssertionsForClassTypes.*;
 
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.dnd.moddo.domain.groupMember.repository.GroupMemberRepository;
 
-@RunWith(SpringRunner.class)
-@DataJpaTest
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
 class GroupMemberTest {
 
 	@Autowired
@@ -33,9 +33,9 @@ class GroupMemberTest {
 		List<GroupMember> groupMembers = groupMemberRepository.findByMeetId(1L);
 
 		// Then
-		assertEquals(2, groupMembers.size());  // meetId가 1인 멤버가 2명 있는지 확인
-		assertTrue(groupMembers.stream().anyMatch(member -> "김완숙".equals(member.getName())));
-		assertTrue(groupMembers.stream().anyMatch(member -> "정에그".equals(member.getName())));
+		assertThat(groupMembers.size()).isEqualTo(2);  // meetId가 1인 멤버가 2명 있는지 확인
+		assertThat(groupMembers.stream().anyMatch(member -> "김완숙".equals(member.getName()))).isTrue();
+		assertThat(groupMembers.stream().anyMatch(member -> "정에그".equals(member.getName()))).isTrue();
 	}
 
 }
