@@ -13,6 +13,7 @@ import com.dnd.moddo.domain.groupMember.dto.response.GroupMembersResponse;
 import com.dnd.moddo.domain.groupMember.service.CommandGroupMemberService;
 import com.dnd.moddo.domain.groupMember.service.QueryGroupMemberService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -25,7 +26,7 @@ public class GroupMemberController {
 	@PostMapping
 	public ResponseEntity<GroupMembersResponse> saveGroupMembers(
 		@RequestParam("meetId") String token, //아마 토큰으로 받고 모임 Id
-		@RequestBody GroupMembersSaveRequest request
+		@Valid @RequestBody GroupMembersSaveRequest request
 	) {
 		Long meetId = 1L; //mock value
 		GroupMembersResponse response = commandGroupMemberService.createGroupMembers(meetId, request);
