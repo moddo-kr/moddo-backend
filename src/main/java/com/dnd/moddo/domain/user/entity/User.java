@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "users")
 public class User{
 
     @Id
