@@ -19,7 +19,7 @@ spring:
 
 jwt:
   header: Authorization
-  prefix: ${PREFIX}
-  secret-key: ${JWT_SECRET_KEY}
-  access-expiration: ${ACCESS_TOKEN_EXPIRATION_TIME}
-  refresh-expiration: ${REFRESH_TOKEN_EXPIRATION_TIME}
+  prefix: prefix
+  secret-key: secretKeysecretKeysecretKeysecretKeysecretKeysecretKey
+  access-expiration: 1
+  refresh-expiration: 1
