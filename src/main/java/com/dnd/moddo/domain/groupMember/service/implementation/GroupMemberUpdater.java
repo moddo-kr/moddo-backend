@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 @Transactional
-public class GroupMemberUpdator {
+public class GroupMemberUpdater {
 	private final GroupMemberRepository groupMemberRepository;
 
 }

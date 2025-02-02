@@ -16,14 +16,14 @@ import com.dnd.moddo.domain.groupMember.dto.request.GroupMembersSaveRequest;
 import com.dnd.moddo.domain.groupMember.dto.response.GroupMembersResponse;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberCreator;
-import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberUpdator;
+import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberUpdater;
 
 @ExtendWith(MockitoExtension.class)
 public class CommandGroupMemberServiceTest {
 	@Mock
 	private GroupMemberCreator groupMemberCreator;
 	@Mock
-	private GroupMemberUpdator groupMemberUpdator;
+	private GroupMemberUpdater groupMemberUpdater;
 	@InjectMocks
 	private CommandGroupMemberService commandGroupMemberService;
 
