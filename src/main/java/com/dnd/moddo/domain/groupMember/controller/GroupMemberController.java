@@ -17,7 +17,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/group-members")
+@RequestMapping("/api/v1/group-member")
 @RestController
 public class GroupMemberController {
 	private final QueryGroupMemberService queryGroupMemberService;
@@ -25,7 +25,7 @@ public class GroupMemberController {
 
 	@PostMapping
 	public ResponseEntity<GroupMembersResponse> saveGroupMembers(
-		@RequestParam("meetId") String token, //아마 토큰으로 받고 모임 Id
+		@RequestParam("meetId") String token,
 		@Valid @RequestBody GroupMembersSaveRequest request
 	) {
 		Long meetId = 1L; //mock value
