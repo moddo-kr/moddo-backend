@@ -12,11 +12,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 @Transactional
-public class ExpenseCreator {
+public class ExpenseUpdater {
 	private final ExpenseRepository expenseRepository;
 
-	public Expense create(Long meetId, ExpenseRequest expenseRequest) {
-		Expense expense = expenseRequest.toEntity(meetId);
-		return expenseRepository.save(expense);
+	public Expense update(Long expenseId, ExpenseRequest request) {
+		Expense expense = expenseRepository.getById(expenseId);
+		expense.update(request.amount(), request.content(), request.date());
+		return expense;
 	}
 }

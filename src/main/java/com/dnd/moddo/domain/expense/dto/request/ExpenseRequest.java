@@ -6,7 +6,7 @@ import java.util.List;
 import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.memberExpense.dto.request.MemberExpenseRequest;
 
-public record ExpenseSaveRequest(
+public record ExpenseRequest(
 	Double amount,
 	String content,
 	Date date,

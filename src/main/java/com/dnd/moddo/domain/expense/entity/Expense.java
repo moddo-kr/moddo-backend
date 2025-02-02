@@ -29,6 +29,7 @@ public class Expense {
 
 	private Date date;
 
+	//TODO List 직렬화 @Convert 추가하기
 	private List<String> images;
 
 	public Expense(Long meetId, Double amount, String content, Date date) {
@@ -42,5 +43,11 @@ public class Expense {
 		this.content = content;
 		this.date = date;
 		this.images = images;
+	}
+
+	public void update(Double amount, String content, Date date) {
+		this.amount = amount;
+		this.content = content;
+		this.date = date;
 	}
 }
