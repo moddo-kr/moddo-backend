@@ -35,6 +35,6 @@ public class AuthService {
 
         userRepository.save(guestUser);
 
-        return jwtProvider.generateGuestToken(guestUser.getId());
+        return jwtProvider.generateToken(guestUser.getId(), guestUser.getEmail(), guestUser.getAuthority().toString(), false);
     }
 }
