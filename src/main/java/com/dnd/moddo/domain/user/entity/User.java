@@ -2,17 +2,13 @@ package com.dnd.moddo.domain.user.entity;
 
 import com.dnd.moddo.domain.user.entity.type.Authority;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.DynamicInsert;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@DynamicInsert
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "users")
 public class User{
