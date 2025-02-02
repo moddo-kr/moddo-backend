@@ -17,7 +17,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/group-member")
+@RequestMapping("/api/v1/group-members")
 @RestController
 public class GroupMemberController {
 	private final QueryGroupMemberService queryGroupMemberService;
