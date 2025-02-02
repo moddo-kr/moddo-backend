@@ -1,5 +1,6 @@
 package com.dnd.moddo.global.security.auth;
 
+import com.dnd.moddo.domain.user.exception.UserNotFoundException;
 import com.dnd.moddo.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,6 +20,6 @@ public class AuthDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email)
                 .map(AuthDetails::new)
-                .orElseThrow(() -> new IllegalStateException("유저를 찾을 수 없습니다."));
+                .orElseThrow(() -> new UserNotFoundException(email));
     }
 }
