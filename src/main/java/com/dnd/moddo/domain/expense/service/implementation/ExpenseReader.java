@@ -16,7 +16,11 @@ import lombok.RequiredArgsConstructor;
 public class ExpenseReader {
 	private final ExpenseRepository expenseRepository;
 
-	public List<Expense> getAll(Long meetId) {
+	public List<Expense> findAllByMeetId(Long meetId) {
 		return expenseRepository.findByMeetId(meetId);
+	}
+
+	public Expense findOneByExpenseId(Long expenseId) {
+		return expenseRepository.getById(expenseId);
 	}
 }
