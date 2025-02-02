@@ -25,3 +25,12 @@ spring:
     activate:
       on-profile: prod
 
+---
+
+jwt:
+  header: Authorization
+  prefix: ${PREFIX}
+  secret-key: ${JWT_SECRET_KEY}
+  access-expiration: ${ACCESS_TOKEN_EXPIRATION_TIME}
+  refresh-expiration: ${REFRESH_TOKEN_EXPIRATION_TIME}
+
