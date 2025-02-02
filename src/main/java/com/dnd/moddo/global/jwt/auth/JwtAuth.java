@@ -18,7 +18,7 @@ public class JwtAuth {
     private final JwtUtil jwtUtil;
     private final AuthDetailsService authDetailsService;
 
-    public Authentication authentication(String token) {
+    public Authentication getAuthentication(String token) {
         Claims claims = jwtUtil.getJwt(token).getBody();
 
         if (isNotAccessToken(token)) {
