@@ -1,7 +1,6 @@
 package com.dnd.moddo.global.jwt.utill;
 
 import com.dnd.moddo.global.jwt.exception.TokenInvalidException;
-import com.dnd.moddo.global.jwt.properties.JwtConstants;
 import com.dnd.moddo.global.jwt.properties.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
