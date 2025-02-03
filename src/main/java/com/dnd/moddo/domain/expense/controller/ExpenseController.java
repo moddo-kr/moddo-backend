@@ -1,6 +1,7 @@
 package com.dnd.moddo.domain.expense.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dnd.moddo.domain.expense.dto.request.ExpenseRequest;
 import com.dnd.moddo.domain.expense.dto.request.ExpensesRequest;
 import com.dnd.moddo.domain.expense.dto.response.ExpenseResponse;
 import com.dnd.moddo.domain.expense.dto.response.ExpensesResponse;
@@ -52,9 +54,10 @@ public class ExpenseController {
 
 	@PutMapping("/{expenseId}")
 	public ResponseEntity<ExpenseResponse> updateByExpenseId(@RequestParam("meetId") String token,
-		@PathVariable("expenseId") Long expenseId) {
+		@PathVariable("expenseId") Long expenseId,
+		@RequestBody ExpenseRequest request) {
 		Long meetId = 1L;
-		ExpenseResponse response = queryExpenseService.findOneByExpenseId(meetId, expenseId);
+		ExpenseResponse response = commandExpenseService.updateExpense(expenseId, request);
 		return ResponseEntity.ok(response);
 
 	}
