@@ -25,7 +25,7 @@ public class JwtAuth {
             throw new MissingTokenException();
         }
 
-        UserDetails userDetails = authDetailsService.loadUserByUsername(claims.get(JwtConstants.AUTH_ID.message).toString());
+        UserDetails userDetails = authDetailsService.loadUserByUsername(claims.get(JwtConstants.EMAIL.message).toString());
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
@@ -35,6 +35,6 @@ public class JwtAuth {
             throw new TokenInvalidException();
         }
         String role = jwtUtil.getJwt(token).getHeader().get(JwtConstants.TYPE.message).toString();
-        return !role.equals(JwtConstants.ACCESS_KEY.message);
+        return !role.equals(JwtConstants.REFRESH_KEY.message);
     }
 }

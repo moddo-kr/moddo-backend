@@ -1,5 +1,6 @@
 package com.dnd.moddo.global.jwt.utill;
 
+import com.dnd.moddo.global.jwt.exception.TokenInvalidException;
 import com.dnd.moddo.global.jwt.properties.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -28,6 +29,18 @@ public class JwtUtil {
     }
 
     public Jws<Claims> getJwt(String token) {
+        if (token == null) {
+            throw new TokenInvalidException();
+        }
+
         return Jwts.parserBuilder().setSigningKey(jwtProperties.getSecretKey()).build().parseClaimsJws(token);
+    }
+
+    public Long getUserIdFromToken(String token) {
+        if (token == null) {
+            return null;
+        }
+        Claims claims = getJwt(token).getBody();
+        return claims.get("userId", Long.class);
     }
 }

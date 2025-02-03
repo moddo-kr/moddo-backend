@@ -7,7 +7,8 @@ import lombok.Getter;
 @Getter
 public enum JwtConstants {
 
-    AUTH_ID("auth_id"),
+    AUTH_ID("userId"),
+    EMAIL("email"),
     TYPE("type"),
     EMPTY(" "),
     PREFIX("prefix"),
