@@ -16,3 +16,10 @@ spring:
         dialect: org.hibernate.dialect.H2Dialect
     show-sql: true
     generate-ddl: true
+
+jwt:
+  header: Authorization
+  prefix: prefix
+  secret-key: secretKeysecretKeysecretKeysecretKeysecretKeysecretKey
+  access-expiration: 1
+  refresh-expiration: 1
