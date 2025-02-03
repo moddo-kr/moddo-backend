@@ -1,17 +1,20 @@
 package com.dnd.moddo.domain.auth.service;
 
-import static org.assertj.core.api.BDDAssertions.*;
+import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import com.dnd.moddo.domain.auth.exception.TokenInvalidException;
 import com.dnd.moddo.domain.user.entity.User;
 import com.dnd.moddo.domain.user.entity.type.Authority;
 import com.dnd.moddo.domain.user.repository.UserRepository;
@@ -22,10 +25,10 @@ import com.dnd.moddo.global.jwt.utill.JwtUtil;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
 
 @ExtendWith(MockitoExtension.class)
 public class RefreshTokenServiceTest {
-
     @Mock
     private JwtUtil jwtUtil;
 
@@ -38,38 +41,49 @@ public class RefreshTokenServiceTest {
     @InjectMocks
     private RefreshTokenService refreshTokenService;
 
+    @BeforeEach
+    void setUp() {
+    }
+
     @Test
-    public void executeNewAccessToken() {
+    public void reissueAccessToken() {
         // given
-        String refreshToken = "RefreshToken";
+        String validToken = "validToken";
         String email = "test@example.com";
-        LocalDateTime time = LocalDateTime.now();
-        User user = new User(1L, "김철수", email, "profile.png", true, time, time.plusMonths(1), Authority.USER);
-
-        Claims mockClaims = mock(Claims.class);
-        Jws<Claims> mockJws = mock(Jws.class);
-
-        when(mockClaims.get(JwtConstants.AUTH_ID.message)).thenReturn(email);
-        when(mockJws.getBody()).thenReturn(mockClaims);
-
-        when(jwtUtil.parseToken(refreshToken)).thenReturn(refreshToken);
-        when(jwtUtil.getJwt(refreshToken)).thenReturn(mockJws);
-
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
-
+        Long userId = 1L;
+        String role = "USER";
         String newAccessToken = "newAccessToken";
-        when(jwtProvider.generateAccessToken(anyLong(), anyString(), anyString())).thenReturn(newAccessToken);
+
+        Jws<Claims> mockJws = mock(Jws.class);
+        Claims mockClaims = mock(Claims.class);
+
+        when(jwtUtil.getJwt(any())).thenReturn(mockJws);
+        when(mockJws.getBody()).thenReturn(mockClaims);
+        when(mockClaims.get(JwtConstants.EMAIL.message)).thenReturn(email);
+
+        User user = new User("name", email, role, true, Authority.USER, LocalDateTime.now(), LocalDateTime.now().plusDays(1));
+        ReflectionTestUtils.setField(user, "id", userId);
+
+        when(userRepository.getByEmail(email)).thenReturn(user);
+        when(jwtProvider.generateAccessToken(userId, email, role)).thenReturn(newAccessToken);
 
         // when
-        RefreshResponse response = refreshTokenService.execute(refreshToken);
+        RefreshResponse response = refreshTokenService.execute(validToken);
 
         // then
-        assertThat(response).isNotNull();
-        assertThat(response.getAccessToken()).isEqualTo(newAccessToken);
+        then(response.getAccessToken()).isEqualTo(newAccessToken);
+        verify(userRepository, times(1)).getByEmail(email);
+        verify(jwtProvider, times(1)).generateAccessToken(userId, email, role);
+    }
 
-        verify(jwtUtil, times(1)).parseToken(refreshToken);
-        verify(jwtUtil, times(1)).getJwt(refreshToken);
-        verify(userRepository, times(1)).findByEmail(email);
-        verify(jwtProvider, times(1)).generateAccessToken(anyLong(), anyString(), anyString());
+    @Test
+    public void shouldThrowOnInvalidToken() {
+        // given
+        String invalidToken = "invalidToken";
+        when(jwtUtil.getJwt(any())).thenThrow(new JwtException("Invalid token"));
+
+        // when & then
+        thenThrownBy(() -> refreshTokenService.execute(invalidToken))
+                .isInstanceOf(TokenInvalidException.class);
     }
 }
