@@ -8,7 +8,7 @@ import com.dnd.moddo.domain.memberExpense.dto.request.MemberExpenseRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public record ExpenseRequest(
-	Double amount,
+	Long amount,
 	String content,
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
 	LocalDate date,

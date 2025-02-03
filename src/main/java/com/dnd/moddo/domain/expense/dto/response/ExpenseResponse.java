@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import com.dnd.moddo.domain.expense.entity.Expense;
 
 public record ExpenseResponse(
-	Long id, Double amount, String content, LocalDate date
+	Long id, Long amount, String content, LocalDate date
 ) {
 	public static ExpenseResponse of(Expense expense) {
 		return new ExpenseResponse(expense.getId(), expense.getAmount(), expense.getContent(), expense.getDate());
