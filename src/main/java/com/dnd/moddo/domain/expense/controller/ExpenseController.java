@@ -61,4 +61,11 @@ public class ExpenseController {
 		return ResponseEntity.ok(response);
 
 	}
+
+	@DeleteMapping("/{expenseId}")
+	public ResponseEntity<Void> deleteByExpenseId(@RequestParam("meetId") String token,
+		@PathVariable("expenseId") Long expenseId) {
+		commandExpenseService.deleteExpense(expenseId);
+		return ResponseEntity.noContent().build();
+	}
 }
