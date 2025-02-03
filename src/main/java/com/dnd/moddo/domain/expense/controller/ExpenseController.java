@@ -46,8 +46,7 @@ public class ExpenseController {
 	@GetMapping("/{expenseId}")
 	public ResponseEntity<ExpenseResponse> getByExpenseId(@RequestParam("meetId") String token,
 		@PathVariable("expenseId") Long expenseId) {
-		Long meetId = 1L;
-		ExpenseResponse response = queryExpenseService.findOneByExpenseId(meetId, expenseId);
+		ExpenseResponse response = queryExpenseService.findOneByExpenseId(expenseId);
 		return ResponseEntity.ok(response);
 
 	}
@@ -56,7 +55,6 @@ public class ExpenseController {
 	public ResponseEntity<ExpenseResponse> updateByExpenseId(@RequestParam("meetId") String token,
 		@PathVariable("expenseId") Long expenseId,
 		@RequestBody ExpenseRequest request) {
-		Long meetId = 1L;
 		ExpenseResponse response = commandExpenseService.updateExpense(expenseId, request);
 		return ResponseEntity.ok(response);
 

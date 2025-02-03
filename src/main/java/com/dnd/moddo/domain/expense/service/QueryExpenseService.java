@@ -21,7 +21,7 @@ public class QueryExpenseService {
 		return ExpensesResponse.of(expenses);
 	}
 
-	public ExpenseResponse findOneByExpenseId(Long meetId, Long expenseId) {
+	public ExpenseResponse findOneByExpenseId(Long expenseId) {
 		Expense expense = expenseReader.findOneByExpenseId(expenseId);
 		return ExpenseResponse.of(expense);
 	}
