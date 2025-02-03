@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dnd.moddo.domain.expense.dto.request.ExpenseRequest;
+import com.dnd.moddo.domain.expense.dto.request.ExpensesRequest;
 import com.dnd.moddo.domain.expense.dto.response.ExpenseResponse;
 import com.dnd.moddo.domain.expense.dto.response.ExpensesResponse;
 import com.dnd.moddo.domain.expense.service.CommandExpenseService;
@@ -27,10 +27,10 @@ public class ExpenseController {
 	private final QueryExpenseService queryExpenseService;
 
 	@PostMapping
-	public ResponseEntity<ExpenseResponse> saveExpense(@RequestParam("meetId") String token,
-		@RequestBody ExpenseRequest request) {
+	public ResponseEntity<ExpensesResponse> saveExpenses(@RequestParam("meetId") String token,
+		@RequestBody ExpensesRequest request) {
 		Long meetId = 1L;
-		ExpenseResponse response = commandExpenseService.createExpense(meetId, request);
+		ExpensesResponse response = commandExpenseService.createExpense(meetId, request);
 		return ResponseEntity.ok(response);
 	}
 
