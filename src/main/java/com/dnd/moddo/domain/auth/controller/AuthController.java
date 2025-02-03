@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/v1/user")
 public class AuthController {
 
     private final AuthService authService;
@@ -22,8 +22,8 @@ public class AuthController {
         return ResponseEntity.ok(authService.createGuestUser());
     }
 
-    @PutMapping("/refresh/token")
-    public RefreshResponse refreshToken(@RequestHeader(value = "Authorization") @NotBlank String refreshToken) {
+    @PutMapping("/reissue/token")
+    public RefreshResponse reissueAccessToken(@RequestHeader(value = "Authorization") @NotBlank String refreshToken) {
         return refreshTokenService.execute(refreshToken);
     }
 }
