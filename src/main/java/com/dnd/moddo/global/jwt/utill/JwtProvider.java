@@ -18,24 +18,24 @@ public class JwtProvider {
 
     private final JwtProperties jwtProperties;
 
-    public String generateAccessToken(Long id, String authId, String role) {
-        return generateToken(id, authId, role, ACCESS_KEY.getMessage(), jwtProperties.getAccessExpiration());
+    public String generateAccessToken(Long id, String email, String role) {
+        return generateToken(id, email, role, ACCESS_KEY.getMessage(), jwtProperties.getAccessExpiration());
     }
 
-    public TokenResponse generateToken(Long id, String authId, String role, Boolean isMember) {
-        String accessToken = generateToken(id, authId, role, ACCESS_KEY.getMessage(), jwtProperties.getAccessExpiration());
-        String refreshToken = generateToken(id, authId, role, REFRESH_KEY.getMessage(), jwtProperties.getRefreshExpiration());
+    public TokenResponse generateToken(Long id, String email, String role, Boolean isMember) {
+        String accessToken = generateToken(id, email, role, ACCESS_KEY.getMessage(), jwtProperties.getAccessExpiration());
+        String refreshToken = generateToken(id, email, role, REFRESH_KEY.getMessage(), jwtProperties.getRefreshExpiration());
 
         return new TokenResponse(accessToken, refreshToken, getExpiredTime(), isMember);
     }
 
 
-    private String generateToken(Long id, String authId, String role, String type, Long exp) {
+    private String generateToken(Long id, String email, String role, String type, Long exp) {
         return Jwts.builder()
-                .claim("userId", id)
+                .claim(AUTH_ID.getMessage(), id)
+                .claim(EMAIL.getMessage(), email)
                 .setHeaderParam(TYPE.message, type)
                 .claim(ROLE.getMessage(), role)
-                .claim(AUTH_ID.getMessage(), authId)
                 .signWith(jwtProperties.getSecretKey(), SignatureAlgorithm.HS256)
                 .setExpiration(
                         new Date(System.currentTimeMillis() + exp * 1000)

@@ -25,13 +25,13 @@ public class RefreshTokenService {
         String email;
 
         try {
-            email = jwtUtil.getJwt(jwtUtil.parseToken(token)).getBody().get(JwtConstants.AUTH_ID.message).toString();
+            email = jwtUtil.getJwt(jwtUtil.parseToken(token)).getBody().get(JwtConstants.EMAIL.message).toString();
         } catch (Exception e) {
             throw new TokenInvalidException();
         }
 
-        Optional<User> user = userRepository.findByEmail(email);
-        String newAccessToken = jwtProvider.generateAccessToken(user.get().getId(), user.get().getEmail(), user.get().getAuthority().toString());
+        User user = userRepository.getByEmail(email);
+        String newAccessToken = jwtProvider.generateAccessToken(user.getId(), user.getEmail(), user.getAuthority().toString());
 
         return RefreshResponse.builder()
                 .accessToken(newAccessToken)
