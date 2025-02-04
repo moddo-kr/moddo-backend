@@ -2,7 +2,7 @@ package com.dnd.moddo.domain.group.service;
 
 import com.dnd.moddo.domain.group.dto.request.GroupRequest;
 import com.dnd.moddo.domain.group.dto.response.GroupResponse;
-import com.dnd.moddo.domain.group.service.implementation.GroupCreater;
+import com.dnd.moddo.domain.group.service.implementation.GroupCreator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 class CommandGroupServiceTest {
 
     @Mock
-    private GroupCreater groupCreater;
+    private GroupCreator groupCreator;
 
     @InjectMocks
     private CommandGroupService commandGroupService;
@@ -38,7 +38,7 @@ class CommandGroupServiceTest {
     @Test
     void createGroup() {
         // Given
-        when(groupCreater.createGroup(any(GroupRequest.class), anyLong())).thenReturn(groupResponse);
+        when(groupCreator.createGroup(any(GroupRequest.class), anyLong())).thenReturn(groupResponse);
 
         // When
         GroupResponse response = commandGroupService.createGroup(groupRequest, 1L);

@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class GroupCreater {
+public class GroupCreator {
 
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
