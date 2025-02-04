@@ -10,10 +10,6 @@ public record GroupRequest(
 
         String password,
 
-        LocalDateTime expiredAt,
-
-        String bank,
-
-        String accountNumber
+        LocalDateTime expiredAt
 ) {
 }

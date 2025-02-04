@@ -30,8 +30,6 @@ public class GroupCreater {
                 .password(encryptedPassword)
                 .createdAt(LocalDateTime.now())
                 .expiredAt(LocalDateTime.now().plusMonths(1))
-                .bank(request.bank())
-                .accountNumber(request.accountNumber())
                 .build();
 
         return GroupResponse.of(groupRepository.save(group));
