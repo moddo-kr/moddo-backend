@@ -1,7 +1,7 @@
 package com.dnd.moddo.domain.group.service;
 
-import com.dnd.moddo.domain.group.dto.GroupRequest;
-import com.dnd.moddo.domain.group.dto.GroupResponse;
+import com.dnd.moddo.domain.group.dto.request.GroupRequest;
+import com.dnd.moddo.domain.group.dto.response.GroupResponse;
 import com.dnd.moddo.domain.group.service.implementation.GroupCreater;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

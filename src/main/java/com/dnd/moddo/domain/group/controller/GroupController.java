@@ -1,7 +1,7 @@
 package com.dnd.moddo.domain.group.controller;
 
-import com.dnd.moddo.domain.group.dto.GroupRequest;
-import com.dnd.moddo.domain.group.dto.GroupResponse;
+import com.dnd.moddo.domain.group.dto.request.GroupRequest;
+import com.dnd.moddo.domain.group.dto.response.GroupResponse;
 import com.dnd.moddo.domain.group.service.CommandGroupService;
 import com.dnd.moddo.global.jwt.service.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
