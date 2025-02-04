@@ -18,10 +18,10 @@ public class JwtAuth {
     private final JwtUtil jwtUtil;
     private final AuthDetailsService authDetailsService;
 
-    public Authentication getAuthentication(String token) {
+    public Authentication getAuthentication(String token, String expectedTokenType) {
         Claims claims = jwtUtil.getJwt(token).getBody();
 
-        if (isNotAccessToken(token)) {
+        if (isNotExpectedToken(token, expectedTokenType)) {
             throw new MissingTokenException();
         }
 
@@ -29,12 +29,12 @@ public class JwtAuth {
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
-    private boolean isNotAccessToken(String token) {
-
-        if (token.isEmpty()) {
+    private boolean isNotExpectedToken(String token, String expectedTokenType) {
+        if (token == null || token.isEmpty()) {
             throw new TokenInvalidException();
         }
+
         String role = jwtUtil.getJwt(token).getHeader().get(JwtConstants.TYPE.message).toString();
-        return !role.equals(JwtConstants.REFRESH_KEY.message);
+        return !role.equals(expectedTokenType);
     }
 }

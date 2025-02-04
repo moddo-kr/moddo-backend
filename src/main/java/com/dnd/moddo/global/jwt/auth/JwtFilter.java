@@ -1,5 +1,6 @@
 package com.dnd.moddo.global.jwt.auth;
 
+import com.dnd.moddo.global.jwt.properties.JwtConstants;
 import com.dnd.moddo.global.jwt.utill.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -27,10 +28,20 @@ public class JwtFilter extends OncePerRequestFilter {
         String token = jwtUtil.resolveToken(request);
 
         if (token != null) {
-            Authentication authentication = jwtAuth.getAuthentication(token);
+            String requestURI = request.getRequestURI();
+            String expectedTokenType = getExpectedTokenType(requestURI);
+
+            Authentication authentication = jwtAuth.getAuthentication(token, expectedTokenType);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private String getExpectedTokenType(String requestURI) {
+        if (requestURI.startsWith("/api/v1/user/reissue/token")) {
+            return JwtConstants.REFRESH_KEY.message;
+        }
+        return JwtConstants.ACCESS_KEY.message;
     }
 }
