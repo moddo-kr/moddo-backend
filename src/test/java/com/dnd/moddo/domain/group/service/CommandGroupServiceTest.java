@@ -31,7 +31,7 @@ class CommandGroupServiceTest {
 
     @BeforeEach
     void setUp() {
-        groupRequest = new GroupRequest("GroupName", "password123", LocalDateTime.now(), "bank", "1234-1234");
+        groupRequest = new GroupRequest("GroupName", "password123", LocalDateTime.now());
         groupResponse = new GroupResponse(1L, 1L, LocalDateTime.now(), LocalDateTime.now().minusDays(1), "bank", "1234-1234");
     }
 
@@ -47,7 +47,5 @@ class CommandGroupServiceTest {
         assertThat(response).isNotNull();
         assertThat(response.id()).isEqualTo(1L);
         assertThat(response.writer()).isEqualTo(1L);
-        assertThat(response.bank()).isEqualTo("bank");
-        assertThat(response.accountNumber()).isEqualTo("1234-1234");
     }
 }
