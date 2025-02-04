@@ -20,4 +20,8 @@ public class GroupMemberReader {
 		return groupMemberRepository.findByMeetId(meetId);
 	}
 
+	public GroupMember getByGroupMemberId(Long groupMemberId) {
+		return groupMemberRepository.getById(groupMemberId);
+	}
+
 }
