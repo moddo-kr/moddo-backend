@@ -30,7 +30,7 @@ public class GroupMemberReaderTest {
 		when(groupMemberRepository.findByMeetId(meetId)).thenReturn(expectedMembers);
 
 		//when
-		List<GroupMember> groupMembers = groupMemberReader.getAll(meetId);
+		List<GroupMember> groupMembers = groupMemberReader.getAllByMeetId(meetId);
 
 		//then
 		assertThat(groupMembers).isNotNull();

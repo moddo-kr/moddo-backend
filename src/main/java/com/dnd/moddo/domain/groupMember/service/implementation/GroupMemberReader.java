@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 public class GroupMemberReader {
 	private final GroupMemberRepository groupMemberRepository;
 
-	public List<GroupMember> getAll(Long meetId) {
+	public List<GroupMember> getAllByMeetId(Long meetId) {
 		return groupMemberRepository.findByMeetId(meetId);
 	}
 
