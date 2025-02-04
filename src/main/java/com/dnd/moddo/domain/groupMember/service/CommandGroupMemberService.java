@@ -8,7 +8,7 @@ import com.dnd.moddo.domain.groupMember.dto.request.GroupMembersSaveRequest;
 import com.dnd.moddo.domain.groupMember.dto.response.GroupMembersResponse;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberCreator;
-import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberUpdator;
+import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberUpdater;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class CommandGroupMemberService {
 	private final GroupMemberCreator groupMemberCreator;
-	private final GroupMemberUpdator groupMemberUpdator;
+	private final GroupMemberUpdater groupMemberUpdater;
 
 	public GroupMembersResponse createGroupMembers(Long meetId, GroupMembersSaveRequest request) {
 		List<GroupMember> members = groupMemberCreator.createGroupMember(meetId, request);
