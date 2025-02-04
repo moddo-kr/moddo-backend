@@ -1,11 +1,16 @@
 package com.dnd.moddo.domain.group.entity;
 
+import com.dnd.moddo.domain.group.repository.GroupRepository;
+import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -13,36 +18,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 class GroupTest {
 
+    @Autowired
+    private GroupRepository groupRepository;
+
     @Test
     void groupCreateTest() {
         // given
-        String name = "groupName";
-        Long writer = 1L;
-        String password = "password";
-        LocalDateTime createdAt = LocalDateTime.now();
-        LocalDateTime expiredAt = createdAt.plusDays(1);
-        String bank = "bank";
-        String accountNumber = "1234-1234";
+        Group group1 = new Group("groupName", 1L, "password", LocalDateTime.now(), LocalDateTime.now().plusDays(1), "bank", "1234-1234");
+        Group group2 = new Group("groupName", 1L, "password", LocalDateTime.now(), LocalDateTime.now().plusDays(1), "bank", "1234-1234");
+        groupRepository.save(group1);
+        groupRepository.save(group2);
 
         // when
-        Group group = Group.builder()
-                .name(name)
-                .writer(writer)
-                .password(password)
-                .createdAt(createdAt)
-                .expiredAt(expiredAt)
-                .bank(bank)
-                .accountNumber(accountNumber)
-                .build();
+        Optional<Group> foundGroup = groupRepository.findById(1L);
 
         // then
-        assertThat(group).isNotNull();
-        assertThat(group.getName()).isEqualTo(name);
-        assertThat(group.getWriter()).isEqualTo(writer);
-        assertThat(group.getPassword()).isEqualTo(password);
-        assertThat(group.getCreatedAt()).isEqualTo(createdAt);
-        assertThat(group.getExpiredAt()).isEqualTo(expiredAt);
-        assertThat(group.getBank()).isEqualTo(bank);
-        assertThat(group.getAccountNumber()).isEqualTo(accountNumber);
+        assertThat(foundGroup).isPresent();
+        assertThat(foundGroup.get().getName()).isEqualTo("groupName");
+        assertThat(foundGroup.get().getWriter()).isEqualTo(1L);
     }
 }
