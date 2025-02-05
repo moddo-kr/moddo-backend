@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: classpath:config/application-jwt.yml
   jpa:
     hibernate:
       ddl-auto: create
@@ -27,10 +29,7 @@ spring:
 
 ---
 
-jwt:
-  header: Authorization
-  prefix: ${PREFIX}
-  secret-key: ${JWT_SECRET_KEY}
-  access-expiration: ${ACCESS_TOKEN_EXPIRATION_TIME}
-  refresh-expiration: ${REFRESH_TOKEN_EXPIRATION_TIME}
+
+
+
 
