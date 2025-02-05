@@ -1,5 +1,6 @@
 package com.dnd.moddo.domain.memberExpense.entity;
 
+import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 
 import jakarta.persistence.Entity;
@@ -8,7 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -23,19 +24,17 @@ public class MemberExpense {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	//@OneToMany(fetch = FetchType.LAZY)
-	//@JoinColumn(name = "expense_id")
-	//private Expense expense;
-	private Long expenseId;
-
-	@OneToMany(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "expense_id")
+	private Expense expense;
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "group_member_id")
 	private GroupMember groupMember;
 
 	private Long amount;
 
-	public MemberExpense(Long expenseId, GroupMember groupMember, Long amount) {
-		this.expenseId = expenseId;
+	public MemberExpense(Expense expense, GroupMember groupMember, Long amount) {
+		this.expense = expense;
 		this.groupMember = groupMember;
 		this.amount = amount;
 	}

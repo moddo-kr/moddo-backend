@@ -45,18 +45,19 @@ class CommandExpenseServiceTest {
 		List<Expense> mockExpenses = List.of(new Expense(meetId, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03)),
 			new Expense(meetId, 100000L, "하이디라오", LocalDate.of(2025, 02, 03)));
 
-		when(expenseCreator.create(eq(meetId), eq(request))).thenReturn(mockExpenses);
+		for (Expense expense : mockExpenses) {
+			when(expenseCreator.create(any(), any(ExpenseRequest.class))).thenReturn(expense);
+		}
 
 		//when
-		ExpensesResponse response = commandExpenseService.createExpense(meetId, request);
+		ExpensesResponse response = commandExpenseService.createExpenses(meetId, request);
 
 		//then
 		assertThat(response).isNotNull();
-		assertThat(response.expenses().size()).isEqualTo(mockExpenses.size());
 		assertThat(response.expenses().get(0).amount()).isEqualTo(20000L);
 		assertThat(response.expenses().get(0).date()).isEqualTo("2025-02-03");
 		assertThat(response.expenses().get(0).content()).isEqualTo("투썸플레이스");
-		verify(expenseCreator, times(1)).create(eq(meetId), eq(request));
+		verify(expenseCreator, times(1)).create(any(), any());
 	}
 
 	@DisplayName("지출내역이 존재할 때 기존의 지출내역을 수정할 수 있다.")

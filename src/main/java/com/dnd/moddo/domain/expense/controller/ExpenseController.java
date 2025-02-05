@@ -32,7 +32,7 @@ public class ExpenseController {
 	public ResponseEntity<ExpensesResponse> saveExpenses(@RequestParam("meetId") String token,
 		@RequestBody ExpensesRequest request) {
 		Long meetId = 1L;
-		ExpensesResponse response = commandExpenseService.createExpense(meetId, request);
+		ExpensesResponse response = commandExpenseService.createExpenses(meetId, request);
 		return ResponseEntity.ok(response);
 	}
 
