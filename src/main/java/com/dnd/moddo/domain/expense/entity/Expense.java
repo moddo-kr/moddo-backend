@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -36,11 +37,11 @@ public class Expense {
 	private List<String> images;
 
 	public Expense(Long meetId, Long amount, String content, LocalDate date) {
-		this(null, meetId, amount, content, date, null);
+		this(meetId, amount, content, date, null);
 	}
 
-	public Expense(Long id, Long meetId, Long amount, String content, LocalDate date, List<String> images) {
-		this.id = id;
+	@Builder
+	public Expense(Long meetId, Long amount, String content, LocalDate date, List<String> images) {
 		this.meetId = meetId;
 		this.amount = amount;
 		this.content = content;
