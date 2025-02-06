@@ -1,4 +1,4 @@
-package com.dnd.moddo.domain.group.dto;
+package com.dnd.moddo.domain.group.dto.response;
 
 import com.dnd.moddo.domain.group.entity.Group;
 

@@ -1,5 +1,6 @@
 package com.dnd.moddo.domain.group.entity;
 
+import com.dnd.moddo.domain.group.dto.request.GroupAccountRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -40,5 +41,10 @@ public class Group {
         this.expiredAt = expiredAt;
         this.bank = bank;
         this.accountNumber = accountNumber;
+    }
+
+    public void updateAccount(GroupAccountRequest request) {
+        this.bank = request.bank();
+        this.accountNumber = request.accountNumber();
     }
 }

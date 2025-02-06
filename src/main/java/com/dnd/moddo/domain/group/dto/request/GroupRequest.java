@@ -1,4 +1,4 @@
-package com.dnd.moddo.domain.group.dto;
+package com.dnd.moddo.domain.group.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 
