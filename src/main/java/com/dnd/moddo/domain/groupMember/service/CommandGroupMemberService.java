@@ -23,8 +23,4 @@ public class CommandGroupMemberService {
 		return GroupMembersResponse.of(members);
 	}
 
-	public GroupMembersResponse addGroupMembers(Long groupId, GroupMembersSaveRequest request) {
-		List<GroupMember> members = groupMemberUpdater.updateGroupMember(groupId, request);
-		return GroupMembersResponse.of(members);
-	}
 }
