@@ -28,7 +28,7 @@ public class GroupMemberController {
 		@RequestParam("groupId") Long groupId,
 		@Valid @RequestBody GroupMembersSaveRequest request
 	) {
-		GroupMembersResponse response = commandGroupMemberService.addOrCreateGroupMembers(groupId, request);
+		GroupMembersResponse response = commandGroupMemberService.createGroupMembers(groupId, request);
 		return ResponseEntity.ok(response);
 	}
 
