@@ -25,9 +25,9 @@ public class GroupController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/account/{postId}")
-    public ResponseEntity<GroupResponse> updateAccount(@RequestBody GroupAccountRequest groupAccountRequest, @PathVariable Long postId) {
-        GroupResponse response = commandGroupService.updateAccount(groupAccountRequest, postId);
+    @PutMapping("/account/{groupId}")
+    public ResponseEntity<GroupResponse> updateAccount(@RequestBody GroupAccountRequest groupAccountRequest, @PathVariable Long groupId) {
+        GroupResponse response = commandGroupService.updateAccount(groupAccountRequest, groupId);
         return ResponseEntity.ok(response);
     }
 }
