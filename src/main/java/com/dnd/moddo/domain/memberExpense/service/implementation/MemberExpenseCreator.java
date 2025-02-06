@@ -18,7 +18,7 @@ public class MemberExpenseCreator {
 	private final MemberExpenseRepository memberExpenseRepository;
 
 	public MemberExpense create(Expense expense, GroupMember groupMember, MemberExpenseRequest memberExpenseRequest) {
-		MemberExpense memberExpense = new MemberExpense(expense, groupMember, memberExpenseRequest.amount());
+		MemberExpense memberExpense = memberExpenseRequest.toEntity(expense, groupMember);
 		return memberExpenseRepository.save(memberExpense);
 	}
 }
