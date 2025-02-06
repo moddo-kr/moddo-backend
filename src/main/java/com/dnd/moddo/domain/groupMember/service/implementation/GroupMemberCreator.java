@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dnd.moddo.domain.group.entity.Group;
+import com.dnd.moddo.domain.group.repository.GroupRepository;
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMemberSaveRequest;
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMembersSaveRequest;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
@@ -19,15 +21,19 @@ import lombok.RequiredArgsConstructor;
 public class GroupMemberCreator {
 	private final GroupMemberRepository groupMemberRepository;
 	private final GroupMemberValidator groupMemberValidator;
+	private final GroupRepository groupRepository; //추후 grouopReader나 다른것으로 수정할 예정
 
 	public List<GroupMember> createGroupMember(Long groupId, GroupMembersSaveRequest request) {
-		List<GroupMember> existingMembers = groupMemberRepository.findByGroupId(groupId);
+		Group group = groupRepository.getById(groupId);
 
+		List<GroupMember> existingMembers = groupMemberRepository.findByGroupId(groupId);
 		List<String> allNames = getAllGroupMemberName(existingMembers, request);
 
 		groupMemberValidator.validateMemberNamesNotDuplicate(allNames);
-		List<GroupMember> newMembers = request.toEntity(groupId);
+
+		List<GroupMember> newMembers = request.toEntity(group);
 		existingMembers.addAll(groupMemberRepository.saveAll(newMembers));
+
 		return existingMembers;
 	}
 
