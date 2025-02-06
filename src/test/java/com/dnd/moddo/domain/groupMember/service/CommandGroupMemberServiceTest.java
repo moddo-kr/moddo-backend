@@ -30,19 +30,19 @@ public class CommandGroupMemberServiceTest {
 	@Test
 	public void createGroupMembers() {
 		//given
-		Long meetId = 1L;
+		Long groupId = 1L;
 		GroupMembersSaveRequest request = new GroupMembersSaveRequest(new ArrayList<>());
-		List<GroupMember> mockMembers = List.of(new GroupMember("김반숙", 1, meetId));
+		List<GroupMember> mockMembers = List.of(new GroupMember("김반숙", 1, groupId));
 
-		when(groupMemberCreator.createGroupMember(eq(meetId), eq(request))).thenReturn(mockMembers);
+		when(groupMemberCreator.createGroupMember(eq(groupId), eq(request))).thenReturn(mockMembers);
 
 		// when
-		GroupMembersResponse response = commandGroupMemberService.createGroupMembers(meetId, request);
+		GroupMembersResponse response = commandGroupMemberService.createGroupMembers(groupId, request);
 
 		//then
 		assertThat(response).isNotNull();
 		assertThat(response.members().size()).isEqualTo(1);
 		assertThat(response.members().get(0).name()).isEqualTo("김반숙");
-		verify(groupMemberCreator, times(1)).createGroupMember(eq(meetId), eq(request));
+		verify(groupMemberCreator, times(1)).createGroupMember(eq(groupId), eq(request));
 	}
 }

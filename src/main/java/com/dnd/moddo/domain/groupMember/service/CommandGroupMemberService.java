@@ -18,8 +18,8 @@ public class CommandGroupMemberService {
 	private final GroupMemberCreator groupMemberCreator;
 	private final GroupMemberUpdater groupMemberUpdater;
 
-	public GroupMembersResponse createGroupMembers(Long meetId, GroupMembersSaveRequest request) {
-		List<GroupMember> members = groupMemberCreator.createGroupMember(meetId, request);
+	public GroupMembersResponse createGroupMembers(Long groupId, GroupMembersSaveRequest request) {
+		List<GroupMember> members = groupMemberCreator.createGroupMember(groupId, request);
 		return GroupMembersResponse.of(members);
 	}
 }

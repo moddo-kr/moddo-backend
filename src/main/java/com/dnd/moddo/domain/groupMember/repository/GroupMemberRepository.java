@@ -9,7 +9,7 @@ import com.dnd.moddo.domain.groupMember.exception.GroupMemberNotFoundException;
 
 public interface GroupMemberRepository extends JpaRepository<GroupMember, Long> {
 
-	List<GroupMember> findByMeetId(Long meetId);
+	List<GroupMember> findByGroupId(Long groupId);
 
 	default GroupMember getById(Long id) {
 		return findById(id)

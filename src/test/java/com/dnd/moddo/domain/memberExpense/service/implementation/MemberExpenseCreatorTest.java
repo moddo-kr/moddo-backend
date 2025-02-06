@@ -29,12 +29,12 @@ class MemberExpenseCreatorTest {
 	private Expense expense;
 	private GroupMember groupMember;
 	private MemberExpenseRequest memberExpenseRequest;
-	private Long meetId = 1L;
+	private Long groupId = 1L;
 
 	@BeforeEach
 	void setUp() {
-		expense = new Expense(meetId, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
-		groupMember = new GroupMember("박완수", meetId);
+		expense = new Expense(groupId, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
+		groupMember = new GroupMember("박완수", groupId);
 		memberExpenseRequest = mock(MemberExpenseRequest.class);
 	}
 

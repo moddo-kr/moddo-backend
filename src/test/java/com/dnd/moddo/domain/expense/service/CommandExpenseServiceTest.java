@@ -43,7 +43,7 @@ class CommandExpenseServiceTest {
 	@Test
 	void createExpense() {
 		//given
-		Long meetId = 1L;
+		Long groupId = 1L;
 
 		ExpenseRequest expenseRequest1 = new ExpenseRequest(20000L, "투썸플레이스", LocalDate.of(2025, 02, 03),
 			new ArrayList<>());
@@ -52,14 +52,14 @@ class CommandExpenseServiceTest {
 
 		ExpensesRequest request = new ExpensesRequest(List.of(expenseRequest1, expenseRequest2));
 
-		Expense expense1 = new Expense(meetId, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
-		Expense expense2 = new Expense(meetId, 100000L, "하이디라오", LocalDate.of(2025, 02, 03));
-		when(expenseCreator.create(eq(meetId), any(ExpenseRequest.class)))
+		Expense expense1 = new Expense(groupId, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
+		Expense expense2 = new Expense(groupId, 100000L, "하이디라오", LocalDate.of(2025, 02, 03));
+		when(expenseCreator.create(eq(groupId), any(ExpenseRequest.class)))
 			.thenReturn(expense1)
 			.thenReturn(expense2);
 
 		// When
-		ExpensesResponse response = commandExpenseService.createExpenses(meetId, request);
+		ExpensesResponse response = commandExpenseService.createExpenses(groupId, request);
 
 		// Then
 		assertThat(response).isNotNull();
@@ -72,8 +72,8 @@ class CommandExpenseServiceTest {
 	@Test
 	void updateExpenseSuccess() {
 		//given
-		Long meetId = 1L, expenseId = 1L;
-		Expense mockExpense = new Expense(meetId, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
+		Long groupId = 1L, expenseId = 1L;
+		Expense mockExpense = new Expense(groupId, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
 		ExpenseRequest expenseRequest = mock(ExpenseRequest.class);
 		ExpenseResponse expectedResponse = ExpenseResponse.of(mockExpense);
 

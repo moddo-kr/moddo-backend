@@ -28,16 +28,16 @@ public class CommandExpenseService {
 	private final MemberExpenseCreator memberExpenseCreator;
 	private final GroupMemberReader groupMemberReader;
 
-	public ExpensesResponse createExpenses(Long meetId, ExpensesRequest request) {
+	public ExpensesResponse createExpenses(Long groupId, ExpensesRequest request) {
 		List<ExpenseResponse> expenses = request.expenses()
 			.stream()
-			.map(e -> createExpense(meetId, e))
+			.map(e -> createExpense(groupId, e))
 			.toList();
 		return new ExpensesResponse(expenses);
 	}
 
-	private ExpenseResponse createExpense(Long meetId, ExpenseRequest request) {
-		Expense expense = expenseCreator.create(meetId, request);
+	private ExpenseResponse createExpense(Long groupId, ExpenseRequest request) {
+		Expense expense = expenseCreator.create(groupId, request);
 		List<MemberExpenseResponse> memberExpensesResponses = request.memberExpenses().stream()
 			.map(m -> {
 				GroupMember groupMember = groupMemberReader.getByGroupMemberId(m.memberId());

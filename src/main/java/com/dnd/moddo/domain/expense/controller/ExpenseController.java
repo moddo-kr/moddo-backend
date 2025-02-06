@@ -29,22 +29,22 @@ public class ExpenseController {
 	private final QueryExpenseService queryExpenseService;
 
 	@PostMapping
-	public ResponseEntity<ExpensesResponse> saveExpenses(@RequestParam("meetId") String token,
+	public ResponseEntity<ExpensesResponse> saveExpenses(@RequestParam("groupId") String token,
 		@RequestBody ExpensesRequest request) {
-		Long meetId = 1L;
-		ExpensesResponse response = commandExpenseService.createExpenses(meetId, request);
+		Long groupId = 1L;
+		ExpensesResponse response = commandExpenseService.createExpenses(groupId, request);
 		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping
-	public ResponseEntity<ExpensesResponse> getAllByMeetId(@RequestParam("meetId") String token) {
-		Long meetId = 1L;
-		ExpensesResponse response = queryExpenseService.findAllByMeetId(meetId);
+	public ResponseEntity<ExpensesResponse> getAllByGroupId(@RequestParam("groupId") String token) {
+		Long groupId = 1L;
+		ExpensesResponse response = queryExpenseService.findAllByGroupId(groupId);
 		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping("/{expenseId}")
-	public ResponseEntity<ExpenseResponse> getByExpenseId(@RequestParam("meetId") String token,
+	public ResponseEntity<ExpenseResponse> getByExpenseId(@RequestParam("groupId") String token,
 		@PathVariable("expenseId") Long expenseId) {
 		ExpenseResponse response = queryExpenseService.findOneByExpenseId(expenseId);
 		return ResponseEntity.ok(response);
@@ -52,7 +52,7 @@ public class ExpenseController {
 	}
 
 	@PutMapping("/{expenseId}")
-	public ResponseEntity<ExpenseResponse> updateByExpenseId(@RequestParam("meetId") String token,
+	public ResponseEntity<ExpenseResponse> updateByExpenseId(@RequestParam("groupId") String token,
 		@PathVariable("expenseId") Long expenseId,
 		@RequestBody ExpenseRequest request) {
 		ExpenseResponse response = commandExpenseService.updateExpense(expenseId, request);
@@ -61,7 +61,7 @@ public class ExpenseController {
 	}
 
 	@DeleteMapping("/{expenseId}")
-	public ResponseEntity<Void> deleteByExpenseId(@RequestParam("meetId") String token,
+	public ResponseEntity<Void> deleteByExpenseId(@RequestParam("groupId") String token,
 		@PathVariable("expenseId") Long expenseId) {
 		commandExpenseService.deleteExpense(expenseId);
 		return ResponseEntity.noContent().build();

@@ -15,8 +15,8 @@ import lombok.RequiredArgsConstructor;
 public class QueryGroupMemberService {
 	private final GroupMemberReader groupMemberReader;
 
-	public GroupMembersResponse findAll(Long meetId) {
-		List<GroupMember> members = groupMemberReader.getAllByMeetId(meetId);
+	public GroupMembersResponse findAll(Long groupId) {
+		List<GroupMember> members = groupMemberReader.getAllByGroupId(groupId);
 		return GroupMembersResponse.of(members);
 	}
 }

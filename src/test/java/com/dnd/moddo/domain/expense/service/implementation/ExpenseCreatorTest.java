@@ -27,14 +27,14 @@ class ExpenseCreatorTest {
 	@Test
 	void createSuccess() {
 		//given
-		Long meetId = 1L;
+		Long groupId = 1L;
 		ExpenseRequest request = mock(ExpenseRequest.class);
 
-		Expense mockExpense = new Expense(meetId, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
+		Expense mockExpense = new Expense(groupId, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
 		when(expenseRepository.save(any())).thenReturn(mockExpense);
 
 		//when
-		Expense result = expenseCreator.create(meetId, request);
+		Expense result = expenseCreator.create(groupId, request);
 
 		//then
 		assertThat(result).isNotNull();

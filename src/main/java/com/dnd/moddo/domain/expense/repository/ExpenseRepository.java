@@ -8,7 +8,7 @@ import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.expense.exception.ExpenseNotFoundException;
 
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
-	List<Expense> findByMeetId(Long meetId);
+	List<Expense> findByGroupId(Long groupId);
 
 	default Expense getById(Long id) {
 		return findById(id)

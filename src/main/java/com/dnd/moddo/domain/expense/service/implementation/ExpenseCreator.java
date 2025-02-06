@@ -15,8 +15,8 @@ import lombok.RequiredArgsConstructor;
 public class ExpenseCreator {
 	private final ExpenseRepository expenseRepository;
 
-	public Expense create(Long meetId, ExpenseRequest request) {
-		Expense expense = request.toEntity(meetId);
+	public Expense create(Long groupId, ExpenseRequest request) {
+		Expense expense = request.toEntity(groupId);
 		return expenseRepository.save(expense);
 	}
 }

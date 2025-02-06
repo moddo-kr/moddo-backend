@@ -17,8 +17,8 @@ public class GroupMemberCreator {
 	private final GroupMemberRepository groupMemberRepository;
 
 	@Transactional
-	public List<GroupMember> createGroupMember(Long meetId, GroupMembersSaveRequest request) {
-		List<GroupMember> groupMembers = request.toEntity(meetId);
+	public List<GroupMember> createGroupMember(Long groupId, GroupMembersSaveRequest request) {
+		List<GroupMember> groupMembers = request.toEntity(groupId);
 		return groupMemberRepository.saveAll(groupMembers);
 	}
 }

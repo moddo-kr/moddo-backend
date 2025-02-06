@@ -24,7 +24,7 @@ public class Expense {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private Long meetId;
+	private Long groupId;
 
 	private Long amount;
 
@@ -36,13 +36,13 @@ public class Expense {
 	//TODO List 직렬화 @Convert 추가하기
 	private List<String> images;
 
-	public Expense(Long meetId, Long amount, String content, LocalDate date) {
-		this(meetId, amount, content, date, null);
+	public Expense(Long groupId, Long amount, String content, LocalDate date) {
+		this(groupId, amount, content, date, null);
 	}
 
 	@Builder
-	public Expense(Long meetId, Long amount, String content, LocalDate date, List<String> images) {
-		this.meetId = meetId;
+	public Expense(Long groupId, Long amount, String content, LocalDate date, List<String> images) {
+		this.groupId = groupId;
 		this.amount = amount;
 		this.content = content;
 		this.date = date;

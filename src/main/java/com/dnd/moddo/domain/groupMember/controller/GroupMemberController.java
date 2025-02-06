@@ -25,20 +25,20 @@ public class GroupMemberController {
 
 	@PostMapping
 	public ResponseEntity<GroupMembersResponse> saveGroupMembers(
-		@RequestParam("meetId") String token,
+		@RequestParam("groupId") String token,
 		@Valid @RequestBody GroupMembersSaveRequest request
 	) {
-		Long meetId = 1L; //mock value
-		GroupMembersResponse response = commandGroupMemberService.createGroupMembers(meetId, request);
+		Long groupId = 1L; //mock value
+		GroupMembersResponse response = commandGroupMemberService.createGroupMembers(groupId, request);
 		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping
 	public ResponseEntity<GroupMembersResponse> getGroupMembers(
-		@RequestParam("meetId") String token
+		@RequestParam("groupId") String token
 	) {
-		Long meetId = 1L;
-		GroupMembersResponse response = queryGroupMemberService.findAll(meetId);
+		Long groupId = 1L;
+		GroupMembersResponse response = queryGroupMemberService.findAll(groupId);
 		return ResponseEntity.ok(response);
 	}
 }

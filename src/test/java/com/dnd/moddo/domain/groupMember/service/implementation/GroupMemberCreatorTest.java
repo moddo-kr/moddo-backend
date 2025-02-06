@@ -28,15 +28,15 @@ public class GroupMemberCreatorTest {
 	@Test
 	public void createGroupMember() {
 		//given
-		Long meetId = 1L;
+		Long groupId = 1L;
 		GroupMembersSaveRequest request = new GroupMembersSaveRequest(new ArrayList<>());
 
-		List<GroupMember> expectedMembers = List.of(new GroupMember("김반숙", 1, meetId));
+		List<GroupMember> expectedMembers = List.of(new GroupMember("김반숙", 1, groupId));
 
 		when(groupMemberRepository.saveAll(anyList())).thenReturn(expectedMembers);
 
 		//when
-		List<GroupMember> savedMembers = groupMemberCreator.createGroupMember(meetId, request);
+		List<GroupMember> savedMembers = groupMemberCreator.createGroupMember(groupId, request);
 
 		//then
 		assertThat(savedMembers).isNotNull();
