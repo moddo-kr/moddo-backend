@@ -7,14 +7,12 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 
 import com.dnd.moddo.domain.groupMember.exception.GroupMemberDuplicateNameException;
-import com.dnd.moddo.domain.groupMember.repository.GroupMemberRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
 public class GroupMemberValidator {
-	private GroupMemberRepository groupMemberRepository;
 
 	public void validateMemberNamesNotDuplicate(List<String> names) {
 		if (hasDuplicateMemberName(names)) {
