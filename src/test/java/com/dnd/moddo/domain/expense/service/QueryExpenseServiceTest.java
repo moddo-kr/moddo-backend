@@ -29,24 +29,24 @@ class QueryExpenseServiceTest {
 
 	@DisplayName("모임이 존재하면 모임의 모든 지출내역을 조회할 수 있다.")
 	@Test
-	void findAllByMeetId() {
+	void findAllByGroupId() {
 		//given
-		Long meetId = 1L;
+		Long groupId = 1L;
 		List<Expense> mockExpenses = List.of(
-			new Expense(meetId, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03)),
-			new Expense(meetId, 35000L, "보드게임카페", LocalDate.of(2025, 02, 03))
+			new Expense(groupId, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03)),
+			new Expense(groupId, 35000L, "보드게임카페", LocalDate.of(2025, 02, 03))
 		);
 
-		when(expenseReader.findAllByMeetId(eq(meetId))).thenReturn(mockExpenses);
+		when(expenseReader.findAllByGroupId(eq(groupId))).thenReturn(mockExpenses);
 		//when
-		ExpensesResponse response = queryExpenseService.findAllByMeetId(meetId);
+		ExpensesResponse response = queryExpenseService.findAllByGroupId(groupId);
 
 		//then
 		assertThat(response).isNotNull();
 		assertThat(response.expenses().size()).isEqualTo(mockExpenses.size());
 		assertThat(response.expenses().get(0).content()).isEqualTo("투썸플레이스");
 
-		verify(expenseReader, times(1)).findAllByMeetId(eq(meetId));
+		verify(expenseReader, times(1)).findAllByGroupId(eq(groupId));
 
 	}
 
@@ -54,8 +54,8 @@ class QueryExpenseServiceTest {
 	@Test
 	void findOneByExpenseIdSuccess() {
 		//given
-		Long meetId = 1L, expenseId = 1L;
-		Expense mockExpense = new Expense(meetId, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
+		Long groupId = 1L, expenseId = 1L;
+		Expense mockExpense = new Expense(groupId, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
 
 		when(expenseReader.findOneByExpenseId(eq(expenseId))).thenReturn(mockExpense);
 

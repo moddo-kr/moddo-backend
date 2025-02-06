@@ -27,24 +27,24 @@ public class GroupMember {
 	private Integer profileId;
 
 	@Column(name = "meet_id", updatable = false, nullable = false)
-	private Long meetId;
+	private Long groupId;
 
 	@Column(name = "is_paid", nullable = false)
 	private boolean isPaid;
 
-	public GroupMember(String name, Long meetId) {
-		this(null, name, null, meetId, false);
+	public GroupMember(String name, Long groupId) {
+		this(null, name, null, groupId, false);
 	}
 
-	public GroupMember(String name, Integer profileId, Long meetId) {
-		this(null, name, profileId, meetId, false);
+	public GroupMember(String name, Integer profileId, Long groupId) {
+		this(null, name, profileId, groupId, false);
 	}
 
-	public GroupMember(Long id, String name, Integer profileId, Long meetId, boolean isPaid) {
+	public GroupMember(Long id, String name, Integer profileId, Long groupId, boolean isPaid) {
 		this.id = id;
 		this.name = name;
 		this.profileId = profileId;
-		this.meetId = meetId;
+		this.groupId = groupId;
 		this.isPaid = isPaid;
 	}
 

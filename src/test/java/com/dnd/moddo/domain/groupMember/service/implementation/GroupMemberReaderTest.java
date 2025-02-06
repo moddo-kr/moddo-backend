@@ -24,19 +24,19 @@ public class GroupMemberReaderTest {
 	@Test
 	public void getAll() {
 		//given
-		Long meetId = 1L;
-		List<GroupMember> expectedMembers = List.of(new GroupMember("김반숙", 1, meetId));
+		Long groupId = 1L;
+		List<GroupMember> expectedMembers = List.of(new GroupMember("김반숙", 1, groupId));
 
-		when(groupMemberRepository.findByMeetId(meetId)).thenReturn(expectedMembers);
+		when(groupMemberRepository.findByGroupId(groupId)).thenReturn(expectedMembers);
 
 		//when
-		List<GroupMember> groupMembers = groupMemberReader.getAll(meetId);
+		List<GroupMember> groupMembers = groupMemberReader.getAllByGroupId(groupId);
 
 		//then
 		assertThat(groupMembers).isNotNull();
 		assertThat(groupMembers.size()).isEqualTo(1);
 		assertThat(groupMembers.get(0).getName()).isEqualTo("김반숙");
-		verify(groupMemberRepository, times(1)).findByMeetId(meetId);
+		verify(groupMemberRepository, times(1)).findByGroupId(groupId);
 	}
 
 }

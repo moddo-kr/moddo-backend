@@ -16,8 +16,8 @@ import lombok.RequiredArgsConstructor;
 public class QueryExpenseService {
 	private final ExpenseReader expenseReader;
 
-	public ExpensesResponse findAllByMeetId(Long meetId) {
-		List<Expense> expenses = expenseReader.findAllByMeetId(meetId);
+	public ExpensesResponse findAllByGroupId(Long groupId) {
+		List<Expense> expenses = expenseReader.findAllByGroupId(groupId);
 		return ExpensesResponse.of(expenses);
 	}
 

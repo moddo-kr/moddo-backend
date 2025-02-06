@@ -23,6 +23,7 @@ import com.dnd.moddo.domain.expense.exception.ExpenseNotFoundException;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseCreator;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseDeleter;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseUpdater;
+import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberReader;
 
 @ExtendWith(MockitoExtension.class)
 class CommandExpenseServiceTest {
@@ -33,6 +34,8 @@ class CommandExpenseServiceTest {
 	private ExpenseUpdater expenseUpdater;
 	@Mock
 	private ExpenseDeleter expenseDeleter;
+	@Mock
+	private GroupMemberReader groupMemberReader;
 	@InjectMocks
 	private CommandExpenseService commandExpenseService;
 
@@ -40,31 +43,37 @@ class CommandExpenseServiceTest {
 	@Test
 	void createExpense() {
 		//given
-		Long meetId = 1L;
-		ExpensesRequest request = new ExpensesRequest(new ArrayList<>());
-		List<Expense> mockExpenses = List.of(new Expense(meetId, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03)),
-			new Expense(meetId, 100000L, "하이디라오", LocalDate.of(2025, 02, 03)));
+		Long groupId = 1L;
 
-		when(expenseCreator.create(eq(meetId), eq(request))).thenReturn(mockExpenses);
+		ExpenseRequest expenseRequest1 = new ExpenseRequest(20000L, "투썸플레이스", LocalDate.of(2025, 02, 03),
+			new ArrayList<>());
+		ExpenseRequest expenseRequest2 = new ExpenseRequest(100000L, "하이디라오", LocalDate.of(2025, 02, 03),
+			new ArrayList<>());
 
-		//when
-		ExpensesResponse response = commandExpenseService.createExpense(meetId, request);
+		ExpensesRequest request = new ExpensesRequest(List.of(expenseRequest1, expenseRequest2));
 
-		//then
+		Expense expense1 = new Expense(groupId, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
+		Expense expense2 = new Expense(groupId, 100000L, "하이디라오", LocalDate.of(2025, 02, 03));
+		when(expenseCreator.create(eq(groupId), any(ExpenseRequest.class)))
+			.thenReturn(expense1)
+			.thenReturn(expense2);
+
+		// When
+		ExpensesResponse response = commandExpenseService.createExpenses(groupId, request);
+
+		// Then
 		assertThat(response).isNotNull();
-		assertThat(response.expenses().size()).isEqualTo(mockExpenses.size());
-		assertThat(response.expenses().get(0).amount()).isEqualTo(20000L);
-		assertThat(response.expenses().get(0).date()).isEqualTo("2025-02-03");
+		assertThat(response.expenses().size()).isEqualTo(2);
 		assertThat(response.expenses().get(0).content()).isEqualTo("투썸플레이스");
-		verify(expenseCreator, times(1)).create(eq(meetId), eq(request));
+		assertThat(response.expenses().get(0).date()).isEqualTo("2025-02-03");
 	}
 
 	@DisplayName("지출내역이 존재할 때 기존의 지출내역을 수정할 수 있다.")
 	@Test
 	void updateExpenseSuccess() {
 		//given
-		Long meetId = 1L, expenseId = 1L;
-		Expense mockExpense = new Expense(meetId, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
+		Long groupId = 1L, expenseId = 1L;
+		Expense mockExpense = new Expense(groupId, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
 		ExpenseRequest expenseRequest = mock(ExpenseRequest.class);
 		ExpenseResponse expectedResponse = ExpenseResponse.of(mockExpense);
 

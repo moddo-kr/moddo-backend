@@ -12,6 +12,10 @@ import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseCreator;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseDeleter;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseUpdater;
+import com.dnd.moddo.domain.groupMember.entity.GroupMember;
+import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberReader;
+import com.dnd.moddo.domain.memberExpense.dto.response.MemberExpenseResponse;
+import com.dnd.moddo.domain.memberExpense.service.implementation.MemberExpenseCreator;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,10 +25,26 @@ public class CommandExpenseService {
 	private final ExpenseCreator expenseCreator;
 	private final ExpenseUpdater expenseUpdater;
 	private final ExpenseDeleter expenseDeleter;
+	private final MemberExpenseCreator memberExpenseCreator;
+	private final GroupMemberReader groupMemberReader;
 
-	public ExpensesResponse createExpense(Long meetId, ExpensesRequest request) {
-		List<Expense> expenses = expenseCreator.create(meetId, request);
-		return ExpensesResponse.of(expenses);
+	public ExpensesResponse createExpenses(Long groupId, ExpensesRequest request) {
+		List<ExpenseResponse> expenses = request.expenses()
+			.stream()
+			.map(e -> createExpense(groupId, e))
+			.toList();
+		return new ExpensesResponse(expenses);
+	}
+
+	private ExpenseResponse createExpense(Long groupId, ExpenseRequest request) {
+		Expense expense = expenseCreator.create(groupId, request);
+		List<MemberExpenseResponse> memberExpensesResponses = request.memberExpenses().stream()
+			.map(m -> {
+				GroupMember groupMember = groupMemberReader.getByGroupMemberId(m.memberId());
+				return MemberExpenseResponse.of(memberExpenseCreator.create(expense, groupMember, m));
+			}).toList();
+
+		return ExpenseResponse.of(expense, memberExpensesResponses);
 	}
 
 	public ExpenseResponse updateExpense(Long expenseId, ExpenseRequest request) {

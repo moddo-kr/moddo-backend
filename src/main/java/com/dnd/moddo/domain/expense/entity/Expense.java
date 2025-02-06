@@ -11,19 +11,20 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "expense")
+@Table(name = "expenses")
 @Entity
 public class Expense {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private Long meetId;
+	private Long groupId;
 
 	private Long amount;
 
@@ -35,13 +36,13 @@ public class Expense {
 	//TODO List 직렬화 @Convert 추가하기
 	private List<String> images;
 
-	public Expense(Long meetId, Long amount, String content, LocalDate date) {
-		this(null, meetId, amount, content, date, null);
+	public Expense(Long groupId, Long amount, String content, LocalDate date) {
+		this(groupId, amount, content, date, null);
 	}
 
-	public Expense(Long id, Long meetId, Long amount, String content, LocalDate date, List<String> images) {
-		this.id = id;
-		this.meetId = meetId;
+	@Builder
+	public Expense(Long groupId, Long amount, String content, LocalDate date, List<String> images) {
+		this.groupId = groupId;
 		this.amount = amount;
 		this.content = content;
 		this.date = date;

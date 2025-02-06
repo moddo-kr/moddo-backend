@@ -27,25 +27,25 @@ class ExpenseReaderTest {
 
 	@DisplayName("모임이 존재하면 모임에 해당하는 지출내역을 모두 조회할 수 있다.")
 	@Test
-	void findAllByMeetId() {
+	void findAllByGroupId() {
 		//given
-		Long meetId = 1L;
+		Long groupId = 1L;
 		List<Expense> mockExpenses = List.of(
-			new Expense(meetId, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03)),
-			new Expense(meetId, 35000L, "보드게임카페", LocalDate.of(2025, 02, 03))
+			new Expense(groupId, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03)),
+			new Expense(groupId, 35000L, "보드게임카페", LocalDate.of(2025, 02, 03))
 		);
 
-		when(expenseRepository.findByMeetId(eq(meetId))).thenReturn(mockExpenses);
+		when(expenseRepository.findByGroupId(eq(groupId))).thenReturn(mockExpenses);
 
 		//when
-		List<Expense> result = expenseReader.findAllByMeetId(meetId);
+		List<Expense> result = expenseReader.findAllByGroupId(groupId);
 
 		assertThat(result).isNotNull();
 		assertThat(result.size()).isEqualTo(mockExpenses.size());
 		assertThat(result.get(0).getContent()).isEqualTo("투썸플레이스");
 
 		//then
-		verify(expenseRepository, times(1)).findByMeetId(eq(meetId));
+		verify(expenseRepository, times(1)).findByGroupId(eq(groupId));
 	}
 
 	@DisplayName("지출내역이 존재하면 해당 지출내역을 조회할 수 있다.")

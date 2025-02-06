@@ -16,7 +16,7 @@ public record ExpenseRequest(
 
 ) {
 
-	public Expense toEntity(Long meetId) {
-		return new Expense(meetId, amount(), content(), date());
+	public Expense toEntity(Long groupId) {
+		return new Expense(groupId, amount(), content(), date());
 	}
 }
