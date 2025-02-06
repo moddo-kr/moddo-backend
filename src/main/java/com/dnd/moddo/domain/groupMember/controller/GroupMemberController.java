@@ -3,6 +3,7 @@ package com.dnd.moddo.domain.groupMember.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -39,6 +40,15 @@ public class GroupMemberController {
 	) {
 		Long groupId = 1L;
 		GroupMembersResponse response = queryGroupMemberService.findAll(groupId);
+		return ResponseEntity.ok(response);
+	}
+
+	@PutMapping
+	public ResponseEntity<GroupMembersResponse> updateGroupMembers(
+		@RequestParam("groupId") String token, @Valid @RequestBody GroupMembersSaveRequest request
+	) {
+		Long groupId = 1L;
+		GroupMembersResponse response = commandGroupMemberService.addGroupMembers(groupId, request);
 		return ResponseEntity.ok(response);
 	}
 }
