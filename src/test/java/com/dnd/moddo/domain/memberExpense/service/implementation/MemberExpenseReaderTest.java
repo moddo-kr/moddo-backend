@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,46 +18,47 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
-import com.dnd.moddo.domain.memberExpense.dto.request.MemberExpenseRequest;
 import com.dnd.moddo.domain.memberExpense.entity.MemberExpense;
 import com.dnd.moddo.domain.memberExpense.repotiroy.MemberExpenseRepository;
 
 @ExtendWith(MockitoExtension.class)
-class MemberExpenseCreatorTest {
+class MemberExpenseReaderTest {
 	@Mock
 	private MemberExpenseRepository memberExpenseRepository;
 	@InjectMocks
-	private MemberExpenseCreator memberExpenseCreator;
+	private MemberExpenseReader memberExpenseReader;
 
 	private Group mockGroup;
 	private Expense mockExpense;
 	private GroupMember mockGroupMember;
-	private MemberExpenseRequest mockMemberExpenseRequest;
 
 	@BeforeEach
 	void setUp() {
 		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now(), LocalDateTime.now().plusMinutes(1),
 			"은행", "계좌");
-		mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", 1, LocalDate.of(2025, 02, 03));
-		mockGroupMember = new GroupMember("박완수", mockGroup);
-		mockMemberExpenseRequest = mock(MemberExpenseRequest.class);
+		mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", 0, LocalDate.of(2025, 02, 03));
+
+		mockGroupMember = new GroupMember("박완숙", mockGroup);
+
 	}
 
-	@DisplayName("지출내역, 참여자 정보가 모두 유효할 때 참여자 지출 내역 생성에 성공한다.")
+	@DisplayName("지출내역이 존재하면 해당 지출내역의 참여자별 지출내역을 조회에 성공한다.")
 	@Test
-	void createMemberExpenseSuccess() {
+	void findAllByExpenseIdS() {
 		//given
-		MemberExpense mockMemberExpense = new MemberExpense(mockExpense, mockGroupMember,
-			mockMemberExpenseRequest.amount());
-		when(mockMemberExpenseRequest.toEntity(mockExpense, mockGroupMember)).thenReturn(mockMemberExpense);
-		when(memberExpenseRepository.save(any(MemberExpense.class))).thenReturn(mockMemberExpense);
+		Long expenseId = 1L;
+		List<MemberExpense> expectedMemberExpense = List.of(new MemberExpense(mockExpense, mockGroupMember, 15000L));
+
+		when(memberExpenseRepository.findByExpenseId(eq(expenseId))).thenReturn(expectedMemberExpense);
 
 		//when
-		MemberExpense result = memberExpenseCreator.create(mockExpense, mockGroupMember, mockMemberExpenseRequest);
+		List<MemberExpense> result = memberExpenseReader.findAllByExpenseId(expenseId);
 
 		//then
-		assertThat(result).isEqualTo(mockMemberExpense);
-		verify(memberExpenseRepository, times(1)).save(any(MemberExpense.class));
+		assertThat(result).isNotNull();
+		assertThat(result.get(0).getAmount()).isEqualTo(15000L);
+		assertThat(result.get(0).getGroupMember()).isEqualTo(mockGroupMember);
 
+		verify(memberExpenseRepository, times(1)).findByExpenseId(eq(expenseId));
 	}
 }

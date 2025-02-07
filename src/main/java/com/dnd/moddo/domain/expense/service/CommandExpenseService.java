@@ -11,6 +11,7 @@ import com.dnd.moddo.domain.expense.dto.response.ExpensesResponse;
 import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseCreator;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseDeleter;
+import com.dnd.moddo.domain.expense.service.implementation.ExpenseReader;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseUpdater;
 import com.dnd.moddo.domain.memberExpense.dto.response.MemberExpenseResponse;
 import com.dnd.moddo.domain.memberExpense.service.CommandMemberExpenseService;
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class CommandExpenseService {
 	private final ExpenseCreator expenseCreator;
+	private final ExpenseReader expenseReader;
 	private final ExpenseUpdater expenseUpdater;
 	private final ExpenseDeleter expenseDeleter;
 	private final CommandMemberExpenseService commandMemberExpenseService;
@@ -34,7 +36,9 @@ public class CommandExpenseService {
 	}
 
 	private ExpenseResponse createExpense(Long groupId, ExpenseRequest request) {
-		Expense expense = expenseCreator.create(groupId, request);
+		int maxOrder = expenseReader.findMaxOrderForGroup(groupId) + 1;
+		Expense expense = expenseCreator.create(groupId, maxOrder, request);
+
 		List<MemberExpenseResponse> memberExpenseResponses = commandMemberExpenseService.create(expense,
 			request.memberExpenses());
 		return ExpenseResponse.of(expense, memberExpenseResponses);
