@@ -1,4 +1,4 @@
-package com.dnd.moddo.domain.expense.exception;
+package com.dnd.moddo.domain.groupMember.exception;
 
 import org.springframework.http.HttpStatus;
 

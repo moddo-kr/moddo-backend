@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
-import com.dnd.moddo.domain.expense.exception.InvalidGroupMemberException;
+import com.dnd.moddo.domain.groupMember.exception.InvalidGroupMemberException;
 import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberReader;
 import com.dnd.moddo.domain.memberExpense.dto.request.MemberExpenseRequest;
 
