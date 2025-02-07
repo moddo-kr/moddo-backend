@@ -6,6 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dnd.moddo.domain.expense.dto.request.ExpenseRequest;
 import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.expense.repository.ExpenseRepository;
+import com.dnd.moddo.domain.group.entity.Group;
+import com.dnd.moddo.domain.group.repository.GroupRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -14,9 +16,11 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class ExpenseCreator {
 	private final ExpenseRepository expenseRepository;
+	private final GroupRepository groupRepository;
 
 	public Expense create(Long groupId, ExpenseRequest request) {
-		Expense expense = request.toEntity(groupId);
+		Group group = groupRepository.getById(groupId);
+		Expense expense = request.toEntity(group);
 		return expenseRepository.save(expense);
 	}
 }

@@ -29,22 +29,20 @@ public class ExpenseController {
 	private final QueryExpenseService queryExpenseService;
 
 	@PostMapping
-	public ResponseEntity<ExpensesResponse> saveExpenses(@RequestParam("groupId") String token,
+	public ResponseEntity<ExpensesResponse> saveExpenses(@RequestParam("groupId") Long groupId,
 		@RequestBody ExpensesRequest request) {
-		Long groupId = 1L;
 		ExpensesResponse response = commandExpenseService.createExpenses(groupId, request);
 		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping
-	public ResponseEntity<ExpensesResponse> getAllByGroupId(@RequestParam("groupId") String token) {
-		Long groupId = 1L;
+	public ResponseEntity<ExpensesResponse> getAllByGroupId(@RequestParam("groupId") Long groupId) {
 		ExpensesResponse response = queryExpenseService.findAllByGroupId(groupId);
 		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping("/{expenseId}")
-	public ResponseEntity<ExpenseResponse> getByExpenseId(@RequestParam("groupId") String token,
+	public ResponseEntity<ExpenseResponse> getByExpenseId(@RequestParam("groupId") Long groupId,
 		@PathVariable("expenseId") Long expenseId) {
 		ExpenseResponse response = queryExpenseService.findOneByExpenseId(expenseId);
 		return ResponseEntity.ok(response);
@@ -52,7 +50,7 @@ public class ExpenseController {
 	}
 
 	@PutMapping("/{expenseId}")
-	public ResponseEntity<ExpenseResponse> updateByExpenseId(@RequestParam("groupId") String token,
+	public ResponseEntity<ExpenseResponse> updateByExpenseId(@RequestParam("groupId") Long groupId,
 		@PathVariable("expenseId") Long expenseId,
 		@RequestBody ExpenseRequest request) {
 		ExpenseResponse response = commandExpenseService.updateExpense(expenseId, request);
@@ -61,7 +59,7 @@ public class ExpenseController {
 	}
 
 	@DeleteMapping("/{expenseId}")
-	public ResponseEntity<Void> deleteByExpenseId(@RequestParam("groupId") String token,
+	public ResponseEntity<Void> deleteByExpenseId(@RequestParam("groupId") Long groupId,
 		@PathVariable("expenseId") Long expenseId) {
 		commandExpenseService.deleteExpense(expenseId);
 		return ResponseEntity.noContent().build();
