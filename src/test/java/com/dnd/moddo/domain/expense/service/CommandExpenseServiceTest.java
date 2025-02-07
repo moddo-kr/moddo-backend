@@ -23,7 +23,7 @@ import com.dnd.moddo.domain.expense.exception.ExpenseNotFoundException;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseCreator;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseDeleter;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseUpdater;
-import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberReader;
+import com.dnd.moddo.domain.memberExpense.service.CommandMemberExpenseService;
 
 @ExtendWith(MockitoExtension.class)
 class CommandExpenseServiceTest {
@@ -35,7 +35,7 @@ class CommandExpenseServiceTest {
 	@Mock
 	private ExpenseDeleter expenseDeleter;
 	@Mock
-	private GroupMemberReader groupMemberReader;
+	private CommandMemberExpenseService commandMemberExpenseService;
 	@InjectMocks
 	private CommandExpenseService commandExpenseService;
 
