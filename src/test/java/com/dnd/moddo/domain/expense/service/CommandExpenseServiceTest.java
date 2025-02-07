@@ -70,7 +70,7 @@ class CommandExpenseServiceTest {
 
 	@DisplayName("지출내역이 존재할 때 기존의 지출내역을 수정할 수 있다.")
 	@Test
-	void updateExpenseSuccess() {
+	void updateSuccess() {
 		//given
 		Long groupId = 1L, expenseId = 1L;
 		Expense mockExpense = new Expense(groupId, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
@@ -79,7 +79,7 @@ class CommandExpenseServiceTest {
 
 		when(expenseUpdater.update(eq(expenseId), eq(expenseRequest))).thenReturn(mockExpense);
 		// when
-		ExpenseResponse response = commandExpenseService.updateExpense(expenseId, expenseRequest);
+		ExpenseResponse response = commandExpenseService.update(expenseId, expenseRequest);
 
 		//then
 		assertThat(response).isNotNull();
@@ -90,7 +90,7 @@ class CommandExpenseServiceTest {
 
 	@DisplayName("업데이트하려는 지출 내역을 찾을 수 없을때 예외를 발생시킨다.")
 	@Test
-	void updateExpenseNotFound() {
+	void updateNotFound() {
 		//given
 		Long expenseId = 1L;
 		ExpenseRequest expenseRequest = mock(ExpenseRequest.class);
@@ -106,25 +106,25 @@ class CommandExpenseServiceTest {
 
 	@DisplayName("삭제하려는 지출내역이 존재하면 지출내역을 삭제에 성공한다.")
 	@Test
-	void deleteExpenseSuccess() {
+	void deleteSuccess() {
 		//given
 		Long expenseId = 1L;
 		doNothing().when(expenseDeleter).delete(eq(expenseId));
 		//when
-		commandExpenseService.deleteExpense(expenseId);
+		commandExpenseService.delete(expenseId);
 		//then
 		verify(expenseDeleter, times(1)).delete(eq(expenseId));
 	}
 
 	@DisplayName("삭제하려는 지출내역이 존재하지 않는다면 예외가 발생한다.")
 	@Test
-	void deleteExpenseNotFound() {
+	void deleteNotFound() {
 		//given
 		Long expenseId = 1L;
 		doThrow(new ExpenseNotFoundException(expenseId)).when(expenseDeleter).delete(eq(expenseId));
 		//when & then
 		assertThatThrownBy(() -> {
-			commandExpenseService.deleteExpense(expenseId);
+			commandExpenseService.delete(expenseId);
 		}).hasMessage("해당 지출내역을 찾을 수 없습니다. (Expense ID: " + expenseId + ")");
 
 	}

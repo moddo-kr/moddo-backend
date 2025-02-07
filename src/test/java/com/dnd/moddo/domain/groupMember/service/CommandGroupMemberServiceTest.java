@@ -43,7 +43,7 @@ public class CommandGroupMemberServiceTest {
 
 	@DisplayName("모든 정보가 유효할때 모임에 참여자 추가가 성공한다.")
 	@Test
-	void createGroupMembersSuccess() {
+	void createSuccess() {
 		//given
 		Long groupId = mockGroup.getId();
 		GroupMembersSaveRequest request = new GroupMembersSaveRequest(new ArrayList<>());
@@ -52,7 +52,7 @@ public class CommandGroupMemberServiceTest {
 		when(groupMemberCreator.create(eq(groupId), eq(request))).thenReturn(expectedMembers);
 
 		// when
-		GroupMembersResponse response = commandGroupMemberService.createGroupMembers(groupId, request);
+		GroupMembersResponse response = commandGroupMemberService.create(groupId, request);
 
 		//then
 		assertThat(response).isNotNull();

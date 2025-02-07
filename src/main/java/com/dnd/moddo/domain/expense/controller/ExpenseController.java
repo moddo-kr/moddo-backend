@@ -53,7 +53,7 @@ public class ExpenseController {
 	public ResponseEntity<ExpenseResponse> updateByExpenseId(@RequestParam("groupId") Long groupId,
 		@PathVariable("expenseId") Long expenseId,
 		@RequestBody ExpenseRequest request) {
-		ExpenseResponse response = commandExpenseService.updateExpense(expenseId, request);
+		ExpenseResponse response = commandExpenseService.update(expenseId, request);
 		return ResponseEntity.ok(response);
 
 	}
@@ -61,7 +61,7 @@ public class ExpenseController {
 	@DeleteMapping("/{expenseId}")
 	public ResponseEntity<Void> deleteByExpenseId(@RequestParam("groupId") Long groupId,
 		@PathVariable("expenseId") Long expenseId) {
-		commandExpenseService.deleteExpense(expenseId);
+		commandExpenseService.delete(expenseId);
 		return ResponseEntity.noContent().build();
 	}
 }

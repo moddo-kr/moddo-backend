@@ -20,7 +20,7 @@ public class CommandGroupMemberService {
 	private final GroupMemberCreator groupMemberCreator;
 	private final GroupMemberUpdater groupMemberUpdater;
 
-	public GroupMembersResponse createGroupMembers(Long groupId, GroupMembersSaveRequest request) {
+	public GroupMembersResponse create(Long groupId, GroupMembersSaveRequest request) {
 		List<GroupMember> members = groupMemberCreator.create(groupId, request);
 		return GroupMembersResponse.of(members);
 	}
