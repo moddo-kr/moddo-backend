@@ -18,10 +18,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class GroupMemberUpdater {
-	private GroupMemberRepository groupMemberRepository;
-	private GroupMemberReader groupMemberReader;
-	private GroupMemberValidator groupMemberValidator;
-	private GroupRepository groupRepository;
+	private final GroupMemberRepository groupMemberRepository;
+	private final GroupMemberReader groupMemberReader;
+	private final GroupMemberValidator groupMemberValidator;
+	private final GroupRepository groupRepository;
 
 	public GroupMember addToGroup(Long groupId, GroupMemberSaveRequest request) {
 		Group group = groupRepository.getById(groupId);
