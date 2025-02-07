@@ -16,11 +16,11 @@ import lombok.RequiredArgsConstructor;
 public class GroupMemberReader {
 	private final GroupMemberRepository groupMemberRepository;
 
-	public List<GroupMember> getAllByGroupId(Long groupId) {
+	public List<GroupMember> findAllByGroupId(Long groupId) {
 		return groupMemberRepository.findByGroupId(groupId);
 	}
 
-	public GroupMember getByGroupMemberId(Long groupMemberId) {
+	public GroupMember findByGroupMemberId(Long groupMemberId) {
 		return groupMemberRepository.getById(groupMemberId);
 	}
 

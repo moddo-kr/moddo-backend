@@ -25,7 +25,7 @@ public class GroupMemberUpdater {
 
 	public GroupMember addToGroup(Long groupId, GroupMemberSaveRequest request) {
 		Group group = groupRepository.getById(groupId);
-		List<GroupMember> groupMembers = groupMemberReader.getAllByGroupId(groupId);
+		List<GroupMember> groupMembers = groupMemberReader.findAllByGroupId(groupId);
 
 		List<String> existingNames = new ArrayList<>(groupMembers.stream().map(GroupMember::getName).toList());
 		existingNames.add(request.name());

@@ -40,7 +40,7 @@ public class CommandExpenseService {
 		Expense expense = expenseCreator.create(groupId, request);
 		List<MemberExpenseResponse> memberExpensesResponses = request.memberExpenses().stream()
 			.map(m -> {
-				GroupMember groupMember = groupMemberReader.getByGroupMemberId(m.memberId());
+				GroupMember groupMember = groupMemberReader.findByGroupMemberId(m.memberId());
 				return MemberExpenseResponse.of(memberExpenseCreator.create(expense, groupMember, m));
 			}).toList();
 
