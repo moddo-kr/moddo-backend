@@ -21,12 +21,16 @@ import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.expense.exception.ExpenseNotFoundException;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseReader;
 import com.dnd.moddo.domain.group.entity.Group;
+import com.dnd.moddo.domain.memberExpense.dto.response.MemberExpenseResponse;
+import com.dnd.moddo.domain.memberExpense.service.QueryMemberExpenseService;
 
 @ExtendWith(MockitoExtension.class)
 class QueryExpenseServiceTest {
 
 	@Mock
 	private ExpenseReader expenseReader;
+	@Mock
+	private QueryMemberExpenseService queryMemberExpenseService;
 	@InjectMocks
 	private QueryExpenseService queryExpenseService;
 
@@ -49,6 +53,17 @@ class QueryExpenseServiceTest {
 		);
 
 		when(expenseReader.findAllByGroupId(eq(groupId))).thenReturn(mockExpenses);
+		Long expenseId1 = 1L, expenseId2 = 2L;
+
+		List<MemberExpenseResponse> responses1 = List.of(new MemberExpenseResponse("김반숙", 15000L),
+			new MemberExpenseResponse("박완숙", 5000L));
+		List<MemberExpenseResponse> responses2 = List.of(new MemberExpenseResponse("김반숙", 15000L),
+			new MemberExpenseResponse("박완숙", 2000L));
+
+		when(queryMemberExpenseService.findAllByExpenseId(any()))
+			.thenReturn(responses1)
+			.thenReturn(responses2);
+
 		//when
 		ExpensesResponse response = queryExpenseService.findAllByGroupId(groupId);
 

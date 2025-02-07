@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,11 +19,17 @@ import com.dnd.moddo.domain.expense.dto.request.ExpenseRequest;
 import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.expense.repository.ExpenseRepository;
 import com.dnd.moddo.domain.group.entity.Group;
+import com.dnd.moddo.domain.group.repository.GroupRepository;
+import com.dnd.moddo.domain.memberExpense.service.implementation.MemberExpenseValidator;
 
 @ExtendWith(MockitoExtension.class)
 class ExpenseCreatorTest {
 	@Mock
 	private ExpenseRepository expenseRepository;
+	@Mock
+	private GroupRepository groupRepository;
+	@Mock
+	private MemberExpenseValidator memberExpenseValidator;
 	@InjectMocks
 	private ExpenseCreator expenseCreator;
 
@@ -39,11 +46,12 @@ class ExpenseCreatorTest {
 	void createSuccess() {
 		//given
 		Long groupId = mockGroup.getId();
+		when(groupRepository.getById(eq(groupId))).thenReturn(mockGroup);
 		ExpenseRequest request = mock(ExpenseRequest.class);
 
 		Expense mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", 1, LocalDate.of(2025, 02, 03));
 		when(expenseRepository.save(any())).thenReturn(mockExpense);
-
+		doNothing().when(memberExpenseValidator).validateMembersArePartOfGroup(groupId, new ArrayList<>());
 		//when
 		Expense result = expenseCreator.create(groupId, 2, request);
 
