@@ -44,7 +44,7 @@ public class GroupMemberController {
 	}
 
 	@PutMapping
-	public ResponseEntity<GroupMemberResponse> updateGroupMember(
+	public ResponseEntity<GroupMemberResponse> addGroupMember(
 		@RequestParam("groupId") Long groupId,
 		@Valid @RequestBody GroupMemberSaveRequest request
 	) {
