@@ -13,10 +13,8 @@ import com.dnd.moddo.domain.expense.service.implementation.ExpenseCreator;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseDeleter;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseReader;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseUpdater;
-import com.dnd.moddo.domain.groupMember.entity.GroupMember;
-import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberReader;
 import com.dnd.moddo.domain.memberExpense.dto.response.MemberExpenseResponse;
-import com.dnd.moddo.domain.memberExpense.service.implementation.MemberExpenseCreator;
+import com.dnd.moddo.domain.memberExpense.service.CommandMemberExpenseService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,8 +25,7 @@ public class CommandExpenseService {
 	private final ExpenseReader expenseReader;
 	private final ExpenseUpdater expenseUpdater;
 	private final ExpenseDeleter expenseDeleter;
-	private final MemberExpenseCreator memberExpenseCreator;
-	private final GroupMemberReader groupMemberReader;
+	private final CommandMemberExpenseService commandMemberExpenseService;
 
 	public ExpensesResponse createExpenses(Long groupId, ExpensesRequest request) {
 		List<ExpenseResponse> expenses = request.expenses()
@@ -42,22 +39,18 @@ public class CommandExpenseService {
 		int maxOrder = expenseReader.findMaxOrderForGroup(groupId) + 1;
 		Expense expense = expenseCreator.create(groupId, maxOrder, request);
 
-		List<MemberExpenseResponse> memberExpenseResponses = request.memberExpenses().stream()
-			.map(m -> {
-				GroupMember groupMember = groupMemberReader.getByGroupMemberId(m.memberId());
-				return MemberExpenseResponse.of(memberExpenseCreator.create(expense, groupMember, m));
-			}).toList();
-
+		List<MemberExpenseResponse> memberExpenseResponses = commandMemberExpenseService.create(expense,
+			request.memberExpenses());
 		return ExpenseResponse.of(expense, memberExpenseResponses);
 	}
 
-	public ExpenseResponse updateExpense(Long expenseId, ExpenseRequest request) {
+	public ExpenseResponse update(Long expenseId, ExpenseRequest request) {
 		Expense expense = expenseUpdater.update(expenseId, request);
 		return ExpenseResponse.of(expense);
 
 	}
 
-	public void deleteExpense(Long expenseId) {
+	public void delete(Long expenseId) {
 		//TODO 삭제하는 사람이 정산자인지 확인 로직 필요
 		expenseDeleter.delete(expenseId);
 	}

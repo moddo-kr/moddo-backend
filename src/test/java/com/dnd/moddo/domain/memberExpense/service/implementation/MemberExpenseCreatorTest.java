@@ -28,30 +28,31 @@ class MemberExpenseCreatorTest {
 	@InjectMocks
 	private MemberExpenseCreator memberExpenseCreator;
 
-	private Expense expense;
-	private GroupMember groupMember;
-	private MemberExpenseRequest memberExpenseRequest;
 	private Group mockGroup;
+	private Expense mockExpense;
+	private GroupMember mockGroupMember;
+	private MemberExpenseRequest mockMemberExpenseRequest;
 
 	@BeforeEach
 	void setUp() {
 		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now(), LocalDateTime.now().plusMinutes(1),
 			"은행", "계좌");
-		expense = new Expense(mockGroup, 20000L, "투썸플레이스", 0, LocalDate.of(2025, 02, 03));
-		groupMember = new GroupMember("박완숙", mockGroup.getId());
-		memberExpenseRequest = mock(MemberExpenseRequest.class);
+		mockExpense = new Expense(mockGroup.getId(), 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
+		mockGroupMember = new GroupMember("박완수", mockGroup);
+		mockMemberExpenseRequest = mock(MemberExpenseRequest.class);
 	}
 
 	@DisplayName("지출내역, 참여자 정보가 모두 유효할 때 참여자 지출 내역 생성에 성공한다.")
 	@Test
 	void createMemberExpenseSuccess() {
 		//given
-		MemberExpense mockMemberExpense = new MemberExpense(expense, groupMember, memberExpenseRequest.amount());
-		when(memberExpenseRequest.toEntity(expense, groupMember)).thenReturn(mockMemberExpense);
+		MemberExpense mockMemberExpense = new MemberExpense(mockExpense, mockGroupMember,
+			mockMemberExpenseRequest.amount());
+		when(mockMemberExpenseRequest.toEntity(mockExpense, mockGroupMember)).thenReturn(mockMemberExpense);
 		when(memberExpenseRepository.save(any(MemberExpense.class))).thenReturn(mockMemberExpense);
 
 		//when
-		MemberExpense result = memberExpenseCreator.create(expense, groupMember, memberExpenseRequest);
+		MemberExpense result = memberExpenseCreator.create(mockExpense, mockGroupMember, mockMemberExpenseRequest);
 
 		//then
 		assertThat(result).isEqualTo(mockMemberExpense);
