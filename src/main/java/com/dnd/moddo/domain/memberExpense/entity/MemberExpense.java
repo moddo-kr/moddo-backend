@@ -28,6 +28,7 @@ public class MemberExpense {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "expense_id")
 	private Expense expense;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "group_member_id")
 	private GroupMember groupMember;

@@ -11,8 +11,8 @@ import com.dnd.moddo.domain.memberExpense.repotiroy.MemberExpenseRepository;
 
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 @Transactional
 public class MemberExpenseCreator {
 	private final MemberExpenseRepository memberExpenseRepository;
