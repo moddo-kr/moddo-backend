@@ -38,7 +38,7 @@ class MemberExpenseCreatorTest {
 		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now(), LocalDateTime.now().plusMinutes(1),
 			"은행", "계좌");
 		expense = new Expense(mockGroup, 20000L, "투썸플레이스", 0, LocalDate.of(2025, 02, 03));
-		groupMember = new GroupMember("박완수", mockGroup.getId());
+		groupMember = new GroupMember("박완숙", mockGroup.getId());
 		memberExpenseRequest = mock(MemberExpenseRequest.class);
 	}
 
