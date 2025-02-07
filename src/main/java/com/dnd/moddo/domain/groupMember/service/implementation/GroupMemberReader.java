@@ -24,4 +24,8 @@ public class GroupMemberReader {
 		return groupMemberRepository.getById(groupMemberId);
 	}
 
+	public List<Long> findIdsByGroupId(Long groupId) {
+		return groupMemberRepository.findGroupMemberIdsByGroupId(groupId);
+	}
+
 }

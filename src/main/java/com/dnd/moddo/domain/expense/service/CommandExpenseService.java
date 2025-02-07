@@ -41,6 +41,7 @@ public class CommandExpenseService {
 	private ExpenseResponse createExpense(Long groupId, ExpenseRequest request) {
 		int maxOrder = expenseReader.findMaxOrderForGroup(groupId) + 1;
 		Expense expense = expenseCreator.create(groupId, maxOrder, request);
+
 		List<MemberExpenseResponse> memberExpenseResponses = request.memberExpenses().stream()
 			.map(m -> {
 				GroupMember groupMember = groupMemberReader.getByGroupMemberId(m.memberId());
