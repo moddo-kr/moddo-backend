@@ -38,13 +38,13 @@ public class CommandExpenseService {
 
 	private ExpenseResponse createExpense(Long groupId, ExpenseRequest request) {
 		Expense expense = expenseCreator.create(groupId, request);
-		List<MemberExpenseResponse> memberExpensesResponses = request.memberExpenses().stream()
+		List<MemberExpenseResponse> memberExpenseResponses = request.memberExpenses().stream()
 			.map(m -> {
 				GroupMember groupMember = groupMemberReader.getByGroupMemberId(m.memberId());
 				return MemberExpenseResponse.of(memberExpenseCreator.create(expense, groupMember, m));
 			}).toList();
 
-		return ExpenseResponse.of(expense, memberExpensesResponses);
+		return ExpenseResponse.of(expense, memberExpenseResponses);
 	}
 
 	public ExpenseResponse updateExpense(Long expenseId, ExpenseRequest request) {
