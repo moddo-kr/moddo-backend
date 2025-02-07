@@ -53,7 +53,7 @@ class GroupMemberUpdaterTest {
 		when(groupRepository.getById(eq(groupId))).thenReturn(mockGroup);
 
 		List<GroupMember> mockGroupMembers = new ArrayList<>();
-		when(groupMemberReader.getAllByGroupId(eq(groupId))).thenReturn(mockGroupMembers);
+		when(groupMemberReader.findAllByGroupId(eq(groupId))).thenReturn(mockGroupMembers);
 
 		doNothing().when(groupMemberValidator).validateMemberNamesNotDuplicate(any());
 
@@ -80,7 +80,7 @@ class GroupMemberUpdaterTest {
 		when(groupRepository.getById(eq(groupId))).thenReturn(mockGroup);
 
 		List<GroupMember> mockGroupMembers = new ArrayList<>();
-		when(groupMemberReader.getAllByGroupId(eq(groupId))).thenReturn(mockGroupMembers);
+		when(groupMemberReader.findAllByGroupId(eq(groupId))).thenReturn(mockGroupMembers);
 
 		doThrow(new GroupMemberDuplicateNameException()).when(groupMemberValidator)
 			.validateMemberNamesNotDuplicate(any());

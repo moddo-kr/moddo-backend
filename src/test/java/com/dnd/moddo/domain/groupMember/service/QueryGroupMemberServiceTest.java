@@ -43,7 +43,7 @@ public class QueryGroupMemberServiceTest {
 
 		List<GroupMember> mockMembers = List.of(new GroupMember("김반숙", 1, mockGroup));
 
-		when(groupMemberReader.getAllByGroupId(eq(groupId))).thenReturn(mockMembers);
+		when(groupMemberReader.findAllByGroupId(eq(groupId))).thenReturn(mockMembers);
 		//when
 		GroupMembersResponse response = queryGroupMemberService.findAll(groupId);
 
@@ -51,6 +51,6 @@ public class QueryGroupMemberServiceTest {
 		assertThat(response).isNotNull();
 		assertThat(response.members().size()).isEqualTo(1);
 		assertThat(response.members().get(0).name()).isEqualTo("김반숙");
-		verify(groupMemberReader, times(1)).getAllByGroupId(eq(groupId));
+		verify(groupMemberReader, times(1)).findAllByGroupId(eq(groupId));
 	}
 }
