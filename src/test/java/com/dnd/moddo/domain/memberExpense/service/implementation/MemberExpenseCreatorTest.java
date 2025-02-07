@@ -4,6 +4,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.dnd.moddo.domain.expense.entity.Expense;
+import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import com.dnd.moddo.domain.memberExpense.dto.request.MemberExpenseRequest;
 import com.dnd.moddo.domain.memberExpense.entity.MemberExpense;
@@ -29,12 +31,14 @@ class MemberExpenseCreatorTest {
 	private Expense expense;
 	private GroupMember groupMember;
 	private MemberExpenseRequest memberExpenseRequest;
-	private Long groupId = 1L;
+	private Group mockGroup;
 
 	@BeforeEach
 	void setUp() {
-		expense = new Expense(groupId, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
-		groupMember = new GroupMember("박완수", groupId);
+		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now(), LocalDateTime.now().plusMinutes(1),
+			"은행", "계좌");
+		expense = new Expense(mockGroup, 20000L, "투썸플레이스", 0, LocalDate.of(2025, 02, 03));
+		groupMember = new GroupMember("박완수", mockGroup.getId());
 		memberExpenseRequest = mock(MemberExpenseRequest.class);
 	}
 

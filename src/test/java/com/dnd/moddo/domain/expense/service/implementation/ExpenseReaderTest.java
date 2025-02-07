@@ -4,8 +4,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.expense.exception.ExpenseNotFoundException;
 import com.dnd.moddo.domain.expense.repository.ExpenseRepository;
+import com.dnd.moddo.domain.group.entity.Group;
 
 @ExtendWith(MockitoExtension.class)
 class ExpenseReaderTest {
@@ -25,14 +28,22 @@ class ExpenseReaderTest {
 	@InjectMocks
 	private ExpenseReader expenseReader;
 
+	private Group mockGroup;
+
+	@BeforeEach
+	void setUp() {
+		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now(), LocalDateTime.now().plusMinutes(1),
+			"은행", "계좌");
+	}
+
 	@DisplayName("모임이 존재하면 모임에 해당하는 지출내역을 모두 조회할 수 있다.")
 	@Test
 	void findAllByGroupId() {
 		//given
-		Long groupId = 1L;
+		Long groupId = mockGroup.getId();
 		List<Expense> mockExpenses = List.of(
-			new Expense(groupId, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03)),
-			new Expense(groupId, 35000L, "보드게임카페", LocalDate.of(2025, 02, 03))
+			new Expense(mockGroup, 20000L, "투썸플레이스", 0, LocalDate.of(2025, 02, 03)),
+			new Expense(mockGroup, 35000L, "보드게임카페", 1, LocalDate.of(2025, 02, 03))
 		);
 
 		when(expenseRepository.findByGroupId(eq(groupId))).thenReturn(mockExpenses);
@@ -53,7 +64,7 @@ class ExpenseReaderTest {
 	void findOneByExpenseIdSuccess() {
 		//given
 		Long expenseId = 1L;
-		Expense mockExpense = new Expense(1L, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
+		Expense mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", 0, LocalDate.of(2025, 02, 03));
 
 		when(expenseRepository.getById(eq(expenseId))).thenReturn(mockExpense);
 		//when
