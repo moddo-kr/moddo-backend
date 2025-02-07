@@ -45,8 +45,8 @@ class QueryMemberExpenseServiceTest {
 	void findAllByExpenseId() {
 		//given
 		Long expenseId = 1L;
-		GroupMember mockGroupMember1 = new GroupMember("박완숙", mockGroup.getId());
-		GroupMember mockGroupMember2 = new GroupMember("김반숙", mockGroup.getId());
+		GroupMember mockGroupMember1 = new GroupMember("박완숙", mockGroup);
+		GroupMember mockGroupMember2 = new GroupMember("김반숙", mockGroup);
 
 		List<MemberExpense> expectedMemberExpense = List.of(
 			new MemberExpense(mockExpense, mockGroupMember1, 15000L),

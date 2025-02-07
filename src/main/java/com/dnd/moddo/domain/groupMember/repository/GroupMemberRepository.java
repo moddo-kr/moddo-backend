@@ -13,7 +13,7 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, Long> 
 
 	List<GroupMember> findByGroupId(Long groupId);
 
-	@Query("select m.id from GroupMember m where m.groupId = :groupId")
+	@Query("select m.id from GroupMember m where m.group.id = :groupId")
 	List<Long> findGroupMemberIdsByGroupId(@Param("groupId") Long groupId);
 
 	default GroupMember getById(Long id) {

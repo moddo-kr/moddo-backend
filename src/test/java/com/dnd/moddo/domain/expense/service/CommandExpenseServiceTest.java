@@ -4,9 +4,11 @@ import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +27,7 @@ import com.dnd.moddo.domain.expense.service.implementation.ExpenseDeleter;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseReader;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseUpdater;
 import com.dnd.moddo.domain.group.entity.Group;
-import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberReader;
+import com.dnd.moddo.domain.memberExpense.service.CommandMemberExpenseService;
 
 @ExtendWith(MockitoExtension.class)
 class CommandExpenseServiceTest {
@@ -33,11 +35,13 @@ class CommandExpenseServiceTest {
 	@Mock
 	private ExpenseCreator expenseCreator;
 	@Mock
+	private ExpenseReader expenseReader;
+	@Mock
 	private ExpenseUpdater expenseUpdater;
 	@Mock
 	private ExpenseDeleter expenseDeleter;
 	@Mock
-	private GroupMemberReader groupMemberReader;
+	private CommandMemberExpenseService commandMemberExpenseService;
 	@InjectMocks
 	private CommandExpenseService commandExpenseService;
 

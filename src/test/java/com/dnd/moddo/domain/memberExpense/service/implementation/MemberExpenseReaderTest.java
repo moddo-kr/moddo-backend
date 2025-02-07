@@ -38,7 +38,7 @@ class MemberExpenseReaderTest {
 			"은행", "계좌");
 		mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", 0, LocalDate.of(2025, 02, 03));
 
-		mockGroupMember = new GroupMember("박완숙", mockGroup.getId());
+		mockGroupMember = new GroupMember("박완숙", mockGroup);
 
 	}
 
