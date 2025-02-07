@@ -19,12 +19,13 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 public class GroupMemberUpdater {
 	private GroupMemberRepository groupMemberRepository;
+	private GroupMemberReader groupMemberReader;
 	private GroupMemberValidator groupMemberValidator;
 	private GroupRepository groupRepository;
 
 	public GroupMember addToGroup(Long groupId, GroupMemberSaveRequest request) {
 		Group group = groupRepository.getById(groupId);
-		List<GroupMember> groupMembers = groupMemberRepository.findByGroupId(groupId);
+		List<GroupMember> groupMembers = groupMemberReader.getAllByGroupId(groupId);
 
 		List<String> existingNames = new ArrayList<>(groupMembers.stream().map(GroupMember::getName).toList());
 		existingNames.add(request.name());
