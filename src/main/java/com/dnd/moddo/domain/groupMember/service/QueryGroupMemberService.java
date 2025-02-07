@@ -16,7 +16,7 @@ public class QueryGroupMemberService {
 	private final GroupMemberReader groupMemberReader;
 
 	public GroupMembersResponse findAll(Long groupId) {
-		List<GroupMember> members = groupMemberReader.getAllByGroupId(groupId);
+		List<GroupMember> members = groupMemberReader.findAllByGroupId(groupId);
 		return GroupMembersResponse.of(members);
 	}
 }

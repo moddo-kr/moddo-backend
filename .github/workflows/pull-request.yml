@@ -50,7 +50,7 @@ jobs:
         with:
           report_paths: '**/build/test-results/test/TEST-*.xml'
           token: ${{ secrets.GITHUB_TOKEN }}
-          
+
       #테스트 커버리지 리포트 생성 확인
       - name: Check if coverage report exists and is valid
         id: check_coverage
@@ -63,7 +63,7 @@ jobs:
             echo "Coverage report exists but has no coverage or is empty."
             echo "::set-output name=exists::false"
           fi
-            
+
       #테스트 커버리지 리포트 출력
       - name: Add coverage to PR
         if: steps.check_coverage.outputs.exists == 'true'
@@ -73,5 +73,5 @@ jobs:
           title: 📝 테스트 커버리지 리포트입니다!
           paths: ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml
           token: ${{ secrets.GITHUB_TOKEN }}
-          min-coverage-overall: 50
-          min-coverage-changed-files: 50
+          min-coverage-overall: 80
+          min-coverage-changed-files: 80
