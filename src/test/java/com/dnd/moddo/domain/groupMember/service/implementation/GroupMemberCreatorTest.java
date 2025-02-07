@@ -47,7 +47,7 @@ public class GroupMemberCreatorTest {
 
 	@DisplayName("모든 이름이 중복없이 유효할때 참여자를 추가하면 성공한다.")
 	@Test
-	void createGroupMemberSuccess() {
+	void createSuccess() {
 		//given
 		Long groupId = mockGroup.getId();
 		List<GroupMember> groupMembers = new ArrayList<>();
@@ -61,7 +61,7 @@ public class GroupMemberCreatorTest {
 		when(groupMemberRepository.saveAll(anyList())).thenReturn(expectedMembers);
 
 		//when
-		List<GroupMember> savedMembers = groupMemberCreator.createGroupMember(groupId, request);
+		List<GroupMember> savedMembers = groupMemberCreator.create(groupId, request);
 
 		//then
 		assertThat(savedMembers).isNotNull();
@@ -72,7 +72,7 @@ public class GroupMemberCreatorTest {
 
 	@DisplayName("요청에 중복된 이름이 존재할 경우 참여자를 추가하면 예외가 발생한다.")
 	@Test
-	void createGroupMemberDuplicatedName() {
+	void createDuplicatedName() {
 
 		//given
 		Long groupId = mockGroup.getId();
@@ -86,7 +86,7 @@ public class GroupMemberCreatorTest {
 
 		//when & then
 		assertThatThrownBy(() -> {
-			groupMemberCreator.createGroupMember(groupId, request);
+			groupMemberCreator.create(groupId, request);
 		}).hasMessage("중복된 참여자의 이름은 저장할 수 없습니다.");
 
 	}

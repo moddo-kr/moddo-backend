@@ -10,8 +10,8 @@ import com.dnd.moddo.domain.groupMember.repository.GroupMemberRepository;
 
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class GroupMemberReader {
 	private final GroupMemberRepository groupMemberRepository;

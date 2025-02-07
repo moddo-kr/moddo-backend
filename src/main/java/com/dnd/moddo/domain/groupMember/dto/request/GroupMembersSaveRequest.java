@@ -10,7 +10,7 @@ public record GroupMembersSaveRequest(
 ) {
 	public List<GroupMember> toEntity(Group group) {
 		return members.stream()
-			.map(m -> new GroupMember(m.name(), group))
+			.map(m -> m.toEntity(group))
 			.toList();
 	}
 }

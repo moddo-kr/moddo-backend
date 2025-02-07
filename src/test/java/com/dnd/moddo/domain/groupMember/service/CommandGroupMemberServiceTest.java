@@ -42,7 +42,7 @@ public class CommandGroupMemberServiceTest {
 		GroupMembersSaveRequest request = new GroupMembersSaveRequest(new ArrayList<>());
 		List<GroupMember> mockMembers = List.of(new GroupMember("김반숙", 1, mockGroup));
 
-		when(groupMemberCreator.createGroupMember(eq(groupId), eq(request))).thenReturn(mockMembers);
+		when(groupMemberCreator.create(eq(groupId), eq(request))).thenReturn(mockMembers);
 
 		// when
 		GroupMembersResponse response = commandGroupMemberService.createGroupMembers(groupId, request);
@@ -51,6 +51,6 @@ public class CommandGroupMemberServiceTest {
 		assertThat(response).isNotNull();
 		assertThat(response.members().size()).isEqualTo(1);
 		assertThat(response.members().get(0).name()).isEqualTo("김반숙");
-		verify(groupMemberCreator, times(1)).createGroupMember(eq(groupId), eq(request));
+		verify(groupMemberCreator, times(1)).create(eq(groupId), eq(request));
 	}
 }
