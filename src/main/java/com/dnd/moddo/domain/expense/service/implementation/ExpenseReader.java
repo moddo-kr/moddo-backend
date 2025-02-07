@@ -17,10 +17,14 @@ public class ExpenseReader {
 	private final ExpenseRepository expenseRepository;
 
 	public List<Expense> findAllByGroupId(Long groupId) {
-		return expenseRepository.findByGroupId(groupId);
+		return expenseRepository.findByGroupIdOrderByOrderAsc(groupId);
 	}
 
 	public Expense findOneByExpenseId(Long expenseId) {
 		return expenseRepository.getById(expenseId);
+	}
+
+	public int findMaxOrderForGroup(Long groupId) {
+		return expenseRepository.findMaxOrderByGroupId(groupId);
 	}
 }

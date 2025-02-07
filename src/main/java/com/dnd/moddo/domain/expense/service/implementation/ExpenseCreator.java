@@ -18,9 +18,9 @@ public class ExpenseCreator {
 	private final ExpenseRepository expenseRepository;
 	private final GroupRepository groupRepository;
 
-	public Expense create(Long groupId, ExpenseRequest request) {
+	public Expense create(Long groupId, int maxOrder, ExpenseRequest request) {
 		Group group = groupRepository.getById(groupId);
-		Expense expense = request.toEntity(group);
+		Expense expense = request.toEntity(group, maxOrder);
 		return expenseRepository.save(expense);
 	}
 }
