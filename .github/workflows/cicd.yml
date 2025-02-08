@@ -27,16 +27,16 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          
+
       - name: Make gradlew executable
         run: chmod +x gradlew
-        
+
       - name: Build with Gradle
         run: ./gradlew build
 
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag ${{ env.DOCKER_IMAGE_NAME }}:latest
-        
+
       - name: Login to Docker Hub using Access Token
         run: |
           echo ${{ env.DOKCER_HUB_TOKEN }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
@@ -52,7 +52,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        
+
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -66,4 +66,5 @@ jobs:
             sudo docker-compose stop
             sudo docker-compose rm -f
             sudo docker rmi ${{ secrets.DOCKER_HUB_USERNAME }}/${{env.DOCKER_IMAGE_NAME}}:latest
+            sudo docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/${{env.DOCKER_IMAGE_NAME}}:latest
             sudo docker-compose up -d
