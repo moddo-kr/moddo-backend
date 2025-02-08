@@ -66,5 +66,4 @@ jobs:
             sudo docker-compose stop
             sudo docker-compose rm -f
             sudo docker rmi ${{ secrets.DOCKER_HUB_USERNAME }}/${{env.DOCKER_IMAGE_NAME}}:latest
-            sudo docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/${{env.DOCKER_IMAGE_NAME}}:latest
             sudo docker-compose up -d
