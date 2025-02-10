@@ -11,6 +11,14 @@ spring:
         jdbc.time_zone: Asia/Seoul
     show-sql: true
 
+server:
+  address: 0.0.0.0
+  port: 8080
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.web.servlet.DispatcherServlet: DEBUG
 ---
 
 spring:
