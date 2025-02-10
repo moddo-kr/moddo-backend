@@ -64,5 +64,6 @@ jobs:
           script: |
             cd dnd-12th-7-backend
             sudo docker-compose down
-            sudo docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/${{env.DOCKER_IMAGE_NAME}}:latest
+            sudo docker-compose rm -f
+            sudo docker rmi ${{env.DOCKER_IMAGE_NAME}}:latest
             sudo docker-compose up -d
