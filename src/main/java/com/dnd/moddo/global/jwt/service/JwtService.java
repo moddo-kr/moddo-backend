@@ -19,7 +19,7 @@ public class JwtService {
         return getId(request, "userId");
     }
 
-    public Long getGroupId(HttpServletRequest request) {
-        return getId(request, "groupId");
+    public Long getGroupId(String groupToken) {
+        return jwtUtil.getIdFromToken(groupToken, "groupId");
     }
 }

@@ -26,9 +26,17 @@ public class GroupController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/account/{groupId}")
-    public ResponseEntity<GroupResponse> updateAccount(@RequestBody GroupAccountRequest groupAccountRequest, @PathVariable Long groupId) {
-        GroupResponse response = commandGroupService.updateAccount(groupAccountRequest, groupId);
+    @PutMapping("/account")
+    public ResponseEntity<GroupResponse> updateAccount(
+            HttpServletRequest request,
+            @RequestParam("groupToken") String groupToken,
+            @RequestBody GroupAccountRequest groupAccountRequest) {
+        Long userId = jwtService.getUserId(request);
+        Long groupId = jwtService.getGroupId(groupToken);
+
+        GroupResponse response = commandGroupService.updateAccount(groupAccountRequest, userId, groupId);
+
         return ResponseEntity.ok(response);
     }
+
 }
