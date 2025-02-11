@@ -10,8 +10,16 @@ import org.springframework.stereotype.Service;
 public class JwtService {
     private final JwtUtil jwtUtil;
 
-    public Long getUserId(HttpServletRequest request) {
+    public Long getId(HttpServletRequest request, String key) {
         String token = jwtUtil.resolveToken(request);
-        return jwtUtil.getUserIdFromToken(token);
+        return jwtUtil.getIdFromToken(token, key);
+    }
+
+    public Long getUserId(HttpServletRequest request) {
+        return getId(request, "userId");
+    }
+
+    public Long getGroupId(HttpServletRequest request) {
+        return getId(request, "groupId");
     }
 }
