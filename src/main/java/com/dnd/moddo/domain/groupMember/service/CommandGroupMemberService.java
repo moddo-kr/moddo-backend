@@ -10,6 +10,7 @@ import com.dnd.moddo.domain.groupMember.dto.response.GroupMemberResponse;
 import com.dnd.moddo.domain.groupMember.dto.response.GroupMembersResponse;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberCreator;
+import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberDeleter;
 import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberUpdater;
 
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 public class CommandGroupMemberService {
 	private final GroupMemberCreator groupMemberCreator;
 	private final GroupMemberUpdater groupMemberUpdater;
+	private final GroupMemberDeleter groupMemberDeleter;
 
 	public GroupMembersResponse create(Long groupId, GroupMembersSaveRequest request) {
 		List<GroupMember> members = groupMemberCreator.create(groupId, request);
@@ -28,6 +30,10 @@ public class CommandGroupMemberService {
 	public GroupMemberResponse addGroupMember(Long groupId, GroupMemberSaveRequest request) {
 		GroupMember groupMember = groupMemberUpdater.addToGroup(groupId, request);
 		return GroupMemberResponse.of(groupMember);
+	}
+
+	public void delete(Long groupMemberId) {
+		groupMemberDeleter.delete(groupMemberId);
 	}
 
 }
