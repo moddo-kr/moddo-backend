@@ -61,5 +61,8 @@ public class GroupMember {
 		this.role = role;
 	}
 
+	public boolean isManager() {
+		return ExpenseRole.MANAGER.equals(role);
+	}
 }
 
