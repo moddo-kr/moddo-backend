@@ -20,6 +20,7 @@ import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.group.repository.GroupRepository;
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMemberSaveRequest;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
+import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.groupMember.exception.GroupMemberDuplicateNameException;
 import com.dnd.moddo.domain.groupMember.repository.GroupMemberRepository;
 
@@ -57,7 +58,7 @@ class GroupMemberUpdaterTest {
 
 		doNothing().when(groupMemberValidator).validateMemberNamesNotDuplicate(any());
 
-		GroupMember expectedGroupMember = new GroupMember("김반숙", mockGroup);
+		GroupMember expectedGroupMember = new GroupMember("김반숙", mockGroup, ExpenseRole.PARTICIPANT);
 		when(groupMemberRepository.save(any())).thenReturn(expectedGroupMember);
 
 		//when

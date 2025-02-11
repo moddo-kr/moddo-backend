@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
+import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.memberExpense.dto.response.MemberExpenseResponse;
 import com.dnd.moddo.domain.memberExpense.entity.MemberExpense;
 import com.dnd.moddo.domain.memberExpense.service.implementation.MemberExpenseReader;
@@ -45,8 +46,8 @@ class QueryMemberExpenseServiceTest {
 	void findAllByExpenseId() {
 		//given
 		Long expenseId = 1L;
-		GroupMember mockGroupMember1 = new GroupMember("박완숙", mockGroup);
-		GroupMember mockGroupMember2 = new GroupMember("김반숙", mockGroup);
+		GroupMember mockGroupMember1 = new GroupMember("김모또", mockGroup, ExpenseRole.MANAGER);
+		GroupMember mockGroupMember2 = new GroupMember("박완숙", mockGroup, ExpenseRole.PARTICIPANT);
 
 		List<MemberExpense> expectedMemberExpense = List.of(
 			new MemberExpense(mockExpense, mockGroupMember1, 15000L),
@@ -60,8 +61,8 @@ class QueryMemberExpenseServiceTest {
 
 		//then
 		assertThat(responses).isNotNull();
-		assertThat(responses.size()).isEqualTo(expectedMemberExpense.size());
-		assertThat(responses.get(0).name()).isEqualTo("박완숙");
+		assertThat(responses.size()).isEqualTo(2);
+		assertThat(responses.get(0).name()).isEqualTo("김모또");
 		assertThat(responses.get(0).amount()).isEqualTo(15000L);
 
 	}

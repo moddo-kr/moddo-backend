@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
+import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.groupMember.exception.GroupMemberNotFoundException;
 import com.dnd.moddo.domain.groupMember.repository.GroupMemberRepository;
 
@@ -39,7 +40,10 @@ public class GroupMemberReaderTest {
 	void findAllByGroupIdSuccess() {
 		//given
 		Long groupId = mockGroup.getId();
-		List<GroupMember> expectedMembers = List.of(new GroupMember("김반숙", 1, mockGroup));
+		List<GroupMember> expectedMembers = List.of(
+			new GroupMember("김모또", 1, mockGroup, ExpenseRole.MANAGER),
+			new GroupMember("김반숙", 2, mockGroup, ExpenseRole.PARTICIPANT)
+		);
 
 		when(groupMemberRepository.findByGroupId(eq(groupId))).thenReturn(expectedMembers);
 
@@ -48,8 +52,9 @@ public class GroupMemberReaderTest {
 
 		//then
 		assertThat(result).isNotNull();
-		assertThat(result.size()).isEqualTo(1);
-		assertThat(result.get(0).getName()).isEqualTo("김반숙");
+		assertThat(result.size()).isEqualTo(2);
+		assertThat(result.get(0).getName()).isEqualTo("김모또");
+		assertThat(result.get(0).getRole()).isEqualTo(ExpenseRole.MANAGER);
 		verify(groupMemberRepository, times(1)).findByGroupId(groupId);
 	}
 
@@ -58,7 +63,7 @@ public class GroupMemberReaderTest {
 	void findByGroupMemberIdSuccess() {
 		//given
 		Long groupMemberId = 1L;
-		GroupMember expectedMember = new GroupMember("김반숙", mockGroup);
+		GroupMember expectedMember = new GroupMember("김반숙", mockGroup, ExpenseRole.PARTICIPANT);
 
 		when(groupMemberRepository.getById(eq(groupMemberId))).thenReturn(expectedMember);
 
