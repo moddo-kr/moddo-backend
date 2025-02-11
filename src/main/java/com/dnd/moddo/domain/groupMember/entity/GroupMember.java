@@ -1,9 +1,12 @@
 package com.dnd.moddo.domain.groupMember.entity;
 
 import com.dnd.moddo.domain.group.entity.Group;
+import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -38,20 +41,24 @@ public class GroupMember {
 	@Column(name = "is_paid", nullable = false)
 	private boolean isPaid;
 
-	public GroupMember(String name, Group group) {
-		this(null, name, null, group, false);
+	@Enumerated(EnumType.STRING)
+	private ExpenseRole role;
+
+	public GroupMember(String name, Group group, ExpenseRole role) {
+		this(null, name, null, group, false, role);
 	}
 
-	public GroupMember(String name, Integer profileId, Group group) {
-		this(null, name, profileId, group, false);
+	public GroupMember(String name, Integer profileId, Group group, ExpenseRole role) {
+		this(null, name, profileId, group, false, role);
 	}
 
-	public GroupMember(Long id, String name, Integer profileId, Group group, boolean isPaid) {
+	public GroupMember(Long id, String name, Integer profileId, Group group, boolean isPaid, ExpenseRole role) {
 		this.id = id;
 		this.name = name;
 		this.profileId = profileId;
 		this.group = group;
 		this.isPaid = isPaid;
+		this.role = role;
 	}
 
 }

@@ -20,17 +20,17 @@ import lombok.RequiredArgsConstructor;
 public class GroupMemberCreator {
 	private final GroupMemberRepository groupMemberRepository;
 	private final GroupMemberValidator groupMemberValidator;
-	private final GroupRepository groupRepository; //추후 grouopReader나 다른것으로 수정할 예정
+	private final GroupRepository groupRepository; //추후 groupReader나 다른것으로 수정할 예정
 
 	public List<GroupMember> create(Long groupId, GroupMembersSaveRequest request) {
 		Group group = groupRepository.getById(groupId);
 
 		List<String> requestNames = request.members().stream().map(GroupMemberSaveRequest::name).toList();
 
+		groupMemberValidator.validateManagerExists(request.members());
 		groupMemberValidator.validateMemberNamesNotDuplicate(requestNames);
 
 		List<GroupMember> newMembers = request.toEntity(group);
 		return groupMemberRepository.saveAll(newMembers);
 	}
-
 }
