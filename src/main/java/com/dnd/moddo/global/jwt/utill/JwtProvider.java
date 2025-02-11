@@ -1,5 +1,6 @@
 package com.dnd.moddo.global.jwt.utill;
 
+import com.dnd.moddo.global.jwt.dto.GroupTokenResponse;
 import com.dnd.moddo.global.jwt.dto.TokenResponse;
 import com.dnd.moddo.global.jwt.properties.JwtProperties;
 import io.jsonwebtoken.Jwts;
@@ -29,6 +30,13 @@ public class JwtProvider {
         return new TokenResponse(accessToken, refreshToken, getExpiredTime(), isMember);
     }
 
+    public GroupTokenResponse generateGroupToken(Long id, Long groupId) {
+        String accessToken = generateGroupToken(id, groupId, ACCESS_KEY.getMessage(), jwtProperties.getAccessExpiration());
+        String refreshToken = generateGroupToken(id, groupId, REFRESH_KEY.getMessage(), jwtProperties.getRefreshExpiration());
+
+        return new GroupTokenResponse(accessToken, refreshToken, getExpiredTime());
+    }
+
 
     private String generateToken(Long id, String email, String role, String type, Long exp) {
         return Jwts.builder()
@@ -36,6 +44,18 @@ public class JwtProvider {
                 .claim(EMAIL.getMessage(), email)
                 .setHeaderParam(TYPE.message, type)
                 .claim(ROLE.getMessage(), role)
+                .signWith(jwtProperties.getSecretKey(), SignatureAlgorithm.HS256)
+                .setExpiration(
+                        new Date(System.currentTimeMillis() + exp * 1000)
+                )
+                .compact();
+    }
+
+    private String generateGroupToken(Long id, Long groupId, String type, Long exp) {
+        return Jwts.builder()
+                .claim(AUTH_ID.getMessage(), id)
+                .claim(GROUP_ID.getMessage(), groupId)
+                .setHeaderParam(TYPE.message, type)
                 .signWith(jwtProperties.getSecretKey(), SignatureAlgorithm.HS256)
                 .setExpiration(
                         new Date(System.currentTimeMillis() + exp * 1000)
