@@ -14,15 +14,14 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MemberExpenseReader {
 	private final MemberExpenseRepository memberExpenseRepository;
 
-	@Transactional(readOnly = true)
 	public List<MemberExpense> findAllByExpenseId(Long expenseId) {
 		return memberExpenseRepository.findByExpenseId(expenseId);
 	}
 
-	@Transactional
 	public Map<Long, List<MemberExpense>> findAllByGroupMemberIds(List<Long> groupMemberIds) {
 		return memberExpenseRepository.findAllByGroupMemberIds(groupMemberIds)
 			.stream()
