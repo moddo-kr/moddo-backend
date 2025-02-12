@@ -15,7 +15,8 @@ public enum JwtConstants {
     PREFIX("prefix"),
     ROLE("role"),
     ACCESS_KEY("access_token"),
-    REFRESH_KEY("refresh_token");
+    REFRESH_KEY("refresh_token"),
+    GROUP_KEY("group_token"),;
 
     public final String message;
 

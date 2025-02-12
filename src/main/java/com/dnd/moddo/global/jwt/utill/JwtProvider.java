@@ -31,10 +31,9 @@ public class JwtProvider {
     }
 
     public GroupTokenResponse generateGroupToken(Long groupId) {
-        String accessToken = generateGroupToken(groupId, ACCESS_KEY.getMessage(), jwtProperties.getAccessExpiration());
-        String refreshToken = generateGroupToken(groupId, REFRESH_KEY.getMessage(), jwtProperties.getRefreshExpiration());
+        String groupToken = generateGroupToken(groupId, GROUP_KEY.getMessage());
 
-        return new GroupTokenResponse(accessToken, refreshToken, getExpiredTime());
+        return new GroupTokenResponse(groupToken);
     }
 
 
@@ -51,14 +50,11 @@ public class JwtProvider {
                 .compact();
     }
 
-    private String generateGroupToken(Long groupId, String type, Long exp) {
+    private String generateGroupToken(Long groupId, String type) {
         return Jwts.builder()
                 .claim(GROUP_ID.getMessage(), groupId)
                 .setHeaderParam(TYPE.message, type)
                 .signWith(jwtProperties.getSecretKey(), SignatureAlgorithm.HS256)
-                .setExpiration(
-                        new Date(System.currentTimeMillis() + exp * 1000)
-                )
                 .compact();
     }
 
