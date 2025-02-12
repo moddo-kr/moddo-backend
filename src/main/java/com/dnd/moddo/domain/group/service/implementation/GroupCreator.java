@@ -37,6 +37,6 @@ public class GroupCreator {
 
         groupRepository.save(group);
 
-        return jwtProvider.generateGroupToken(group.getWriter(), group.getId());
+        return jwtProvider.generateGroupToken(group.getId());
     }
 }

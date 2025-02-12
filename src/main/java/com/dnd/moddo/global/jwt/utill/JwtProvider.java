@@ -30,9 +30,9 @@ public class JwtProvider {
         return new TokenResponse(accessToken, refreshToken, getExpiredTime(), isMember);
     }
 
-    public GroupTokenResponse generateGroupToken(Long id, Long groupId) {
-        String accessToken = generateGroupToken(id, groupId, ACCESS_KEY.getMessage(), jwtProperties.getAccessExpiration());
-        String refreshToken = generateGroupToken(id, groupId, REFRESH_KEY.getMessage(), jwtProperties.getRefreshExpiration());
+    public GroupTokenResponse generateGroupToken(Long groupId) {
+        String accessToken = generateGroupToken(groupId, ACCESS_KEY.getMessage(), jwtProperties.getAccessExpiration());
+        String refreshToken = generateGroupToken(groupId, REFRESH_KEY.getMessage(), jwtProperties.getRefreshExpiration());
 
         return new GroupTokenResponse(accessToken, refreshToken, getExpiredTime());
     }
@@ -51,9 +51,8 @@ public class JwtProvider {
                 .compact();
     }
 
-    private String generateGroupToken(Long id, Long groupId, String type, Long exp) {
+    private String generateGroupToken(Long groupId, String type, Long exp) {
         return Jwts.builder()
-                .claim(AUTH_ID.getMessage(), id)
                 .claim(GROUP_ID.getMessage(), groupId)
                 .setHeaderParam(TYPE.message, type)
                 .signWith(jwtProperties.getSecretKey(), SignatureAlgorithm.HS256)
