@@ -41,5 +41,9 @@ public class MemberExpense {
 		this.groupMember = groupMember;
 		this.amount = amount;
 	}
+
+	public boolean isExpenseMatched(Expense expense) {
+		return this.expense.equals(expense);
+	}
 }
 

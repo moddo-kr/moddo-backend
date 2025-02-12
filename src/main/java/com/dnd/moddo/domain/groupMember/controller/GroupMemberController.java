@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMemberSaveRequest;
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMembersSaveRequest;
 import com.dnd.moddo.domain.groupMember.dto.response.GroupMemberResponse;
+import com.dnd.moddo.domain.groupMember.dto.response.GroupMembersExpenseResponse;
 import com.dnd.moddo.domain.groupMember.dto.response.GroupMembersResponse;
 import com.dnd.moddo.domain.groupMember.service.CommandGroupMemberService;
 import com.dnd.moddo.domain.groupMember.service.QueryGroupMemberService;
@@ -34,6 +35,14 @@ public class GroupMemberController {
 		@Valid @RequestBody GroupMembersSaveRequest request
 	) {
 		GroupMembersResponse response = commandGroupMemberService.create(groupId, request);
+		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/settlement")
+	public ResponseEntity<GroupMembersExpenseResponse> getSettlement(
+		@RequestParam("groupId") Long groupId
+	) {
+		GroupMembersExpenseResponse response = queryGroupMemberService.findSettlementByGroupId(groupId);
 		return ResponseEntity.ok(response);
 	}
 
