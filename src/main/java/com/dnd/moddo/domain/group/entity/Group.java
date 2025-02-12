@@ -47,4 +47,8 @@ public class Group {
         this.bank = request.bank();
         this.accountNumber = request.accountNumber();
     }
+
+    public boolean isWriter(Long userId) {
+        return this.writer.equals(userId);
+    }
 }

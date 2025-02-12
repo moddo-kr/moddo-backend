@@ -28,7 +28,7 @@ public class CommandGroupService {
 
     public GroupResponse updateAccount(GroupAccountRequest request, Long userId, Long groupId) {
         Group group = groupReader.read(groupId);
-        groupValidator.checkGroupAuthor(group.getWriter(), userId);
+        groupValidator.checkGroupAuthor(group, userId);
         group = groupUpdater.updateAccount(request, group.getId());
         return GroupResponse.of(group);
     }

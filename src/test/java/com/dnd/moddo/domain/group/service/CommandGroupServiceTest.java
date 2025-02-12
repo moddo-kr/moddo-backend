@@ -81,7 +81,7 @@ class CommandGroupServiceTest {
         // Given
         when(groupReader.read(anyLong())).thenReturn(updatedGroup);
         when(groupUpdater.updateAccount(any(GroupAccountRequest.class), anyLong())).thenReturn(updatedGroup);
-        doNothing().when(groupValidator).checkGroupAuthor(anyLong(), anyLong());
+        doNothing().when(groupValidator).checkGroupAuthor(any(Group.class), anyLong());
 
         // When
         GroupResponse result = commandGroupService.updateAccount(groupAccountRequest, updatedGroup.getWriter(), updatedGroup.getId());
@@ -89,7 +89,7 @@ class CommandGroupServiceTest {
         // Then
         assertThat(result).isNotNull();
         verify(groupReader, times(1)).read(anyLong());
-        verify(groupValidator, times(1)).checkGroupAuthor(anyLong(), anyLong());
+        verify(groupValidator, times(1)).checkGroupAuthor(any(Group.class), anyLong());
         verify(groupUpdater, times(1)).updateAccount(any(GroupAccountRequest.class), anyLong());
     }
 }
