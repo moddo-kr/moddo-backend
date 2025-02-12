@@ -18,7 +18,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -54,7 +53,7 @@ class CommandGroupServiceTest {
         groupRequest = new GroupRequest("GroupName", "password123", LocalDateTime.now());
         groupResponse = new GroupResponse(1L, 1L, LocalDateTime.now(), LocalDateTime.now().minusDays(1), "bank", "1234-1234");
         groupAccountRequest = new GroupAccountRequest("newBank", "5678-5678");
-        expectedResponse = new GroupTokenResponse("access-token", "refresh-token", ZonedDateTime.now());
+        expectedResponse = new GroupTokenResponse("group-token");
 
         updatedGroup = mock(Group.class);
     }
@@ -70,7 +69,7 @@ class CommandGroupServiceTest {
 
         // Then
         assertThat(response).isNotNull();
-        assertThat(response.accessToken()).isEqualTo("access-token");
+        assertThat(response.groupToken()).isEqualTo("group-token");
 
         verify(groupCreator, times(1)).createGroup(any(GroupRequest.class), anyLong());
     }

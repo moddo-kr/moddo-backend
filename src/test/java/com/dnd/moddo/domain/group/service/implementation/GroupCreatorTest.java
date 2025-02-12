@@ -63,14 +63,14 @@ class GroupCreatorTest {
         when(userRepository.getById(userId)).thenReturn(mockUser);
         when(passwordEncoder.encode(request.password())).thenReturn(encodedPassword);
         when(groupRepository.save(any(Group.class))).thenReturn(mockGroup);
-        when(jwtProvider.generateGroupToken(mockGroup.getId())).thenReturn(new GroupTokenResponse("access-token", "refresh-token", ZonedDateTime.now()));
+        when(jwtProvider.generateGroupToken(mockGroup.getId())).thenReturn(new GroupTokenResponse("group-token"));
 
         // when
         GroupTokenResponse response = groupCreator.createGroup(request, userId);
 
         // then
         assertThat(response).isNotNull();
-        assertThat(response.accessToken()).isEqualTo("access-token");
+        assertThat(response.groupToken()).isEqualTo("group-token");
 
         verify(userRepository, times(1)).getById(userId);
         verify(passwordEncoder, times(1)).encode(request.password());
