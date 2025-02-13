@@ -36,11 +36,11 @@ public class JwtUtil {
         return Jwts.parserBuilder().setSigningKey(jwtProperties.getSecretKey()).build().parseClaimsJws(token);
     }
 
-    public Long getUserIdFromToken(String token) {
+    public Long getIdFromToken(String token, String key) {
         if (token == null) {
             return null;
         }
         Claims claims = getJwt(token).getBody();
-        return claims.get("userId", Long.class);
+        return claims.get(key, Long.class);
     }
 }

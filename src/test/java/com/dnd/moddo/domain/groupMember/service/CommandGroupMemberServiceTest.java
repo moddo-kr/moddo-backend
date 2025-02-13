@@ -21,6 +21,7 @@ import com.dnd.moddo.domain.groupMember.dto.request.GroupMembersSaveRequest;
 import com.dnd.moddo.domain.groupMember.dto.response.GroupMemberResponse;
 import com.dnd.moddo.domain.groupMember.dto.response.GroupMembersResponse;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
+import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberCreator;
 import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberUpdater;
 
@@ -47,7 +48,10 @@ public class CommandGroupMemberServiceTest {
 		//given
 		Long groupId = mockGroup.getId();
 		GroupMembersSaveRequest request = new GroupMembersSaveRequest(new ArrayList<>());
-		List<GroupMember> expectedMembers = List.of(new GroupMember("김반숙", 1, mockGroup));
+		List<GroupMember> expectedMembers = List.of(
+			new GroupMember("김모또", 1, mockGroup, ExpenseRole.MANAGER),
+			new GroupMember("김반숙", 2, mockGroup, ExpenseRole.PARTICIPANT)
+		);
 
 		when(groupMemberCreator.create(eq(groupId), eq(request))).thenReturn(expectedMembers);
 
@@ -56,8 +60,9 @@ public class CommandGroupMemberServiceTest {
 
 		//then
 		assertThat(response).isNotNull();
-		assertThat(response.members().size()).isEqualTo(1);
-		assertThat(response.members().get(0).name()).isEqualTo("김반숙");
+		assertThat(response.members().size()).isEqualTo(2);
+		assertThat(response.members().get(0).name()).isEqualTo("김모또");
+		assertThat(response.members().get(0).role()).isEqualTo(ExpenseRole.MANAGER);
 		verify(groupMemberCreator, times(1)).create(eq(groupId), eq(request));
 	}
 
@@ -67,7 +72,7 @@ public class CommandGroupMemberServiceTest {
 		//given
 		Long groupId = mockGroup.getId();
 		GroupMemberSaveRequest request = mock(GroupMemberSaveRequest.class);
-		GroupMember expectedMember = new GroupMember("김반숙", mockGroup);
+		GroupMember expectedMember = new GroupMember("김반숙", mockGroup, ExpenseRole.PARTICIPANT);
 
 		when(groupMemberUpdater.addToGroup(eq(groupId), any(GroupMemberSaveRequest.class))).thenReturn(expectedMember);
 

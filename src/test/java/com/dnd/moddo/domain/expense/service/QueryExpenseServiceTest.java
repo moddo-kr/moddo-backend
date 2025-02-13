@@ -21,6 +21,7 @@ import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.expense.exception.ExpenseNotFoundException;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseReader;
 import com.dnd.moddo.domain.group.entity.Group;
+import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.memberExpense.dto.response.MemberExpenseResponse;
 import com.dnd.moddo.domain.memberExpense.service.QueryMemberExpenseService;
 
@@ -55,10 +56,12 @@ class QueryExpenseServiceTest {
 		when(expenseReader.findAllByGroupId(eq(groupId))).thenReturn(mockExpenses);
 		Long expenseId1 = 1L, expenseId2 = 2L;
 
-		List<MemberExpenseResponse> responses1 = List.of(new MemberExpenseResponse("김반숙", 15000L),
-			new MemberExpenseResponse("박완숙", 5000L));
-		List<MemberExpenseResponse> responses2 = List.of(new MemberExpenseResponse("김반숙", 15000L),
-			new MemberExpenseResponse("박완숙", 2000L));
+		List<MemberExpenseResponse> responses1 = List.of(
+			new MemberExpenseResponse(1L, ExpenseRole.MANAGER, "김모또", 15000L),
+			new MemberExpenseResponse(2L, ExpenseRole.PARTICIPANT, "박완숙", 5000L));
+		List<MemberExpenseResponse> responses2 = List.of(
+			new MemberExpenseResponse(1L, ExpenseRole.MANAGER, "김모또", 15000L),
+			new MemberExpenseResponse(2L, ExpenseRole.PARTICIPANT, "박완숙", 2000L));
 
 		when(queryMemberExpenseService.findAllByExpenseId(any()))
 			.thenReturn(responses1)

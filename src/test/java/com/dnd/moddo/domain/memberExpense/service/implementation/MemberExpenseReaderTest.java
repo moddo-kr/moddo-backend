@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
+import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.memberExpense.entity.MemberExpense;
 import com.dnd.moddo.domain.memberExpense.repotiroy.MemberExpenseRepository;
 
@@ -38,7 +39,7 @@ class MemberExpenseReaderTest {
 			"은행", "계좌");
 		mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", 0, LocalDate.of(2025, 02, 03));
 
-		mockGroupMember = new GroupMember("박완숙", mockGroup);
+		mockGroupMember = new GroupMember("박완숙", mockGroup, ExpenseRole.MANAGER);
 
 	}
 

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.dnd.moddo.domain.expense.dto.request.ExpenseRequest;
 import com.dnd.moddo.domain.expense.dto.request.ExpensesRequest;
+import com.dnd.moddo.domain.expense.dto.request.ExpensesUpdateOrderRequest;
 import com.dnd.moddo.domain.expense.dto.response.ExpenseResponse;
 import com.dnd.moddo.domain.expense.dto.response.ExpensesResponse;
 import com.dnd.moddo.domain.expense.entity.Expense;
@@ -15,6 +16,7 @@ import com.dnd.moddo.domain.expense.service.implementation.ExpenseReader;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseUpdater;
 import com.dnd.moddo.domain.memberExpense.dto.response.MemberExpenseResponse;
 import com.dnd.moddo.domain.memberExpense.service.CommandMemberExpenseService;
+import com.dnd.moddo.domain.memberExpense.service.QueryMemberExpenseService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,6 +28,7 @@ public class CommandExpenseService {
 	private final ExpenseUpdater expenseUpdater;
 	private final ExpenseDeleter expenseDeleter;
 	private final CommandMemberExpenseService commandMemberExpenseService;
+	private final QueryMemberExpenseService queryMemberExpenseService;
 
 	public ExpensesResponse createExpenses(Long groupId, ExpensesRequest request) {
 		List<ExpenseResponse> expenses = request.expenses()
@@ -48,6 +51,16 @@ public class CommandExpenseService {
 		Expense expense = expenseUpdater.update(expenseId, request);
 		return ExpenseResponse.of(expense);
 
+	}
+
+	public ExpensesResponse updateOrder(ExpensesUpdateOrderRequest request) {
+		List<Expense> expenses = expenseUpdater.updateOrder(request);
+		return new ExpensesResponse(
+			expenses.stream()
+				.map(expense ->
+					ExpenseResponse.of(expense, queryMemberExpenseService.findAllByExpenseId(expense.getId()))
+				).toList()
+		);
 	}
 
 	public void delete(Long expenseId) {

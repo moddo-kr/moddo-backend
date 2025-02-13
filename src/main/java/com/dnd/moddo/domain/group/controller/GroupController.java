@@ -4,6 +4,7 @@ import com.dnd.moddo.domain.group.dto.request.GroupAccountRequest;
 import com.dnd.moddo.domain.group.dto.request.GroupRequest;
 import com.dnd.moddo.domain.group.dto.response.GroupResponse;
 import com.dnd.moddo.domain.group.service.CommandGroupService;
+import com.dnd.moddo.global.jwt.dto.GroupTokenResponse;
 import com.dnd.moddo.global.jwt.service.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -18,16 +19,24 @@ public class GroupController {
     private final JwtService jwtService;
 
     @PostMapping
-    public ResponseEntity<GroupResponse> saveGroup(HttpServletRequest request, @RequestBody GroupRequest groupRequest) {
+    public ResponseEntity<GroupTokenResponse> saveGroup(HttpServletRequest request, @RequestBody GroupRequest groupRequest) {
         Long userId = jwtService.getUserId(request);
 
-        GroupResponse response = commandGroupService.createGroup(groupRequest, userId);
+        GroupTokenResponse response = commandGroupService.createGroup(groupRequest, userId);
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/account/{groupId}")
-    public ResponseEntity<GroupResponse> updateAccount(@RequestBody GroupAccountRequest groupAccountRequest, @PathVariable Long groupId) {
-        GroupResponse response = commandGroupService.updateAccount(groupAccountRequest, groupId);
+    @PutMapping("/account")
+    public ResponseEntity<GroupResponse> updateAccount(
+            HttpServletRequest request,
+            @RequestParam("groupToken") String groupToken,
+            @RequestBody GroupAccountRequest groupAccountRequest) {
+        Long userId = jwtService.getUserId(request);
+        Long groupId = jwtService.getGroupId(groupToken);
+
+        GroupResponse response = commandGroupService.updateAccount(groupAccountRequest, userId, groupId);
+
         return ResponseEntity.ok(response);
     }
+
 }

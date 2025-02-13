@@ -1,16 +1,18 @@
 package com.dnd.moddo.domain.groupMember.dto.response;
 
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
+import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
 
 public record GroupMemberResponse(
 	Long id,
+	ExpenseRole role,
 	String name,
 	String profile,
 	boolean isPaid
 ) {
 
 	public static GroupMemberResponse of(GroupMember groupMember) {
-		return new GroupMemberResponse(groupMember.getId(), groupMember.getName(),
+		return new GroupMemberResponse(groupMember.getId(), groupMember.getRole(), groupMember.getName(),
 			generateProfileUrl(groupMember.getProfileId()), groupMember.isPaid());
 	}
 

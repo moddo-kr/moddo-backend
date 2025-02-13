@@ -10,13 +10,14 @@ import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.group.repository.GroupRepository;
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMemberSaveRequest;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
+import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.groupMember.repository.GroupMemberRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class GroupMemberUpdater {
 	private final GroupMemberRepository groupMemberRepository;
 	private final GroupMemberReader groupMemberReader;
@@ -32,6 +33,6 @@ public class GroupMemberUpdater {
 
 		groupMemberValidator.validateMemberNamesNotDuplicate(existingNames);
 
-		return groupMemberRepository.save(request.toEntity(group));
+		return groupMemberRepository.save(request.toEntity(group, ExpenseRole.PARTICIPANT));
 	}
 }

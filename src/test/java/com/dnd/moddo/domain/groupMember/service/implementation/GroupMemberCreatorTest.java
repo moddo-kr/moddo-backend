@@ -20,7 +20,9 @@ import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.group.repository.GroupRepository;
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMembersSaveRequest;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
+import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.groupMember.exception.GroupMemberDuplicateNameException;
+import com.dnd.moddo.domain.groupMember.exception.InvalidExpenseParticipantsException;
 import com.dnd.moddo.domain.groupMember.repository.GroupMemberRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,9 +54,13 @@ public class GroupMemberCreatorTest {
 		Long groupId = mockGroup.getId();
 
 		when(groupRepository.getById(eq(groupId))).thenReturn(mockGroup);
+		doNothing().when(groupMemberValidator).validateManagerExists(any());
 		doNothing().when(groupMemberValidator).validateMemberNamesNotDuplicate(any());
 
-		List<GroupMember> expectedMembers = List.of(new GroupMember("김반숙", 1, mockGroup));
+		List<GroupMember> expectedMembers = List.of(
+			new GroupMember("김모또", 1, mockGroup, ExpenseRole.MANAGER),
+			new GroupMember("김반숙", 2, mockGroup, ExpenseRole.PARTICIPANT)
+		);
 
 		when(groupMemberRepository.saveAll(anyList())).thenReturn(expectedMembers);
 
@@ -63,8 +69,9 @@ public class GroupMemberCreatorTest {
 
 		//then
 		assertThat(savedMembers).isNotNull();
-		assertThat(savedMembers.size()).isEqualTo(1);
-		assertThat(savedMembers.get(0).getName()).isEqualTo("김반숙");
+		assertThat(savedMembers.size()).isEqualTo(2);
+		assertThat(savedMembers.get(0).getName()).isEqualTo("김모또");
+		assertThat(savedMembers.get(0).getRole()).isEqualTo(ExpenseRole.MANAGER);
 		verify(groupMemberRepository, times(1)).saveAll(anyList());
 	}
 
@@ -85,6 +92,26 @@ public class GroupMemberCreatorTest {
 		assertThatThrownBy(() -> {
 			groupMemberCreator.create(groupId, request);
 		}).hasMessage("중복된 참여자의 이름은 저장할 수 없습니다.");
+
+	}
+
+	@DisplayName("추가하려는 참여자중 정산담당자가 포함되어있지 않으면 예외가 발생한다.")
+	@Test
+	void createGroupMember_ThrowException_WhenNoManagerPresent() {
+
+		//given
+		Long groupId = mockGroup.getId();
+		List<GroupMember> groupMembers = new ArrayList<>();
+
+		when(groupRepository.getById(eq(groupId))).thenReturn(mockGroup);
+
+		doThrow(new InvalidExpenseParticipantsException()).when(groupMemberValidator)
+			.validateManagerExists(any());
+
+		//when & then
+		assertThatThrownBy(() -> {
+			groupMemberCreator.create(groupId, request);
+		}).hasMessage("총무(MANAGER)는 한 명 있어야 합니다.");
 
 	}
 }
