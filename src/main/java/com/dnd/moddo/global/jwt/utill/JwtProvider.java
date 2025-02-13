@@ -1,5 +1,6 @@
 package com.dnd.moddo.global.jwt.utill;
 
+import com.dnd.moddo.global.jwt.dto.GroupTokenResponse;
 import com.dnd.moddo.global.jwt.dto.TokenResponse;
 import com.dnd.moddo.global.jwt.properties.JwtProperties;
 import io.jsonwebtoken.Jwts;
@@ -29,6 +30,12 @@ public class JwtProvider {
         return new TokenResponse(accessToken, refreshToken, getExpiredTime(), isMember);
     }
 
+    public GroupTokenResponse generateGroupToken(Long groupId) {
+        String groupToken = generateGroupToken(groupId, GROUP_KEY.getMessage());
+
+        return new GroupTokenResponse(groupToken);
+    }
+
 
     private String generateToken(Long id, String email, String role, String type, Long exp) {
         return Jwts.builder()
@@ -40,6 +47,14 @@ public class JwtProvider {
                 .setExpiration(
                         new Date(System.currentTimeMillis() + exp * 1000)
                 )
+                .compact();
+    }
+
+    private String generateGroupToken(Long groupId, String type) {
+        return Jwts.builder()
+                .claim(GROUP_ID.getMessage(), groupId)
+                .setHeaderParam(TYPE.message, type)
+                .signWith(jwtProperties.getSecretKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
