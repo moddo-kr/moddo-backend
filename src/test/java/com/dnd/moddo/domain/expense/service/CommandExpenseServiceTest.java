@@ -18,20 +18,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.dnd.moddo.domain.expense.dto.request.ExpenseRequest;
 import com.dnd.moddo.domain.expense.dto.request.ExpensesRequest;
-import com.dnd.moddo.domain.expense.dto.request.ExpensesUpdateOrderRequest;
 import com.dnd.moddo.domain.expense.dto.response.ExpenseResponse;
 import com.dnd.moddo.domain.expense.dto.response.ExpensesResponse;
 import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.expense.exception.ExpenseNotFoundException;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseCreator;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseDeleter;
-import com.dnd.moddo.domain.expense.service.implementation.ExpenseReader;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseUpdater;
 import com.dnd.moddo.domain.group.entity.Group;
-import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
-import com.dnd.moddo.domain.memberExpense.dto.response.MemberExpenseResponse;
 import com.dnd.moddo.domain.memberExpense.service.CommandMemberExpenseService;
-import com.dnd.moddo.domain.memberExpense.service.QueryMemberExpenseService;
 
 @ExtendWith(MockitoExtension.class)
 class CommandExpenseServiceTest {
@@ -39,15 +34,11 @@ class CommandExpenseServiceTest {
 	@Mock
 	private ExpenseCreator expenseCreator;
 	@Mock
-	private ExpenseReader expenseReader;
-	@Mock
 	private ExpenseUpdater expenseUpdater;
 	@Mock
 	private ExpenseDeleter expenseDeleter;
 	@Mock
 	private CommandMemberExpenseService commandMemberExpenseService;
-	@Mock
-	private QueryMemberExpenseService queryMemberExpenseService;
 	@InjectMocks
 	private CommandExpenseService commandExpenseService;
 
@@ -74,9 +65,9 @@ class CommandExpenseServiceTest {
 
 		ExpensesRequest request = new ExpensesRequest(List.of(expenseRequest1, expenseRequest2));
 
-		Expense expense1 = new Expense(mockGroup, 20000L, "투썸플레이스", 0, LocalDate.of(2025, 02, 03));
-		Expense expense2 = new Expense(mockGroup, 100000L, "하이디라오", 1, LocalDate.of(2025, 02, 03));
-		when(expenseCreator.create(eq(groupId), anyInt(), any(ExpenseRequest.class)))
+		Expense expense1 = new Expense(mockGroup, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
+		Expense expense2 = new Expense(mockGroup, 100000L, "하이디라오", LocalDate.of(2025, 02, 03));
+		when(expenseCreator.create(eq(groupId), any(ExpenseRequest.class)))
 			.thenReturn(expense1)
 			.thenReturn(expense2);
 
@@ -95,7 +86,7 @@ class CommandExpenseServiceTest {
 	void updateSuccess() {
 		//given
 		Long groupId = mockGroup.getId(), expenseId = 1L;
-		Expense mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", 1, LocalDate.of(2025, 02, 03));
+		Expense mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
 		ExpenseRequest expenseRequest = mock(ExpenseRequest.class);
 		ExpenseResponse expectedResponse = ExpenseResponse.of(mockExpense);
 
@@ -108,40 +99,6 @@ class CommandExpenseServiceTest {
 		assertThat(response).isEqualTo(expectedResponse);
 
 		verify(expenseUpdater, times(1)).update(expenseId, expenseRequest);
-	}
-
-	@DisplayName("지출내역이 존재할 때 기존의 지출내역의 순서를 변경할 수 있다.")
-	@Test
-	void updateOrder_Success_ValidRequest() {
-		//given
-		Expense expense1 = new Expense(mockGroup, 20000L, "expense 1", 1, LocalDate.of(2025, 02, 03));
-		Expense expense2 = new Expense(mockGroup, 15000L, "expense 2", 2, LocalDate.of(2025, 02, 03));
-		List<Expense> expectedExpenses = List.of(expense1, expense2);
-		ExpensesUpdateOrderRequest request = new ExpensesUpdateOrderRequest(new ArrayList<>());
-
-		when(expenseUpdater.updateOrder(request)).thenReturn(expectedExpenses);
-
-		List<MemberExpenseResponse> responses1 = List.of(
-			new MemberExpenseResponse(1L, ExpenseRole.MANAGER, "김모또", 15000L),
-			new MemberExpenseResponse(2L, ExpenseRole.PARTICIPANT, "박완숙", 5000L));
-		List<MemberExpenseResponse> responses2 = List.of(
-			new MemberExpenseResponse(1L, ExpenseRole.MANAGER, "김모또", 15000L),
-			new MemberExpenseResponse(2L, ExpenseRole.PARTICIPANT, "박완숙", 2000L));
-
-		when(queryMemberExpenseService.findAllByExpenseId(any()))
-			.thenReturn(responses1)
-			.thenReturn(responses2);
-
-		// when
-		ExpensesResponse response = commandExpenseService.updateOrder(request);
-
-		//then
-		assertThat(response).isNotNull();
-		assertThat(response.expenses().size()).isEqualTo(2);
-		assertThat(response.expenses().get(0).content()).isEqualTo("expense 1");
-		assertThat(response.expenses().get(0).memberExpenses().size()).isEqualTo(2);
-
-		verify(expenseUpdater, times(1)).updateOrder(request);
 	}
 
 	@DisplayName("업데이트하려는 지출 내역을 찾을 수 없을때 예외를 발생시킨다.")

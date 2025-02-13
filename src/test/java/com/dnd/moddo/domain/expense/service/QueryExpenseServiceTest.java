@@ -49,8 +49,8 @@ class QueryExpenseServiceTest {
 		//given
 		Long groupId = mockGroup.getId();
 		List<Expense> mockExpenses = List.of(
-			new Expense(mockGroup, 20000L, "투썸플레이스", 0, LocalDate.of(2025, 02, 03)),
-			new Expense(mockGroup, 35000L, "보드게임카페", 1, LocalDate.of(2025, 02, 03))
+			new Expense(mockGroup, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03)),
+			new Expense(mockGroup, 35000L, "보드게임카페", LocalDate.of(2025, 02, 03))
 		);
 
 		when(expenseReader.findAllByGroupId(eq(groupId))).thenReturn(mockExpenses);
@@ -84,7 +84,7 @@ class QueryExpenseServiceTest {
 	void findOneByExpenseIdSuccess() {
 		//given
 		Long groupId = mockGroup.getId(), expenseId = 1L;
-		Expense mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", 0, LocalDate.of(2025, 02, 03));
+		Expense mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
 
 		when(expenseReader.findOneByExpenseId(eq(expenseId))).thenReturn(mockExpense);
 

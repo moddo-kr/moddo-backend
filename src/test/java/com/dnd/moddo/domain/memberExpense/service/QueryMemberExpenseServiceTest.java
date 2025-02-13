@@ -37,7 +37,7 @@ class QueryMemberExpenseServiceTest {
 	void setUp() {
 		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now(), LocalDateTime.now().plusMinutes(1),
 			"은행", "계좌");
-		mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", 0, LocalDate.of(2025, 02, 03));
+		mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
 
 	}
 

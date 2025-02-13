@@ -49,11 +49,11 @@ class ExpenseCreatorTest {
 		when(groupRepository.getById(eq(groupId))).thenReturn(mockGroup);
 		ExpenseRequest request = mock(ExpenseRequest.class);
 
-		Expense mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", 1, LocalDate.of(2025, 02, 03));
+		Expense mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
 		when(expenseRepository.save(any())).thenReturn(mockExpense);
 		doNothing().when(memberExpenseValidator).validateMembersArePartOfGroup(groupId, new ArrayList<>());
 		//when
-		Expense result = expenseCreator.create(groupId, 2, request);
+		Expense result = expenseCreator.create(groupId, request);
 
 		//then
 		assertThat(result).isNotNull();

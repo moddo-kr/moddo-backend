@@ -26,7 +26,7 @@ class ExpenseTest {
 		Long initAmount = 20000L;
 		String initContent = "old content";
 		LocalDate initDate = LocalDate.of(2025, 02, 03);
-		Expense expense = new Expense(mockGroup, initAmount, initContent, 0, initDate);
+		Expense expense = new Expense(mockGroup, initAmount, initContent, initDate);
 
 		// when
 		Long newAmount = 30000L;
