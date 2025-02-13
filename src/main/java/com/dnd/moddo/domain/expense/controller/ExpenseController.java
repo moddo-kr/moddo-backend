@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dnd.moddo.domain.expense.dto.request.ExpenseRequest;
 import com.dnd.moddo.domain.expense.dto.request.ExpensesRequest;
-import com.dnd.moddo.domain.expense.dto.request.ExpensesUpdateOrderRequest;
 import com.dnd.moddo.domain.expense.dto.response.ExpenseResponse;
 import com.dnd.moddo.domain.expense.dto.response.ExpensesResponse;
 import com.dnd.moddo.domain.expense.service.CommandExpenseService;
@@ -55,14 +54,6 @@ public class ExpenseController {
 		@PathVariable("expenseId") Long expenseId,
 		@RequestBody ExpenseRequest request) {
 		ExpenseResponse response = commandExpenseService.update(expenseId, request);
-		return ResponseEntity.ok(response);
-
-	}
-
-	@PutMapping("/order")
-	public ResponseEntity<ExpensesResponse> updateExpenseOrder(@RequestParam("groupId") Long groupId,
-		@RequestBody ExpensesUpdateOrderRequest request) {
-		ExpensesResponse response = commandExpenseService.updateOrder(request);
 		return ResponseEntity.ok(response);
 
 	}

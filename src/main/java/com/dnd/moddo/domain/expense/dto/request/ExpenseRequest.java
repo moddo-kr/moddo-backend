@@ -17,7 +17,7 @@ public record ExpenseRequest(
 
 ) {
 
-	public Expense toEntity(Group group, int maxOrder) {
-		return new Expense(group, amount(), content(), maxOrder, date());
+	public Expense toEntity(Group group) {
+		return new Expense(group, amount(), content(), date());
 	}
 }

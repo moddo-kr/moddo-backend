@@ -20,12 +20,12 @@ public class ExpenseCreator {
 	private final MemberExpenseValidator memberExpenseValidator;
 	private final GroupRepository groupRepository;
 
-	public Expense create(Long groupId, int maxOrder, ExpenseRequest request) {
+	public Expense create(Long groupId, ExpenseRequest request) {
 		Group group = groupRepository.getById(groupId);
 
 		memberExpenseValidator.validateMembersArePartOfGroup(groupId, request.memberExpenses());
 
-		Expense expense = request.toEntity(group, maxOrder);
+		Expense expense = request.toEntity(group);
 		return expenseRepository.save(expense);
 	}
 
