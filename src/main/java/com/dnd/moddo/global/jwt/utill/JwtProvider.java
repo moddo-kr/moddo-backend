@@ -8,6 +8,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
@@ -55,6 +57,9 @@ public class JwtProvider {
                 .claim(GROUP_ID.getMessage(), groupId)
                 .setHeaderParam(TYPE.message, type)
                 .signWith(jwtProperties.getSecretKey(), SignatureAlgorithm.HS256)
+                .setExpiration(
+                        Date.from(LocalDate.now().plusMonths(1).atStartOfDay(ZoneId.systemDefault()).toInstant())
+                )
                 .compact();
     }
 
