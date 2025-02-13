@@ -6,6 +6,8 @@ import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.group.repository.GroupRepository;
 import com.dnd.moddo.domain.user.entity.User;
 import com.dnd.moddo.domain.user.repository.UserRepository;
+import com.dnd.moddo.global.jwt.dto.GroupTokenResponse;
+import com.dnd.moddo.global.jwt.utill.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,8 +21,9 @@ public class GroupCreator {
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final JwtProvider jwtProvider;
 
-    public GroupResponse createGroup(GroupRequest request, Long userId) {
+    public GroupTokenResponse createGroup(GroupRequest request, Long userId) {
         User user = userRepository.getById(userId);
         String encryptedPassword = passwordEncoder.encode(request.password());
 
@@ -32,6 +35,8 @@ public class GroupCreator {
                 .expiredAt(LocalDateTime.now().plusMonths(1))
                 .build();
 
-        return GroupResponse.of(groupRepository.save(group));
+        groupRepository.save(group);
+
+        return jwtProvider.generateGroupToken(group.getId());
     }
 }

@@ -1,5 +1,7 @@
 package com.dnd.moddo.domain.expense.controller;
 
+import com.dnd.moddo.global.jwt.service.JwtService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,31 +29,33 @@ public class ExpenseController {
 
 	private final CommandExpenseService commandExpenseService;
 	private final QueryExpenseService queryExpenseService;
+	private final JwtService jwtService;
 
 	@PostMapping
-	public ResponseEntity<ExpensesResponse> saveExpenses(@RequestParam("groupId") Long groupId,
-		@RequestBody ExpensesRequest request) {
+	public ResponseEntity<ExpensesResponse> saveExpenses(
+			@RequestParam("groupToken") String groupToken,
+			@RequestBody ExpensesRequest request) {
+		Long groupId = jwtService.getGroupId(groupToken);
 		ExpensesResponse response = commandExpenseService.createExpenses(groupId, request);
 		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping
-	public ResponseEntity<ExpensesResponse> getAllByGroupId(@RequestParam("groupId") Long groupId) {
+	public ResponseEntity<ExpensesResponse> getAllByGroupId(@RequestParam("groupToken") String groupToken) {
+		Long groupId = jwtService.getGroupId(groupToken);
 		ExpensesResponse response = queryExpenseService.findAllByGroupId(groupId);
 		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping("/{expenseId}")
-	public ResponseEntity<ExpenseResponse> getByExpenseId(@RequestParam("groupId") Long groupId,
-		@PathVariable("expenseId") Long expenseId) {
+	public ResponseEntity<ExpenseResponse> getByExpenseId(@PathVariable("expenseId") Long expenseId) {
 		ExpenseResponse response = queryExpenseService.findOneByExpenseId(expenseId);
 		return ResponseEntity.ok(response);
 
 	}
 
 	@PutMapping("/{expenseId}")
-	public ResponseEntity<ExpenseResponse> updateByExpenseId(@RequestParam("groupId") Long groupId,
-		@PathVariable("expenseId") Long expenseId,
+	public ResponseEntity<ExpenseResponse> updateByExpenseId(@PathVariable("expenseId") Long expenseId,
 		@RequestBody ExpenseRequest request) {
 		ExpenseResponse response = commandExpenseService.update(expenseId, request);
 		return ResponseEntity.ok(response);
@@ -59,8 +63,7 @@ public class ExpenseController {
 	}
 
 	@DeleteMapping("/{expenseId}")
-	public ResponseEntity<Void> deleteByExpenseId(@RequestParam("groupId") Long groupId,
-		@PathVariable("expenseId") Long expenseId) {
+	public ResponseEntity<Void> deleteByExpenseId(@PathVariable("expenseId") Long expenseId) {
 		commandExpenseService.delete(expenseId);
 		return ResponseEntity.noContent().build();
 	}
