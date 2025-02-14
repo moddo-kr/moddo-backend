@@ -80,7 +80,7 @@ public class QueryExpenseService {
 
 		// Map으로 변환하여 빠른 조회 가능
 		Map<Long, MemberExpense> expenseToMemberExpenseMap = memberExpenses.stream()
-			.collect(Collectors.toMap(me -> me.getExpense().getId(), me -> me));
+			.collect(Collectors.toMap(MemberExpense::getExpenseId, me -> me));
 
 		List<MemberExpenseDetailResponse> memberExpenseDetails = expenses.stream()
 			.map(expense -> {

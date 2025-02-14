@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberReader;
 import com.dnd.moddo.domain.memberExpense.dto.request.MemberExpenseRequest;
@@ -29,11 +28,11 @@ public class CommandMemberExpenseService {
 	private final MemberExpenseUpdater memberExpenseUpdater;
 	private final MemberExpenseDeleter memberExpenseDeleter;
 
-	public List<MemberExpenseResponse> create(Expense expense, List<MemberExpenseRequest> memberExpenses) {
-		return memberExpenses.stream()
+	public List<MemberExpenseResponse> create(Long expenseId, List<MemberExpenseRequest> request) {
+		return request.stream()
 			.map(m -> {
 				GroupMember groupMember = groupMemberReader.findByGroupMemberId(m.memberId());
-				return MemberExpenseResponse.of(memberExpenseCreator.create(expense, groupMember, m));
+				return MemberExpenseResponse.of(memberExpenseCreator.create(expenseId, groupMember, m));
 			}).toList();
 
 	}

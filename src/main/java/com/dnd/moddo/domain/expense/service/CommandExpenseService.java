@@ -36,7 +36,7 @@ public class CommandExpenseService {
 	private ExpenseResponse createExpense(Long groupId, ExpenseRequest request) {
 		Expense expense = expenseCreator.create(groupId, request);
 
-		List<MemberExpenseResponse> memberExpenseResponses = commandMemberExpenseService.create(expense,
+		List<MemberExpenseResponse> memberExpenseResponses = commandMemberExpenseService.create(expense.getId(),
 			request.memberExpenses());
 		return ExpenseResponse.of(expense, memberExpenseResponses);
 	}

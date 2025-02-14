@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import com.dnd.moddo.domain.memberExpense.entity.MemberExpense;
 
 public interface MemberExpenseRepository extends JpaRepository<MemberExpense, Long> {
+	//@EntityGraph(attributePaths = {"groupMember"})
 	List<MemberExpense> findByExpenseId(Long expenseId);
 
 	@Query("select me from MemberExpense me where me.groupMember.id in :groupMemberIds")
