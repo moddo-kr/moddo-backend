@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -55,5 +56,38 @@ class MemberExpenseReaderTest {
 		assertThat(result.get(0).getGroupMember()).isEqualTo(mockGroupMember);
 
 		verify(memberExpenseRepository, times(1)).findByExpenseId(eq(expenseId));
+	}
+
+	@DisplayName("참여자별 지출내역을 참여자id, 지출내역 map으로 변환하여 조회할 수 있다.")
+	@Test
+	public void findAllByGroupMemberIds_Success() {
+		//given
+		GroupMember groupMember1 = mock(GroupMember.class);
+		GroupMember groupMember2 = mock(GroupMember.class);
+		when(groupMember1.getId()).thenReturn(1L);
+		when(groupMember2.getId()).thenReturn(2L);
+
+		List<MemberExpense> mockExpenses = List.of(
+			new MemberExpense(1L, groupMember1, 1000L),
+			new MemberExpense(2L, groupMember1, 2000L),
+			new MemberExpense(1L, groupMember2, 3000L)
+		);
+
+		List<Long> groupMemberIds = List.of(1L, 2L);
+
+		when(memberExpenseRepository.findAllByGroupMemberIds(groupMemberIds)).thenReturn(mockExpenses);
+
+		//when
+		Map<Long, List<MemberExpense>> result = memberExpenseReader.findAllByGroupMemberIds(groupMemberIds);
+
+		//then
+		assertThat(result).isNotNull();
+		assertThat(result.size()).isEqualTo(2);
+
+		assertThat(result.get(1L).get(0).getAmount()).isEqualTo(1000L);
+		assertThat(result.get(1L).get(1).getAmount()).isEqualTo(2000L);
+		assertThat(result.get(2L).get(0).getAmount()).isEqualTo(3000L);
+
+		verify(memberExpenseRepository, times(1)).findAllByGroupMemberIds(groupMemberIds);
 	}
 }
