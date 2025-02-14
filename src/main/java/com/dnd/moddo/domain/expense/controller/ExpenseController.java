@@ -17,7 +17,6 @@ import com.dnd.moddo.domain.expense.dto.response.ExpenseResponse;
 import com.dnd.moddo.domain.expense.dto.response.ExpensesResponse;
 import com.dnd.moddo.domain.expense.service.CommandExpenseService;
 import com.dnd.moddo.domain.expense.service.QueryExpenseService;
-import com.dnd.moddo.domain.groupMember.dto.response.GroupMembersExpenseResponse;
 import com.dnd.moddo.global.jwt.service.JwtService;
 
 import lombok.RequiredArgsConstructor;
@@ -68,12 +67,4 @@ public class ExpenseController {
 		return ResponseEntity.noContent().build();
 	}
 
-	@GetMapping("/settlement")
-	public ResponseEntity<GroupMembersExpenseResponse> getSettlement(
-		@RequestParam("groupToken") String groupToken
-	) {
-		Long groupId = jwtService.getGroupId(groupToken);
-		GroupMembersExpenseResponse response = queryExpenseService.findSettlementsByGroupId(groupId);
-		return ResponseEntity.ok(response);
-	}
 }
