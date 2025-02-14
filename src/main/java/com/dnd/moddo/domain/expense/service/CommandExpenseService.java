@@ -51,6 +51,7 @@ public class CommandExpenseService {
 
 	public void delete(Long expenseId) {
 		//TODO 삭제하는 사람이 정산자인지 확인 로직 필요
+		commandMemberExpenseService.deleteAllByExpenseId(expenseId);
 		expenseDeleter.delete(expenseId);
 	}
 }

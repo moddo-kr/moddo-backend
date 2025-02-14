@@ -90,4 +90,7 @@ public class CommandMemberExpenseService {
 		memberExpenseDeleter.deleteByMemberExpenses(deleteMemberExpenses);
 	}
 
+	public void deleteAllByExpenseId(Long expenseId) {
+		memberExpenseDeleter.deleteAllByExpenseId(expenseId);
+	}
 }
