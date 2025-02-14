@@ -17,7 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.dnd.moddo.domain.group.entity.Group;
-import com.dnd.moddo.domain.group.repository.GroupRepository;
+import com.dnd.moddo.domain.group.service.implementation.GroupReader;
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMembersSaveRequest;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
@@ -32,7 +32,7 @@ public class GroupMemberCreatorTest {
 	@Mock
 	private GroupMemberValidator groupMemberValidator;
 	@Mock
-	private GroupRepository groupRepository;
+	private GroupReader groupReader;
 	@InjectMocks
 	private GroupMemberCreator groupMemberCreator;
 
@@ -53,7 +53,7 @@ public class GroupMemberCreatorTest {
 		//given
 		Long groupId = mockGroup.getId();
 
-		when(groupRepository.getById(eq(groupId))).thenReturn(mockGroup);
+		when(groupReader.read(eq(groupId))).thenReturn(mockGroup);
 		doNothing().when(groupMemberValidator).validateManagerExists(any());
 		doNothing().when(groupMemberValidator).validateMemberNamesNotDuplicate(any());
 
@@ -83,7 +83,7 @@ public class GroupMemberCreatorTest {
 		Long groupId = mockGroup.getId();
 		List<GroupMember> groupMembers = new ArrayList<>();
 
-		when(groupRepository.getById(eq(groupId))).thenReturn(mockGroup);
+		when(groupReader.read(eq(groupId))).thenReturn(mockGroup);
 
 		doThrow(new GroupMemberDuplicateNameException()).when(groupMemberValidator)
 			.validateMemberNamesNotDuplicate(any());
@@ -103,7 +103,7 @@ public class GroupMemberCreatorTest {
 		Long groupId = mockGroup.getId();
 		List<GroupMember> groupMembers = new ArrayList<>();
 
-		when(groupRepository.getById(eq(groupId))).thenReturn(mockGroup);
+		when(groupReader.read(eq(groupId))).thenReturn(mockGroup);
 
 		doThrow(new InvalidExpenseParticipantsException()).when(groupMemberValidator)
 			.validateManagerExists(any());

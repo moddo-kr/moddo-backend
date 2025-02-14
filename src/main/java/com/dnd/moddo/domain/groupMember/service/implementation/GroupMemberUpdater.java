@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.group.repository.GroupRepository;
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMemberSaveRequest;
+import com.dnd.moddo.domain.groupMember.dto.request.PaymentStatusUpdateRequest;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.groupMember.repository.GroupMemberRepository;
@@ -34,5 +35,11 @@ public class GroupMemberUpdater {
 		groupMemberValidator.validateMemberNamesNotDuplicate(existingNames);
 
 		return groupMemberRepository.save(request.toEntity(group, ExpenseRole.PARTICIPANT));
+	}
+
+	public GroupMember updatePaymentStatus(Long groupMemberId, PaymentStatusUpdateRequest request) {
+		GroupMember groupMember = groupMemberRepository.getById(groupMemberId);
+		groupMember.updatePaymentStatus(request.isPaid());
+		return groupMember;
 	}
 }

@@ -42,11 +42,11 @@ class ExpenseReaderTest {
 		//given
 		Long groupId = mockGroup.getId();
 		List<Expense> mockExpenses = List.of(
-			new Expense(mockGroup, 20000L, "투썸플레이스", 0, LocalDate.of(2025, 02, 03)),
-			new Expense(mockGroup, 35000L, "보드게임카페", 1, LocalDate.of(2025, 02, 03))
+			new Expense(mockGroup, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03)),
+			new Expense(mockGroup, 35000L, "보드게임카페", LocalDate.of(2025, 02, 03))
 		);
 
-		when(expenseRepository.findByGroupIdOrderByOrderAsc(eq(groupId))).thenReturn(mockExpenses);
+		when(expenseRepository.findByGroupIdOrderByDateAsc(eq(groupId))).thenReturn(mockExpenses);
 
 		//when
 		List<Expense> result = expenseReader.findAllByGroupId(groupId);
@@ -56,7 +56,7 @@ class ExpenseReaderTest {
 		assertThat(result.get(0).getContent()).isEqualTo("투썸플레이스");
 
 		//then
-		verify(expenseRepository, times(1)).findByGroupIdOrderByOrderAsc(eq(groupId));
+		verify(expenseRepository, times(1)).findByGroupIdOrderByDateAsc(eq(groupId));
 	}
 
 	@DisplayName("지출내역이 존재하면 해당 지출내역을 조회할 수 있다.")
@@ -64,7 +64,7 @@ class ExpenseReaderTest {
 	void findOneByExpenseIdSuccess() {
 		//given
 		Long expenseId = 1L;
-		Expense mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", 0, LocalDate.of(2025, 02, 03));
+		Expense mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
 
 		when(expenseRepository.getById(eq(expenseId))).thenReturn(mockExpense);
 		//when

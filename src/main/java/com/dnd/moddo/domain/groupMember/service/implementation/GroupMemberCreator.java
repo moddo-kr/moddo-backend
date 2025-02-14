@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.moddo.domain.group.entity.Group;
-import com.dnd.moddo.domain.group.repository.GroupRepository;
+import com.dnd.moddo.domain.group.service.implementation.GroupReader;
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMemberSaveRequest;
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMembersSaveRequest;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
@@ -20,10 +20,10 @@ import lombok.RequiredArgsConstructor;
 public class GroupMemberCreator {
 	private final GroupMemberRepository groupMemberRepository;
 	private final GroupMemberValidator groupMemberValidator;
-	private final GroupRepository groupRepository; //추후 groupReader나 다른것으로 수정할 예정
+	private final GroupReader groupReader;
 
 	public List<GroupMember> create(Long groupId, GroupMembersSaveRequest request) {
-		Group group = groupRepository.getById(groupId);
+		Group group = groupReader.read(groupId);
 
 		List<String> requestNames = request.members().stream().map(GroupMemberSaveRequest::name).toList();
 

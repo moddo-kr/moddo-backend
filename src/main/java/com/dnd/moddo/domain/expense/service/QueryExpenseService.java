@@ -32,4 +32,5 @@ public class QueryExpenseService {
 		Expense expense = expenseReader.findOneByExpenseId(expenseId);
 		return ExpenseResponse.of(expense);
 	}
+
 }

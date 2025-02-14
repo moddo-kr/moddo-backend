@@ -3,7 +3,6 @@ package com.dnd.moddo.domain.memberExpense.service.implementation;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.Mockito.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
@@ -30,7 +28,6 @@ class MemberExpenseCreatorTest {
 	private MemberExpenseCreator memberExpenseCreator;
 
 	private Group mockGroup;
-	private Expense mockExpense;
 	private GroupMember mockGroupMember;
 	private MemberExpenseRequest mockMemberExpenseRequest;
 
@@ -38,7 +35,7 @@ class MemberExpenseCreatorTest {
 	void setUp() {
 		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now(), LocalDateTime.now().plusMinutes(1),
 			"은행", "계좌");
-		mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", 1, LocalDate.of(2025, 02, 03));
+
 		mockGroupMember = new GroupMember("박완수", mockGroup, ExpenseRole.MANAGER);
 		mockMemberExpenseRequest = mock(MemberExpenseRequest.class);
 	}
@@ -47,13 +44,14 @@ class MemberExpenseCreatorTest {
 	@Test
 	void createMemberExpenseSuccess() {
 		//given
-		MemberExpense mockMemberExpense = new MemberExpense(mockExpense, mockGroupMember,
+		Long expenseId = 1L;
+		MemberExpense mockMemberExpense = new MemberExpense(expenseId, mockGroupMember,
 			mockMemberExpenseRequest.amount());
-		when(mockMemberExpenseRequest.toEntity(mockExpense, mockGroupMember)).thenReturn(mockMemberExpense);
+		when(mockMemberExpenseRequest.toEntity(expenseId, mockGroupMember)).thenReturn(mockMemberExpense);
 		when(memberExpenseRepository.save(any(MemberExpense.class))).thenReturn(mockMemberExpense);
 
 		//when
-		MemberExpense result = memberExpenseCreator.create(mockExpense, mockGroupMember, mockMemberExpenseRequest);
+		MemberExpense result = memberExpenseCreator.create(expenseId, mockGroupMember, mockMemberExpenseRequest);
 
 		//then
 		assertThat(result).isEqualTo(mockMemberExpense);

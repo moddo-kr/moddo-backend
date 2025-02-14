@@ -12,6 +12,10 @@ public record GroupMemberSaveRequest(
 	String role
 ) {
 	public GroupMember toEntity(Group group, ExpenseRole role) {
-		return new GroupMember(name(), group, role);
+		boolean isPaid = false;
+		if (ExpenseRole.MANAGER.equals(role)) {
+			isPaid = true;
+		}
+		return new GroupMember(name(), group, isPaid, role);
 	}
 }

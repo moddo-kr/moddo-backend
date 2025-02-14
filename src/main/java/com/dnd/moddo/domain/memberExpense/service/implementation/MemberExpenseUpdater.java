@@ -1,23 +1,22 @@
 package com.dnd.moddo.domain.memberExpense.service.implementation;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import com.dnd.moddo.domain.memberExpense.dto.request.MemberExpenseRequest;
 import com.dnd.moddo.domain.memberExpense.entity.MemberExpense;
 import com.dnd.moddo.domain.memberExpense.repotiroy.MemberExpenseRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
-@Service
 @RequiredArgsConstructor
+@Service
 @Transactional
-public class MemberExpenseCreator {
+public class MemberExpenseUpdater {
 	private final MemberExpenseRepository memberExpenseRepository;
 
-	public MemberExpense create(Long expenseId, GroupMember groupMember, MemberExpenseRequest memberExpenseRequest) {
-		MemberExpense memberExpense = memberExpenseRequest.toEntity(expenseId, groupMember);
-		return memberExpenseRepository.save(memberExpense);
+	public void update(MemberExpense memberExpense, MemberExpenseRequest request) {
+		memberExpense.updateAmount(request.amount());
+		memberExpenseRepository.save(memberExpense);
 	}
 }

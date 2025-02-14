@@ -8,9 +8,9 @@ import com.dnd.moddo.domain.group.entity.Group;
 public record ExpensesRequest(
 	List<ExpenseRequest> expenses
 ) {
-	public List<Expense> toEntity(Group group, int maxOrder) {
+	public List<Expense> toEntity(Group group) {
 		return expenses.stream()
-			.map(e -> e.toEntity(group, maxOrder))
+			.map(e -> e.toEntity(group))
 			.toList();
 	}
 }

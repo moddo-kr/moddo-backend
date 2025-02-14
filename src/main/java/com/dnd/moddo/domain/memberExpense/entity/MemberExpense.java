@@ -1,8 +1,8 @@
 package com.dnd.moddo.domain.memberExpense.entity;
 
-import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -18,16 +18,15 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "member-expenses")
+@Table(name = "member_expenses")
 @Entity
 public class MemberExpense {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "expense_id")
-	private Expense expense;
+	@Column(name = "expense_id")
+	private Long expenseId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "group_member_id")
@@ -36,9 +35,13 @@ public class MemberExpense {
 	private Long amount;
 
 	@Builder
-	public MemberExpense(Expense expense, GroupMember groupMember, Long amount) {
-		this.expense = expense;
+	public MemberExpense(Long expenseId, GroupMember groupMember, Long amount) {
+		this.expenseId = expenseId;
 		this.groupMember = groupMember;
+		this.amount = amount;
+	}
+
+	public void updateAmount(Long amount) {
 		this.amount = amount;
 	}
 }

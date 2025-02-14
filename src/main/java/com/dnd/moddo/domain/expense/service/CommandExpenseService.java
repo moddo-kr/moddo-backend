@@ -6,17 +6,14 @@ import org.springframework.stereotype.Service;
 
 import com.dnd.moddo.domain.expense.dto.request.ExpenseRequest;
 import com.dnd.moddo.domain.expense.dto.request.ExpensesRequest;
-import com.dnd.moddo.domain.expense.dto.request.ExpensesUpdateOrderRequest;
 import com.dnd.moddo.domain.expense.dto.response.ExpenseResponse;
 import com.dnd.moddo.domain.expense.dto.response.ExpensesResponse;
 import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseCreator;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseDeleter;
-import com.dnd.moddo.domain.expense.service.implementation.ExpenseReader;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseUpdater;
 import com.dnd.moddo.domain.memberExpense.dto.response.MemberExpenseResponse;
 import com.dnd.moddo.domain.memberExpense.service.CommandMemberExpenseService;
-import com.dnd.moddo.domain.memberExpense.service.QueryMemberExpenseService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,11 +21,9 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class CommandExpenseService {
 	private final ExpenseCreator expenseCreator;
-	private final ExpenseReader expenseReader;
 	private final ExpenseUpdater expenseUpdater;
 	private final ExpenseDeleter expenseDeleter;
 	private final CommandMemberExpenseService commandMemberExpenseService;
-	private final QueryMemberExpenseService queryMemberExpenseService;
 
 	public ExpensesResponse createExpenses(Long groupId, ExpensesRequest request) {
 		List<ExpenseResponse> expenses = request.expenses()
@@ -39,28 +34,19 @@ public class CommandExpenseService {
 	}
 
 	private ExpenseResponse createExpense(Long groupId, ExpenseRequest request) {
-		int maxOrder = expenseReader.findMaxOrderForGroup(groupId) + 1;
-		Expense expense = expenseCreator.create(groupId, maxOrder, request);
+		Expense expense = expenseCreator.create(groupId, request);
 
-		List<MemberExpenseResponse> memberExpenseResponses = commandMemberExpenseService.create(expense,
+		List<MemberExpenseResponse> memberExpenseResponses = commandMemberExpenseService.create(expense.getId(),
 			request.memberExpenses());
 		return ExpenseResponse.of(expense, memberExpenseResponses);
 	}
 
 	public ExpenseResponse update(Long expenseId, ExpenseRequest request) {
 		Expense expense = expenseUpdater.update(expenseId, request);
-		return ExpenseResponse.of(expense);
+		List<MemberExpenseResponse> memberExpenseResponses = commandMemberExpenseService.update(expenseId,
+			request.memberExpenses());
+		return ExpenseResponse.of(expense, memberExpenseResponses);
 
-	}
-
-	public ExpensesResponse updateOrder(ExpensesUpdateOrderRequest request) {
-		List<Expense> expenses = expenseUpdater.updateOrder(request);
-		return new ExpensesResponse(
-			expenses.stream()
-				.map(expense ->
-					ExpenseResponse.of(expense, queryMemberExpenseService.findAllByExpenseId(expense.getId()))
-				).toList()
-		);
 	}
 
 	public void delete(Long expenseId) {
