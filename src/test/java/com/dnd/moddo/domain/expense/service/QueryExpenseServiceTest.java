@@ -126,7 +126,7 @@ class QueryExpenseServiceTest {
 
 	@DisplayName("모임이 유효할 때 참여자별 정산내역 조회에 성공한다.")
 	@Test
-	void findSettlementByGroupId_Success() {
+	void findSettlementsByGroupId_Success() {
 		//given
 		Long groupId = 1L;
 		GroupMember groupMember1 = mock(GroupMember.class);
@@ -161,7 +161,7 @@ class QueryExpenseServiceTest {
 		when(expenseReader.findAllByGroupId(any())).thenReturn(List.of(expense1, expense2));
 
 		// when
-		GroupMembersExpenseResponse response = queryExpenseService.findSettlementByGroupId(groupId);
+		GroupMembersExpenseResponse response = queryExpenseService.findSettlementsByGroupId(groupId);
 
 		// then
 		assertThat(response).isNotNull();

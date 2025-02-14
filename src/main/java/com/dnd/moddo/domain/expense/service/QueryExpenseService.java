@@ -46,10 +46,10 @@ public class QueryExpenseService {
 		return ExpenseResponse.of(expense);
 	}
 
-	public GroupMembersExpenseResponse findSettlementByGroupId(Long groupId) {
+	public GroupMembersExpenseResponse findSettlementsByGroupId(Long groupId) {
 		List<GroupMember> groupMembers = groupMemberReader.findAllByGroupId(groupId);
 
-		Map<Long, GroupMember> groupMemberById = mapGroupMembers(groupMembers);
+		Map<Long, GroupMember> groupMemberById = convertGroupMembersToMap(groupMembers);
 
 		Map<Long, List<MemberExpense>> memberExpenses = memberExpenseReader.findAllByGroupMemberIds(
 			groupMemberById.keySet().stream().toList());
@@ -70,8 +70,7 @@ public class QueryExpenseService {
 		return new GroupMembersExpenseResponse(responses);
 	}
 
-	// 그룹 멤버들을 id별로 Map으로 매핑
-	private Map<Long, GroupMember> mapGroupMembers(List<GroupMember> groupMembers) {
+	private Map<Long, GroupMember> convertGroupMembersToMap(List<GroupMember> groupMembers) {
 		return groupMembers.stream()
 			.collect(Collectors.toMap(GroupMember::getId, groupMember -> groupMember,
 				(existing, replacement) -> existing,
@@ -82,7 +81,6 @@ public class QueryExpenseService {
 	private GroupMemberExpenseResponse findSettlementByGroupMember(GroupMember groupMember,
 		List<MemberExpense> memberExpenses, List<Expense> expenses) {
 
-		// Map으로 변환하여 빠른 조회 가능
 		Map<Long, MemberExpense> expenseToMemberExpenseMap = memberExpenses.stream()
 			.collect(Collectors.toMap(MemberExpense::getExpenseId, me -> me));
 

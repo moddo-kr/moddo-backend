@@ -73,7 +73,7 @@ public class ExpenseController {
 		@RequestParam("groupToken") String groupToken
 	) {
 		Long groupId = jwtService.getGroupId(groupToken);
-		GroupMembersExpenseResponse response = queryExpenseService.findSettlementByGroupId(groupId);
+		GroupMembersExpenseResponse response = queryExpenseService.findSettlementsByGroupId(groupId);
 		return ResponseEntity.ok(response);
 	}
 }
