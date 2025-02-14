@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 @ExtendWith(MockitoExtension.class)
 class QueryGroupServiceTest {
@@ -41,6 +42,8 @@ class QueryGroupServiceTest {
         // Given
         group = new Group("groupName", 1L, "password", null, null, null, null);
         groupMember = new GroupMember(1L, "김완숙", 1, group, false, ExpenseRole.MANAGER);
+
+        setField(group, "id", 1L);
     }
 
     @Test
@@ -52,7 +55,7 @@ class QueryGroupServiceTest {
         doNothing().when(groupValidator).checkGroupAuthor(group, 1L);
 
         // When
-        GroupDetailResponse response = queryGroupService.findOne(1L, 1L);
+        GroupDetailResponse response = queryGroupService.findOne(group.getId(), 1L);
 
         // Then
         assertThat(response).isNotNull();
