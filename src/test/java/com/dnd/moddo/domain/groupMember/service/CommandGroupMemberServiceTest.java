@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMemberSaveRequest;
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMembersSaveRequest;
+import com.dnd.moddo.domain.groupMember.dto.request.PaymentStatusUpdateRequest;
 import com.dnd.moddo.domain.groupMember.dto.response.GroupMemberResponse;
 import com.dnd.moddo.domain.groupMember.dto.response.GroupMembersResponse;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
@@ -77,11 +78,32 @@ public class CommandGroupMemberServiceTest {
 		when(groupMemberUpdater.addToGroup(eq(groupId), any(GroupMemberSaveRequest.class))).thenReturn(expectedMember);
 
 		//when
-		GroupMemberResponse result = commandGroupMemberService.addGroupMember(groupId, request);
+		GroupMemberResponse response = commandGroupMemberService.addGroupMember(groupId, request);
 
 		//then
-		assertThat(result).isNotNull();
-		assertThat(result.name()).isEqualTo("김반숙");
+		assertThat(response).isNotNull();
+		assertThat(response.name()).isEqualTo("김반숙");
 		verify(groupMemberUpdater, times(1)).addToGroup(eq(groupId), any(GroupMemberSaveRequest.class));
+	}
+
+	@DisplayName("참여자 입금 내역을 업데이트 할 수 있다.")
+	@Test
+	void updatePaymentStatus_Success() {
+		//given
+		GroupMember expectedGroupMember = new GroupMember("김반숙", mockGroup, true, ExpenseRole.PARTICIPANT);
+		PaymentStatusUpdateRequest request = new PaymentStatusUpdateRequest(true);
+		when(groupMemberUpdater.updatePaymentStatus(any(), eq(request))).thenReturn(expectedGroupMember);
+
+		//then
+		GroupMemberResponse response = commandGroupMemberService.updatePaymentStatus(1L, request);
+
+		//then
+		assertThat(response).isNotNull();
+		assertThat(response.name()).isEqualTo("김반숙");
+		assertThat(response.role()).isEqualTo(ExpenseRole.PARTICIPANT);
+		assertThat(response.isPaid()).isTrue();
+
+		verify(groupMemberUpdater, times(1)).updatePaymentStatus(any(), eq(request));
+
 	}
 }

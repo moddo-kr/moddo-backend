@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.group.repository.GroupRepository;
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMemberSaveRequest;
+import com.dnd.moddo.domain.groupMember.dto.request.PaymentStatusUpdateRequest;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.groupMember.exception.GroupMemberDuplicateNameException;
@@ -90,5 +91,22 @@ class GroupMemberUpdaterTest {
 		assertThatThrownBy(() -> {
 			groupMemberUpdater.addToGroup(groupId, request);
 		}).hasMessage("중복된 참여자의 이름은 저장할 수 없습니다.");
+	}
+
+	@DisplayName("참여자가 유효할 때 참여자의 입금 상태를 변경할 수 있다.")
+	@Test
+	void updatePaymentStatus_Success() {
+		//given
+		GroupMember groupMember = new GroupMember("김반숙", mockGroup, ExpenseRole.PARTICIPANT);
+		PaymentStatusUpdateRequest request = new PaymentStatusUpdateRequest(true);
+
+		when(groupMemberRepository.getById(any())).thenReturn(groupMember);
+
+		//then
+		GroupMember result = groupMemberUpdater.updatePaymentStatus(1L, request);
+
+		//then
+		assertThat(result).isNotNull();
+		assertThat(result.isPaid()).isTrue();
 	}
 }
