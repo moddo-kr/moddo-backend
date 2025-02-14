@@ -57,7 +57,7 @@ class GroupReaderTest {
         when(groupMemberRepository.findByGroupId(anyLong())).thenReturn(mockMembers);
 
         // When
-        List<GroupMember> result = groupReader.findByGroup(mockGroup);
+        List<GroupMember> result = groupReader.findByGroup(mockGroup.getId());
 
         // Then
         assertThat(result).hasSize(2);

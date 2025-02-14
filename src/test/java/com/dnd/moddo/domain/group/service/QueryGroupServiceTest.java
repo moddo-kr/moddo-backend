@@ -48,7 +48,7 @@ class QueryGroupServiceTest {
     void testFindOne_Success() {
         // Given
         when(groupReader.read(anyLong())).thenReturn(group);
-        when(groupReader.findByGroup(group)).thenReturn(List.of(groupMember));
+        when(groupReader.findByGroup(group.getId())).thenReturn(List.of(groupMember));
         doNothing().when(groupValidator).checkGroupAuthor(group, 1L);
 
         // When
@@ -62,7 +62,7 @@ class QueryGroupServiceTest {
         assertThat(response.members().get(0).name()).isEqualTo(groupMember.getName());
 
         verify(groupReader, times(1)).read(1L);
-        verify(groupReader, times(1)).findByGroup(group);
+        verify(groupReader, times(1)).findByGroup(group.getId());
         verify(groupValidator, times(1)).checkGroupAuthor(group, 1L);
     }
 

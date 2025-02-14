@@ -19,7 +19,7 @@ public class GroupReader {
         return groupRepository.getById(groupId);
     }
 
-    public List<GroupMember> findByGroup(Group group) {
-        return groupMemberRepository.findByGroupId(group.getId());
+    public List<GroupMember> findByGroup(Long groupId) {
+        return groupMemberRepository.findByGroupId(groupId);
     }
 }

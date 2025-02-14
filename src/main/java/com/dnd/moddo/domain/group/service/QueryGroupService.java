@@ -19,7 +19,7 @@ public class QueryGroupService {
     public GroupDetailResponse findOne(Long groupId, Long userId) {
         Group group = groupReader.read(groupId);
         groupValidator.checkGroupAuthor(group, userId);
-        List<GroupMember> members = groupReader.findByGroup(group);
+        List<GroupMember> members = groupReader.findByGroup(groupId);
         return GroupDetailResponse.of(group, members);
     }
 }
