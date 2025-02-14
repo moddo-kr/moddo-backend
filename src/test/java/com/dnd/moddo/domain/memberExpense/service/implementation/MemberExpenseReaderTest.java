@@ -3,7 +3,6 @@ package com.dnd.moddo.domain.memberExpense.service.implementation;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.Mockito.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -15,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
@@ -30,17 +28,13 @@ class MemberExpenseReaderTest {
 	private MemberExpenseReader memberExpenseReader;
 
 	private Group mockGroup;
-	private Expense mockExpense;
 	private GroupMember mockGroupMember;
 
 	@BeforeEach
 	void setUp() {
 		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now(), LocalDateTime.now().plusMinutes(1),
 			"은행", "계좌");
-		mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
-
 		mockGroupMember = new GroupMember("박완숙", mockGroup, ExpenseRole.MANAGER);
-
 	}
 
 	@DisplayName("지출내역이 존재하면 해당 지출내역의 참여자별 지출내역을 조회에 성공한다.")
@@ -48,7 +42,7 @@ class MemberExpenseReaderTest {
 	void findAllByExpenseIdS() {
 		//given
 		Long expenseId = 1L;
-		List<MemberExpense> expectedMemberExpense = List.of(new MemberExpense(mockExpense, mockGroupMember, 15000L));
+		List<MemberExpense> expectedMemberExpense = List.of(new MemberExpense(expenseId, mockGroupMember, 15000L));
 
 		when(memberExpenseRepository.findByExpenseId(eq(expenseId))).thenReturn(expectedMemberExpense);
 

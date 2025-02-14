@@ -26,6 +26,7 @@ import com.dnd.moddo.domain.expense.service.implementation.ExpenseCreator;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseDeleter;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseUpdater;
 import com.dnd.moddo.domain.group.entity.Group;
+import com.dnd.moddo.domain.memberExpense.dto.response.MemberExpenseResponse;
 import com.dnd.moddo.domain.memberExpense.service.CommandMemberExpenseService;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,8 +56,6 @@ class CommandExpenseServiceTest {
 	void createExpense() {
 		//given
 		Long groupId = mockGroup.getId();
-
-		//when(expenseReader.findMaxOrderForGroup(eq(groupId))).thenReturn(0);
 
 		ExpenseRequest expenseRequest1 = new ExpenseRequest(20000L, "투썸플레이스", LocalDate.of(2025, 02, 03),
 			new ArrayList<>());
@@ -90,14 +89,19 @@ class CommandExpenseServiceTest {
 		ExpenseRequest expenseRequest = mock(ExpenseRequest.class);
 		ExpenseResponse expectedResponse = ExpenseResponse.of(mockExpense);
 
+		MemberExpenseResponse memberExpenseResponse1 = mock(MemberExpenseResponse.class);
+		MemberExpenseResponse memberExpenseResponse2 = mock(MemberExpenseResponse.class);
+
 		when(expenseUpdater.update(eq(expenseId), eq(expenseRequest))).thenReturn(mockExpense);
+		when(commandMemberExpenseService.update(eq(expenseId), any())).thenReturn(
+			List.of(memberExpenseResponse1, memberExpenseResponse2));
 		// when
 		ExpenseResponse response = commandExpenseService.update(expenseId, expenseRequest);
 
 		//then
 		assertThat(response).isNotNull();
-		assertThat(response).isEqualTo(expectedResponse);
-
+		assertThat(response.content()).isEqualTo("투썸플레이스");
+		assertThat(response.memberExpenses().size()).isEqualTo(2);
 		verify(expenseUpdater, times(1)).update(expenseId, expenseRequest);
 	}
 

@@ -3,7 +3,6 @@ package com.dnd.moddo.domain.memberExpense.service;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.Mockito.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -15,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
@@ -31,13 +29,11 @@ class QueryMemberExpenseServiceTest {
 	private QueryMemberExpenseService queryMemberExpenseService;
 
 	private Group mockGroup;
-	private Expense mockExpense;
 
 	@BeforeEach
 	void setUp() {
 		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now(), LocalDateTime.now().plusMinutes(1),
 			"은행", "계좌");
-		mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
 
 	}
 
@@ -50,8 +46,8 @@ class QueryMemberExpenseServiceTest {
 		GroupMember mockGroupMember2 = new GroupMember("박완숙", mockGroup, ExpenseRole.PARTICIPANT);
 
 		List<MemberExpense> expectedMemberExpense = List.of(
-			new MemberExpense(mockExpense, mockGroupMember1, 15000L),
-			new MemberExpense(mockExpense, mockGroupMember2, 5000L)
+			new MemberExpense(expenseId, mockGroupMember1, 15000L),
+			new MemberExpense(expenseId, mockGroupMember2, 5000L)
 		);
 
 		when(memberExpenseReader.findAllByExpenseId(eq(expenseId))).thenReturn(expectedMemberExpense);
