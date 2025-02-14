@@ -13,7 +13,8 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, Long> 
 
 	@Query("select gm from GroupMember gm where gm.group.id = :groupId order by "
 		+ "case when gm.role = 'MANAGER' then 1 else 2 end, "
-		+ "gm.isPaid desc, "
+		+ "case when gm.paidAt is null then 1 else 0 end, "
+		+ "gm.paidAt asc, "
 		+ "gm.name asc")
 	List<GroupMember> findByGroupId(@Param("groupId") Long groupId);
 

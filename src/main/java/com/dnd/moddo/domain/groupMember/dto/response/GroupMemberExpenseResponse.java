@@ -1,5 +1,6 @@
 package com.dnd.moddo.domain.groupMember.dto.response;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
@@ -14,6 +15,7 @@ public record GroupMemberExpenseResponse(
 	ExpenseRole role,
 	String name,
 	boolean isPaid,
+	LocalDateTime paidAt,
 	List<MemberExpenseDetailResponse> expenses
 ) {
 	public static GroupMemberExpenseResponse of(GroupMember groupMember, List<MemberExpenseDetailResponse> expenses) {
@@ -22,6 +24,7 @@ public record GroupMemberExpenseResponse(
 			.role(groupMember.getRole())
 			.name(groupMember.getName())
 			.isPaid(groupMember.isPaid())
+			.paidAt(groupMember.getPaidAt())
 			.expenses(expenses).build();
 	}
 }

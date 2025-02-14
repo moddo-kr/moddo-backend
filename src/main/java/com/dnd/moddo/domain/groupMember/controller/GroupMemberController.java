@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMemberSaveRequest;
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMembersSaveRequest;
+import com.dnd.moddo.domain.groupMember.dto.request.PaymentStatusUpdateRequest;
 import com.dnd.moddo.domain.groupMember.dto.response.GroupMemberResponse;
 import com.dnd.moddo.domain.groupMember.dto.response.GroupMembersResponse;
 import com.dnd.moddo.domain.groupMember.service.CommandGroupMemberService;
@@ -56,6 +57,15 @@ public class GroupMemberController {
 	) {
 		Long groupId = jwtService.getGroupId(groupToken);
 		GroupMemberResponse response = commandGroupMemberService.addGroupMember(groupId, request);
+		return ResponseEntity.ok(response);
+	}
+
+	@PutMapping("/{groupMemberId}/payment")
+	public ResponseEntity<GroupMemberResponse> updatePaymentStatus(
+		@RequestParam("groupToken") String groupToken,
+		@PathVariable("groupMemberId") Long groupMemberId,
+		@RequestBody PaymentStatusUpdateRequest request) {
+		GroupMemberResponse response = commandGroupMemberService.updatePaymentStatus(groupMemberId, request);
 		return ResponseEntity.ok(response);
 	}
 
