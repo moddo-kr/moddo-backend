@@ -13,6 +13,7 @@ public record GroupMemberExpenseResponse(
 	Long id,
 	ExpenseRole role,
 	String name,
+	boolean isPaid,
 	List<MemberExpenseDetailResponse> expenses
 ) {
 	public static GroupMemberExpenseResponse of(GroupMember groupMember, List<MemberExpenseDetailResponse> expenses) {
@@ -20,6 +21,7 @@ public record GroupMemberExpenseResponse(
 			.id(groupMember.getId())
 			.role(groupMember.getRole())
 			.name(groupMember.getName())
+			.isPaid(groupMember.isPaid())
 			.expenses(expenses).build();
 	}
 }

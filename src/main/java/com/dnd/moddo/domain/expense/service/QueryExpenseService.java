@@ -1,5 +1,6 @@
 package com.dnd.moddo.domain.expense.service;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -72,7 +73,10 @@ public class QueryExpenseService {
 	// 그룹 멤버들을 id별로 Map으로 매핑
 	private Map<Long, GroupMember> mapGroupMembers(List<GroupMember> groupMembers) {
 		return groupMembers.stream()
-			.collect(Collectors.toMap(GroupMember::getId, groupMember -> groupMember));
+			.collect(Collectors.toMap(GroupMember::getId, groupMember -> groupMember,
+				(existing, replacement) -> existing,
+				LinkedHashMap::new)
+			);
 	}
 
 	private GroupMemberExpenseResponse findSettlementByGroupMember(GroupMember groupMember,
