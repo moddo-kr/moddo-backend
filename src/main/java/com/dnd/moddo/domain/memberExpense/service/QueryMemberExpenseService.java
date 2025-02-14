@@ -100,4 +100,17 @@ public class QueryMemberExpenseService {
 			.filter(Objects::nonNull)
 			.toList();
 	}
+
+	public Map<Long, List<String>> getMemberNamesByExpenseIds(List<Long> expenseIds) {
+		List<MemberExpense> memberExpenses = memberExpenseReader.findAllByExpenseIds(expenseIds);
+
+		return memberExpenses.stream()
+			.collect(Collectors.groupingBy(
+				MemberExpense::getExpenseId,
+				Collectors.mapping(
+					me -> me.getGroupMember().getName(),
+					Collectors.toList()
+				)
+			));
+	}
 }

@@ -12,6 +12,9 @@ public interface MemberExpenseRepository extends JpaRepository<MemberExpense, Lo
 	//@EntityGraph(attributePaths = {"groupMember"})
 	List<MemberExpense> findByExpenseId(Long expenseId);
 
+	@Query("select me from MemberExpense me where me.expenseId in :expenseIds")
+	List<MemberExpense> findAllByExpenseIds(@Param("expenseIds") List<Long> expenseIds);
+
 	@Query("select me from MemberExpense me where me.groupMember.id in :groupMemberIds")
 	List<MemberExpense> findAllByGroupMemberIds(@Param("groupMemberIds") List<Long> groupMemberIds);
 }

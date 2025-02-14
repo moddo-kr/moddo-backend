@@ -27,4 +27,8 @@ public class MemberExpenseReader {
 			.stream()
 			.collect(Collectors.groupingBy(me -> me.getGroupMember().getId()));
 	}
+
+	public List<MemberExpense> findAllByExpenseIds(List<Long> expenseIds) {
+		return memberExpenseRepository.findAllByExpenseIds(expenseIds);
+	}
 }
