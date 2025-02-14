@@ -43,7 +43,9 @@ public class CommandExpenseService {
 
 	public ExpenseResponse update(Long expenseId, ExpenseRequest request) {
 		Expense expense = expenseUpdater.update(expenseId, request);
-		return ExpenseResponse.of(expense);
+		List<MemberExpenseResponse> memberExpenseResponses = commandMemberExpenseService.update(expenseId,
+			request.memberExpenses());
+		return ExpenseResponse.of(expense, memberExpenseResponses);
 
 	}
 
