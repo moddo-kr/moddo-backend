@@ -1,6 +1,5 @@
 package com.dnd.moddo.domain.groupMember.controller;
 
-import com.dnd.moddo.global.jwt.service.JwtService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,10 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMemberSaveRequest;
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMembersSaveRequest;
 import com.dnd.moddo.domain.groupMember.dto.response.GroupMemberResponse;
-import com.dnd.moddo.domain.groupMember.dto.response.GroupMembersExpenseResponse;
 import com.dnd.moddo.domain.groupMember.dto.response.GroupMembersResponse;
 import com.dnd.moddo.domain.groupMember.service.CommandGroupMemberService;
 import com.dnd.moddo.domain.groupMember.service.QueryGroupMemberService;
+import com.dnd.moddo.global.jwt.service.JwtService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,25 +32,17 @@ public class GroupMemberController {
 
 	@PostMapping
 	public ResponseEntity<GroupMembersResponse> saveGroupMembers(
-			@RequestParam("groupToken") String groupToken,
-			@Valid @RequestBody GroupMembersSaveRequest request
+		@RequestParam("groupToken") String groupToken,
+		@Valid @RequestBody GroupMembersSaveRequest request
 	) {
 		Long groupId = jwtService.getGroupId(groupToken);
 		GroupMembersResponse response = commandGroupMemberService.create(groupId, request);
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping("/settlement")
-	public ResponseEntity<GroupMembersExpenseResponse> getSettlement(
-		@RequestParam("groupId") Long groupId
-	) {
-		GroupMembersExpenseResponse response = queryGroupMemberService.findSettlementByGroupId(groupId);
-		return ResponseEntity.ok(response);
-	}
-
 	@GetMapping
 	public ResponseEntity<GroupMembersResponse> getGroupMembers(
-			@RequestParam("groupToken") String groupToken
+		@RequestParam("groupToken") String groupToken
 	) {
 		Long groupId = jwtService.getGroupId(groupToken);
 		GroupMembersResponse response = queryGroupMemberService.findAll(groupId);
@@ -60,8 +51,8 @@ public class GroupMemberController {
 
 	@PutMapping
 	public ResponseEntity<GroupMemberResponse> addGroupMember(
-			@RequestParam("groupToken") String groupToken,
-			@Valid @RequestBody GroupMemberSaveRequest request
+		@RequestParam("groupToken") String groupToken,
+		@Valid @RequestBody GroupMemberSaveRequest request
 	) {
 		Long groupId = jwtService.getGroupId(groupToken);
 		GroupMemberResponse response = commandGroupMemberService.addGroupMember(groupId, request);

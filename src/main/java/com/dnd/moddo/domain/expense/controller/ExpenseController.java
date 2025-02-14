@@ -1,7 +1,5 @@
 package com.dnd.moddo.domain.expense.controller;
 
-import com.dnd.moddo.global.jwt.service.JwtService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +17,8 @@ import com.dnd.moddo.domain.expense.dto.response.ExpenseResponse;
 import com.dnd.moddo.domain.expense.dto.response.ExpensesResponse;
 import com.dnd.moddo.domain.expense.service.CommandExpenseService;
 import com.dnd.moddo.domain.expense.service.QueryExpenseService;
+import com.dnd.moddo.domain.groupMember.dto.response.GroupMembersExpenseResponse;
+import com.dnd.moddo.global.jwt.service.JwtService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,8 +33,8 @@ public class ExpenseController {
 
 	@PostMapping
 	public ResponseEntity<ExpensesResponse> saveExpenses(
-			@RequestParam("groupToken") String groupToken,
-			@RequestBody ExpensesRequest request) {
+		@RequestParam("groupToken") String groupToken,
+		@RequestBody ExpensesRequest request) {
 		Long groupId = jwtService.getGroupId(groupToken);
 		ExpensesResponse response = commandExpenseService.createExpenses(groupId, request);
 		return ResponseEntity.ok(response);
@@ -66,5 +66,13 @@ public class ExpenseController {
 	public ResponseEntity<Void> deleteByExpenseId(@PathVariable("expenseId") Long expenseId) {
 		commandExpenseService.delete(expenseId);
 		return ResponseEntity.noContent().build();
+	}
+
+	@GetMapping("/settlement")
+	public ResponseEntity<GroupMembersExpenseResponse> getSettlement(
+		@RequestParam("groupId") Long groupId
+	) {
+		GroupMembersExpenseResponse response = queryExpenseService.findSettlementByGroupId(groupId);
+		return ResponseEntity.ok(response);
 	}
 }
