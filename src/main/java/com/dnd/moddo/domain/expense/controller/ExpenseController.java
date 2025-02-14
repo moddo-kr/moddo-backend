@@ -70,8 +70,9 @@ public class ExpenseController {
 
 	@GetMapping("/settlement")
 	public ResponseEntity<GroupMembersExpenseResponse> getSettlement(
-		@RequestParam("groupId") Long groupId
+		@RequestParam("groupToken") String groupToken
 	) {
+		Long groupId = jwtService.getGroupId(groupToken);
 		GroupMembersExpenseResponse response = queryExpenseService.findSettlementByGroupId(groupId);
 		return ResponseEntity.ok(response);
 	}
