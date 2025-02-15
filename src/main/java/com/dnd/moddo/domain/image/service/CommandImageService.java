@@ -33,7 +33,7 @@ public class CommandImageService {
         Image tempImage = imageRepository.findByUniqueKey(uniqueKey)
                 .orElseThrow(() -> new InvalidUniqueKeyException());
 
-        String finalImagePath = imageUpdater.moveToPermanentStorage(tempImage.getPath());
+        String finalImagePath = imageUpdater.moveToBucket(tempImage.getPath());
         imageRepository.delete(tempImage);
 
         return ImageResponse.from(finalImagePath);
