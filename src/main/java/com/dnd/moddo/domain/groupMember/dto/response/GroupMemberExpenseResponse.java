@@ -14,15 +14,18 @@ public record GroupMemberExpenseResponse(
 	Long id,
 	ExpenseRole role,
 	String name,
+	Long totalAmount,
 	boolean isPaid,
 	LocalDateTime paidAt,
 	List<MemberExpenseDetailResponse> expenses
 ) {
-	public static GroupMemberExpenseResponse of(GroupMember groupMember, List<MemberExpenseDetailResponse> expenses) {
+	public static GroupMemberExpenseResponse of(GroupMember groupMember, Long totalAmount,
+		List<MemberExpenseDetailResponse> expenses) {
 		return GroupMemberExpenseResponse.builder()
 			.id(groupMember.getId())
 			.role(groupMember.getRole())
 			.name(groupMember.getName())
+			.totalAmount(totalAmount)
 			.isPaid(groupMember.isPaid())
 			.paidAt(groupMember.getPaidAt())
 			.expenses(expenses).build();

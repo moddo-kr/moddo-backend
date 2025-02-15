@@ -1,6 +1,6 @@
 package com.dnd.moddo.domain.memberExpense.service;
 
-import static org.assertj.core.api.AssertionsForClassTypes.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -74,8 +74,8 @@ class CommandMemberExpenseServiceTest {
 		List<MemberExpenseResponse> responses = commandMemberExpenseService.create(expenseId, requests);
 
 		//then
-		assertThat(!responses.isEmpty()).isTrue();
-		assertThat(responses.size()).isEqualTo(2);
+		assertThat(responses).isNotEmpty();
+		assertThat(responses).hasSize(2);
 
 		verify(memberExpenseCreator, times(2)).create(eq(expenseId), any(GroupMember.class),
 			any(MemberExpenseRequest.class));
@@ -102,8 +102,10 @@ class CommandMemberExpenseServiceTest {
 		when(existingMemberExpense1.getGroupMember()).thenReturn(groupMember1);
 		when(existingMemberExpense2.getGroupMember()).thenReturn(groupMember2);
 
+		List<MemberExpense> exisitingMemberExpenses = List.of(existingMemberExpense1, existingMemberExpense2);
+
 		when(memberExpenseReader.findAllByExpenseId(eq(expenseId))).thenReturn(
-			List.of(existingMemberExpense1, existingMemberExpense2));
+			exisitingMemberExpenses);
 
 		doNothing().when(memberExpenseUpdater).update(existingMemberExpense1, request1);
 		doNothing().when(memberExpenseUpdater).update(existingMemberExpense2, request2);
@@ -112,8 +114,8 @@ class CommandMemberExpenseServiceTest {
 		List<MemberExpenseResponse> responses = commandMemberExpenseService.update(expenseId, requests);
 
 		//then
-		assertThat(responses.isEmpty()).isFalse();
-		assertThat(responses.size()).isEqualTo(2);
+		assertThat(responses).isNotEmpty();
+		assertThat(responses).hasSize(exisitingMemberExpenses.size());
 
 		verify(memberExpenseUpdater, times(2)).update(any(MemberExpense.class), any(MemberExpenseRequest.class));
 	}
@@ -157,8 +159,8 @@ class CommandMemberExpenseServiceTest {
 		List<MemberExpenseResponse> responses = commandMemberExpenseService.update(expenseId, requests);
 
 		//then
-		assertThat(responses.isEmpty()).isFalse();
-		assertThat(responses.size()).isEqualTo(3);
+		assertThat(responses).isNotEmpty();
+		assertThat(responses).hasSize(3);
 
 		verify(memberExpenseUpdater, times(2)).update(any(MemberExpense.class), any(MemberExpenseRequest.class));
 		verify(memberExpenseCreator, times(1)).create(eq(expenseId), any(GroupMember.class),
@@ -196,8 +198,8 @@ class CommandMemberExpenseServiceTest {
 		List<MemberExpenseResponse> responses = commandMemberExpenseService.update(expenseId, requests);
 
 		//then
-		assertThat(!responses.isEmpty()).isTrue();
-		assertThat(responses.size()).isEqualTo(1);
+		assertThat(responses).isNotEmpty();
+		assertThat(responses).hasSize(1);
 
 		verify(memberExpenseUpdater, times(1)).update(any(MemberExpense.class), any(MemberExpenseRequest.class));
 		verify(memberExpenseDeleter, times(1)).deleteByMemberExpenses(any());

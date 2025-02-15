@@ -15,8 +15,7 @@ public class ExpenseDeleter {
 
 	private final ExpenseRepository expenseRepository;
 
-	public void delete(Long expenseId) {
-		Expense expense = expenseRepository.getById(expenseId);
+	public void delete(Expense expense) {
 		expenseRepository.delete(expense);
 	}
 }
