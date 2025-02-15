@@ -5,7 +5,7 @@ import com.dnd.moddo.domain.group.exception.GroupNotFoundException;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface GroupRepository extends JpaRepository<Group, Long> {
-    default Group getById(Long id) {
-        return findById(id).orElseThrow(() -> new GroupNotFoundException(id));
+    default Group getById(Long groupId) {
+        return findById(groupId).orElseThrow(() -> new GroupNotFoundException(groupId));
     }
 }
