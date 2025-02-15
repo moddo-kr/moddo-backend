@@ -1,10 +1,11 @@
 package com.dnd.moddo.domain.memberExpense.service;
 
-import static org.assertj.core.api.AssertionsForClassTypes.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -64,8 +65,8 @@ class QueryMemberExpenseServiceTest {
 		List<MemberExpenseResponse> responses = queryMemberExpenseService.findAllByExpenseId(expenseId);
 
 		//then
-		assertThat(responses).isNotNull();
-		assertThat(responses.size()).isEqualTo(2);
+		assertThat(responses).isNotEmpty();
+		assertThat(responses).hasSize(2);
 		assertThat(responses.get(0).name()).isEqualTo("김모또");
 		assertThat(responses.get(0).amount()).isEqualTo(15000L);
 	}
@@ -110,10 +111,44 @@ class QueryMemberExpenseServiceTest {
 
 		// then
 		assertThat(response).isNotNull();
-		assertThat(response.memberExpenses().size()).isEqualTo(2);
+		assertThat(response.memberExpenses()).hasSize(2);
 
 		verify(groupMemberReader, times(1)).findAllByGroupId(groupId);
 		verify(memberExpenseReader, times(1)).findAllByGroupMemberIds(anyList());
 		verify(expenseReader, times(1)).findAllByGroupId(groupId);
+	}
+
+	@DisplayName("지출내역 id를 통해 참여자 지출내역을 찾아 지출내역 id에 해당하는 참여자 이름들을 map으로 조회할 수 있다.")
+	@Test
+	void getMemberNamesByExpenseIds_Success() {
+		//given
+		GroupMember groupMember1 = mock(GroupMember.class);
+		GroupMember groupMember2 = mock(GroupMember.class);
+
+		when(groupMember1.getName()).thenReturn("김모또");
+		when(groupMember2.getName()).thenReturn("김반숙");
+
+		List<Long> expenseIds = List.of(1L, 2L);
+
+		List<MemberExpense> mockExpenses = List.of(
+			new MemberExpense(1L, groupMember1, 1000L),
+			new MemberExpense(2L, groupMember1, 2000L),
+			new MemberExpense(1L, groupMember2, 3000L)
+		);
+
+		when(memberExpenseReader.findAllByExpenseIds(eq(expenseIds))).thenReturn(mockExpenses);
+
+		//when
+		Map<Long, List<String>> result = queryMemberExpenseService.getMemberNamesByExpenseIds(expenseIds);
+
+		//then
+		assertThat(result).isNotEmpty();
+		assertThat(result).hasSize(2);
+		assertThat(result.get(1L)).hasSize(2);
+		assertThat(result.get(1L).get(0)).isEqualTo("김모또");
+		assertThat(result.get(2L)).hasSize(1);
+		assertThat(result.get(2L).get(0)).isEqualTo("김모또");
+
+		verify(memberExpenseReader, times(1)).findAllByExpenseIds(eq(expenseIds));
 	}
 }

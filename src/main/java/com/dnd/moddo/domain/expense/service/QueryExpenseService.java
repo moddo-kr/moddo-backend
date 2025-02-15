@@ -11,7 +11,6 @@ import com.dnd.moddo.domain.expense.dto.response.ExpenseResponse;
 import com.dnd.moddo.domain.expense.dto.response.ExpensesResponse;
 import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseReader;
-import com.dnd.moddo.domain.groupMember.service.QueryGroupMemberService;
 import com.dnd.moddo.domain.memberExpense.service.QueryMemberExpenseService;
 
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 public class QueryExpenseService {
 	private final ExpenseReader expenseReader;
 	private final QueryMemberExpenseService queryMemberExpenseService;
-	private final QueryGroupMemberService queryGroupMemberService;
 
 	public ExpensesResponse findAllByGroupId(Long groupId) {
 		List<Expense> expenses = expenseReader.findAllByGroupId(groupId);
