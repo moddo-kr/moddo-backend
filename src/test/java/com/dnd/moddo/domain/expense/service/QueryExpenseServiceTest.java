@@ -88,7 +88,7 @@ class QueryExpenseServiceTest {
 		Long groupId = mockGroup.getId(), expenseId = 1L;
 		Expense mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
 
-		when(expenseReader.findOneByExpenseId(eq(expenseId))).thenReturn(mockExpense);
+		when(expenseReader.findByExpenseId(eq(expenseId))).thenReturn(mockExpense);
 
 		//when
 		ExpenseResponse response = queryExpenseService.findOneByExpenseId(expenseId);
@@ -98,7 +98,7 @@ class QueryExpenseServiceTest {
 		assertThat(response.amount()).isEqualTo(20000L);
 		assertThat(response.content()).isEqualTo("투썸플레이스");
 
-		verify(expenseReader, times(1)).findOneByExpenseId(eq(expenseId));
+		verify(expenseReader, times(1)).findByExpenseId(eq(expenseId));
 
 	}
 
@@ -108,7 +108,7 @@ class QueryExpenseServiceTest {
 		//given
 		Long expenseId = 1L;
 
-		when(expenseReader.findOneByExpenseId(eq(expenseId))).thenThrow(new ExpenseNotFoundException(expenseId));
+		when(expenseReader.findByExpenseId(eq(expenseId))).thenThrow(new ExpenseNotFoundException(expenseId));
 
 		//when & then
 		assertThatThrownBy(() -> {

@@ -61,14 +61,14 @@ class ExpenseReaderTest {
 
 	@DisplayName("지출내역이 존재하면 해당 지출내역을 조회할 수 있다.")
 	@Test
-	void findOneByExpenseIdSuccess() {
+	void findByExpenseIdSuccess() {
 		//given
 		Long expenseId = 1L;
 		Expense mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
 
 		when(expenseRepository.getById(eq(expenseId))).thenReturn(mockExpense);
 		//when
-		Expense result = expenseReader.findOneByExpenseId(expenseId);
+		Expense result = expenseReader.findByExpenseId(expenseId);
 		//then
 		assertThat(result.getContent()).isEqualTo("투썸플레이스");
 		assertThat(result.getAmount()).isEqualTo(20000);
@@ -79,14 +79,14 @@ class ExpenseReaderTest {
 
 	@DisplayName("지출내역이 존재하지 않으면 조회시 예외가 발생한다.")
 	@Test
-	void findOneByExpenseIdNotFoundExpense() {
+	void findByExpenseIdNotFoundExpense() {
 		//given
 		Long expenseId = 1L;
 
 		when(expenseRepository.getById(eq(expenseId))).thenThrow(new ExpenseNotFoundException(expenseId));
 		//when & then
 		assertThatThrownBy(() -> {
-			expenseReader.findOneByExpenseId(expenseId);
+			expenseReader.findByExpenseId(expenseId);
 		}).hasMessage("해당 지출내역을 찾을 수 없습니다. (Expense ID: " + expenseId + ")");
 	}
 }
