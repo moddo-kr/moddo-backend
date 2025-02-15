@@ -5,7 +5,6 @@ import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -78,15 +77,15 @@ class MemberExpenseReaderTest {
 		when(memberExpenseRepository.findAllByGroupMemberIds(groupMemberIds)).thenReturn(mockExpenses);
 
 		//when
-		Map<Long, List<MemberExpense>> result = memberExpenseReader.findAllByGroupMemberIds(groupMemberIds);
+		List<MemberExpense> result = memberExpenseReader.findAllByGroupMemberIds(groupMemberIds);
 
 		//then
 		assertThat(result).isNotNull();
 		assertThat(result.size()).isEqualTo(2);
 
-		assertThat(result.get(1L).get(0).getAmount()).isEqualTo(1000L);
-		assertThat(result.get(1L).get(1).getAmount()).isEqualTo(2000L);
-		assertThat(result.get(2L).get(0).getAmount()).isEqualTo(3000L);
+		assertThat(result.get(0).getAmount()).isEqualTo(1000L);
+		assertThat(result.get(1).getAmount()).isEqualTo(2000L);
+		assertThat(result.get(0).getAmount()).isEqualTo(3000L);
 
 		verify(memberExpenseRepository, times(1)).findAllByGroupMemberIds(groupMemberIds);
 	}

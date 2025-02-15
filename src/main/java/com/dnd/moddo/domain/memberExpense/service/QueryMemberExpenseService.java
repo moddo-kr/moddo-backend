@@ -42,7 +42,10 @@ public class QueryMemberExpenseService {
 		Map<Long, GroupMember> groupMemberById = convertGroupMembersToMap(groupMembers);
 
 		Map<Long, List<MemberExpense>> memberExpenses = memberExpenseReader.findAllByGroupMemberIds(
-			groupMemberById.keySet().stream().toList());
+				groupMemberById.keySet().stream().toList())
+			.stream()
+			.collect(Collectors.groupingBy(me -> me.getGroupMember().getId()));
+		;
 
 		List<Expense> expenses = expenseReader.findAllByGroupId(groupId);
 

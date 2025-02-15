@@ -5,7 +5,6 @@ import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -88,9 +87,11 @@ class QueryMemberExpenseServiceTest {
 		MemberExpense memberExpense2 = mock(MemberExpense.class);
 		when(memberExpense1.getExpenseId()).thenReturn(1L);
 		when(memberExpense1.getAmount()).thenReturn(10000L);
+		when(memberExpense1.getGroupMember()).thenReturn(groupMember1);
 
 		when(memberExpense2.getExpenseId()).thenReturn(2L);
 		when(memberExpense2.getAmount()).thenReturn(15000L);
+		when(memberExpense2.getGroupMember()).thenReturn(groupMember2);
 
 		Expense expense1 = mock(Expense.class);
 		Expense expense2 = mock(Expense.class);
@@ -100,10 +101,7 @@ class QueryMemberExpenseServiceTest {
 		when(groupMemberReader.findAllByGroupId(eq(groupId))).thenReturn(groupMembers);
 
 		when(memberExpenseReader.findAllByGroupMemberIds(List.of(1L, 2L)))
-			.thenReturn(Map.of(
-				1L, List.of(memberExpense1),
-				2L, List.of(memberExpense2)
-			));
+			.thenReturn(List.of(memberExpense1, memberExpense2));
 
 		when(expenseReader.findAllByGroupId(any())).thenReturn(List.of(expense1, expense2));
 
