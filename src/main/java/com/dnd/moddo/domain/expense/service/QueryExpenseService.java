@@ -32,7 +32,7 @@ public class QueryExpenseService {
 	}
 
 	public ExpenseResponse findOneByExpenseId(Long expenseId) {
-		Expense expense = expenseReader.findOneByExpenseId(expenseId);
+		Expense expense = expenseReader.findByExpenseId(expenseId);
 		return ExpenseResponse.of(expense);
 	}
 
