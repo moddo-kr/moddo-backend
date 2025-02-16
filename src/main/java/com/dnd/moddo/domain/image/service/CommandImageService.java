@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -20,22 +21,34 @@ public class CommandImageService {
     private final ImageUpdater imageUpdater;
     private final ImageRepository imageRepository;
 
-    public TempImageResponse uploadTempImage(MultipartFile file) {
-        String uniqueKey = UUID.randomUUID().toString();
-        String tempPath = imageCreator.createTempImage(file);
+    public TempImageResponse uploadTempImage(List<MultipartFile> files) {
+        List<String> uniqueKeys = files.stream()
+                .map(file -> {
+                    String uniqueKey = UUID.randomUUID().toString();
+                    String tempPath = imageCreator.createTempImage(file);
+                    imageRepository.save(new Image(uniqueKey, tempPath));
+                    return uniqueKey;
+                })
+                .toList();
 
-        imageRepository.save(new Image(uniqueKey, tempPath));
-
-        return TempImageResponse.from(uniqueKey);
+        return TempImageResponse.from(uniqueKeys);
     }
 
-    public ImageResponse uploadFinalImage(String uniqueKey) {
-        Image tempImage = imageRepository.findByUniqueKey(uniqueKey)
-                .orElseThrow(() -> new InvalidUniqueKeyException());
+    public ImageResponse uploadFinalImage(List<String> uniqueKeys) {
+        List<Image> tempImages = imageRepository.findByUniqueKeyIn(uniqueKeys);
 
-        String finalImagePath = imageUpdater.moveToBucket(tempImage.getPath());
-        imageRepository.delete(tempImage);
+        if (tempImages.size() != uniqueKeys.size()) {
+            throw new InvalidUniqueKeyException();
+        }
 
-        return ImageResponse.from(finalImagePath);
+        List<String> finalImagePaths = tempImages.stream()
+                .map(tempImage -> {
+                    String finalPath = imageUpdater.moveToBucket(tempImage.getPath());
+                    imageRepository.delete(tempImage);
+                    return finalPath;
+                })
+                .toList();
+
+        return ImageResponse.from(finalImagePaths);
     }
 }

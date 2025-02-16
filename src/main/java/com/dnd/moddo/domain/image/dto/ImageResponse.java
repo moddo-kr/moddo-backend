@@ -1,9 +1,11 @@
 package com.dnd.moddo.domain.image.dto;
 
+import java.util.List;
+
 public record ImageResponse(
-        String path
+        List<String> paths
 ) {
-    public static ImageResponse from(String path) {
-        return new ImageResponse(path);
+    public static ImageResponse from(List<String> paths) {
+        return new ImageResponse(paths);
     }
 }
