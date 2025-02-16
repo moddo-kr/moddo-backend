@@ -29,7 +29,7 @@ public class CommandImageService {
         return TempImageResponse.from(uniqueKey);
     }
 
-    public ImageResponse finalizeImage(String uniqueKey) {
+    public ImageResponse uploadFinalImage(String uniqueKey) {
         Image tempImage = imageRepository.findByUniqueKey(uniqueKey)
                 .orElseThrow(() -> new InvalidUniqueKeyException());
 

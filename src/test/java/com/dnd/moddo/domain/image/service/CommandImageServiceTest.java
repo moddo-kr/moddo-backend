@@ -46,7 +46,7 @@ class CommandImageServiceTest {
         when(imageUpdater.moveToBucket(tempPath)).thenReturn(finalPath);
 
         // when
-        ImageResponse response = commandImageService.finalizeImage(uniqueKey);
+        ImageResponse response = commandImageService.uploadFinalImage(uniqueKey);
 
         // then
         assertThat(response.path()).isEqualTo(finalPath);
@@ -64,7 +64,7 @@ class CommandImageServiceTest {
 
         // when & then
         try {
-            commandImageService.finalizeImage(uniqueKey);
+            commandImageService.uploadFinalImage(uniqueKey);
         } catch (InvalidUniqueKeyException e) {
             assertThat(e).isInstanceOf(InvalidUniqueKeyException.class);
         }

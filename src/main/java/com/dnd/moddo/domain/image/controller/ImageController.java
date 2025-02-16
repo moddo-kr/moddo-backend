@@ -22,7 +22,7 @@ public class ImageController {
 
     @PostMapping("/update")
     public ResponseEntity<ImageResponse> updateImage(@RequestParam("uniqueKey") String uniqueKey) {
-        ImageResponse finalImagePath = commandImageService.finalizeImage(uniqueKey);
+        ImageResponse finalImagePath = commandImageService.uploadFinalImage(uniqueKey);
         return ResponseEntity.ok(finalImagePath);
     }
 }
