@@ -8,14 +8,10 @@ import jakarta.validation.constraints.NotBlank;
 
 public record GroupMemberSaveRequest(
 	@NotBlank(message = "참여자 이름으로 공백은 입력할 수 없습니다.")
-	String name,
-	String role
+	String name
+
 ) {
 	public GroupMember toEntity(Group group, ExpenseRole role) {
-		boolean isPaid = false;
-		if (ExpenseRole.MANAGER.equals(role)) {
-			isPaid = true;
-		}
-		return new GroupMember(name(), group, isPaid, role);
+		return new GroupMember(name(), group, role);
 	}
 }

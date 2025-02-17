@@ -20,6 +20,7 @@ import com.dnd.moddo.domain.groupMember.service.CommandGroupMemberService;
 import com.dnd.moddo.domain.groupMember.service.QueryGroupMemberService;
 import com.dnd.moddo.global.jwt.service.JwtService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -33,11 +34,13 @@ public class GroupMemberController {
 
 	@PostMapping
 	public ResponseEntity<GroupMembersResponse> saveGroupMembers(
+		HttpServletRequest httpRequest,
 		@RequestParam("groupToken") String groupToken,
 		@Valid @RequestBody GroupMembersSaveRequest request
 	) {
+		Long userId = jwtService.getUserId(httpRequest);
 		Long groupId = jwtService.getGroupId(groupToken);
-		GroupMembersResponse response = commandGroupMemberService.create(groupId, request);
+		GroupMembersResponse response = commandGroupMemberService.create(groupId, userId, request);
 		return ResponseEntity.ok(response);
 	}
 
