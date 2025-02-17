@@ -111,7 +111,13 @@ public class QueryMemberExpenseService {
 			.collect(Collectors.groupingBy(
 				MemberExpense::getExpenseId,
 				Collectors.mapping(
-					me -> me.getGroupMember().getName(),
+					me -> {
+						String name = me.getGroupMember().getName();
+						if (me.getGroupMember().isManager()) {
+							return name + "(총무)";
+						}
+						return name;
+					},
 					Collectors.toList()
 				)
 			));
