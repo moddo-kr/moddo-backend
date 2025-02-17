@@ -128,6 +128,9 @@ class QueryMemberExpenseServiceTest {
 		when(groupMember1.getName()).thenReturn("김모또");
 		when(groupMember2.getName()).thenReturn("김반숙");
 
+		when(groupMember1.isManager()).thenReturn(true);
+		when(groupMember2.isManager()).thenReturn(false);
+
 		List<Long> expenseIds = List.of(1L, 2L);
 
 		List<MemberExpense> mockExpenses = List.of(
@@ -145,9 +148,9 @@ class QueryMemberExpenseServiceTest {
 		assertThat(result).isNotEmpty();
 		assertThat(result).hasSize(2);
 		assertThat(result.get(1L)).hasSize(2);
-		assertThat(result.get(1L).get(0)).isEqualTo("김모또");
+		assertThat(result.get(1L).get(0)).endsWith("(총무)");
+		assertThat(result.get(1L).get(1)).isEqualTo("김반숙");
 		assertThat(result.get(2L)).hasSize(1);
-		assertThat(result.get(2L).get(0)).isEqualTo("김모또");
 
 		verify(memberExpenseReader, times(1)).findAllByExpenseIds(eq(expenseIds));
 	}
