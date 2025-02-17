@@ -8,6 +8,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.dnd.moddo.domain.expense.dto.request.ExpenseImageRequest;
+import com.dnd.moddo.domain.group.service.implementation.GroupReader;
+import com.dnd.moddo.domain.group.service.implementation.GroupValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,6 +41,10 @@ class CommandExpenseServiceTest {
 	private ExpenseUpdater expenseUpdater;
 	@Mock
 	private ExpenseDeleter expenseDeleter;
+	@Mock
+	private GroupReader groupReader;
+	@Mock
+	private GroupValidator groupValidator;
 	@Mock
 	private CommandMemberExpenseService commandMemberExpenseService;
 	@InjectMocks
@@ -145,4 +152,26 @@ class CommandExpenseServiceTest {
 		}).hasMessage("해당 지출내역을 찾을 수 없습니다. (Expense ID: " + expenseId + ")");
 
 	}
+
+	@DisplayName("지출 내역의 이미지 URL을 업데이트할 수 있다.")
+	@Test
+	void updateImgUrlSuccess() {
+		// given
+		Long userId = mockGroup.getWriter(), groupId = mockGroup.getId(), expenseId = 1L;
+		ExpenseImageRequest request = mock(ExpenseImageRequest.class);
+		Group mockGroup = mock(Group.class);
+
+		when(groupReader.read(groupId)).thenReturn(mockGroup);
+		doNothing().when(groupValidator).checkGroupAuthor(mockGroup, userId);
+
+		// when
+		commandExpenseService.updateImgUrl(userId, groupId, expenseId, request);
+
+		// then
+		verify(groupReader, times(1)).read(groupId);
+		verify(groupValidator, times(1)).checkGroupAuthor(mockGroup, userId);
+		verify(expenseUpdater, times(1)).updateImgUrl(expenseId, request);
+	}
+
+
 }

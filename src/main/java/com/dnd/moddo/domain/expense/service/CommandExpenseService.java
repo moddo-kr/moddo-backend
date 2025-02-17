@@ -2,6 +2,10 @@ package com.dnd.moddo.domain.expense.service;
 
 import java.util.List;
 
+import com.dnd.moddo.domain.expense.dto.request.ExpenseImageRequest;
+import com.dnd.moddo.domain.group.entity.Group;
+import com.dnd.moddo.domain.group.service.implementation.GroupReader;
+import com.dnd.moddo.domain.group.service.implementation.GroupValidator;
 import org.springframework.stereotype.Service;
 
 import com.dnd.moddo.domain.expense.dto.request.ExpenseRequest;
@@ -24,6 +28,8 @@ public class CommandExpenseService {
 	private final ExpenseUpdater expenseUpdater;
 	private final ExpenseDeleter expenseDeleter;
 	private final CommandMemberExpenseService commandMemberExpenseService;
+	private final GroupReader groupReader;
+	private final GroupValidator groupValidator;
 
 	public ExpensesResponse createExpenses(Long groupId, ExpensesRequest request) {
 		List<ExpenseResponse> expenses = request.expenses()
@@ -48,6 +54,13 @@ public class CommandExpenseService {
 		return ExpenseResponse.of(expense, memberExpenseResponses);
 
 	}
+
+	public void updateImgUrl(Long userId, Long groupId, Long expenseId, ExpenseImageRequest request) {
+		Group group = groupReader.read(groupId);
+		groupValidator.checkGroupAuthor(group, userId);
+		expenseUpdater.updateImgUrl(expenseId, request);
+	}
+
 
 	public void delete(Long expenseId) {
 		//TODO 삭제하는 사람이 정산자인지 확인 로직 필요

@@ -1,5 +1,6 @@
 package com.dnd.moddo.domain.expense.service.implementation;
 
+import com.dnd.moddo.domain.expense.dto.request.ExpenseImageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,12 @@ public class ExpenseUpdater {
 	public Expense update(Long expenseId, ExpenseRequest request) {
 		Expense expense = expenseRepository.getById(expenseId);
 		expense.update(request.amount(), request.content(), request.date());
+		return expense;
+	}
+
+	public Expense updateImgUrl(Long expenseId, ExpenseImageRequest request) {
+		Expense expense = expenseRepository.getById(expenseId);
+		expense.updateImgUrl(request.images());
 		return expense;
 	}
 }
