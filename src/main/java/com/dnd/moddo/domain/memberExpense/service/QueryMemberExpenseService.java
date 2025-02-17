@@ -51,10 +51,8 @@ public class QueryMemberExpenseService {
 
 		List<GroupMemberExpenseResponse> responses = groupMemberById.keySet()
 			.stream()
-			.map(key -> {
-					return findMemberExpenseDetailByGroupMember(groupMemberById.get(key), memberExpenses.get(key),
-						expenses);
-				}
+			.map(
+				key -> findMemberExpenseDetailByGroupMember(groupMemberById.get(key), memberExpenses.get(key), expenses)
 			)
 			.filter(Objects::nonNull)
 			.toList();
