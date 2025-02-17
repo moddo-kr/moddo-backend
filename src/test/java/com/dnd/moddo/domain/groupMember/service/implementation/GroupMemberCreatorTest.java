@@ -22,8 +22,8 @@ import com.dnd.moddo.domain.groupMember.dto.request.GroupMembersSaveRequest;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.groupMember.exception.GroupMemberDuplicateNameException;
-import com.dnd.moddo.domain.groupMember.exception.InvalidExpenseParticipantsException;
 import com.dnd.moddo.domain.groupMember.repository.GroupMemberRepository;
+import com.dnd.moddo.domain.user.repository.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class GroupMemberCreatorTest {
@@ -33,6 +33,8 @@ public class GroupMemberCreatorTest {
 	private GroupMemberValidator groupMemberValidator;
 	@Mock
 	private GroupReader groupReader;
+	@Mock
+	private UserRepository userRepository;
 	@InjectMocks
 	private GroupMemberCreator groupMemberCreator;
 
@@ -51,10 +53,10 @@ public class GroupMemberCreatorTest {
 	@Test
 	void createSuccess() {
 		//given
-		Long groupId = mockGroup.getId();
+		Long groupId = mockGroup.getId(), userId = 1L;
 
 		when(groupReader.read(eq(groupId))).thenReturn(mockGroup);
-		doNothing().when(groupMemberValidator).validateManagerExists(any());
+
 		doNothing().when(groupMemberValidator).validateMemberNamesNotDuplicate(any());
 
 		List<GroupMember> expectedMembers = List.of(
@@ -65,7 +67,7 @@ public class GroupMemberCreatorTest {
 		when(groupMemberRepository.saveAll(anyList())).thenReturn(expectedMembers);
 
 		//when
-		List<GroupMember> savedMembers = groupMemberCreator.create(groupId, request);
+		List<GroupMember> savedMembers = groupMemberCreator.create(groupId, userId, request);
 
 		//then
 		assertThat(savedMembers).isNotNull();
@@ -80,7 +82,7 @@ public class GroupMemberCreatorTest {
 	void createDuplicatedName() {
 
 		//given
-		Long groupId = mockGroup.getId();
+		Long groupId = mockGroup.getId(), userId = 1L;
 		List<GroupMember> groupMembers = new ArrayList<>();
 
 		when(groupReader.read(eq(groupId))).thenReturn(mockGroup);
@@ -90,28 +92,8 @@ public class GroupMemberCreatorTest {
 
 		//when & then
 		assertThatThrownBy(() -> {
-			groupMemberCreator.create(groupId, request);
+			groupMemberCreator.create(groupId, userId, request);
 		}).hasMessage("중복된 참여자의 이름은 저장할 수 없습니다.");
-
-	}
-
-	@DisplayName("추가하려는 참여자중 정산담당자가 포함되어있지 않으면 예외가 발생한다.")
-	@Test
-	void createGroupMember_ThrowException_WhenNoManagerPresent() {
-
-		//given
-		Long groupId = mockGroup.getId();
-		List<GroupMember> groupMembers = new ArrayList<>();
-
-		when(groupReader.read(eq(groupId))).thenReturn(mockGroup);
-
-		doThrow(new InvalidExpenseParticipantsException()).when(groupMemberValidator)
-			.validateManagerExists(any());
-
-		//when & then
-		assertThatThrownBy(() -> {
-			groupMemberCreator.create(groupId, request);
-		}).hasMessage("총무(MANAGER)는 한 명 있어야 합니다.");
 
 	}
 }
