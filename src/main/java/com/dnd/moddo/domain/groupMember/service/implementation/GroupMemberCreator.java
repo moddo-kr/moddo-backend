@@ -33,7 +33,9 @@ public class GroupMemberCreator {
 
 		groupMemberValidator.validateMemberNamesNotDuplicate(requestNames);
 
-		List<GroupMember> newMembers = new ArrayList<>(List.of(createManager(userId, group)));
+		List<GroupMember> newMembers = new ArrayList<>();
+
+		newMembers.add(createManager(userId, group));
 		newMembers.addAll(request.toEntity(group));
 
 		return groupMemberRepository.saveAll(newMembers);
@@ -41,9 +43,9 @@ public class GroupMemberCreator {
 
 	private GroupMember createManager(Long userId, Group group) {
 		User user = userRepository.getById(userId);
-
+		String name = user.getIsMember() ? user.getName() : "김모또";
 		return GroupMember.builder()
-			.name("김모또")        //기본이름: 김모또
+			.name(name)
 			.profileId(null)     //user 프로필 가져오기
 			.group(group)
 			.isPaid(true)
