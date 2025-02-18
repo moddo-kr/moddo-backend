@@ -18,7 +18,7 @@ import com.dnd.moddo.domain.groupMember.dto.response.GroupMemberResponse;
 import com.dnd.moddo.domain.groupMember.dto.response.GroupMembersResponse;
 import com.dnd.moddo.domain.groupMember.service.CommandGroupMemberService;
 import com.dnd.moddo.domain.groupMember.service.QueryGroupMemberService;
-import com.dnd.moddo.global.common.annotation.VerifyGroupPermission;
+import com.dnd.moddo.global.common.annotation.VerifyManagerPermission;
 import com.dnd.moddo.global.jwt.service.JwtService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -54,7 +54,7 @@ public class GroupMemberController {
 		return ResponseEntity.ok(response);
 	}
 
-	@VerifyGroupPermission
+	@VerifyManagerPermission
 	@PutMapping
 	public ResponseEntity<GroupMemberResponse> addGroupMember(
 		@RequestParam("groupToken") String groupToken,
@@ -74,7 +74,7 @@ public class GroupMemberController {
 		return ResponseEntity.ok(response);
 	}
 
-	@VerifyGroupPermission
+	@VerifyManagerPermission
 	@DeleteMapping("/{groupMemberId}")
 	public ResponseEntity<Void> deleteGroupMember(
 		@PathVariable("groupMemberId") Long groupMemberId

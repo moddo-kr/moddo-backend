@@ -19,7 +19,7 @@ import com.dnd.moddo.domain.expense.dto.response.ExpenseResponse;
 import com.dnd.moddo.domain.expense.dto.response.ExpensesResponse;
 import com.dnd.moddo.domain.expense.service.CommandExpenseService;
 import com.dnd.moddo.domain.expense.service.QueryExpenseService;
-import com.dnd.moddo.global.common.annotation.VerifyGroupPermission;
+import com.dnd.moddo.global.common.annotation.VerifyManagerPermission;
 import com.dnd.moddo.global.jwt.service.JwtService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -66,7 +66,7 @@ public class ExpenseController {
 		return ResponseEntity.ok(response);
 	}
 
-	@VerifyGroupPermission
+	@VerifyManagerPermission
 	@PutMapping("/{expenseId}")
 	public ResponseEntity<ExpenseResponse> updateByExpenseId(@PathVariable("expenseId") Long expenseId,
 		@RequestBody ExpenseRequest request) {
@@ -75,7 +75,7 @@ public class ExpenseController {
 
 	}
 
-	@VerifyGroupPermission
+	@VerifyManagerPermission
 	@DeleteMapping("/{expenseId}")
 	public ResponseEntity<Void> deleteByExpenseId(@PathVariable("expenseId") Long expenseId) {
 		commandExpenseService.delete(expenseId);

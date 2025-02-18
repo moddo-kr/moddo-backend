@@ -9,7 +9,7 @@ import com.dnd.moddo.domain.auth.exception.TokenNotFoundException;
 import com.dnd.moddo.domain.auth.exception.UserPermissionException;
 import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.group.service.implementation.GroupReader;
-import com.dnd.moddo.global.common.annotation.VerifyGroupPermission;
+import com.dnd.moddo.global.common.annotation.VerifyManagerPermission;
 import com.dnd.moddo.global.jwt.service.JwtService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,8 +23,8 @@ public class GroupPermissionAspect {
 	private final HttpServletRequest request;
 	private final GroupReader groupReader;
 
-	@Before("@annotation(verifyGroupPermission)")
-	public void checkPermission(JoinPoint joinPoint, VerifyGroupPermission verifyGroupPermission) {
+	@Before("@annotation(verifyManagerPermission)")
+	public void checkPermission(JoinPoint joinPoint, VerifyManagerPermission verifyManagerPermission) {
 		//헤더에서 user token 추출
 		String token = request.getHeader("Authorization");
 		if (token == null || !token.startsWith("Bearer ")) {
