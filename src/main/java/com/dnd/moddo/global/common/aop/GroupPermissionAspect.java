@@ -5,7 +5,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
 
-import com.dnd.moddo.domain.auth.exception.NotFoundTokenException;
+import com.dnd.moddo.domain.auth.exception.TokenNotFoundException;
 import com.dnd.moddo.domain.auth.exception.UserPermissionException;
 import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.group.service.implementation.GroupReader;
@@ -28,7 +28,7 @@ public class GroupPermissionAspect {
 		//헤더에서 user token 추출
 		String token = request.getHeader("Authorization");
 		if (token == null || !token.startsWith("Bearer ")) {
-			throw new NotFoundTokenException("access token");
+			throw new TokenNotFoundException("access token");
 		}
 
 		Long userId = jwtService.getUserId(request);
@@ -37,7 +37,7 @@ public class GroupPermissionAspect {
 		String groupToken = request.getParameter("groupToken");
 
 		if (groupToken == null) {
-			throw new NotFoundTokenException("group token");
+			throw new TokenNotFoundException("group token");
 		}
 
 		Long groupId = jwtService.getGroupId(groupToken);
