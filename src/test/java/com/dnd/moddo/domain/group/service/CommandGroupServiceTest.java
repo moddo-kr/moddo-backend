@@ -107,7 +107,7 @@ class CommandGroupServiceTest {
         when(groupValidator.checkGroupPassword(request, group.getPassword())).thenReturn(expectedResponse);
 
         // When
-        GroupPasswordResponse response = commandGroupService.verifyPassword(group.getId(), 1L, request);
+        GroupPasswordResponse response = commandGroupService.isPasswordMatch(group.getId(), 1L, request);
 
         // Then
         assertThat(response).isNotNull();
@@ -133,7 +133,7 @@ class CommandGroupServiceTest {
                 .when(groupValidator).checkGroupPassword(request, storedPassword);
 
         // When & Then
-        assertThatThrownBy(() -> commandGroupService.verifyPassword(group.getId(), 1L, request))
+        assertThatThrownBy(() -> commandGroupService.isPasswordMatch(group.getId(), 1L, request))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("비밀번호가 일치하지 않습니다.");
 

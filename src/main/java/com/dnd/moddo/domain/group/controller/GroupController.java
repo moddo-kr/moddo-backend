@@ -55,14 +55,14 @@ public class GroupController {
     }
 
     @PostMapping("/password")
-    public ResponseEntity<GroupPasswordResponse> verifyPassword(
+    public ResponseEntity<GroupPasswordResponse> isPasswordMatch(
             HttpServletRequest request,
             @RequestParam("groupToken") String groupToken,
             @RequestBody GroupPasswordRequest groupPasswordRequest) {
         Long userId = jwtService.getUserId(request);
         Long groupId = jwtService.getGroupId(groupToken);
 
-        GroupPasswordResponse response = commandGroupService.verifyPassword(groupId, userId, groupPasswordRequest);
+        GroupPasswordResponse response = commandGroupService.isPasswordMatch(groupId, userId, groupPasswordRequest);
         return ResponseEntity.ok(response);
     }
 }

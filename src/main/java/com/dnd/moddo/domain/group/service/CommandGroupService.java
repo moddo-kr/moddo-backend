@@ -35,7 +35,7 @@ public class CommandGroupService {
         return GroupResponse.of(group);
     }
 
-    public GroupPasswordResponse verifyPassword(Long groupId, Long userId, GroupPasswordRequest request) {
+    public GroupPasswordResponse isPasswordMatch(Long groupId, Long userId, GroupPasswordRequest request) {
         Group group = groupReader.read(groupId);
         groupValidator.checkGroupAuthor(group, userId);
         GroupPasswordResponse response = groupValidator.checkGroupPassword(request, group.getPassword());
