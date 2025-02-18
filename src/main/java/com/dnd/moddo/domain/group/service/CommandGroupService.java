@@ -1,7 +1,9 @@
 package com.dnd.moddo.domain.group.service;
 
 import com.dnd.moddo.domain.group.dto.request.GroupAccountRequest;
+import com.dnd.moddo.domain.group.dto.request.GroupPasswordRequest;
 import com.dnd.moddo.domain.group.dto.request.GroupRequest;
+import com.dnd.moddo.domain.group.dto.response.GroupPasswordResponse;
 import com.dnd.moddo.domain.group.dto.response.GroupResponse;
 import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.group.service.implementation.GroupCreator;
@@ -31,5 +33,12 @@ public class CommandGroupService {
         groupValidator.checkGroupAuthor(group, userId);
         group = groupUpdater.updateAccount(request, group.getId());
         return GroupResponse.of(group);
+    }
+
+    public GroupPasswordResponse verifyPassword(Long groupId, Long userId, GroupPasswordRequest request) {
+        Group group = groupReader.read(groupId);
+        groupValidator.checkGroupAuthor(group, userId);
+        GroupPasswordResponse response = groupValidator.checkGroupPassword(request, group.getPassword());
+        return response;
     }
 }

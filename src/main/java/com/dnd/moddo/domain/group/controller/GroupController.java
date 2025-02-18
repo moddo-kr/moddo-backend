@@ -1,8 +1,10 @@
 package com.dnd.moddo.domain.group.controller;
 
 import com.dnd.moddo.domain.group.dto.request.GroupAccountRequest;
+import com.dnd.moddo.domain.group.dto.request.GroupPasswordRequest;
 import com.dnd.moddo.domain.group.dto.request.GroupRequest;
 import com.dnd.moddo.domain.group.dto.response.GroupDetailResponse;
+import com.dnd.moddo.domain.group.dto.response.GroupPasswordResponse;
 import com.dnd.moddo.domain.group.dto.response.GroupResponse;
 import com.dnd.moddo.domain.group.service.CommandGroupService;
 import com.dnd.moddo.domain.group.service.QueryGroupService;
@@ -49,6 +51,18 @@ public class GroupController {
         Long groupId = jwtService.getGroupId(groupToken);
 
         GroupDetailResponse response = queryGroupService.findOne(groupId, userId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/password")
+    public ResponseEntity<GroupPasswordResponse> verifyPassword(
+            HttpServletRequest request,
+            @RequestParam("groupToken") String groupToken,
+            @RequestBody GroupPasswordRequest groupPasswordRequest) {
+        Long userId = jwtService.getUserId(request);
+        Long groupId = jwtService.getGroupId(groupToken);
+
+        GroupPasswordResponse response = commandGroupService.verifyPassword(groupId, userId, groupPasswordRequest);
         return ResponseEntity.ok(response);
     }
 }
