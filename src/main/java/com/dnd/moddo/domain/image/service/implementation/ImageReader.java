@@ -25,8 +25,7 @@ public class ImageReader {
         }
 
         Character character = characters.get(new Random().nextInt(characters.size()));
-
-        return CharacterResponse.of(character.getName(), String.valueOf(rarity), getImageUrl(character.getName(), rarity), getBigImageUrl(character.getName(), rarity));
+        return CharacterResponse.of(character, s3Bucket);
     }
 
     private int getRandomRarity() {
@@ -34,13 +33,5 @@ public class ImageReader {
         if (roll < 60) return 1;
         if (roll < 90) return 2;
         return 3;
-    }
-
-    private String getImageUrl(String characterName, int rarity) {
-        return s3Bucket.getS3Url() + "character/" + characterName + "-" + rarity + ".png";
-    }
-
-    private String getBigImageUrl(String characterName, int rarity) {
-        return s3Bucket.getS3Url() + "character/" + characterName + "-" + rarity + "-big.png";
     }
 }
