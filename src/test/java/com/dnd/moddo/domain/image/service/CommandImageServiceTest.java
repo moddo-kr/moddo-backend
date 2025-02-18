@@ -15,7 +15,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,7 +34,10 @@ class CommandImageServiceTest {
     private ImageRepository imageRepository;
 
     @Mock
-    private MultipartFile multipartFile;
+    private MultipartFile multipartFile1;
+
+    @Mock
+    private MultipartFile multipartFile2;
 
     @InjectMocks
     private CommandImageService commandImageService;
@@ -45,55 +48,68 @@ class CommandImageServiceTest {
     }
 
     @Test
-    @DisplayName("임시 이미지 업로드 성공 시 uniqueKey 반환")
-    void uploadTempImage_Success() {
+    @DisplayName("여러 개의 임시 이미지 업로드 성공 시 uniqueKeys 리스트 반환")
+    void uploadTempImages_Success() {
         // given
-        String uniqueKey = UUID.randomUUID().toString();
-        String tempPath = "temp/tempImage.jpg";
+        String uniqueKey1 = UUID.randomUUID().toString();
+        String uniqueKey2 = UUID.randomUUID().toString();
+        String tempPath1 = "temp/tempImage1.jpg";
+        String tempPath2 = "temp/tempImage2.jpg";
 
-        when(imageCreator.createTempImage(multipartFile)).thenReturn(tempPath);
+        when(imageCreator.createTempImage(multipartFile1)).thenReturn(tempPath1);
+        when(imageCreator.createTempImage(multipartFile2)).thenReturn(tempPath2);
 
         // when
-        TempImageResponse response = commandImageService.uploadTempImage(multipartFile);
+        TempImageResponse response = commandImageService.uploadTempImage(List.of(multipartFile1, multipartFile2));
 
         // then
-        assertThat(response.uniqueKey()).isNotNull();
-        verify(imageCreator, times(1)).createTempImage(multipartFile);
-        verify(imageRepository, times(1)).save(any(Image.class));
+        assertThat(response.uniqueKeys()).hasSize(2);  // 두 개의 uniqueKey 확인
+        verify(imageCreator, times(1)).createTempImage(multipartFile1);
+        verify(imageCreator, times(1)).createTempImage(multipartFile2);
+        verify(imageRepository, times(2)).save(any(Image.class));
     }
 
     @Test
-    @DisplayName("이미지 최종화 성공 시 이미지 경로 반환")
-    void uploadFinalImage_Success() {
+    @DisplayName("여러 개의 임시 이미지를 최종화 성공 시 최종 이미지 경로 리스트 반환")
+    void uploadFinalImages_Success() {
         // given
-        String uniqueKey = "uniqueKey";
-        String tempPath = "temp/tempImage.jpg";
-        String finalPath = "permanent/finalImage.jpg";
-        Image tempImage = new Image(uniqueKey, tempPath);
+        String uniqueKey1 = UUID.randomUUID().toString();
+        String uniqueKey2 = UUID.randomUUID().toString();
+        String tempPath1 = "temp/tempImage1.jpg";
+        String tempPath2 = "temp/tempImage2.jpg";
+        String finalPath1 = "permanent/finalImage1.jpg";
+        String finalPath2 = "permanent/finalImage2.jpg";
+        Image tempImage1 = new Image(uniqueKey1, tempPath1);
+        Image tempImage2 = new Image(uniqueKey2, tempPath2);
 
-        when(imageRepository.findByUniqueKey(uniqueKey)).thenReturn(Optional.of(tempImage));
-        when(imageUpdater.moveToBucket(tempPath)).thenReturn(finalPath);
+        when(imageRepository.findByUniqueKeyIn(List.of(uniqueKey1, uniqueKey2)))
+                .thenReturn(List.of(tempImage1, tempImage2));
+        when(imageUpdater.moveToBucket(tempPath1)).thenReturn(finalPath1);
+        when(imageUpdater.moveToBucket(tempPath2)).thenReturn(finalPath2);
 
         // when
-        ImageResponse response = commandImageService.uploadFinalImage(uniqueKey);
+        ImageResponse response = commandImageService.uploadFinalImage(List.of(uniqueKey1, uniqueKey2));
 
         // then
-        assertThat(response.path()).isEqualTo(finalPath);
-        verify(imageRepository, times(1)).delete(tempImage);
+        assertThat(response.paths()).hasSize(2);
+        assertThat(response.paths()).containsExactlyInAnyOrder(finalPath1, finalPath2);
+        verify(imageRepository, times(2)).delete(any(Image.class));
     }
 
     @Test
-    @DisplayName("잘못된 uniqueKey로 이미지 최종화 시 InvalidUniqueKeyException 발생")
-    void finalizeImage_InvalidKey() {
+    @DisplayName("잘못된 uniqueKey로 여러 개의 이미지 최종화 시 InvalidUniqueKeyException 발생")
+    void finalizeImages_InvalidKey() {
         // given
-        String uniqueKey = "invalidKey";
+        String invalidKey1 = "invalidKey1";
+        String invalidKey2 = "invalidKey2";
 
-        when(imageRepository.findByUniqueKey(uniqueKey)).thenReturn(Optional.empty());
+        when(imageRepository.findByUniqueKeyIn(List.of(invalidKey1, invalidKey2)))
+                .thenReturn(List.of());
 
         // when & then
-        assertThrows(InvalidUniqueKeyException.class, () -> commandImageService.uploadFinalImage(uniqueKey));
+        assertThrows(InvalidUniqueKeyException.class, () -> commandImageService.uploadFinalImage(List.of(invalidKey1, invalidKey2)));
 
-        verify(imageRepository, times(1)).findByUniqueKey(uniqueKey);
+        verify(imageRepository, times(1)).findByUniqueKeyIn(List.of(invalidKey1, invalidKey2));
         verifyNoMoreInteractions(imageUpdater, imageRepository);
     }
 }

@@ -1,5 +1,7 @@
 package com.dnd.moddo.domain.expense.controller;
 
+import com.dnd.moddo.domain.expense.dto.request.ExpenseImageRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -65,7 +67,7 @@ public class ExpenseController {
 
 	@PutMapping("/{expenseId}")
 	public ResponseEntity<ExpenseResponse> updateByExpenseId(@PathVariable("expenseId") Long expenseId,
-		@RequestBody ExpenseRequest request) {
+															 @RequestBody ExpenseRequest request) {
 		ExpenseResponse response = commandExpenseService.update(expenseId, request);
 		return ResponseEntity.ok(response);
 
@@ -77,4 +79,13 @@ public class ExpenseController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@PutMapping("/img/{expenseId}")
+	public void updateImgUrl(HttpServletRequest request,
+							 @RequestParam("groupToken") String groupToken,
+							 @PathVariable("expenseId") Long expenseId,
+							 @RequestBody ExpenseImageRequest expenseImageRequest) {
+		Long userId = jwtService.getUserId(request);
+		Long groupId = jwtService.getGroupId(groupToken);
+		commandExpenseService.updateImgUrl(userId, groupId, expenseId, expenseImageRequest);
+	}
 }

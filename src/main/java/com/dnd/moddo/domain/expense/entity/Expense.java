@@ -3,17 +3,13 @@ package com.dnd.moddo.domain.expense.entity;
 import java.time.LocalDate;
 import java.util.List;
 
+import ch.qos.logback.core.testUtil.StringListAppender;
+import com.dnd.moddo.domain.expense.dto.request.ExpenseImageRequest;
 import com.dnd.moddo.domain.group.entity.Group;
+import com.dnd.moddo.global.converter.StringListConverter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,7 +35,7 @@ public class Expense {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
 	private LocalDate date;
 
-	//TODO List 직렬화 @Convert 추가하기
+	@Convert(converter = StringListConverter.class)
 	private List<String> images;
 
 	public Expense(Group group, Long amount, String content, LocalDate date) {
@@ -59,5 +55,9 @@ public class Expense {
 		this.amount = amount;
 		this.content = content;
 		this.date = date;
+	}
+
+	public void updateImgUrl(List<String> images) {
+		this.images = images;
 	}
 }

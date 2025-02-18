@@ -4,7 +4,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
+import com.dnd.moddo.domain.expense.dto.request.ExpenseImageRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,6 +45,26 @@ class ExpenseUpdaterTest {
 
 		//then
 		verify(oldExpense, times(1)).update(any(), any(), any());
+	}
+
+	@DisplayName("지출내역이 존재하면 이미지 URL 목록을 업데이트할 수 있다.")
+	@Test
+	void updateImgUrlSuccess() {
+		//given
+		Long expenseId = 1L;
+		Expense oldExpense = mock(Expense.class);
+		List<String> newImages = List.of("image1.jpg", "image2.jpg", "image3.jpg");
+
+		when(expenseRepository.getById(eq(expenseId))).thenReturn(oldExpense);
+
+		ExpenseImageRequest request = mock(ExpenseImageRequest.class);
+		when(request.images()).thenReturn(newImages);
+
+		//when
+		Expense updatedExpense = expenseUpdater.updateImgUrl(expenseId, request);
+
+		//then
+		verify(oldExpense, times(1)).updateImgUrl(eq(newImages));
 	}
 
 	@DisplayName("지출내역이 존재하지 않으면 해당 지출내역을 수정하려할 때 예외가 발생한다.")

@@ -1,9 +1,11 @@
 package com.dnd.moddo.domain.image.dto;
 
+import java.util.List;
+
 public record TempImageResponse(
-        String uniqueKey
+        List<String> uniqueKeys
 ) {
-    public static TempImageResponse from(String uniqueKey) {
-        return new TempImageResponse(uniqueKey);
+    public static TempImageResponse from(List<String> uniqueKeys) {
+        return new TempImageResponse(uniqueKeys);
     }
 }
