@@ -1,6 +1,8 @@
 package com.dnd.moddo.domain.group.service;
 
+import com.dnd.moddo.domain.group.dto.request.GroupPasswordRequest;
 import com.dnd.moddo.domain.group.dto.response.GroupDetailResponse;
+import com.dnd.moddo.domain.group.dto.response.GroupPasswordResponse;
 import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.group.service.implementation.GroupReader;
 import com.dnd.moddo.domain.group.service.implementation.GroupValidator;

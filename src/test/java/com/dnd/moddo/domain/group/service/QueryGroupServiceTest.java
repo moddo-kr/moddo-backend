@@ -7,6 +7,8 @@ import static org.springframework.test.util.ReflectionTestUtils.*;
 
 import java.util.List;
 
+import com.dnd.moddo.domain.group.dto.request.GroupPasswordRequest;
+import com.dnd.moddo.domain.group.dto.response.GroupPasswordResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -48,7 +50,7 @@ class QueryGroupServiceTest {
 
 	@Test
 	@DisplayName("그룹 상세 정보를 정상적으로 조회할 수 있다.")
-	void testFindOne_Success() {
+	void FindOne_Success() {
 		// Given
 		when(groupReader.read(anyLong())).thenReturn(group);
 		when(groupReader.findByGroup(group.getId())).thenReturn(List.of(groupMember));
@@ -71,7 +73,7 @@ class QueryGroupServiceTest {
 
 	@Test
 	@DisplayName("그룹 작성자가 아닐 경우 예외가 발생한다.")
-	void testFindOne_Failure_WhenNotGroupAuthor() {
+	void FindOne_Failure_WhenNotGroupAuthor() {
 		// Given
 		when(groupReader.read(anyLong())).thenReturn(group);
 		doThrow(new RuntimeException("Not an author")).when(groupValidator).checkGroupAuthor(group, 2L);
@@ -87,7 +89,7 @@ class QueryGroupServiceTest {
 
 	@Test
 	@DisplayName("그룹을 찾을 수 없을 경우 예외가 발생한다.")
-	void testFindOne_Failure_WhenGroupNotFound() {
+	void FindOne_Failure_WhenGroupNotFound() {
 		// Given
 		when(groupReader.read(anyLong())).thenThrow(new RuntimeException("Group not found"));
 
