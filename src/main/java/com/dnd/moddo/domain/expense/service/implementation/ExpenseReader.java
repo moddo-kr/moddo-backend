@@ -20,7 +20,7 @@ public class ExpenseReader {
 		return expenseRepository.findByGroupIdOrderByDateAsc(groupId);
 	}
 
-	public Expense findOneByExpenseId(Long expenseId) {
+	public Expense findByExpenseId(Long expenseId) {
 		return expenseRepository.getById(expenseId);
 	}
 

@@ -1,6 +1,6 @@
 package com.dnd.moddo.domain.memberExpense.service;
 
-import static org.assertj.core.api.AssertionsForClassTypes.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
@@ -65,8 +65,8 @@ class QueryMemberExpenseServiceTest {
 		List<MemberExpenseResponse> responses = queryMemberExpenseService.findAllByExpenseId(expenseId);
 
 		//then
-		assertThat(responses).isNotNull();
-		assertThat(responses.size()).isEqualTo(2);
+		assertThat(responses).isNotEmpty();
+		assertThat(responses).hasSize(2);
 		assertThat(responses.get(0).name()).isEqualTo("김모또");
 		assertThat(responses.get(0).amount()).isEqualTo(15000L);
 	}
@@ -88,9 +88,11 @@ class QueryMemberExpenseServiceTest {
 		MemberExpense memberExpense2 = mock(MemberExpense.class);
 		when(memberExpense1.getExpenseId()).thenReturn(1L);
 		when(memberExpense1.getAmount()).thenReturn(10000L);
+		when(memberExpense1.getGroupMember()).thenReturn(groupMember1);
 
 		when(memberExpense2.getExpenseId()).thenReturn(2L);
 		when(memberExpense2.getAmount()).thenReturn(15000L);
+		when(memberExpense2.getGroupMember()).thenReturn(groupMember2);
 
 		Expense expense1 = mock(Expense.class);
 		Expense expense2 = mock(Expense.class);
@@ -100,10 +102,7 @@ class QueryMemberExpenseServiceTest {
 		when(groupMemberReader.findAllByGroupId(eq(groupId))).thenReturn(groupMembers);
 
 		when(memberExpenseReader.findAllByGroupMemberIds(List.of(1L, 2L)))
-			.thenReturn(Map.of(
-				1L, List.of(memberExpense1),
-				2L, List.of(memberExpense2)
-			));
+			.thenReturn(List.of(memberExpense1, memberExpense2));
 
 		when(expenseReader.findAllByGroupId(any())).thenReturn(List.of(expense1, expense2));
 
@@ -112,10 +111,47 @@ class QueryMemberExpenseServiceTest {
 
 		// then
 		assertThat(response).isNotNull();
-		assertThat(response.memberExpenses().size()).isEqualTo(2);
+		assertThat(response.memberExpenses()).hasSize(2);
 
 		verify(groupMemberReader, times(1)).findAllByGroupId(groupId);
 		verify(memberExpenseReader, times(1)).findAllByGroupMemberIds(anyList());
 		verify(expenseReader, times(1)).findAllByGroupId(groupId);
+	}
+
+	@DisplayName("지출내역 id를 통해 참여자 지출내역을 찾아 지출내역 id에 해당하는 참여자 이름들을 map으로 조회할 수 있다.")
+	@Test
+	void getMemberNamesByExpenseIds_Success() {
+		//given
+		GroupMember groupMember1 = mock(GroupMember.class);
+		GroupMember groupMember2 = mock(GroupMember.class);
+
+		when(groupMember1.getName()).thenReturn("김모또");
+		when(groupMember2.getName()).thenReturn("김반숙");
+
+		when(groupMember1.isManager()).thenReturn(true);
+		when(groupMember2.isManager()).thenReturn(false);
+
+		List<Long> expenseIds = List.of(1L, 2L);
+
+		List<MemberExpense> mockExpenses = List.of(
+			new MemberExpense(1L, groupMember1, 1000L),
+			new MemberExpense(2L, groupMember1, 2000L),
+			new MemberExpense(1L, groupMember2, 3000L)
+		);
+
+		when(memberExpenseReader.findAllByExpenseIds(eq(expenseIds))).thenReturn(mockExpenses);
+
+		//when
+		Map<Long, List<String>> result = queryMemberExpenseService.getMemberNamesByExpenseIds(expenseIds);
+
+		//then
+		assertThat(result).isNotEmpty();
+		assertThat(result).hasSize(2);
+		assertThat(result.get(1L)).hasSize(2);
+		assertThat(result.get(1L).get(0)).endsWith("(총무)");
+		assertThat(result.get(1L).get(1)).isEqualTo("김반숙");
+		assertThat(result.get(2L)).hasSize(1);
+
+		verify(memberExpenseReader, times(1)).findAllByExpenseIds(eq(expenseIds));
 	}
 }

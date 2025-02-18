@@ -7,12 +7,18 @@ import java.util.List;
 import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 
+import jakarta.validation.Valid;
+
 public record GroupMembersSaveRequest(
-	List<GroupMemberSaveRequest> members
+	@Valid List<GroupMemberSaveRequest> members
 ) {
 	public List<GroupMember> toEntity(Group group) {
 		return members.stream()
-			.map(m -> m.toEntity(group, getRoleByString(m.role())))
+			.map(m -> m.toEntity(group, PARTICIPANT))
 			.toList();
+	}
+
+	public List<String> extractNames() {
+		return members().stream().map(GroupMemberSaveRequest::name).toList();
 	}
 }

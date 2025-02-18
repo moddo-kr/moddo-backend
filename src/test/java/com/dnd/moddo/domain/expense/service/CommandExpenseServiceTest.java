@@ -1,6 +1,6 @@
 package com.dnd.moddo.domain.expense.service;
 
-import static org.assertj.core.api.AssertionsForClassTypes.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
@@ -27,6 +27,7 @@ import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.expense.exception.ExpenseNotFoundException;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseCreator;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseDeleter;
+import com.dnd.moddo.domain.expense.service.implementation.ExpenseReader;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseUpdater;
 import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.memberExpense.dto.response.MemberExpenseResponse;
@@ -35,6 +36,8 @@ import com.dnd.moddo.domain.memberExpense.service.CommandMemberExpenseService;
 @ExtendWith(MockitoExtension.class)
 class CommandExpenseServiceTest {
 
+	@Mock
+	private ExpenseReader expenseReader;
 	@Mock
 	private ExpenseCreator expenseCreator;
 	@Mock
@@ -82,7 +85,7 @@ class CommandExpenseServiceTest {
 
 		// Then
 		assertThat(response).isNotNull();
-		assertThat(response.expenses().size()).isEqualTo(2);
+		assertThat(response.expenses()).hasSize(2);
 		assertThat(response.expenses().get(0).content()).isEqualTo("투썸플레이스");
 		assertThat(response.expenses().get(0).date()).isEqualTo("2025-02-03");
 	}
@@ -133,11 +136,18 @@ class CommandExpenseServiceTest {
 	void deleteSuccess() {
 		//given
 		Long expenseId = 1L;
-		doNothing().when(expenseDeleter).delete(eq(expenseId));
+		Expense mockExpense = mock(Expense.class);
+
+		when(expenseReader.findByExpenseId(eq(expenseId))).thenReturn(mockExpense);
+		doNothing().when(commandMemberExpenseService).deleteAllByExpenseId(eq(expenseId));
+		doNothing().when(expenseDeleter).delete(eq(mockExpense));
+
 		//when
 		commandExpenseService.delete(expenseId);
+
 		//then
-		verify(expenseDeleter, times(1)).delete(eq(expenseId));
+		verify(commandMemberExpenseService, times(1)).deleteAllByExpenseId(eq(expenseId));
+		verify(expenseDeleter, times(1)).delete(eq(mockExpense));
 	}
 
 	@DisplayName("삭제하려는 지출내역이 존재하지 않는다면 예외가 발생한다.")
@@ -145,7 +155,8 @@ class CommandExpenseServiceTest {
 	void deleteNotFound() {
 		//given
 		Long expenseId = 1L;
-		doThrow(new ExpenseNotFoundException(expenseId)).when(expenseDeleter).delete(eq(expenseId));
+		doThrow(new ExpenseNotFoundException(expenseId)).when(expenseReader).findByExpenseId(eq(expenseId));
+
 		//when & then
 		assertThatThrownBy(() -> {
 			commandExpenseService.delete(expenseId);

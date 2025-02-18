@@ -1,5 +1,6 @@
 package com.dnd.moddo.domain.memberExpense.service;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,18 +42,17 @@ public class QueryMemberExpenseService {
 		Map<Long, GroupMember> groupMemberById = convertGroupMembersToMap(groupMembers);
 
 		Map<Long, List<MemberExpense>> memberExpenses = memberExpenseReader.findAllByGroupMemberIds(
-			groupMemberById.keySet().stream().toList());
+				groupMemberById.keySet().stream().toList())
+			.stream()
+			.collect(Collectors.groupingBy(me -> me.getGroupMember().getId()));
+		;
 
 		List<Expense> expenses = expenseReader.findAllByGroupId(groupId);
 
 		List<GroupMemberExpenseResponse> responses = groupMemberById.keySet()
 			.stream()
-			.map(key -> {
-					if (memberExpenses.get(key) == null)
-						return null;
-					return findMemberExpenseDetailByGroupMember(groupMemberById.get(key), memberExpenses.get(key),
-						expenses);
-				}
+			.map(
+				key -> findMemberExpenseDetailByGroupMember(groupMemberById.get(key), memberExpenses.get(key), expenses)
 			)
 			.filter(Objects::nonNull)
 			.toList();
@@ -68,20 +68,52 @@ public class QueryMemberExpenseService {
 			);
 	}
 
-	private GroupMemberExpenseResponse findMemberExpenseDetailByGroupMember(GroupMember groupMember,
+	private GroupMemberExpenseResponse findMemberExpenseDetailByGroupMember(
+		GroupMember groupMember, List<MemberExpense> memberExpenses, List<Expense> expenses) {
+
+		if (memberExpenses == null) {
+			return GroupMemberExpenseResponse.of(groupMember, 0L, new ArrayList<>());
+		}
+
+		List<MemberExpenseDetailResponse> memberExpenseDetails = mapToMemberExpenseDetails(memberExpenses, expenses);
+		Long totalAmount = calculateTotalAmount(memberExpenses);
+
+		return GroupMemberExpenseResponse.of(groupMember, totalAmount, memberExpenseDetails);
+	}
+
+	private Long calculateTotalAmount(List<MemberExpense> memberExpenses) {
+		return memberExpenses.stream()
+			.mapToLong(MemberExpense::getAmount)
+			.sum();
+	}
+
+	private List<MemberExpenseDetailResponse> mapToMemberExpenseDetails(
 		List<MemberExpense> memberExpenses, List<Expense> expenses) {
 
 		Map<Long, MemberExpense> expenseToMemberExpenseMap = memberExpenses.stream()
 			.collect(Collectors.toMap(MemberExpense::getExpenseId, me -> me));
 
-		List<MemberExpenseDetailResponse> memberExpenseDetails = expenses.stream()
+		return expenses.stream()
 			.map(expense -> {
 				MemberExpense memberExpense = expenseToMemberExpenseMap.get(expense.getId());
 				return (memberExpense != null) ? MemberExpenseDetailResponse.of(expense, memberExpense) : null;
 			})
 			.filter(Objects::nonNull)
 			.toList();
+	}
 
-		return GroupMemberExpenseResponse.of(groupMember, memberExpenseDetails);
+	public Map<Long, List<String>> getMemberNamesByExpenseIds(List<Long> expenseIds) {
+		List<MemberExpense> memberExpenses = memberExpenseReader.findAllByExpenseIds(expenseIds);
+
+		return memberExpenses.stream()
+			.collect(Collectors.groupingBy(
+				MemberExpense::getExpenseId,
+				Collectors.mapping(this::formatMemberName, Collectors.toUnmodifiableList())
+			));
+	}
+
+	private String formatMemberName(MemberExpense me) {
+		String name = me.getGroupMember().getName();
+		return me.getGroupMember().isManager() ? name + "(총무)" : name;
 	}
 }

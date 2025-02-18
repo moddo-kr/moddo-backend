@@ -47,24 +47,24 @@ public class CommandGroupMemberServiceTest {
 	@Test
 	void createSuccess() {
 		//given
-		Long groupId = mockGroup.getId();
+		Long groupId = mockGroup.getId(), userId = 1L;
 		GroupMembersSaveRequest request = new GroupMembersSaveRequest(new ArrayList<>());
 		List<GroupMember> expectedMembers = List.of(
 			new GroupMember("김모또", 1, mockGroup, ExpenseRole.MANAGER),
 			new GroupMember("김반숙", 2, mockGroup, ExpenseRole.PARTICIPANT)
 		);
 
-		when(groupMemberCreator.create(eq(groupId), eq(request))).thenReturn(expectedMembers);
+		when(groupMemberCreator.create(eq(groupId), any(), eq(request))).thenReturn(expectedMembers);
 
 		// when
-		GroupMembersResponse response = commandGroupMemberService.create(groupId, request);
+		GroupMembersResponse response = commandGroupMemberService.create(groupId, userId, request);
 
 		//then
 		assertThat(response).isNotNull();
 		assertThat(response.members().size()).isEqualTo(2);
 		assertThat(response.members().get(0).name()).isEqualTo("김모또");
 		assertThat(response.members().get(0).role()).isEqualTo(ExpenseRole.MANAGER);
-		verify(groupMemberCreator, times(1)).create(eq(groupId), eq(request));
+		verify(groupMemberCreator, times(1)).create(eq(groupId), any(), eq(request));
 	}
 
 	@DisplayName("모든 정보가 유효할때 기존 모임의 참여자 추가가 성공한다.")
