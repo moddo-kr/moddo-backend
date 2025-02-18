@@ -25,9 +25,6 @@ class ImageReaderTest {
     @Mock
     private S3Bucket s3Bucket;
 
-    @Mock
-    private Character character;
-
     @InjectMocks
     private ImageReader imageReader;
 
@@ -36,13 +33,15 @@ class ImageReaderTest {
     void getRandomCharacter() {
         // given
         int rarity = 1;
-        character = Character.LUCKY;
+        Character character = Character.LUCKY;
         List<Character> characterList = List.of(character);
 
         when(s3Bucket.getS3Url()).thenReturn("https://mock-s3-url.com/");
 
         try (MockedStatic<Character> mockedCharacter = mockStatic(Character.class)) {
             mockedCharacter.when(() -> Character.getByRarity(rarity)).thenReturn(characterList);
+
+            System.out.println("Mocked Character List: " + Character.getByRarity(rarity));
 
             // when
             CharacterResponse response = imageReader.getRandomCharacter();
@@ -55,6 +54,7 @@ class ImageReaderTest {
             assertThat(response.imageBigUrl()).contains(character.getName());
 
             verify(s3Bucket, times(2)).getS3Url();
+            mockedCharacter.verify(() -> Character.getByRarity(rarity), times(2));
         }
     }
 
@@ -67,9 +67,13 @@ class ImageReaderTest {
         try (MockedStatic<Character> mockedCharacter = mockStatic(Character.class)) {
             mockedCharacter.when(() -> Character.getByRarity(rarity)).thenReturn(List.of());
 
+            System.out.println("Mocked Empty: " + Character.getByRarity(rarity));
+
             // when & then
             assertThatThrownBy(() -> imageReader.getRandomCharacter())
                     .isInstanceOf(CharacterNotFoundException.class);
+
+            mockedCharacter.verify(() -> Character.getByRarity(rarity), times(1));
         }
     }
 }
