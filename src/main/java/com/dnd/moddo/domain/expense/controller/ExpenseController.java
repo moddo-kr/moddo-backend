@@ -1,7 +1,5 @@
 package com.dnd.moddo.domain.expense.controller;
 
-import com.dnd.moddo.domain.expense.dto.request.ExpenseImageRequest;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dnd.moddo.domain.expense.dto.request.ExpenseImageRequest;
 import com.dnd.moddo.domain.expense.dto.request.ExpenseRequest;
 import com.dnd.moddo.domain.expense.dto.request.ExpensesRequest;
 import com.dnd.moddo.domain.expense.dto.response.ExpenseDetailsResponse;
@@ -20,8 +19,10 @@ import com.dnd.moddo.domain.expense.dto.response.ExpenseResponse;
 import com.dnd.moddo.domain.expense.dto.response.ExpensesResponse;
 import com.dnd.moddo.domain.expense.service.CommandExpenseService;
 import com.dnd.moddo.domain.expense.service.QueryExpenseService;
+import com.dnd.moddo.global.common.annotation.VerifyManagerPermission;
 import com.dnd.moddo.global.jwt.service.JwtService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -65,14 +66,16 @@ public class ExpenseController {
 		return ResponseEntity.ok(response);
 	}
 
+	@VerifyManagerPermission
 	@PutMapping("/{expenseId}")
 	public ResponseEntity<ExpenseResponse> updateByExpenseId(@PathVariable("expenseId") Long expenseId,
-															 @RequestBody ExpenseRequest request) {
+		@RequestBody ExpenseRequest request) {
 		ExpenseResponse response = commandExpenseService.update(expenseId, request);
 		return ResponseEntity.ok(response);
 
 	}
 
+	@VerifyManagerPermission
 	@DeleteMapping("/{expenseId}")
 	public ResponseEntity<Void> deleteByExpenseId(@PathVariable("expenseId") Long expenseId) {
 		commandExpenseService.delete(expenseId);
@@ -81,9 +84,9 @@ public class ExpenseController {
 
 	@PutMapping("/img/{expenseId}")
 	public void updateImgUrl(HttpServletRequest request,
-							 @RequestParam("groupToken") String groupToken,
-							 @PathVariable("expenseId") Long expenseId,
-							 @RequestBody ExpenseImageRequest expenseImageRequest) {
+		@RequestParam("groupToken") String groupToken,
+		@PathVariable("expenseId") Long expenseId,
+		@RequestBody ExpenseImageRequest expenseImageRequest) {
 		Long userId = jwtService.getUserId(request);
 		Long groupId = jwtService.getGroupId(groupToken);
 		commandExpenseService.updateImgUrl(userId, groupId, expenseId, expenseImageRequest);
