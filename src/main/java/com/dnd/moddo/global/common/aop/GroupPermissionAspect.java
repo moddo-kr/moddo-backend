@@ -24,8 +24,7 @@ public class GroupPermissionAspect {
 	private final GroupReader groupReader;
 
 	@Before("@annotation(verifyGroupPermission)")
-	public void checkPermission(JoinPoint joinPoint, VerifyGroupPermission verifyGroupPermission) throws
-		IllegalAccessException {
+	public void checkPermission(JoinPoint joinPoint, VerifyGroupPermission verifyGroupPermission) {
 		//헤더에서 user token 추출
 		String token = request.getHeader("Authorization");
 		if (token == null || !token.startsWith("Bearer ")) {
