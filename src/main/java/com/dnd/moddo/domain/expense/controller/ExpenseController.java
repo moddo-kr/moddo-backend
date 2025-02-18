@@ -20,6 +20,7 @@ import com.dnd.moddo.domain.expense.service.CommandExpenseService;
 import com.dnd.moddo.domain.expense.service.QueryExpenseService;
 import com.dnd.moddo.global.jwt.service.JwtService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -34,7 +35,7 @@ public class ExpenseController {
 	@PostMapping
 	public ResponseEntity<ExpensesResponse> saveExpenses(
 		@RequestParam("groupToken") String groupToken,
-		@RequestBody ExpensesRequest request) {
+		@Valid @RequestBody ExpensesRequest request) {
 		Long groupId = jwtService.getGroupId(groupToken);
 		ExpensesResponse response = commandExpenseService.createExpenses(groupId, request);
 		return ResponseEntity.ok(response);

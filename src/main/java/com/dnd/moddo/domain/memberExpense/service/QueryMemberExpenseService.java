@@ -51,10 +51,8 @@ public class QueryMemberExpenseService {
 
 		List<GroupMemberExpenseResponse> responses = groupMemberById.keySet()
 			.stream()
-			.map(key -> {
-					return findMemberExpenseDetailByGroupMember(groupMemberById.get(key), memberExpenses.get(key),
-						expenses);
-				}
+			.map(
+				key -> findMemberExpenseDetailByGroupMember(groupMemberById.get(key), memberExpenses.get(key), expenses)
 			)
 			.filter(Objects::nonNull)
 			.toList();
@@ -110,16 +108,12 @@ public class QueryMemberExpenseService {
 		return memberExpenses.stream()
 			.collect(Collectors.groupingBy(
 				MemberExpense::getExpenseId,
-				Collectors.mapping(
-					me -> {
-						String name = me.getGroupMember().getName();
-						if (me.getGroupMember().isManager()) {
-							return name + "(총무)";
-						}
-						return name;
-					},
-					Collectors.toList()
-				)
+				Collectors.mapping(this::formatMemberName, Collectors.toUnmodifiableList())
 			));
+	}
+
+	private String formatMemberName(MemberExpense me) {
+		String name = me.getGroupMember().getName();
+		return me.getGroupMember().isManager() ? name + "(총무)" : name;
 	}
 }
