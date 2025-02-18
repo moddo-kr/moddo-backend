@@ -34,5 +34,7 @@ class GroupTest {
         assertThat(foundGroup).isPresent();
         assertThat(foundGroup.get().getName()).isEqualTo("groupName");
         assertThat(foundGroup.get().getWriter()).isEqualTo(1L);
+        assertThat(foundGroup.get().getBank()).isEqualTo("bank");
+        assertThat(foundGroup.get().getAccountNumber()).isEqualTo("1234-1234");
     }
 }

@@ -1,5 +1,7 @@
 package com.dnd.moddo.domain.group.service.implementation;
 
+import com.dnd.moddo.domain.expense.repository.ExpenseRepository;
+import com.dnd.moddo.domain.group.dto.response.GroupHeaderResponse;
 import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.group.repository.GroupRepository;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
@@ -22,6 +24,9 @@ class GroupReaderTest {
 
     @Mock
     private GroupRepository groupRepository;
+
+    @Mock
+    private ExpenseRepository expenseRepository;
 
     @Mock
     private GroupMemberRepository groupMemberRepository;
@@ -62,5 +67,32 @@ class GroupReaderTest {
         // Then
         assertThat(result).hasSize(2);
         verify(groupMemberRepository, times(1)).findByGroupId(mockGroup.getId());
+    }
+
+    @Test
+    @DisplayName("그룹 ID를 통해 그룹 헤더 정보를 정상적으로 조회할 수 있다.")
+    void findByHeader_Success() {
+        // Given
+        Long groupId = 1L;
+        Group mockGroup = mock(Group.class);
+        when(mockGroup.getName()).thenReturn("모임 이름");
+        when(mockGroup.getBank()).thenReturn("은행");
+        when(mockGroup.getAccountNumber()).thenReturn("1234-1234");
+        when(groupRepository.getById(anyLong())).thenReturn(mockGroup);
+
+        Long totalAmount = 1000L;
+        when(expenseRepository.sumAmountByGroup(any(Group.class))).thenReturn(totalAmount);
+
+        // When
+        GroupHeaderResponse result = groupReader.findByHeader(groupId);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result.groupName()).isEqualTo("모임 이름");
+        assertThat(result.totalAmount()).isEqualTo(1000L);
+        assertThat(result.bank()).isEqualTo("은행");
+        assertThat(result.accountNumber()).isEqualTo("1234-1234");
+        verify(groupRepository, times(1)).getById(groupId);
+        verify(expenseRepository, times(1)).sumAmountByGroup(mockGroup);
     }
 }

@@ -5,8 +5,10 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.util.ReflectionTestUtils.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import com.dnd.moddo.domain.group.dto.response.GroupHeaderResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -97,5 +99,25 @@ class QueryGroupServiceTest {
 			.hasMessageContaining("Group not found");
 
 		verify(groupReader, times(1)).read(1L);
+	}
+
+	@Test
+	@DisplayName("그룹 헤더를 정상적으로 조회할 수 있다.")
+	void FindByGroupHeader_Success() {
+		// Given
+		GroupHeaderResponse expectedResponse = new GroupHeaderResponse(group.getName(), 1000L, LocalDateTime.now().plusDays(1), group.getBank(), group.getAccountNumber());
+		when(groupReader.findByHeader(group.getId())).thenReturn(expectedResponse);
+
+		// When
+		GroupHeaderResponse response = queryGroupService.findByGroupHeader(group.getId());
+
+		// Then
+		assertThat(response).isNotNull();
+		assertThat(response.groupName()).isEqualTo(group.getName());
+		assertThat(response.bank()).isEqualTo(group.getBank());
+		assertThat(response.accountNumber()).isEqualTo(group.getAccountNumber());
+		assertThat(response.groupName()).isEqualTo(group.getName());
+
+		verify(groupReader, times(1)).findByHeader(group.getId());
 	}
 }
