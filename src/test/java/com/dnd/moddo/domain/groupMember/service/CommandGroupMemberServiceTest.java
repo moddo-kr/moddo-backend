@@ -40,7 +40,7 @@ public class CommandGroupMemberServiceTest {
 	@BeforeEach
 	void setUp() {
 		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now(), LocalDateTime.now().plusMinutes(1),
-			"은행", "계좌");
+			"은행", "계좌", LocalDateTime.now().plusDays(1));
 	}
 
 	@DisplayName("모든 정보가 유효할때 모임에 참여자 추가가 성공한다.")

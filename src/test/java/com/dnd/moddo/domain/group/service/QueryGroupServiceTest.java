@@ -7,8 +7,6 @@ import static org.springframework.test.util.ReflectionTestUtils.*;
 
 import java.util.List;
 
-import com.dnd.moddo.domain.group.dto.request.GroupPasswordRequest;
-import com.dnd.moddo.domain.group.dto.response.GroupPasswordResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,7 +40,7 @@ class QueryGroupServiceTest {
 	@BeforeEach
 	void setUp() {
 		// Given
-		group = new Group("groupName", 1L, "password", null, null, null, null);
+		group = new Group("groupName", 1L, "password", null, null, null, null, null);
 		groupMember = new GroupMember("김완숙", 1, group, false, ExpenseRole.MANAGER);
 
 		setField(group, "id", 1L);

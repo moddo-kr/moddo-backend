@@ -32,7 +32,7 @@ public class GroupMemberReaderTest {
 	@BeforeEach
 	void setUp() {
 		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now(), LocalDateTime.now().plusMinutes(1),
-			"은행", "계좌");
+			"은행", "계좌", LocalDateTime.now().plusDays(1));
 	}
 
 	@DisplayName("모임이 존재할때 모임의 모든 참여자를 조회에 성공한다.")

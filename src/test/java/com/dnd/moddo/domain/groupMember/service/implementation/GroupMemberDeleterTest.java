@@ -34,7 +34,7 @@ class GroupMemberDeleterTest {
 	@BeforeEach
 	void setUp() {
 		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now(), LocalDateTime.now().plusMinutes(1),
-			"은행", "계좌");
+			"은행", "계좌", LocalDateTime.now().plusDays(1));
 	}
 
 	@DisplayName("유효한 참여자 id로 삭제를 요청하면 성공적으로 삭제된다.")
