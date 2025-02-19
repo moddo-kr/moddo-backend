@@ -34,7 +34,16 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
-                .cors(Customizer.withDefaults())
+                .cors(cors -> cors
+                        .configurationSource(request -> {
+                            var corsConfig = new org.springframework.web.cors.CorsConfiguration();
+                            corsConfig.addAllowedOrigin("https://d3mflkk1qce6p3.cloudfront.net");
+                            corsConfig.addAllowedOrigin("http://localhost:3000");
+                            corsConfig.addAllowedMethod("*");
+                            corsConfig.addAllowedHeader("*");
+                            return corsConfig;
+                        })
+                )
                 .sessionManagement((sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
