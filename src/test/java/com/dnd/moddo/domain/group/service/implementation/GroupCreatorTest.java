@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 
 import com.dnd.moddo.domain.user.entity.type.Authority;
 import com.dnd.moddo.global.jwt.dto.GroupTokenResponse;
@@ -53,7 +52,7 @@ class GroupCreatorTest {
         request = new GroupRequest("groupName", "password", LocalDateTime.now().plusDays(1));
         mockUser = new User(userId, "test@example.com", "닉네임", "프로필", false, LocalDateTime.now(), LocalDateTime.now().plusDays(1), Authority.USER);
         encodedPassword = "encryptedPassword";
-        mockGroup = new Group(request.name(), userId, "password", LocalDateTime.now(), LocalDateTime.now().plusMonths(1), "groupName", encodedPassword);
+        mockGroup = new Group(request.name(), userId, "password", LocalDateTime.now(), LocalDateTime.now().plusMonths(1), "groupName", encodedPassword, LocalDateTime.now().plusDays(1));
     }
 
     @DisplayName("사용자는 모임 생성에 성공한다.")

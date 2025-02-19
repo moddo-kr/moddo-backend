@@ -1,5 +1,7 @@
 package com.dnd.moddo.domain.groupMember.entity;
 
+import java.time.LocalDateTime;
+
 import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
 
@@ -15,6 +17,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -41,19 +44,26 @@ public class GroupMember {
 	@Column(name = "is_paid", nullable = false)
 	private boolean isPaid;
 
+	@Column(name = "paid_at")
+	private LocalDateTime paidAt;
+
 	@Enumerated(EnumType.STRING)
 	private ExpenseRole role;
 
 	public GroupMember(String name, Group group, ExpenseRole role) {
-		this(null, name, null, group, false, role);
+		this(name, null, group, false, role);
+	}
+
+	public GroupMember(String name, Group group, boolean isPaid, ExpenseRole role) {
+		this(name, null, group, isPaid, role);
 	}
 
 	public GroupMember(String name, Integer profileId, Group group, ExpenseRole role) {
-		this(null, name, profileId, group, false, role);
+		this(name, profileId, group, false, role);
 	}
 
-	public GroupMember(Long id, String name, Integer profileId, Group group, boolean isPaid, ExpenseRole role) {
-		this.id = id;
+	@Builder
+	public GroupMember(String name, Integer profileId, Group group, boolean isPaid, ExpenseRole role) {
 		this.name = name;
 		this.profileId = profileId;
 		this.group = group;
@@ -63,6 +73,15 @@ public class GroupMember {
 
 	public boolean isManager() {
 		return ExpenseRole.MANAGER.equals(role);
+	}
+
+	public void updatePaymentStatus(Boolean isPaid) {
+		this.isPaid = isPaid;
+		if (Boolean.TRUE.equals(isPaid)) {
+			this.paidAt = LocalDateTime.now();
+		} else {
+			this.paidAt = null;
+		}
 	}
 }
 

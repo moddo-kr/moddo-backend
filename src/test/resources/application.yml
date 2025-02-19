@@ -23,3 +23,11 @@ jwt:
   secret-key: secretKeysecretKeysecretKeysecretKeysecretKeysecretKey
   access-expiration: 1
   refresh-expiration: 1
+
+aws:
+  s3:
+    bucket: test-bucket
+    access-key: accessKeyaccessKeyaccessKeyaccessKeyaccessKeyaccessKey
+    secret-key: secretKeysecretKeysecretKeysecretKeysecretKeysecretKey
+  region:
+    static: ap-northeast-2

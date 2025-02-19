@@ -1,16 +1,19 @@
 package com.dnd.moddo.domain.groupMember.service.implementation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.moddo.domain.group.entity.Group;
-import com.dnd.moddo.domain.group.repository.GroupRepository;
-import com.dnd.moddo.domain.groupMember.dto.request.GroupMemberSaveRequest;
+import com.dnd.moddo.domain.group.service.implementation.GroupReader;
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMembersSaveRequest;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
+import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.groupMember.repository.GroupMemberRepository;
+import com.dnd.moddo.domain.user.entity.User;
+import com.dnd.moddo.domain.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,17 +23,34 @@ import lombok.RequiredArgsConstructor;
 public class GroupMemberCreator {
 	private final GroupMemberRepository groupMemberRepository;
 	private final GroupMemberValidator groupMemberValidator;
-	private final GroupRepository groupRepository; //추후 groupReader나 다른것으로 수정할 예정
+	private final GroupReader groupReader;
+	private final UserRepository userRepository;
 
-	public List<GroupMember> create(Long groupId, GroupMembersSaveRequest request) {
-		Group group = groupRepository.getById(groupId);
+	public List<GroupMember> create(Long groupId, Long userId, GroupMembersSaveRequest request) {
+		Group group = groupReader.read(groupId);
 
-		List<String> requestNames = request.members().stream().map(GroupMemberSaveRequest::name).toList();
+		List<String> requestNames = request.extractNames();
 
-		groupMemberValidator.validateManagerExists(request.members());
 		groupMemberValidator.validateMemberNamesNotDuplicate(requestNames);
 
-		List<GroupMember> newMembers = request.toEntity(group);
+		List<GroupMember> newMembers = new ArrayList<>();
+
+		newMembers.add(createManager(userId, group));
+		newMembers.addAll(request.toEntity(group));
+
 		return groupMemberRepository.saveAll(newMembers);
+	}
+
+	private GroupMember createManager(Long userId, Group group) {
+		User user = userRepository.getById(userId);
+		String name = user.getIsMember() ? user.getName() : "김모또";
+		return GroupMember.builder()
+			.name(name)
+			.profileId(null)     //user 프로필 가져오기
+			.group(group)
+			.isPaid(true)
+			.role(ExpenseRole.MANAGER)
+			.build();
+
 	}
 }

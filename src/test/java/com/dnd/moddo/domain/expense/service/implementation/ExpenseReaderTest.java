@@ -33,7 +33,7 @@ class ExpenseReaderTest {
 	@BeforeEach
 	void setUp() {
 		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now(), LocalDateTime.now().plusMinutes(1),
-			"은행", "계좌");
+			"은행", "계좌", LocalDateTime.now().plusDays(1));
 	}
 
 	@DisplayName("모임이 존재하면 모임에 해당하는 지출내역을 모두 조회할 수 있다.")
@@ -42,11 +42,11 @@ class ExpenseReaderTest {
 		//given
 		Long groupId = mockGroup.getId();
 		List<Expense> mockExpenses = List.of(
-			new Expense(mockGroup, 20000L, "투썸플레이스", 0, LocalDate.of(2025, 02, 03)),
-			new Expense(mockGroup, 35000L, "보드게임카페", 1, LocalDate.of(2025, 02, 03))
+			new Expense(mockGroup, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03)),
+			new Expense(mockGroup, 35000L, "보드게임카페", LocalDate.of(2025, 02, 03))
 		);
 
-		when(expenseRepository.findByGroupIdOrderByOrderAsc(eq(groupId))).thenReturn(mockExpenses);
+		when(expenseRepository.findByGroupIdOrderByDateAsc(eq(groupId))).thenReturn(mockExpenses);
 
 		//when
 		List<Expense> result = expenseReader.findAllByGroupId(groupId);
@@ -56,19 +56,19 @@ class ExpenseReaderTest {
 		assertThat(result.get(0).getContent()).isEqualTo("투썸플레이스");
 
 		//then
-		verify(expenseRepository, times(1)).findByGroupIdOrderByOrderAsc(eq(groupId));
+		verify(expenseRepository, times(1)).findByGroupIdOrderByDateAsc(eq(groupId));
 	}
 
 	@DisplayName("지출내역이 존재하면 해당 지출내역을 조회할 수 있다.")
 	@Test
-	void findOneByExpenseIdSuccess() {
+	void findByExpenseIdSuccess() {
 		//given
 		Long expenseId = 1L;
-		Expense mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", 0, LocalDate.of(2025, 02, 03));
+		Expense mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
 
 		when(expenseRepository.getById(eq(expenseId))).thenReturn(mockExpense);
 		//when
-		Expense result = expenseReader.findOneByExpenseId(expenseId);
+		Expense result = expenseReader.findByExpenseId(expenseId);
 		//then
 		assertThat(result.getContent()).isEqualTo("투썸플레이스");
 		assertThat(result.getAmount()).isEqualTo(20000);
@@ -79,14 +79,14 @@ class ExpenseReaderTest {
 
 	@DisplayName("지출내역이 존재하지 않으면 조회시 예외가 발생한다.")
 	@Test
-	void findOneByExpenseIdNotFoundExpense() {
+	void findByExpenseIdNotFoundExpense() {
 		//given
 		Long expenseId = 1L;
 
 		when(expenseRepository.getById(eq(expenseId))).thenThrow(new ExpenseNotFoundException(expenseId));
 		//when & then
 		assertThatThrownBy(() -> {
-			expenseReader.findOneByExpenseId(expenseId);
+			expenseReader.findByExpenseId(expenseId);
 		}).hasMessage("해당 지출내역을 찾을 수 없습니다. (Expense ID: " + expenseId + ")");
 	}
 }

@@ -32,8 +32,10 @@ public class Group {
 
     private String accountNumber;
 
+    private LocalDateTime deadline;
+
     @Builder
-    public Group(String name, Long writer, String password, LocalDateTime createdAt, LocalDateTime expiredAt, String bank, String accountNumber) {
+    public Group(String name, Long writer, String password, LocalDateTime createdAt, LocalDateTime expiredAt, String bank, String accountNumber, LocalDateTime deadline) {
         this.name = name;
         this.writer = writer;
         this.password = password;
@@ -41,6 +43,7 @@ public class Group {
         this.expiredAt = expiredAt;
         this.bank = bank;
         this.accountNumber = accountNumber;
+        this.deadline = LocalDateTime.now().plusDays(1);
     }
 
     public void updateAccount(GroupAccountRequest request) {

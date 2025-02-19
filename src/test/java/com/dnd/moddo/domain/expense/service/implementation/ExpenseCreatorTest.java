@@ -38,7 +38,7 @@ class ExpenseCreatorTest {
 	@BeforeEach
 	void setUp() {
 		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now(), LocalDateTime.now().plusMinutes(1),
-			"은행", "계좌");
+			"은행", "계좌", LocalDateTime.now().plusDays(1));
 	}
 
 	@DisplayName("모임이 존재하면 지출내역을 생성에 성공한다.")
@@ -49,11 +49,11 @@ class ExpenseCreatorTest {
 		when(groupRepository.getById(eq(groupId))).thenReturn(mockGroup);
 		ExpenseRequest request = mock(ExpenseRequest.class);
 
-		Expense mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", 1, LocalDate.of(2025, 02, 03));
+		Expense mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
 		when(expenseRepository.save(any())).thenReturn(mockExpense);
 		doNothing().when(memberExpenseValidator).validateMembersArePartOfGroup(groupId, new ArrayList<>());
 		//when
-		Expense result = expenseCreator.create(groupId, 2, request);
+		Expense result = expenseCreator.create(groupId, request);
 
 		//then
 		assertThat(result).isNotNull();

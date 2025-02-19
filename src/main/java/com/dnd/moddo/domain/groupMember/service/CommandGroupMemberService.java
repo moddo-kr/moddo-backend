@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMemberSaveRequest;
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMembersSaveRequest;
+import com.dnd.moddo.domain.groupMember.dto.request.PaymentStatusUpdateRequest;
 import com.dnd.moddo.domain.groupMember.dto.response.GroupMemberResponse;
 import com.dnd.moddo.domain.groupMember.dto.response.GroupMembersResponse;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
@@ -22,13 +23,18 @@ public class CommandGroupMemberService {
 	private final GroupMemberUpdater groupMemberUpdater;
 	private final GroupMemberDeleter groupMemberDeleter;
 
-	public GroupMembersResponse create(Long groupId, GroupMembersSaveRequest request) {
-		List<GroupMember> members = groupMemberCreator.create(groupId, request);
+	public GroupMembersResponse create(Long groupId, Long userId, GroupMembersSaveRequest request) {
+		List<GroupMember> members = groupMemberCreator.create(groupId, userId, request);
 		return GroupMembersResponse.of(members);
 	}
 
 	public GroupMemberResponse addGroupMember(Long groupId, GroupMemberSaveRequest request) {
 		GroupMember groupMember = groupMemberUpdater.addToGroup(groupId, request);
+		return GroupMemberResponse.of(groupMember);
+	}
+
+	public GroupMemberResponse updatePaymentStatus(Long groupMemberId, PaymentStatusUpdateRequest request) {
+		GroupMember groupMember = groupMemberUpdater.updatePaymentStatus(groupMemberId, request);
 		return GroupMemberResponse.of(groupMember);
 	}
 

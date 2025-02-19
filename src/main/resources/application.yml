@@ -1,6 +1,6 @@
 spring:
   config:
-    import: classpath:config/application-jwt.yml
+    import: classpath:config/application-jwt.yml, classpath:config/application-s3.yml
   jpa:
     hibernate:
       ddl-auto: create
