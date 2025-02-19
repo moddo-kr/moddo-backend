@@ -14,6 +14,7 @@ public record GroupMemberSaveRequest(
 
 ) {
 	public GroupMember toEntity(Group group, ExpenseRole role) {
-		return new GroupMember(name(), group, role);
+		int proflieId = 0;
+		return new GroupMember(name(), proflieId, group, role);
 	}
 }

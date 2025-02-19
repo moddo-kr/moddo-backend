@@ -33,6 +33,11 @@ public class CommandGroupMemberService {
 		return GroupMemberResponse.of(groupMember);
 	}
 
+	public GroupMemberResponse addManager(Long groupId, Long userId) {
+		GroupMember groupMember = groupMemberUpdater.addManagerToGroup(userId, groupId);
+		return GroupMemberResponse.of(groupMember);
+	}
+
 	public GroupMemberResponse updatePaymentStatus(Long groupMemberId, PaymentStatusUpdateRequest request) {
 		GroupMember groupMember = groupMemberUpdater.updatePaymentStatus(groupMemberId, request);
 		return GroupMemberResponse.of(groupMember);
