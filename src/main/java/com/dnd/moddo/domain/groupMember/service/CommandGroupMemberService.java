@@ -2,6 +2,7 @@ package com.dnd.moddo.domain.groupMember.service;
 
 import org.springframework.stereotype.Service;
 
+import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMemberSaveRequest;
 import com.dnd.moddo.domain.groupMember.dto.request.PaymentStatusUpdateRequest;
 import com.dnd.moddo.domain.groupMember.dto.response.GroupMemberResponse;
@@ -19,8 +20,8 @@ public class CommandGroupMemberService {
 	private final GroupMemberUpdater groupMemberUpdater;
 	private final GroupMemberDeleter groupMemberDeleter;
 
-	public GroupMemberResponse createManager(Long groupId, Long userId) {
-		GroupMember groupMember = groupMemberCreator.createManagerForGroup(userId, groupId);
+	public GroupMemberResponse createManager(Group group, Long userId) {
+		GroupMember groupMember = groupMemberCreator.createManagerForGroup(group, userId);
 		return GroupMemberResponse.of(groupMember);
 	}
 

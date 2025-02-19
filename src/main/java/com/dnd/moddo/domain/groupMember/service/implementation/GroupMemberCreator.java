@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.moddo.domain.group.entity.Group;
-import com.dnd.moddo.domain.group.service.implementation.GroupReader;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.groupMember.repository.GroupMemberRepository;
@@ -18,12 +17,10 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class GroupMemberCreator {
 	private final GroupMemberRepository groupMemberRepository;
-	private final GroupReader groupReader;
 	private final UserRepository userRepository;
 
-	public GroupMember createManagerForGroup(Long userId, Long groupId) {
+	public GroupMember createManagerForGroup(Group group, Long userId) {
 		User user = userRepository.getById(userId);
-		Group group = groupReader.read(groupId);
 
 		String name = user.getIsMember() ? user.getName() : "김모또";
 
