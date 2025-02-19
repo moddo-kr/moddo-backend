@@ -4,7 +4,6 @@ import static org.assertj.core.api.BDDAssertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMemberSaveRequest;
-import com.dnd.moddo.domain.groupMember.dto.request.GroupMembersSaveRequest;
 import com.dnd.moddo.domain.groupMember.dto.request.PaymentStatusUpdateRequest;
 import com.dnd.moddo.domain.groupMember.dto.response.GroupMemberResponse;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
@@ -41,15 +39,14 @@ public class CommandGroupMemberServiceTest {
 			"은행", "계좌", LocalDateTime.now().plusDays(1));
 	}
 
-	@DisplayName("모든 정보가 유효할때 모임에 참여자 추가가 성공한다.")
+	@DisplayName("모든 정보가 유효할때 총무 생성에 성공한다.")
 	@Test
 	void createSuccess() {
 		//given
-		Long groupId = mockGroup.getId(), userId = 1L;
-		GroupMembersSaveRequest request = new GroupMembersSaveRequest(new ArrayList<>());
+		Long groupId = 1L, userId = 1L;
 		GroupMember expectedMembers = new GroupMember("김모또", 1, mockGroup, ExpenseRole.MANAGER);
 
-		when(groupMemberCreator.createManagerForGroup(eq(groupId), any())).thenReturn(expectedMembers);
+		when(groupMemberCreator.createManagerForGroup(eq(groupId), eq(userId))).thenReturn(expectedMembers);
 
 		// when
 		GroupMemberResponse response = commandGroupMemberService.createManager(groupId, userId);
