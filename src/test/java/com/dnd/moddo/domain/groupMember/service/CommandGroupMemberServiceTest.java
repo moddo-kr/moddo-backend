@@ -43,19 +43,19 @@ public class CommandGroupMemberServiceTest {
 	@Test
 	void createSuccess() {
 		//given
-		Long groupId = 1L, userId = 1L;
+		Long userId = 1L;
 		GroupMember expectedMembers = new GroupMember("김모또", 1, mockGroup, ExpenseRole.MANAGER);
-
-		when(groupMemberCreator.createManagerForGroup(eq(groupId), eq(userId))).thenReturn(expectedMembers);
+		Group mockGroup = mock(Group.class);
+		when(groupMemberCreator.createManagerForGroup(any(Group.class), eq(userId))).thenReturn(expectedMembers);
 
 		// when
-		GroupMemberResponse response = commandGroupMemberService.createManager(groupId, userId);
+		GroupMemberResponse response = commandGroupMemberService.createManager(mockGroup, userId);
 
 		//then
 		assertThat(response).isNotNull();
 		assertThat(response.name()).isEqualTo("김모또");
 		assertThat(response.role()).isEqualTo(ExpenseRole.MANAGER);
-		verify(groupMemberCreator, times(1)).createManagerForGroup(eq(groupId), any());
+		verify(groupMemberCreator, times(1)).createManagerForGroup(any(Group.class), any());
 	}
 
 	@DisplayName("모든 정보가 유효할때 기존 모임의 참여자 추가가 성공한다.")

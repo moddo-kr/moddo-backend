@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.group.repository.GroupRepository;
+import com.dnd.moddo.domain.group.service.implementation.GroupReader;
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMemberSaveRequest;
 import com.dnd.moddo.domain.groupMember.dto.request.PaymentStatusUpdateRequest;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
@@ -34,6 +34,8 @@ class GroupMemberUpdaterTest {
 	@Mock
 	private GroupMemberValidator groupMemberValidator;
 	@Mock
+	private GroupReader groupReader;
+	@Mock
 	private GroupRepository groupRepository;
 	@InjectMocks
 	private GroupMemberUpdater groupMemberUpdater;
@@ -41,18 +43,18 @@ class GroupMemberUpdaterTest {
 	private Group mockGroup;
 
 	@BeforeEach
-	void setUp() {
-		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now(), LocalDateTime.now().plusMinutes(1),
-			"은행", "계좌", LocalDateTime.now().plusDays(1));
+	void setup() {
+		mockGroup = mock(Group.class);
 	}
 
 	@DisplayName("추가하려는 참여자의 이름이 기존 참여자의 이름과 중복되지 않을경우 참여자 추가에 성공한다.")
 	@Test
 	void addToGroupSuccess() {
 		//given
-		Long groupId = mockGroup.getId();
+		Long groupId = 1L;
 		GroupMemberSaveRequest request = mock(GroupMemberSaveRequest.class);
-		when(groupRepository.getById(eq(groupId))).thenReturn(mockGroup);
+
+		when(groupReader.read(eq(groupId))).thenReturn(mockGroup);
 
 		List<GroupMember> mockGroupMembers = new ArrayList<>();
 		when(groupMemberReader.findAllByGroupId(eq(groupId))).thenReturn(mockGroupMembers);
@@ -77,9 +79,10 @@ class GroupMemberUpdaterTest {
 	@Test
 	void addToGroupDuplicatedName() {
 		//given
-		Long groupId = mockGroup.getId();
+		Long groupId = 1L;
 		GroupMemberSaveRequest request = mock(GroupMemberSaveRequest.class);
-		when(groupRepository.getById(eq(groupId))).thenReturn(mockGroup);
+
+		when(groupReader.read(eq(groupId))).thenReturn(mockGroup);
 
 		List<GroupMember> mockGroupMembers = new ArrayList<>();
 		when(groupMemberReader.findAllByGroupId(eq(groupId))).thenReturn(mockGroupMembers);
@@ -97,6 +100,7 @@ class GroupMemberUpdaterTest {
 	@Test
 	void updatePaymentStatus_Success() {
 		//given
+
 		GroupMember groupMember = new GroupMember("김반숙", mockGroup, ExpenseRole.PARTICIPANT);
 		PaymentStatusUpdateRequest request = new PaymentStatusUpdateRequest(true);
 

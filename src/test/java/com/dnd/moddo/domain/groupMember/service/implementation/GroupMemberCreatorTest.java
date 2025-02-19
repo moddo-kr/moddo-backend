@@ -47,8 +47,6 @@ public class GroupMemberCreatorTest {
 		Long groupId = 1L, userId = 1L;
 		Group mockGroup = mock(Group.class);
 
-		when(groupReader.read(eq(groupId))).thenReturn(mockGroup);
-
 		User mockUser = mock(User.class);
 		when(userRepository.getById(eq(userId))).thenReturn(mockUser);
 		when(mockUser.getIsMember()).thenReturn(false);
@@ -58,7 +56,7 @@ public class GroupMemberCreatorTest {
 		when(groupMemberRepository.save(any())).thenReturn(expectedMember);
 
 		//when
-		GroupMember savedMember = groupMemberCreator.createManagerForGroup(groupId, userId);
+		GroupMember savedMember = groupMemberCreator.createManagerForGroup(mockGroup, userId);
 
 		//then
 		assertThat(savedMember).isNotNull();
@@ -71,10 +69,8 @@ public class GroupMemberCreatorTest {
 	@Test
 	void create_Success_WithMember() {
 		//given
-		Long groupId = 1L, userId = 1L;
+		Long userId = 1L;
 		Group mockGroup = mock(Group.class);
-
-		when(groupReader.read(eq(groupId))).thenReturn(mockGroup);
 
 		User mockUser = mock(User.class);
 		when(userRepository.getById(eq(userId))).thenReturn(mockUser);
@@ -85,7 +81,7 @@ public class GroupMemberCreatorTest {
 		when(groupMemberRepository.save(any(GroupMember.class))).thenReturn(expectedMember);
 
 		//when
-		GroupMember savedMember = groupMemberCreator.createManagerForGroup(groupId, userId);
+		GroupMember savedMember = groupMemberCreator.createManagerForGroup(mockGroup, userId);
 
 		//then
 		assertThat(savedMember).isNotNull();
