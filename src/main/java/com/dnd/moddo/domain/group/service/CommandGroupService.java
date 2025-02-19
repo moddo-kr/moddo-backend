@@ -33,7 +33,7 @@ public class CommandGroupService {
 
 	public GroupSaveResponse createGroup(GroupRequest request, Long userId) {
 		Group group = groupCreator.createGroup(request, userId);
-		GroupMemberResponse manager = commandGroupMemberService.addManager(group.getId(), userId);
+		GroupMemberResponse manager = commandGroupMemberService.createManager(group.getId(), userId);
 		String groupToken = jwtProvider.generateGroupToken(group.getId());
 		return new GroupSaveResponse(groupToken, manager);
 	}
