@@ -4,10 +4,12 @@ import com.dnd.moddo.domain.group.dto.request.GroupAccountRequest;
 import com.dnd.moddo.domain.group.dto.request.GroupPasswordRequest;
 import com.dnd.moddo.domain.group.dto.request.GroupRequest;
 import com.dnd.moddo.domain.group.dto.response.GroupDetailResponse;
+import com.dnd.moddo.domain.group.dto.response.GroupHeaderResponse;
 import com.dnd.moddo.domain.group.dto.response.GroupPasswordResponse;
 import com.dnd.moddo.domain.group.dto.response.GroupResponse;
 import com.dnd.moddo.domain.group.service.CommandGroupService;
 import com.dnd.moddo.domain.group.service.QueryGroupService;
+import com.dnd.moddo.global.common.annotation.VerifyManagerPermission;
 import com.dnd.moddo.global.jwt.dto.GroupTokenResponse;
 import com.dnd.moddo.global.jwt.service.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -63,6 +65,16 @@ public class GroupController {
         Long groupId = jwtService.getGroupId(groupToken);
 
         GroupPasswordResponse response = commandGroupService.isPasswordMatch(groupId, userId, groupPasswordRequest);
+        return ResponseEntity.ok(response);
+    }
+
+    @VerifyManagerPermission
+    @GetMapping("/header")
+    public ResponseEntity<GroupHeaderResponse> getHeader(
+            @RequestParam("groupToken") String groupToken) {
+        Long groupId = jwtService.getGroupId(groupToken);
+
+        GroupHeaderResponse response = queryGroupService.findByGroupHeader(groupId);
         return ResponseEntity.ok(response);
     }
 }

@@ -43,7 +43,7 @@ class GroupMemberUpdaterTest {
 	@BeforeEach
 	void setUp() {
 		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now(), LocalDateTime.now().plusMinutes(1),
-			"은행", "계좌");
+			"은행", "계좌", LocalDateTime.now().plusDays(1));
 	}
 
 	@DisplayName("추가하려는 참여자의 이름이 기존 참여자의 이름과 중복되지 않을경우 참여자 추가에 성공한다.")

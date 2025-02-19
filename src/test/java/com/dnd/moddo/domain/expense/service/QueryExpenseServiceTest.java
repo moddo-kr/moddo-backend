@@ -42,7 +42,7 @@ class QueryExpenseServiceTest {
 	@BeforeEach
 	void setUp() {
 		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now(), LocalDateTime.now().plusMinutes(1),
-			"은행", "계좌");
+			"은행", "계좌", LocalDateTime.now().plusDays(1));
 	}
 
 	@DisplayName("모임이 존재하면 모임의 모든 지출내역을 조회할 수 있다.")

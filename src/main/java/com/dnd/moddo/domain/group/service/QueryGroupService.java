@@ -1,8 +1,7 @@
 package com.dnd.moddo.domain.group.service;
 
-import com.dnd.moddo.domain.group.dto.request.GroupPasswordRequest;
 import com.dnd.moddo.domain.group.dto.response.GroupDetailResponse;
-import com.dnd.moddo.domain.group.dto.response.GroupPasswordResponse;
+import com.dnd.moddo.domain.group.dto.response.GroupHeaderResponse;
 import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.group.service.implementation.GroupReader;
 import com.dnd.moddo.domain.group.service.implementation.GroupValidator;
@@ -23,5 +22,9 @@ public class QueryGroupService {
         groupValidator.checkGroupAuthor(group, userId);
         List<GroupMember> members = groupReader.findByGroup(groupId);
         return GroupDetailResponse.of(group, members);
+    }
+
+    public GroupHeaderResponse findByGroupHeader(Long groupId) {
+        return groupReader.findByHeader(groupId);
     }
 }
