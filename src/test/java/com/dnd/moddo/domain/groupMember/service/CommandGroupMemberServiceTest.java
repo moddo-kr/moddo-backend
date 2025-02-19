@@ -5,7 +5,6 @@ import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,7 +19,6 @@ import com.dnd.moddo.domain.groupMember.dto.request.GroupMemberSaveRequest;
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMembersSaveRequest;
 import com.dnd.moddo.domain.groupMember.dto.request.PaymentStatusUpdateRequest;
 import com.dnd.moddo.domain.groupMember.dto.response.GroupMemberResponse;
-import com.dnd.moddo.domain.groupMember.dto.response.GroupMembersResponse;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberCreator;
@@ -49,22 +47,18 @@ public class CommandGroupMemberServiceTest {
 		//given
 		Long groupId = mockGroup.getId(), userId = 1L;
 		GroupMembersSaveRequest request = new GroupMembersSaveRequest(new ArrayList<>());
-		List<GroupMember> expectedMembers = List.of(
-			new GroupMember("김모또", 1, mockGroup, ExpenseRole.MANAGER),
-			new GroupMember("김반숙", 2, mockGroup, ExpenseRole.PARTICIPANT)
-		);
+		GroupMember expectedMembers = new GroupMember("김모또", 1, mockGroup, ExpenseRole.MANAGER);
 
-		when(groupMemberCreator.create(eq(groupId), any(), eq(request))).thenReturn(expectedMembers);
+		when(groupMemberCreator.createManagerForGroup(eq(groupId), any())).thenReturn(expectedMembers);
 
 		// when
-		GroupMembersResponse response = commandGroupMemberService.create(groupId, userId, request);
+		GroupMemberResponse response = commandGroupMemberService.createManager(groupId, userId);
 
 		//then
 		assertThat(response).isNotNull();
-		assertThat(response.members().size()).isEqualTo(2);
-		assertThat(response.members().get(0).name()).isEqualTo("김모또");
-		assertThat(response.members().get(0).role()).isEqualTo(ExpenseRole.MANAGER);
-		verify(groupMemberCreator, times(1)).create(eq(groupId), any(), eq(request));
+		assertThat(response.name()).isEqualTo("김모또");
+		assertThat(response.role()).isEqualTo(ExpenseRole.MANAGER);
+		verify(groupMemberCreator, times(1)).createManagerForGroup(eq(groupId), any());
 	}
 
 	@DisplayName("모든 정보가 유효할때 기존 모임의 참여자 추가가 성공한다.")

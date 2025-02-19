@@ -6,7 +6,6 @@ import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,7 +20,6 @@ import com.dnd.moddo.domain.group.service.implementation.GroupReader;
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMembersSaveRequest;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
-import com.dnd.moddo.domain.groupMember.exception.GroupMemberDuplicateNameException;
 import com.dnd.moddo.domain.groupMember.repository.GroupMemberRepository;
 import com.dnd.moddo.domain.user.entity.User;
 import com.dnd.moddo.domain.user.repository.UserRepository;
@@ -50,7 +48,7 @@ public class GroupMemberCreatorTest {
 		request = new GroupMembersSaveRequest(new ArrayList<>());
 	}
 
-	@DisplayName("사용자가 비회원인 경우, 모든 이름이 중복없이 유효할 때 총무의 이름은 '김모또'로 추가되고, 다른 참여자는 정상적으로 추가된다.")
+	@DisplayName("사용자가 비회원인 경우, 모든 이름이 중복없이 유효할 때 총무의 이름은 '김모또'로 생성된다.")
 	@Test
 	void create_Success_WithGuestMember() {
 		//given
@@ -58,31 +56,25 @@ public class GroupMemberCreatorTest {
 
 		when(groupReader.read(eq(groupId))).thenReturn(mockGroup);
 
-		doNothing().when(groupMemberValidator).validateMemberNamesNotDuplicate(any());
-
 		User mockUser = mock(User.class);
 		when(userRepository.getById(eq(userId))).thenReturn(mockUser);
 		when(mockUser.getIsMember()).thenReturn(false);
 
-		List<GroupMember> expectedMembers = List.of(
-			new GroupMember("김모또", 1, mockGroup, ExpenseRole.MANAGER),
-			new GroupMember("김반숙", 2, mockGroup, ExpenseRole.PARTICIPANT)
-		);
+		GroupMember expectedMember = new GroupMember("김모또", 1, mockGroup, ExpenseRole.MANAGER);
 
-		when(groupMemberRepository.saveAll(anyList())).thenReturn(expectedMembers);
+		when(groupMemberRepository.save(any())).thenReturn(expectedMember);
 
 		//when
-		List<GroupMember> savedMembers = groupMemberCreator.create(groupId, userId, request);
+		GroupMember savedMember = groupMemberCreator.createManagerForGroup(groupId, userId);
 
 		//then
-		assertThat(savedMembers).isNotNull();
-		assertThat(savedMembers.size()).isEqualTo(2);
-		assertThat(savedMembers.get(0).getName()).isEqualTo("김모또");
-		assertThat(savedMembers.get(0).getRole()).isEqualTo(ExpenseRole.MANAGER);
+		assertThat(savedMember).isNotNull();
+		assertThat(savedMember.getName()).isEqualTo("김모또");
+		assertThat(savedMember.getRole()).isEqualTo(ExpenseRole.MANAGER);
 		verify(groupMemberRepository, times(1)).saveAll(anyList());
 	}
 
-	@DisplayName("사용자가 회원인 경우, 모든 이름이 중복없이 유효할 때 총무의 이름은 회원의 이름으로 추가되고, 다른 참여자는 정상적으로 추가된다.")
+	@DisplayName("사용자가 회원인 경우, 모든 이름이 중복없이 유효할 때 총무의 이름은 회원의 이름으로 생성된다.")
 	@Test
 	void create_Success_WithMember() {
 		//given
@@ -97,41 +89,18 @@ public class GroupMemberCreatorTest {
 		when(mockUser.getIsMember()).thenReturn(true);
 		when(mockUser.getName()).thenReturn("연노른자");
 
-		List<GroupMember> expectedMembers = List.of(
-			new GroupMember("연노른자", 1, mockGroup, ExpenseRole.MANAGER),
-			new GroupMember("김반숙", 2, mockGroup, ExpenseRole.PARTICIPANT)
-		);
-
-		when(groupMemberRepository.saveAll(anyList())).thenReturn(expectedMembers);
+		GroupMember expectedMember = new GroupMember("연노른자", 1, mockGroup, ExpenseRole.MANAGER);
+		when(groupMemberRepository.save(any(GroupMember.class))).thenReturn(expectedMember);
 
 		//when
-		List<GroupMember> savedMembers = groupMemberCreator.create(groupId, userId, request);
+		GroupMember savedMember = groupMemberCreator.createManagerForGroup(groupId, userId);
 
 		//then
-		assertThat(savedMembers).isNotNull();
-		assertThat(savedMembers.size()).isEqualTo(2);
-		assertThat(savedMembers.get(0).getName()).isEqualTo("연노른자");
-		assertThat(savedMembers.get(0).getRole()).isEqualTo(ExpenseRole.MANAGER);
+		assertThat(savedMember).isNotNull();
+		assertThat(savedMember.getName()).isEqualTo("연노른자");
+		assertThat(savedMember.getRole()).isEqualTo(ExpenseRole.MANAGER);
+
+		verify(userRepository, times(1)).getById(eq(userId));
 		verify(groupMemberRepository, times(1)).saveAll(anyList());
-	}
-
-	@DisplayName("요청에 중복된 이름이 존재할 경우 참여자를 추가하면 예외가 발생한다.")
-	@Test
-	void create_WithThrow_ByDuplicatedName() {
-
-		//given
-		Long groupId = mockGroup.getId(), userId = 1L;
-		List<GroupMember> groupMembers = new ArrayList<>();
-
-		when(groupReader.read(eq(groupId))).thenReturn(mockGroup);
-
-		doThrow(new GroupMemberDuplicateNameException()).when(groupMemberValidator)
-			.validateMemberNamesNotDuplicate(any());
-
-		//when & then
-		assertThatThrownBy(() -> {
-			groupMemberCreator.create(groupId, userId, request);
-		}).hasMessage("중복된 참여자의 이름은 저장할 수 없습니다.");
-
 	}
 }

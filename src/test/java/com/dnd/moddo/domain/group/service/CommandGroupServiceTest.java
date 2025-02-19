@@ -78,7 +78,7 @@ class CommandGroupServiceTest {
 		when(groupCreator.createGroup(any(GroupRequest.class), anyLong())).thenReturn(group);
 		when(jwtProvider.generateGroupToken(any())).thenReturn("group-token");
 		when(group.getId()).thenReturn(1L);
-		when(commandGroupMemberService.addManager(any(), any())).thenReturn(groupMemberResponse);
+		when(commandGroupMemberService.createManager(any(), any())).thenReturn(groupMemberResponse);
 
 		// When
 		GroupSaveResponse response = commandGroupService.createGroup(groupRequest, 1L);
@@ -89,7 +89,7 @@ class CommandGroupServiceTest {
 		assertThat(response.manager().role()).isEqualTo(ExpenseRole.MANAGER);
 
 		verify(groupCreator, times(1)).createGroup(any(GroupRequest.class), anyLong());
-		verify(commandGroupMemberService, times(1)).addManager(any(), any());
+		verify(commandGroupMemberService, times(1)).createManager(any(), any());
 	}
 
 	@Test
