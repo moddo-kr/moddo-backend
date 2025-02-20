@@ -83,5 +83,12 @@ public class GroupMember {
 			this.paidAt = null;
 		}
 	}
+
+	public String getProfileUrl() {
+		if (profileId == null) {
+			return "https://example.com/profiles/default.jpg";
+		}
+		return "https://example.com/profiles/" + profileId + ".jpg";
+	}
 }
 

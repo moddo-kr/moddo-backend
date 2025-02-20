@@ -10,7 +10,7 @@ import jakarta.validation.constraints.Positive;
 public record MemberExpenseRequest(
 	@NotNull(message = "참여자 id는 필수 항목입니다.")
 	@Positive(message = "참여자 id는 양수여야 합니다.")
-	Long memberId,
+	Long id,
 
 	@Positive(message = "지출내역 값은 양수여야 합니다.")
 	@Max(value = 5_000_000, message = "지출내역 값은 최대 500만원까지 입력할 수 있습니다.")

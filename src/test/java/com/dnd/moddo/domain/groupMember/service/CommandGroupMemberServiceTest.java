@@ -4,8 +4,6 @@ import static org.assertj.core.api.BDDAssertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,10 +15,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMemberSaveRequest;
-import com.dnd.moddo.domain.groupMember.dto.request.GroupMembersSaveRequest;
 import com.dnd.moddo.domain.groupMember.dto.request.PaymentStatusUpdateRequest;
 import com.dnd.moddo.domain.groupMember.dto.response.GroupMemberResponse;
-import com.dnd.moddo.domain.groupMember.dto.response.GroupMembersResponse;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberCreator;
@@ -43,28 +39,23 @@ public class CommandGroupMemberServiceTest {
 			"은행", "계좌", LocalDateTime.now().plusDays(1));
 	}
 
-	@DisplayName("모든 정보가 유효할때 모임에 참여자 추가가 성공한다.")
+	@DisplayName("모든 정보가 유효할때 총무 생성에 성공한다.")
 	@Test
 	void createSuccess() {
 		//given
-		Long groupId = mockGroup.getId(), userId = 1L;
-		GroupMembersSaveRequest request = new GroupMembersSaveRequest(new ArrayList<>());
-		List<GroupMember> expectedMembers = List.of(
-			new GroupMember("김모또", 1, mockGroup, ExpenseRole.MANAGER),
-			new GroupMember("김반숙", 2, mockGroup, ExpenseRole.PARTICIPANT)
-		);
-
-		when(groupMemberCreator.create(eq(groupId), any(), eq(request))).thenReturn(expectedMembers);
+		Long userId = 1L;
+		GroupMember expectedMembers = new GroupMember("김모또", 1, mockGroup, ExpenseRole.MANAGER);
+		Group mockGroup = mock(Group.class);
+		when(groupMemberCreator.createManagerForGroup(any(Group.class), eq(userId))).thenReturn(expectedMembers);
 
 		// when
-		GroupMembersResponse response = commandGroupMemberService.create(groupId, userId, request);
+		GroupMemberResponse response = commandGroupMemberService.createManager(mockGroup, userId);
 
 		//then
 		assertThat(response).isNotNull();
-		assertThat(response.members().size()).isEqualTo(2);
-		assertThat(response.members().get(0).name()).isEqualTo("김모또");
-		assertThat(response.members().get(0).role()).isEqualTo(ExpenseRole.MANAGER);
-		verify(groupMemberCreator, times(1)).create(eq(groupId), any(), eq(request));
+		assertThat(response.name()).isEqualTo("김모또");
+		assertThat(response.role()).isEqualTo(ExpenseRole.MANAGER);
+		verify(groupMemberCreator, times(1)).createManagerForGroup(any(Group.class), any());
 	}
 
 	@DisplayName("모든 정보가 유효할때 기존 모임의 참여자 추가가 성공한다.")
