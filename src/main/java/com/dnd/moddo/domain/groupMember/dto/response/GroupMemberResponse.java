@@ -24,14 +24,8 @@ public record GroupMemberResponse(
 			.role(groupMember.getRole())
 			.isPaid(groupMember.isPaid())
 			.paidAt(groupMember.getPaidAt())
-			.profile(generateProfileUrl(groupMember.getProfileId()))
+			.profile(groupMember.getProfileUrl())
 			.build();
 	}
 
-	private static String generateProfileUrl(Integer profile) {
-		if (profile == null) {
-			return "https://example.com/profiles/default.jpg";
-		}
-		return "https://example.com/profiles/" + profile + ".jpg";
-	}
 }

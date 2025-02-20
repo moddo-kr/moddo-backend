@@ -20,7 +20,7 @@ public class MemberExpenseValidator {
 	public void validateMembersArePartOfGroup(Long groupId, List<MemberExpenseRequest> requests) {
 		Set<Long> validGroupMemberIds = new HashSet<>(groupMemberReader.findIdsByGroupId(groupId));
 		List<Long> requestedGroupMemberIds = requests.stream()
-			.map(MemberExpenseRequest::memberId)
+			.map(MemberExpenseRequest::id)
 			.toList();
 
 		requestedGroupMemberIds.forEach(id -> {

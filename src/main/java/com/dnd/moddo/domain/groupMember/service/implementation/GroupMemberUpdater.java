@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.moddo.domain.group.entity.Group;
-import com.dnd.moddo.domain.group.repository.GroupRepository;
+import com.dnd.moddo.domain.group.service.implementation.GroupReader;
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMemberSaveRequest;
 import com.dnd.moddo.domain.groupMember.dto.request.PaymentStatusUpdateRequest;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
@@ -23,10 +23,10 @@ public class GroupMemberUpdater {
 	private final GroupMemberRepository groupMemberRepository;
 	private final GroupMemberReader groupMemberReader;
 	private final GroupMemberValidator groupMemberValidator;
-	private final GroupRepository groupRepository;
+	private final GroupReader groupReader;
 
 	public GroupMember addToGroup(Long groupId, GroupMemberSaveRequest request) {
-		Group group = groupRepository.getById(groupId);
+		Group group = groupReader.read(groupId);
 		List<GroupMember> groupMembers = groupMemberReader.findAllByGroupId(groupId);
 
 		List<String> existingNames = new ArrayList<>(groupMembers.stream().map(GroupMember::getName).toList());
