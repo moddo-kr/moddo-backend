@@ -15,6 +15,7 @@ public record GroupMemberExpenseResponse(
 	ExpenseRole role,
 	String name,
 	Long totalAmount,
+	String profile,
 	boolean isPaid,
 	LocalDateTime paidAt,
 	List<MemberExpenseDetailResponse> expenses
@@ -26,6 +27,7 @@ public record GroupMemberExpenseResponse(
 			.role(groupMember.getRole())
 			.name(groupMember.getName())
 			.totalAmount(totalAmount)
+			.profile(groupMember.getProfileUrl())
 			.isPaid(groupMember.isPaid())
 			.paidAt(groupMember.getPaidAt())
 			.expenses(expenses).build();

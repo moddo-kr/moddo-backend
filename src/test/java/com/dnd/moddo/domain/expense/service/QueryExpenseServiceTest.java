@@ -59,11 +59,11 @@ class QueryExpenseServiceTest {
 		Long expenseId1 = 1L, expenseId2 = 2L;
 
 		List<MemberExpenseResponse> responses1 = List.of(
-			new MemberExpenseResponse(1L, ExpenseRole.MANAGER, "김모또", 15000L),
-			new MemberExpenseResponse(2L, ExpenseRole.PARTICIPANT, "박완숙", 5000L));
+			new MemberExpenseResponse(1L, ExpenseRole.MANAGER, "김모또", null, 15000L),
+			new MemberExpenseResponse(2L, ExpenseRole.PARTICIPANT, "박완숙", null, 5000L));
 		List<MemberExpenseResponse> responses2 = List.of(
-			new MemberExpenseResponse(1L, ExpenseRole.MANAGER, "김모또", 15000L),
-			new MemberExpenseResponse(2L, ExpenseRole.PARTICIPANT, "박완숙", 2000L));
+			new MemberExpenseResponse(1L, ExpenseRole.MANAGER, "김모또", null, 15000L),
+			new MemberExpenseResponse(2L, ExpenseRole.PARTICIPANT, "박완숙", null, 2000L));
 
 		when(queryMemberExpenseService.findAllByExpenseId(any()))
 			.thenReturn(responses1)

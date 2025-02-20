@@ -31,7 +31,7 @@ public class CommandMemberExpenseService {
 	public List<MemberExpenseResponse> create(Long expenseId, List<MemberExpenseRequest> request) {
 		return request.stream()
 			.map(m -> {
-				GroupMember groupMember = groupMemberReader.findByGroupMemberId(m.memberId());
+				GroupMember groupMember = groupMemberReader.findByGroupMemberId(m.id());
 				return MemberExpenseResponse.of(memberExpenseCreator.create(expenseId, groupMember, m));
 			}).toList();
 
@@ -57,7 +57,7 @@ public class CommandMemberExpenseService {
 		Map<Long, MemberExpense> existingMemberExpenses,
 		MemberExpenseRequest request) {
 
-		Long groupMemberId = request.memberId();
+		Long groupMemberId = request.id();
 		MemberExpenseResponse response;
 
 		if (existingMemberExpenses.containsKey(groupMemberId)) {
@@ -79,7 +79,7 @@ public class CommandMemberExpenseService {
 		List<MemberExpense> memberExpenses) {
 		// 1. 요청된 멤버들의 memberId를 추출
 		Set<Long> requestMemberIds = requests.stream()
-			.map(MemberExpenseRequest::memberId)
+			.map(MemberExpenseRequest::id)
 			.collect(Collectors.toSet());
 
 		//2. 멤버별 지출내역중 요청된 멤버 id에 포함되지 않는 지출내역을 찾는다.
