@@ -30,7 +30,6 @@ public class GroupCreator {
 			.name(request.name())
 			.password(encryptedPassword)
 			.createdAt(LocalDateTime.now())
-			.expiredAt(LocalDateTime.now().plusMonths(1))
 			.build();
 
 		return groupRepository.save(group);

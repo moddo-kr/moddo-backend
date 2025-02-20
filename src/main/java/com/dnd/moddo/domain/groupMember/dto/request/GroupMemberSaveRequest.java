@@ -1,5 +1,6 @@
 package com.dnd.moddo.domain.groupMember.dto.request;
 
+import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
 
@@ -12,7 +13,8 @@ public record GroupMemberSaveRequest(
 	String name
 
 ) {
-	public GroupMember toEntity(ExpenseRole role) {
-		return new GroupMember(name(), role);
+	public GroupMember toEntity(Group group, ExpenseRole role) {
+		Integer proflieId = null;
+		return new GroupMember(name(), group, role);
 	}
 }

@@ -34,8 +34,8 @@ public class GroupMember {
 	@Column(name = "name", updatable = false, nullable = false)
 	private String name;
 
-	@Column(name = "profile_id")
-	private Integer profileId;
+	@Column(name = "profile")
+	private Integer profile;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "group_id")
@@ -63,9 +63,9 @@ public class GroupMember {
 	}
 
 	@Builder
-	public GroupMember(String name, Integer profileId, Group group, boolean isPaid, ExpenseRole role) {
+	public GroupMember(String name, Integer profile, Group group, boolean isPaid, ExpenseRole role) {
 		this.name = name;
-		this.profileId = profileId;
+		this.profile = profile;
 		this.group = group;
 		this.isPaid = isPaid;
 		this.role = role;
@@ -84,11 +84,11 @@ public class GroupMember {
 		}
 	}
 
-	public String getProfileUrl() {
-		if (profileId == null) {
-			return "https://example.com/profiles/default.jpg";
+	public String getProfileUrl(Long profileId) {
+		if (profileId > 8) {
+			Long finalId = profileId - 8;
+			return "https://moddo-s3.s3.ap-northeast-2.amazonaws.com/profile/" + finalId + ".png";
 		}
-		return "https://example.com/profiles/" + profileId + ".jpg";
+		return "https://moddo-s3.s3.ap-northeast-2.amazonaws.com/profile/" + profileId + ".png";
 	}
 }
-
