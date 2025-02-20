@@ -60,8 +60,8 @@ class CommandGroupServiceTest {
 	@BeforeEach
 	void setUp() {
 		groupRequest = new GroupRequest("GroupName", "password123", LocalDateTime.now());
-		groupResponse = new GroupResponse(1L, 1L, LocalDateTime.now(), LocalDateTime.now().minusDays(1), "bank",
-			"1234-1234");
+		groupResponse = new GroupResponse(1L, 1L, LocalDateTime.now(), LocalDateTime.now().plusDays(1), "bank",
+			"1234-1234", LocalDateTime.now().plusDays(1));
 		groupAccountRequest = new GroupAccountRequest("newBank", "5678-5678");
 		expectedResponse = new GroupSaveResponse("group-token", mock(GroupMemberResponse.class));
 
