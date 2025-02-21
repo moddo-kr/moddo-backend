@@ -34,7 +34,7 @@ public class GroupMemberCreator {
 			.build();
 
 		groupMember.updatePaymentStatus(true);
-		String profile = s3Bucket.getS3Url() + "profile/moddo.png";
+		String profile = s3Bucket.getS3Url() + "profile/MODDO.png";
 		groupMember.updateProfile(profile);
 
 		return groupMemberRepository.save(groupMember);
