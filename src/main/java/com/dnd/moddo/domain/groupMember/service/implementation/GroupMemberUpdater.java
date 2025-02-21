@@ -56,7 +56,7 @@ public class GroupMemberUpdater {
 			return s3Bucket.getS3Url() + "profile/moddo.png";
 		}
 
-		Long finalId = (memberId - 1) % 9 + 1; // 🔥 ID를 1~9 범위로 변환
+		Long finalId = (memberId - 1) % 9 + 1;
 		return s3Bucket.getS3Url() + "profile/" + finalId + ".png";
 	}
 }
