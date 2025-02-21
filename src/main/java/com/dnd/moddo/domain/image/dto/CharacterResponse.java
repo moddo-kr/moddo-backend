@@ -24,13 +24,14 @@ public record CharacterResponse(
 		return new CharacterResponse(
 			characters.getName(),
 			rarityString,
-			getImageUrl(s3Bucket, characters.getName(), characters.getRarity()),
-			getBigImageUrl(s3Bucket, characters.getName(), characters.getRarity())
+			getImageUrl(s3Bucket, characters.getFileName(), characters.getRarity()),
+			getBigImageUrl(s3Bucket, characters.getBigName(), characters.getRarity())
 		);
 	}
 
 	private static String getImageUrl(S3Bucket s3Bucket, String name, int rarity) {
 		return s3Bucket.getS3Url() + "character/" + name + "-" + rarity + ".png";
+
 	}
 
 	private static String getBigImageUrl(S3Bucket s3Bucket, String name, int rarity) {
