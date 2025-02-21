@@ -7,7 +7,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class CharacterTest {
+class CharactersTest {
 
 	@Test
 	@DisplayName("rarity에 해당하는 캐릭터의 검증한다.")
