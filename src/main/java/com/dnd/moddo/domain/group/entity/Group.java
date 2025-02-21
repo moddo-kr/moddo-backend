@@ -44,9 +44,11 @@ public class Group {
 
 	private LocalDateTime deadline;
 
+	private String characterUrl;
+
 	@Builder
 	public Group(String name, Long writer, String password, LocalDateTime createdAt,
-		String bank, String accountNumber, LocalDateTime deadline) {
+		String bank, String accountNumber, LocalDateTime deadline, String characterUrl) {
 		this.name = name;
 		this.writer = writer;
 		this.password = password;
@@ -55,6 +57,7 @@ public class Group {
 		this.bank = bank;
 		this.accountNumber = accountNumber;
 		this.deadline = deadline;
+		this.characterUrl = characterUrl;
 	}
 
 	public void updateAccount(GroupAccountRequest request) {
@@ -65,5 +68,9 @@ public class Group {
 
 	public boolean isWriter(Long userId) {
 		return this.writer.equals(userId);
+	}
+
+	public void updateCharacterUrl(String characterUrl) {
+		this.characterUrl = characterUrl;
 	}
 }

@@ -1,27 +1,26 @@
 package com.dnd.moddo.domain.image.entity.type;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 import java.util.Arrays;
 import java.util.List;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
 public enum Character {
-    LUCKY(1, "lucky"),
-    ANGEL(2, "angel"),
-    STRAWBERRY(2, "strawberry"),
-    MAGIC(3, "magic"),
-    SLEEP(3, "sleep");
+	LUCKY(1, "러키 또또"),
+	ANGEL(2, "천사 모또"),
+	STRAWBERRY(2, "딸기 또또"),
+	MAGIC(3, "마법사 또또"),
+	SLEEP(3, "잠꾸러기 또또");
 
-    private final int rarity;
-    private final String name;
+	private final int rarity;
+	private final String name;
 
-    public static List<Character> getByRarity(int rarity) {
-        return Arrays.stream(values())
-                .filter(character -> character.getRarity() == rarity)
-                .toList();
-    }
+	public static List<Character> getByRarity(int rarity) {
+		return Arrays.stream(values())
+			.filter(character -> character.getRarity() == rarity)
+			.toList();
+	}
 }
