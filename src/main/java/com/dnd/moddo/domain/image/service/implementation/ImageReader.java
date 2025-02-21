@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.dnd.moddo.domain.group.repository.GroupRepository;
 import com.dnd.moddo.domain.image.dto.CharacterResponse;
-import com.dnd.moddo.domain.image.entity.type.Character;
+import com.dnd.moddo.domain.image.entity.type.Characters;
 import com.dnd.moddo.domain.image.exception.CharacterNotFoundException;
 import com.dnd.moddo.global.config.S3Bucket;
 
@@ -20,17 +20,15 @@ public class ImageReader {
 	private final S3Bucket s3Bucket;
 	private final GroupRepository groupRepository;
 
-	public CharacterResponse getRandomCharacter(Long groupId) {
-		groupRepository.findById(groupId);
-
+	public CharacterResponse getRandomCharacter() {
 		int rarity = getRandomRarity();
-		List<Character> characters = Character.getByRarity(rarity);
+		List<Characters> characters = Characters.getByRarity(rarity);
 
 		if (characters.isEmpty()) {
 			throw new CharacterNotFoundException();
 		}
 
-		Character character = characters.get(new Random().nextInt(characters.size()));
+		Characters character = characters.get(new Random().nextInt(characters.size()));
 		return CharacterResponse.of(character, s3Bucket);
 	}
 
