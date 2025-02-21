@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.dnd.moddo.domain.image.dto.CharacterResponse;
-import com.dnd.moddo.domain.image.entity.type.Character;
+import com.dnd.moddo.domain.image.entity.type.Characters;
 import com.dnd.moddo.domain.image.service.implementation.ImageReader;
 
 class QueryImageServiceTest {
@@ -29,19 +29,19 @@ class QueryImageServiceTest {
 	@Test
 	void getCharacter() {
 		// given
-		Character character = Character.ANGEL;
-		CharacterResponse Response = new CharacterResponse(character.getName(), String.valueOf(character.getRarity()),
+		Characters characters = Characters.ANGEL;
+		CharacterResponse Response = new CharacterResponse(characters.getName(), String.valueOf(characters.getRarity()),
 			"imgUrl", "bigImgUrl");
 
 		// when
-		when(imageReader.getRandomCharacter(1L)).thenReturn(Response);
-		CharacterResponse result = queryImageService.getCharacter(1L);
+		when(imageReader.getRandomCharacter()).thenReturn(Response);
+		CharacterResponse result = queryImageService.getCharacter();
 
 		// then
-		assertThat(result.rarity()).isEqualTo(String.valueOf(character.getRarity()));
-		assertThat(result.name()).isEqualTo(character.getName());
+		assertThat(result.rarity()).isEqualTo(String.valueOf(characters.getRarity()));
+		assertThat(result.name()).isEqualTo(characters.getName());
 
 		// verify
-		verify(imageReader, times(1)).getRandomCharacter(1L);
+		verify(imageReader, times(1)).getRandomCharacter();
 	}
 }
