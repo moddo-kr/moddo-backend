@@ -36,10 +36,20 @@ public class GroupMemberUpdater {
 
 		groupMemberValidator.validateMemberNamesNotDuplicate(existingNames);
 
-		GroupMember newMember = request.toEntity(group, null, ExpenseRole.PARTICIPANT);
+		List<GroupMember> membersOnly = groupMembers.stream()
+			.filter(member -> !member.isManager())
+			.toList();
+
+		List<Integer> usedProfiles = membersOnly.stream()
+			.map(GroupMember::getProfileId)
+			.toList();
+
+		int newProfileId = findAvailableProfileId(usedProfiles);
+
+		GroupMember newMember = request.toEntity(group, newProfileId, null, ExpenseRole.PARTICIPANT);
 		newMember = groupMemberRepository.save(newMember);
 
-		String profileUrl = getProfileUrl(newMember.getId());
+		String profileUrl = getProfileUrl(newProfileId);
 		newMember.updateProfile(profileUrl);
 
 		return newMember;
@@ -51,12 +61,18 @@ public class GroupMemberUpdater {
 		return groupMember;
 	}
 
-	private String getProfileUrl(Long memberId) {
-		if (memberId == null || memberId < 1) {
-			return s3Bucket.getS3Url() + "profile/moddo.png";
+	private int findAvailableProfileId(List<Integer> usedProfiles) {
+		for (int i = 1; i <= 8; i++) {
+			if (!usedProfiles.contains(i)) {
+				return i;
+			}
 		}
 
-		Long finalId = (memberId - 1) % 9 + 1;
-		return s3Bucket.getS3Url() + "profile/" + finalId + ".png";
+		int maxProfileId = usedProfiles.stream().max(Integer::compareTo).orElse(0);
+		return (maxProfileId % 8) + 1;
+	}
+
+	private String getProfileUrl(int profileId) {
+		return s3Bucket.getS3Url() + "profile/" + profileId + ".png";
 	}
 }
