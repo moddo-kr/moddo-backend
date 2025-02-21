@@ -9,7 +9,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum Characters {
-	LUCKY(1, "러키 또또"),
+	LUCKY(1, "러키 모또"),
 	ANGEL(2, "천사 모또"),
 	STRAWBERRY(2, "딸기 또또"),
 	MAGIC(3, "마법사 또또"),
