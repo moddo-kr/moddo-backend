@@ -43,7 +43,7 @@ public class ImageController {
 	@GetMapping("/character")
 	public ResponseEntity<CharacterResponse> getRandomCharacter(@RequestParam("groupToken") String groupToken) {
 		Long groupId = jwtService.getGroupId(groupToken);
-		CharacterResponse character = queryImageService.getCharacter(groupId);
+		CharacterResponse character = queryImageService.getCharacter();
 		return ResponseEntity.ok(character);
 	}
 }
