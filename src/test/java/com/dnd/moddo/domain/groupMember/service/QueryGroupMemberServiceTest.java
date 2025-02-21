@@ -33,12 +33,20 @@ public class QueryGroupMemberServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now(), LocalDateTime.now().plusMinutes(1),
+		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now().plusMinutes(1),
 			"은행", "계좌", LocalDateTime.now().plusDays(1));
 
 		mockMembers = List.of(
-			new GroupMember("김모또", 1, mockGroup, ExpenseRole.MANAGER),
-			new GroupMember("김반숙", 2, mockGroup, ExpenseRole.PARTICIPANT)
+			GroupMember.builder()
+				.name("김모또")
+				.group(mockGroup)
+				.role(ExpenseRole.MANAGER)
+				.build(),
+			GroupMember.builder()
+				.name("김반숙")
+				.group(mockGroup)
+				.role(ExpenseRole.PARTICIPANT)
+				.build()
 		);
 	}
 
@@ -49,6 +57,7 @@ public class QueryGroupMemberServiceTest {
 		Long groupId = mockGroup.getId();
 
 		when(groupMemberReader.findAllByGroupId(eq(groupId))).thenReturn(mockMembers);
+
 		//when
 		GroupMembersResponse response = queryGroupMemberService.findAll(groupId);
 

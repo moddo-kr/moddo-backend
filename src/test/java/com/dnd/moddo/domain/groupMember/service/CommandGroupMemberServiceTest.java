@@ -35,7 +35,7 @@ public class CommandGroupMemberServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now(), LocalDateTime.now().plusMinutes(1),
+		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now().plusMinutes(1),
 			"은행", "계좌", LocalDateTime.now().plusDays(1));
 	}
 
@@ -44,7 +44,12 @@ public class CommandGroupMemberServiceTest {
 	void createSuccess() {
 		//given
 		Long userId = 1L;
-		GroupMember expectedMembers = new GroupMember("김모또", 1, mockGroup, ExpenseRole.MANAGER);
+		GroupMember expectedMembers = GroupMember.builder()
+			.name("김모또")
+			.profile("profile")
+			.group(mockGroup)
+			.role(ExpenseRole.MANAGER)
+			.build();
 		Group mockGroup = mock(Group.class);
 		when(groupMemberCreator.createManagerForGroup(any(Group.class), eq(userId))).thenReturn(expectedMembers);
 
@@ -64,7 +69,11 @@ public class CommandGroupMemberServiceTest {
 		//given
 		Long groupId = mockGroup.getId();
 		GroupMemberSaveRequest request = mock(GroupMemberSaveRequest.class);
-		GroupMember expectedMember = new GroupMember("김반숙", mockGroup, ExpenseRole.PARTICIPANT);
+		GroupMember expectedMember = GroupMember.builder()
+			.name("김반숙")
+			.group(mockGroup)
+			.role(ExpenseRole.PARTICIPANT)
+			.build();
 
 		when(groupMemberUpdater.addToGroup(eq(groupId), any(GroupMemberSaveRequest.class))).thenReturn(expectedMember);
 
@@ -81,7 +90,12 @@ public class CommandGroupMemberServiceTest {
 	@Test
 	void updatePaymentStatus_Success() {
 		//given
-		GroupMember expectedGroupMember = new GroupMember("김반숙", mockGroup, true, ExpenseRole.PARTICIPANT);
+		GroupMember expectedGroupMember = GroupMember.builder()
+			.name("김반숙")
+			.group(mockGroup)
+			.isPaid(true)
+			.role(ExpenseRole.PARTICIPANT)
+			.build();
 		PaymentStatusUpdateRequest request = new PaymentStatusUpdateRequest(true);
 		when(groupMemberUpdater.updatePaymentStatus(any(), eq(request))).thenReturn(expectedGroupMember);
 
@@ -95,6 +109,5 @@ public class CommandGroupMemberServiceTest {
 		assertThat(response.isPaid()).isTrue();
 
 		verify(groupMemberUpdater, times(1)).updatePaymentStatus(any(), eq(request));
-
 	}
 }

@@ -32,24 +32,34 @@ class MemberExpenseReaderTest {
 
 	@BeforeEach
 	void setUp() {
-		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now(), LocalDateTime.now().plusMinutes(1),
+		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now().plusMinutes(1),
 			"은행", "계좌", LocalDateTime.now().plusDays(1));
-		mockGroupMember = new GroupMember("박완숙", mockGroup, ExpenseRole.MANAGER);
+
+		mockGroupMember = GroupMember.builder()
+			.name("박완숙")
+			.group(mockGroup)
+			.role(ExpenseRole.MANAGER)
+			.isPaid(true)
+			.profile("profile.jpg")
+			.build();
 	}
 
 	@DisplayName("지출내역이 존재하면 해당 지출내역의 참여자별 지출내역을 조회에 성공한다.")
 	@Test
-	void findAllByExpenseIdS() {
-		//given
+	void findAllByExpenseId_Success() {
+		// given
 		Long expenseId = 1L;
-		List<MemberExpense> expectedMemberExpense = List.of(new MemberExpense(expenseId, mockGroupMember, 15000L));
+		// Mock 데이터 준비
+		List<MemberExpense> expectedMemberExpense = List.of(
+			new MemberExpense(expenseId, mockGroupMember, 15000L)
+		);
 
 		when(memberExpenseRepository.findByExpenseId(eq(expenseId))).thenReturn(expectedMemberExpense);
 
-		//when
+		// when
 		List<MemberExpense> result = memberExpenseReader.findAllByExpenseId(expenseId);
 
-		//then
+		// then
 		assertThat(result).isNotEmpty();
 		assertThat(result.get(0).getAmount()).isEqualTo(15000L);
 		assertThat(result.get(0).getGroupMember()).isEqualTo(mockGroupMember);
@@ -57,12 +67,16 @@ class MemberExpenseReaderTest {
 		verify(memberExpenseRepository, times(1)).findByExpenseId(eq(expenseId));
 	}
 
-	@DisplayName("참여자별 지출내역을 참여자id, 지출내역 map으로 변환하여 조회할 수 있다.")
+	@DisplayName("참여자별 지출내역을 참여자 id, 지출내역 map으로 변환하여 조회할 수 있다.")
 	@Test
-	public void findAllByGroupMemberIds_Success() {
-		//given
-		GroupMember groupMember1 = mock(GroupMember.class);
-		GroupMember groupMember2 = mock(GroupMember.class);
+	void findAllByGroupMemberIds_Success() {
+		// given
+		GroupMember groupMember1 = GroupMember.builder()
+			.name("김모또")
+			.group(mockGroup)
+			.role(ExpenseRole.PARTICIPANT)
+			.build();
+		GroupMember groupMember2 = GroupMember.builder().name("박완숙").group(mockGroup).role(ExpenseRole.MANAGER).build();
 
 		List<MemberExpense> mockExpenses = List.of(
 			new MemberExpense(1L, groupMember1, 1000L),
@@ -74,10 +88,10 @@ class MemberExpenseReaderTest {
 
 		when(memberExpenseRepository.findAllByGroupMemberIds(groupMemberIds)).thenReturn(mockExpenses);
 
-		//when
+		// when
 		List<MemberExpense> result = memberExpenseReader.findAllByGroupMemberIds(groupMemberIds);
 
-		//then
+		// then
 		assertThat(result).isNotEmpty();
 		assertThat(result).hasSize(mockExpenses.size());
 
@@ -87,9 +101,13 @@ class MemberExpenseReaderTest {
 	@DisplayName("지출내역 id들로 모든 참여자별 지출내역을 조회할 수 있다.")
 	@Test
 	void findAllByExpenseIds_Success() {
-		//given
-		GroupMember groupMember1 = mock(GroupMember.class);
-		GroupMember groupMember2 = mock(GroupMember.class);
+		// given
+		GroupMember groupMember1 = GroupMember.builder()
+			.name("김모또")
+			.group(mockGroup)
+			.role(ExpenseRole.PARTICIPANT)
+			.build();
+		GroupMember groupMember2 = GroupMember.builder().name("박완숙").group(mockGroup).role(ExpenseRole.MANAGER).build();
 
 		List<MemberExpense> mockExpenses = List.of(
 			new MemberExpense(1L, groupMember1, 1000L),
@@ -101,11 +119,13 @@ class MemberExpenseReaderTest {
 
 		when(memberExpenseRepository.findAllByExpenseIds(eq(expenseIds))).thenReturn(mockExpenses);
 
-		//then
+		// when
 		List<MemberExpense> result = memberExpenseReader.findAllByExpenseIds(expenseIds);
 
-		//then
+		// then
 		assertThat(result).isNotEmpty();
 		assertThat(result).hasSize(mockExpenses.size());
+
+		verify(memberExpenseRepository, times(1)).findAllByExpenseIds(eq(expenseIds));
 	}
 }

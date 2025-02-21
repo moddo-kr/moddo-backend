@@ -52,8 +52,8 @@ class GroupCreatorTest {
 		mockUser = new User(userId, "test@example.com", "닉네임", "프로필", false, LocalDateTime.now(),
 			LocalDateTime.now().plusDays(1), Authority.USER);
 		encodedPassword = "encryptedPassword";
-		mockGroup = new Group(request.name(), userId, "password", LocalDateTime.now(),
-			LocalDateTime.now().plusMonths(1), "groupName", encodedPassword, LocalDateTime.now().plusDays(1));
+		mockGroup = new Group(request.name(), userId, "password", LocalDateTime.now().plusMonths(1), "groupName",
+			encodedPassword, LocalDateTime.now().plusDays(1));
 	}
 
 	@DisplayName("사용자는 모임 생성에 성공한다.")

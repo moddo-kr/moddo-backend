@@ -31,7 +31,7 @@ public class GroupMemberReaderTest {
 
 	@BeforeEach
 	void setUp() {
-		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now(), LocalDateTime.now().plusMinutes(1),
+		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now().plusMinutes(1),
 			"은행", "계좌", LocalDateTime.now().plusDays(1));
 	}
 
@@ -41,8 +41,20 @@ public class GroupMemberReaderTest {
 		//given
 		Long groupId = mockGroup.getId();
 		List<GroupMember> expectedMembers = List.of(
-			new GroupMember("김모또", 1, mockGroup, ExpenseRole.MANAGER),
-			new GroupMember("김반숙", 2, mockGroup, ExpenseRole.PARTICIPANT)
+			GroupMember.builder()
+				.name("김모또")
+				.profile("profile")
+				.group(mockGroup)
+				.role(ExpenseRole.MANAGER)
+				.isPaid(false)
+				.build(),
+			GroupMember.builder()
+				.name("김반숙")
+				.profile("profile")
+				.group(mockGroup)
+				.role(ExpenseRole.PARTICIPANT)
+				.isPaid(false)
+				.build()
 		);
 
 		when(groupMemberRepository.findByGroupId(eq(groupId))).thenReturn(expectedMembers);
@@ -63,7 +75,13 @@ public class GroupMemberReaderTest {
 	void findByGroupMemberIdSuccess() {
 		//given
 		Long groupMemberId = 1L;
-		GroupMember expectedMember = new GroupMember("김반숙", mockGroup, ExpenseRole.PARTICIPANT);
+		GroupMember expectedMember = GroupMember.builder()
+			.name("김반숙")
+			.profile("profile")
+			.group(mockGroup)
+			.role(ExpenseRole.PARTICIPANT)
+			.isPaid(false)
+			.build();
 
 		when(groupMemberRepository.getById(eq(groupMemberId))).thenReturn(expectedMember);
 
@@ -89,7 +107,6 @@ public class GroupMemberReaderTest {
 		assertThatThrownBy(() -> {
 			groupMemberReader.findByGroupMemberId(groupMemberId);
 		}).hasMessage("해당 참여자를 찾을 수 없습니다. (GroupMember ID: " + groupMemberId + ")");
-
 	}
 
 }

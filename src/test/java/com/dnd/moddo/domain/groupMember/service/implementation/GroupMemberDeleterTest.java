@@ -33,7 +33,7 @@ class GroupMemberDeleterTest {
 
 	@BeforeEach
 	void setUp() {
-		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now(), LocalDateTime.now().plusMinutes(1),
+		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now().plusMinutes(1),
 			"은행", "계좌", LocalDateTime.now().plusDays(1));
 	}
 
@@ -42,7 +42,13 @@ class GroupMemberDeleterTest {
 	void delete_Success_ValidGroupMemberId() {
 		//given
 		Long groupMemberId = 1L;
-		GroupMember expectedMember = new GroupMember("김반숙", mockGroup, ExpenseRole.PARTICIPANT);
+		GroupMember expectedMember = GroupMember.builder()
+			.name("김반숙")
+			.profile("profile")
+			.group(mockGroup)
+			.role(ExpenseRole.PARTICIPANT)
+			.isPaid(false)
+			.build();
 
 		when(groupMemberReader.findByGroupMemberId(eq(groupMemberId))).thenReturn(expectedMember);
 		doNothing().when(groupMemberRepository).delete(any(GroupMember.class));
@@ -67,7 +73,6 @@ class GroupMemberDeleterTest {
 		assertThatThrownBy(() -> {
 			groupMemberDeleter.delete(groupMemberId);
 		}).hasMessage("해당 참여자를 찾을 수 없습니다. (GroupMember ID: " + groupMemberId + ")");
-
 	}
 
 	@DisplayName("유효한 참여자 id로 삭제를 요청하면 성공적으로 삭제된다.")
@@ -75,7 +80,13 @@ class GroupMemberDeleterTest {
 	void delete_ThrowException_WhenRoleIsManager() {
 		//given
 		Long groupMemberId = 1L;
-		GroupMember expectedMember = new GroupMember("김모또", mockGroup, ExpenseRole.MANAGER);
+		GroupMember expectedMember = GroupMember.builder()
+			.name("김모또")
+			.profile("profile")
+			.group(mockGroup)
+			.role(ExpenseRole.MANAGER)
+			.isPaid(false)
+			.build();
 
 		when(groupMemberReader.findByGroupMemberId(eq(groupMemberId))).thenReturn(expectedMember);
 

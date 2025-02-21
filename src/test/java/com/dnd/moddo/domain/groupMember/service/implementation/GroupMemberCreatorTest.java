@@ -51,7 +51,12 @@ public class GroupMemberCreatorTest {
 		when(userRepository.getById(eq(userId))).thenReturn(mockUser);
 		when(mockUser.getIsMember()).thenReturn(false);
 
-		GroupMember expectedMember = new GroupMember("김모또", 1, mockGroup, ExpenseRole.MANAGER);
+		GroupMember expectedMember = GroupMember.builder()
+			.name("김모또")
+			.profile("profle")
+			.group(mockGroup)
+			.role(ExpenseRole.MANAGER)
+			.build();
 
 		when(groupMemberRepository.save(any())).thenReturn(expectedMember);
 
@@ -77,7 +82,13 @@ public class GroupMemberCreatorTest {
 		when(mockUser.getIsMember()).thenReturn(true);
 		when(mockUser.getName()).thenReturn("연노른자");
 
-		GroupMember expectedMember = new GroupMember("연노른자", 1, mockGroup, ExpenseRole.MANAGER);
+		GroupMember expectedMember = GroupMember.builder()
+			.name("연노른자")
+			.profile("profile")
+			.group(mockGroup)
+			.role(ExpenseRole.MANAGER)
+			.build();
+
 		when(groupMemberRepository.save(any(GroupMember.class))).thenReturn(expectedMember);
 
 		//when

@@ -27,7 +27,7 @@ public record GroupMemberExpenseResponse(
 			.role(groupMember.getRole())
 			.name(groupMember.getName())
 			.totalAmount(totalAmount)
-			.profile(groupMember.getProfileUrl())
+			.profile(groupMember.getProfile())
 			.isPaid(groupMember.isPaid())
 			.paidAt(groupMember.getPaidAt())
 			.expenses(expenses).build();

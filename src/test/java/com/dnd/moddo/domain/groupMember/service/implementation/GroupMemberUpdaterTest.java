@@ -1,7 +1,6 @@
 package com.dnd.moddo.domain.groupMember.service.implementation;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
@@ -16,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.dnd.moddo.domain.group.entity.Group;
-import com.dnd.moddo.domain.group.repository.GroupRepository;
 import com.dnd.moddo.domain.group.service.implementation.GroupReader;
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMemberSaveRequest;
 import com.dnd.moddo.domain.groupMember.dto.request.PaymentStatusUpdateRequest;
@@ -24,6 +22,7 @@ import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.groupMember.exception.GroupMemberDuplicateNameException;
 import com.dnd.moddo.domain.groupMember.repository.GroupMemberRepository;
+import com.dnd.moddo.global.config.S3Bucket;
 
 @ExtendWith(MockitoExtension.class)
 class GroupMemberUpdaterTest {
@@ -36,7 +35,7 @@ class GroupMemberUpdaterTest {
 	@Mock
 	private GroupReader groupReader;
 	@Mock
-	private GroupRepository groupRepository;
+	private S3Bucket s3Bucket;
 	@InjectMocks
 	private GroupMemberUpdater groupMemberUpdater;
 
@@ -50,10 +49,12 @@ class GroupMemberUpdaterTest {
 	@DisplayName("추가하려는 참여자의 이름이 기존 참여자의 이름과 중복되지 않을경우 참여자 추가에 성공한다.")
 	@Test
 	void addToGroupSuccess() {
-		//given
+		// given
 		Long groupId = 1L;
 		GroupMemberSaveRequest request = mock(GroupMemberSaveRequest.class);
+		String newMemberName = "김반숙";
 
+		when(request.name()).thenReturn(newMemberName);
 		when(groupReader.read(eq(groupId))).thenReturn(mockGroup);
 
 		List<GroupMember> mockGroupMembers = new ArrayList<>();
@@ -61,36 +62,44 @@ class GroupMemberUpdaterTest {
 
 		doNothing().when(groupMemberValidator).validateMemberNamesNotDuplicate(any());
 
-		GroupMember expectedGroupMember = new GroupMember("김반숙", mockGroup, ExpenseRole.PARTICIPANT);
+		GroupMember expectedGroupMember = GroupMember.builder()
+			.name(newMemberName)
+			.group(mockGroup)
+			.role(ExpenseRole.PARTICIPANT)
+			.build();
 		when(groupMemberRepository.save(any())).thenReturn(expectedGroupMember);
 
-		//when
+		// when
 		GroupMember result = groupMemberUpdater.addToGroup(groupId, request);
 
-		//then
+		// then
 		assertThat(result).isNotNull();
 		assertThat(result.getGroup()).isEqualTo(mockGroup);
-		assertThat(result.getName()).isEqualTo("김반숙");
+		assertThat(result.getName()).isEqualTo(newMemberName);
 
 		verify(groupMemberRepository, times(1)).save(any());
 	}
 
-	@DisplayName("추가하려는 참여자의 이름이 기존 참여자의 이름과 중복되는 경우 예외가 발생한다..")
+	@DisplayName("추가하려는 참여자의 이름이 기존 참여자의 이름과 중복되는 경우 예외가 발생한다.")
 	@Test
 	void addToGroupDuplicatedName() {
-		//given
+		// given
 		Long groupId = 1L;
 		GroupMemberSaveRequest request = mock(GroupMemberSaveRequest.class);
+		String duplicatedName = "김반숙";
 
+		when(request.name()).thenReturn(duplicatedName);
 		when(groupReader.read(eq(groupId))).thenReturn(mockGroup);
 
 		List<GroupMember> mockGroupMembers = new ArrayList<>();
+		GroupMember existingMember = GroupMember.builder().name(duplicatedName).build();
+		mockGroupMembers.add(existingMember);
 		when(groupMemberReader.findAllByGroupId(eq(groupId))).thenReturn(mockGroupMembers);
 
 		doThrow(new GroupMemberDuplicateNameException()).when(groupMemberValidator)
 			.validateMemberNamesNotDuplicate(any());
 
-		//when & then
+		// when & then
 		assertThatThrownBy(() -> {
 			groupMemberUpdater.addToGroup(groupId, request);
 		}).hasMessage("중복된 참여자의 이름은 저장할 수 없습니다.");
@@ -99,17 +108,20 @@ class GroupMemberUpdaterTest {
 	@DisplayName("참여자가 유효할 때 참여자의 입금 상태를 변경할 수 있다.")
 	@Test
 	void updatePaymentStatus_Success() {
-		//given
-
-		GroupMember groupMember = new GroupMember("김반숙", mockGroup, ExpenseRole.PARTICIPANT);
+		// given
+		GroupMember groupMember = GroupMember.builder()
+			.name("김반숙")
+			.group(mockGroup)
+			.role(ExpenseRole.PARTICIPANT)
+			.build();
 		PaymentStatusUpdateRequest request = new PaymentStatusUpdateRequest(true);
 
 		when(groupMemberRepository.getById(any())).thenReturn(groupMember);
 
-		//then
+		// when
 		GroupMember result = groupMemberUpdater.updatePaymentStatus(1L, request);
 
-		//then
+		// then
 		assertThat(result).isNotNull();
 		assertThat(result.isPaid()).isTrue();
 	}

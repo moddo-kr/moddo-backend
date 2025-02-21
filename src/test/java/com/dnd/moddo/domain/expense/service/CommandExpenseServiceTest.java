@@ -8,9 +8,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.dnd.moddo.domain.expense.dto.request.ExpenseImageRequest;
-import com.dnd.moddo.domain.group.service.implementation.GroupReader;
-import com.dnd.moddo.domain.group.service.implementation.GroupValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.dnd.moddo.domain.expense.dto.request.ExpenseImageRequest;
 import com.dnd.moddo.domain.expense.dto.request.ExpenseRequest;
 import com.dnd.moddo.domain.expense.dto.request.ExpensesRequest;
 import com.dnd.moddo.domain.expense.dto.response.ExpenseResponse;
@@ -30,6 +28,8 @@ import com.dnd.moddo.domain.expense.service.implementation.ExpenseDeleter;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseReader;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseUpdater;
 import com.dnd.moddo.domain.group.entity.Group;
+import com.dnd.moddo.domain.group.service.implementation.GroupReader;
+import com.dnd.moddo.domain.group.service.implementation.GroupValidator;
 import com.dnd.moddo.domain.memberExpense.dto.response.MemberExpenseResponse;
 import com.dnd.moddo.domain.memberExpense.service.CommandMemberExpenseService;
 
@@ -57,7 +57,7 @@ class CommandExpenseServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now(), LocalDateTime.now().plusMinutes(1),
+		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now().plusMinutes(1),
 			"은행", "계좌", LocalDateTime.now().plusDays(1));
 	}
 
@@ -183,6 +183,5 @@ class CommandExpenseServiceTest {
 		verify(groupValidator, times(1)).checkGroupAuthor(mockGroup, userId);
 		verify(expenseUpdater, times(1)).updateImgUrl(expenseId, request);
 	}
-
 
 }

@@ -1,40 +1,76 @@
 package com.dnd.moddo.domain.group.entity;
 
-import com.dnd.moddo.domain.group.repository.GroupRepository;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
+import com.dnd.moddo.domain.group.dto.request.GroupAccountRequest;
+
 class GroupTest {
 
-    @Autowired
-    private GroupRepository groupRepository;
+	private Group mockGroup;
 
-    @Test
-    void groupCreateTest() {
-        // given
-        Group group1 = new Group("groupName", 1L, "password", LocalDateTime.now(), LocalDateTime.now().plusDays(1), "bank", "1234-1234", LocalDateTime.now().plusDays(1));
-        Group group2 = new Group("groupName", 1L, "password", LocalDateTime.now(), LocalDateTime.now().plusDays(1), "bank", "1234-1234", LocalDateTime.now().plusDays(1));
-        groupRepository.save(group1);
-        groupRepository.save(group2);
+	@BeforeEach
+	void setUp() {
+		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now().plusMinutes(1),
+			"은행", "계좌", LocalDateTime.now().plusDays(1));
+	}
 
-        // when
-        Optional<Group> foundGroup = groupRepository.findById(1L);
+	@DisplayName("그룹의 작성자(userId)가 해당 그룹의 작성자인지 확인한다.")
+	@Test
+	void testIsWriter_whenUserIsWriter() {
+		// given
+		Long userId = 1L;
 
-        // then
-        assertThat(foundGroup).isPresent();
-        assertThat(foundGroup.get().getName()).isEqualTo("groupName");
-        assertThat(foundGroup.get().getWriter()).isEqualTo(1L);
-        assertThat(foundGroup.get().getBank()).isEqualTo("bank");
-        assertThat(foundGroup.get().getAccountNumber()).isEqualTo("1234-1234");
-    }
+		// when
+		boolean isWriter = mockGroup.isWriter(userId);
+
+		// then
+		assertThat(isWriter).isTrue();
+	}
+
+	@DisplayName("그룹의 작성자가 아닌 경우 false를 반환한다.")
+	@Test
+	void testIsWriter_whenUserIsNotWriter() {
+		// given
+		Long userId = 2L;
+
+		// when
+		boolean isWriter = mockGroup.isWriter(userId);
+
+		// then
+		assertThat(isWriter).isFalse();
+	}
+
+	@DisplayName("그룹의 계좌 정보를 업데이트할 수 있다.")
+	@Test
+	void testUpdateAccount() {
+		// given
+		GroupAccountRequest request = new GroupAccountRequest("새로운 은행", "새로운 계좌");
+
+		// when
+		mockGroup.updateAccount(request);
+
+		// then
+		assertThat(mockGroup.getBank()).isEqualTo("새로운 은행");
+		assertThat(mockGroup.getAccountNumber()).isEqualTo("새로운 계좌");
+		assertThat(mockGroup.getDeadline()).isAfter(LocalDateTime.now());
+	}
+
+	@DisplayName("그룹의 작성자를 확인할 수 있다.")
+	@Test
+	void testGroupWriter() {
+		// given
+		Long writerId = 1L;
+
+		// when
+		Long actualWriterId = mockGroup.getWriter();
+
+		// then
+		assertThat(actualWriterId).isEqualTo(writerId);
+	}
 }

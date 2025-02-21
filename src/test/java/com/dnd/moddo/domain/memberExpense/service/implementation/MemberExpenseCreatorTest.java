@@ -1,6 +1,6 @@
 package com.dnd.moddo.domain.memberExpense.service.implementation;
 
-import static org.assertj.core.api.AssertionsForClassTypes.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
@@ -33,10 +33,17 @@ class MemberExpenseCreatorTest {
 
 	@BeforeEach
 	void setUp() {
-		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now(), LocalDateTime.now().plusMinutes(1),
+		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now().plusMinutes(1),
 			"은행", "계좌", LocalDateTime.now().plusDays(1));
 
-		mockGroupMember = new GroupMember("박완수", mockGroup, ExpenseRole.MANAGER);
+		mockGroupMember = GroupMember.builder()
+			.name("박완수")
+			.group(mockGroup)
+			.role(ExpenseRole.MANAGER)
+			.isPaid(true)
+			.profile("profile.jpg")
+			.build();
+
 		mockMemberExpenseRequest = mock(MemberExpenseRequest.class);
 	}
 
@@ -45,8 +52,8 @@ class MemberExpenseCreatorTest {
 	void createMemberExpenseSuccess() {
 		//given
 		Long expenseId = 1L;
-		MemberExpense mockMemberExpense = new MemberExpense(expenseId, mockGroupMember,
-			mockMemberExpenseRequest.amount());
+		MemberExpense mockMemberExpense = new MemberExpense(expenseId, mockGroupMember, 10000L);
+
 		when(mockMemberExpenseRequest.toEntity(expenseId, mockGroupMember)).thenReturn(mockMemberExpense);
 		when(memberExpenseRepository.save(any(MemberExpense.class))).thenReturn(mockMemberExpense);
 
@@ -54,8 +61,11 @@ class MemberExpenseCreatorTest {
 		MemberExpense result = memberExpenseCreator.create(expenseId, mockGroupMember, mockMemberExpenseRequest);
 
 		//then
+		assertThat(result).isNotNull();
 		assertThat(result).isEqualTo(mockMemberExpense);
-		verify(memberExpenseRepository, times(1)).save(any(MemberExpense.class));
+		assertThat(result.getAmount()).isEqualTo(10000L);
+		assertThat(result.getGroupMember()).isEqualTo(mockGroupMember);
 
+		verify(memberExpenseRepository, times(1)).save(any(MemberExpense.class));
 	}
 }
