@@ -1,6 +1,6 @@
 package com.dnd.moddo.domain.groupMember.entity;
 
-import static org.assertj.core.api.AssertionsForClassTypes.*;
+import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
 
@@ -25,7 +25,13 @@ class GroupMemberTest {
 	@Test
 	void testIsManager_whenRoleIsManager() {
 		// given
-		GroupMember groupMember = new GroupMember("김모또", mockGroup, ExpenseRole.MANAGER);
+		GroupMember groupMember = GroupMember.builder()
+			.name("김모또")
+			.group(mockGroup)
+			.role(ExpenseRole.MANAGER)
+			.isPaid(true)
+			.profile("profile.jpg")
+			.build();
 
 		// when
 		boolean isManager = groupMember.isManager();
@@ -38,7 +44,13 @@ class GroupMemberTest {
 	@Test
 	void testIsManager_whenRoleIsNotManager() {
 		// given
-		GroupMember groupMember = new GroupMember("김모또", mockGroup, ExpenseRole.PARTICIPANT);
+		GroupMember groupMember = GroupMember.builder()
+			.name("김모또")
+			.group(mockGroup)
+			.role(ExpenseRole.PARTICIPANT)
+			.isPaid(true)
+			.profile("profile.jpg")
+			.build();
 
 		// when
 		boolean isManager = groupMember.isManager();
@@ -46,5 +58,4 @@ class GroupMemberTest {
 		// then
 		assertThat(isManager).isFalse();
 	}
-
 }

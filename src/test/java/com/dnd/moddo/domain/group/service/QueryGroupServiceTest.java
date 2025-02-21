@@ -43,7 +43,7 @@ class QueryGroupServiceTest {
 	void setUp() {
 		// Given
 		group = new Group("groupName", 1L, "password", null, null, null, null);
-		groupMember = new GroupMember("김완숙", 1, group, false, ExpenseRole.MANAGER);
+		groupMember = new GroupMember("김완숙", "profile", group, false, ExpenseRole.MANAGER);
 
 		setField(group, "id", 1L);
 	}

@@ -24,6 +24,7 @@ import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.groupMember.exception.GroupMemberDuplicateNameException;
 import com.dnd.moddo.domain.groupMember.repository.GroupMemberRepository;
+import com.dnd.moddo.global.config.S3Bucket;
 
 @ExtendWith(MockitoExtension.class)
 class GroupMemberUpdaterTest {
@@ -37,6 +38,8 @@ class GroupMemberUpdaterTest {
 	private GroupReader groupReader;
 	@Mock
 	private GroupRepository groupRepository;
+	@Mock
+	private S3Bucket s3Bucket;
 	@InjectMocks
 	private GroupMemberUpdater groupMemberUpdater;
 
@@ -61,7 +64,11 @@ class GroupMemberUpdaterTest {
 
 		doNothing().when(groupMemberValidator).validateMemberNamesNotDuplicate(any());
 
-		GroupMember expectedGroupMember = new GroupMember("김반숙", mockGroup, ExpenseRole.PARTICIPANT);
+		GroupMember expectedGroupMember = GroupMember.builder()
+			.name("김반숙")
+			.group(mockGroup)
+			.role(ExpenseRole.PARTICIPANT)
+			.build();
 		when(groupMemberRepository.save(any())).thenReturn(expectedGroupMember);
 
 		//when
@@ -101,7 +108,11 @@ class GroupMemberUpdaterTest {
 	void updatePaymentStatus_Success() {
 		//given
 
-		GroupMember groupMember = new GroupMember("김반숙", mockGroup, ExpenseRole.PARTICIPANT);
+		GroupMember groupMember = GroupMember.builder()
+			.name("김반숙")
+			.group(mockGroup)
+			.role(ExpenseRole.PARTICIPANT)
+			.build();
 		PaymentStatusUpdateRequest request = new PaymentStatusUpdateRequest(true);
 
 		when(groupMemberRepository.getById(any())).thenReturn(groupMember);
