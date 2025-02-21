@@ -37,6 +37,9 @@ public class GroupMember {
 	@Column(name = "profile")
 	private String profile;
 
+	@Column(name = "profile_id", nullable = false)
+	Integer profileId;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "group_id", nullable = false)
 	private Group group;
@@ -52,9 +55,10 @@ public class GroupMember {
 	private ExpenseRole role;
 
 	@Builder
-	public GroupMember(String name, String profile, Group group, boolean isPaid, ExpenseRole role) {
+	public GroupMember(String name, String profile, Integer profileId, Group group, boolean isPaid, ExpenseRole role) {
 		this.name = name;
 		this.profile = profile;
+		this.profileId = profileId;
 		this.group = group;
 		this.isPaid = isPaid;
 		this.role = role;

@@ -12,11 +12,12 @@ public record GroupMemberSaveRequest(
 	@Pattern(regexp = "^[가-힣a-zA-Z]{1,5}$", message = "참여자 이름은 한글과 영어만 포함하여 5자 이내여야 합니다.")
 	String name
 ) {
-	public GroupMember toEntity(Group group, String profile, ExpenseRole role) {
+	public GroupMember toEntity(Group group, Integer profileId, String profile, ExpenseRole role) {
 		return GroupMember.builder()
 			.name(name)
 			.group(group)
 			.role(role)
+			.profileId(profileId)
 			.profile(profile)
 			.isPaid(false)
 			.build();
