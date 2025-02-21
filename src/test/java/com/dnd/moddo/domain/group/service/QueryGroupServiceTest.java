@@ -8,7 +8,6 @@ import static org.springframework.test.util.ReflectionTestUtils.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.dnd.moddo.domain.group.dto.response.GroupHeaderResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.dnd.moddo.domain.group.dto.response.GroupDetailResponse;
+import com.dnd.moddo.domain.group.dto.response.GroupHeaderResponse;
 import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.group.service.implementation.GroupReader;
 import com.dnd.moddo.domain.group.service.implementation.GroupValidator;
@@ -41,8 +41,7 @@ class QueryGroupServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		// Given
-		group = new Group("groupName", 1L, "password", null, null, null, null, null);
+		group = new Group("groupName", 1L, "password", null, null, null, null);
 		groupMember = new GroupMember("김완숙", 1, group, false, ExpenseRole.MANAGER);
 
 		setField(group, "id", 1L);
@@ -105,7 +104,8 @@ class QueryGroupServiceTest {
 	@DisplayName("그룹 헤더를 정상적으로 조회할 수 있다.")
 	void FindByGroupHeader_Success() {
 		// Given
-		GroupHeaderResponse expectedResponse = new GroupHeaderResponse(group.getName(), 1000L, LocalDateTime.now().plusDays(1), group.getBank(), group.getAccountNumber());
+		GroupHeaderResponse expectedResponse = new GroupHeaderResponse(group.getName(), 1000L,
+			LocalDateTime.now().plusDays(1), group.getBank(), group.getAccountNumber());
 		when(groupReader.findByHeader(group.getId())).thenReturn(expectedResponse);
 
 		// When
@@ -116,8 +116,21 @@ class QueryGroupServiceTest {
 		assertThat(response.groupName()).isEqualTo(group.getName());
 		assertThat(response.bank()).isEqualTo(group.getBank());
 		assertThat(response.accountNumber()).isEqualTo(group.getAccountNumber());
-		assertThat(response.groupName()).isEqualTo(group.getName());
 
 		verify(groupReader, times(1)).findByHeader(group.getId());
+	}
+
+	@Test
+	@DisplayName("그룹 헤더를 찾을 수 없을 경우 예외가 발생한다.")
+	void FindByGroupHeader_Failure_WhenHeaderNotFound() {
+		// Given
+		when(groupReader.findByHeader(anyLong())).thenThrow(new RuntimeException("Header not found"));
+
+		// When & Then
+		assertThatThrownBy(() -> queryGroupService.findByGroupHeader(1L))
+			.isInstanceOf(RuntimeException.class)
+			.hasMessageContaining("Header not found");
+
+		verify(groupReader, times(1)).findByHeader(1L);
 	}
 }

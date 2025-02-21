@@ -1,6 +1,6 @@
 package com.dnd.moddo.domain.groupMember.entity;
 
-import static org.assertj.core.api.AssertionsForClassTypes.*;
+import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
 
@@ -17,7 +17,7 @@ class GroupMemberTest {
 
 	@BeforeEach
 	void setUp() {
-		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now(), LocalDateTime.now().plusMinutes(1),
+		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now().plusMinutes(1),
 			"은행", "계좌", LocalDateTime.now().plusDays(1));
 	}
 
@@ -25,7 +25,12 @@ class GroupMemberTest {
 	@Test
 	void testIsManager_whenRoleIsManager() {
 		// given
-		GroupMember groupMember = new GroupMember("김모또", mockGroup, ExpenseRole.MANAGER);
+		GroupMember groupMember = GroupMember.builder()
+			.name("김모또")
+			.group(mockGroup)
+			.role(ExpenseRole.MANAGER)
+			.isPaid(true)
+			.build();
 
 		// when
 		boolean isManager = groupMember.isManager();
@@ -38,7 +43,12 @@ class GroupMemberTest {
 	@Test
 	void testIsManager_whenRoleIsNotManager() {
 		// given
-		GroupMember groupMember = new GroupMember("김모또", mockGroup, ExpenseRole.PARTICIPANT);
+		GroupMember groupMember = GroupMember.builder()
+			.name("김모또")
+			.group(mockGroup)
+			.role(ExpenseRole.PARTICIPANT)
+			.isPaid(true)
+			.build();
 
 		// when
 		boolean isManager = groupMember.isManager();
@@ -47,4 +57,22 @@ class GroupMemberTest {
 		assertThat(isManager).isFalse();
 	}
 
+	@DisplayName("참여자가 입금 상태를 변경할 수 있다.")
+	@Test
+	void testUpdatePaymentStatus() {
+		// given
+		GroupMember groupMember = GroupMember.builder()
+			.name("김모또")
+			.group(mockGroup)
+			.role(ExpenseRole.PARTICIPANT)
+			.isPaid(false)
+			.build();
+
+		// when
+		groupMember.updatePaymentStatus(true);
+
+		// then
+		assertThat(groupMember.isPaid()).isTrue();
+		assertThat(groupMember.getPaidAt()).isNotNull();
+	}
 }

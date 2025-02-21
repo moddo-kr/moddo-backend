@@ -38,12 +38,29 @@ class QueryMemberExpenseServiceTest {
 	private QueryMemberExpenseService queryMemberExpenseService;
 
 	private Group mockGroup;
+	private GroupMember mockGroupMember1;
+	private GroupMember mockGroupMember2;
 
 	@BeforeEach
 	void setUp() {
-		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now(), LocalDateTime.now().plusMinutes(1),
+		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now().plusMinutes(1),
 			"은행", "계좌", LocalDateTime.now().plusDays(1));
 
+		mockGroupMember1 = GroupMember.builder()
+			.name("김모또")
+			.group(mockGroup)
+			.isPaid(true)
+			.profileId(0)
+			.role(ExpenseRole.MANAGER)
+			.build();
+
+		mockGroupMember2 = GroupMember.builder()
+			.name("박완숙")
+			.group(mockGroup)
+			.isPaid(false)
+			.profileId(1)
+			.role(ExpenseRole.PARTICIPANT)
+			.build();
 	}
 
 	@DisplayName("지출내역이 유효할때 지출내역의 참여자별 지출내역 조회에 성공한다.")
@@ -51,8 +68,6 @@ class QueryMemberExpenseServiceTest {
 	void findAllByExpenseId() {
 		//given
 		Long expenseId = 1L;
-		GroupMember mockGroupMember1 = new GroupMember("김모또", mockGroup, ExpenseRole.MANAGER);
-		GroupMember mockGroupMember2 = new GroupMember("박완숙", mockGroup, ExpenseRole.PARTICIPANT);
 
 		List<MemberExpense> expectedMemberExpense = List.of(
 			new MemberExpense(expenseId, mockGroupMember1, 15000L),
@@ -100,10 +115,8 @@ class QueryMemberExpenseServiceTest {
 		when(expense2.getId()).thenReturn(2L);
 
 		when(groupMemberReader.findAllByGroupId(eq(groupId))).thenReturn(groupMembers);
-
 		when(memberExpenseReader.findAllByGroupMemberIds(List.of(1L, 2L)))
 			.thenReturn(List.of(memberExpense1, memberExpense2));
-
 		when(expenseReader.findAllByGroupId(any())).thenReturn(List.of(expense1, expense2));
 
 		// when

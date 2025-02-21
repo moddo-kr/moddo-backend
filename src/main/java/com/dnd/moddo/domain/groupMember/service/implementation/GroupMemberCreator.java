@@ -26,8 +26,9 @@ public class GroupMemberCreator {
 
 		GroupMember groupMember = GroupMember.builder()
 			.name(name)
-			.profileId(null)     //user 프로필 가져오기
 			.group(group)
+			.profileId(null)
+			.profileId(0)
 			.role(ExpenseRole.MANAGER)
 			.build();
 

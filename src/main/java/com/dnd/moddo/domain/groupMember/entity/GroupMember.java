@@ -34,11 +34,11 @@ public class GroupMember {
 	@Column(name = "name", updatable = false, nullable = false)
 	private String name;
 
-	@Column(name = "profile_id")
+	@Column(name = "profile_id", nullable = false)
 	private Integer profileId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "group_id")
+	@JoinColumn(name = "group_id", nullable = false)
 	private Group group;
 
 	@Column(name = "is_paid", nullable = false)
@@ -48,19 +48,8 @@ public class GroupMember {
 	private LocalDateTime paidAt;
 
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	private ExpenseRole role;
-
-	public GroupMember(String name, Group group, ExpenseRole role) {
-		this(name, null, group, false, role);
-	}
-
-	public GroupMember(String name, Group group, boolean isPaid, ExpenseRole role) {
-		this(name, null, group, isPaid, role);
-	}
-
-	public GroupMember(String name, Integer profileId, Group group, ExpenseRole role) {
-		this(name, profileId, group, false, role);
-	}
 
 	@Builder
 	public GroupMember(String name, Integer profileId, Group group, boolean isPaid, ExpenseRole role) {
@@ -77,18 +66,13 @@ public class GroupMember {
 
 	public void updatePaymentStatus(Boolean isPaid) {
 		this.isPaid = isPaid;
-		if (Boolean.TRUE.equals(isPaid)) {
-			this.paidAt = LocalDateTime.now();
-		} else {
-			this.paidAt = null;
-		}
+		this.paidAt = Boolean.TRUE.equals(isPaid) ? LocalDateTime.now() : null;
 	}
 
 	public String getProfileUrl() {
-		if (profileId == null) {
-			return "https://example.com/profiles/default.jpg";
+		if (profileId == 0) {
+			return "https://moddo-s3.s3.amazonaws.com/profile/MODDO.png";
 		}
-		return "https://example.com/profiles/" + profileId + ".jpg";
+		return "https://moddo-s3.s3.amazonaws.com/profile/" + profileId + ".png";
 	}
 }
-
