@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: moddo
   config:
     import: classpath:config/application-jwt.yml, classpath:config/application-s3.yml
   jpa:
@@ -14,7 +16,7 @@ spring:
 server:
   address: 0.0.0.0
   port: 8080
-  
+
 management:
   endpoints:
     web:
