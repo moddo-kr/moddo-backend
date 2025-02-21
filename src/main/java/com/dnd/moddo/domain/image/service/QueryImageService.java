@@ -13,7 +13,7 @@ public class QueryImageService {
 
 	private final ImageReader imageReader;
 
-	public CharacterResponse getCharacter(Long groupId) {
-		return imageReader.getRandomCharacter(groupId);
+	public CharacterResponse getCharacter() {
+		return imageReader.getRandomCharacter();
 	}
 }
