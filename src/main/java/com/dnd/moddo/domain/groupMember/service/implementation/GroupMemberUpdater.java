@@ -13,7 +13,6 @@ import com.dnd.moddo.domain.groupMember.dto.request.PaymentStatusUpdateRequest;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.groupMember.repository.GroupMemberRepository;
-import com.dnd.moddo.global.config.S3Bucket;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,7 +24,6 @@ public class GroupMemberUpdater {
 	private final GroupMemberReader groupMemberReader;
 	private final GroupMemberValidator groupMemberValidator;
 	private final GroupReader groupReader;
-	private final S3Bucket s3Bucket;
 
 	public GroupMember addToGroup(Long groupId, GroupMemberSaveRequest request) {
 		Group group = groupReader.read(groupId);
@@ -36,11 +34,15 @@ public class GroupMemberUpdater {
 
 		groupMemberValidator.validateMemberNamesNotDuplicate(existingNames);
 
-		GroupMember newMember = request.toEntity(group, null, ExpenseRole.PARTICIPANT);
-		newMember = groupMemberRepository.save(newMember);
+		List<Integer> usedProfiles = groupMembers.stream()
+			.filter(member -> !member.isManager())
+			.map(GroupMember::getProfileId)
+			.toList();
 
-		String profileUrl = getProfileUrl(newMember.getId());
-		newMember.updateProfile(profileUrl);
+		Integer newProfileId = findAvailableProfileId(usedProfiles);
+
+		GroupMember newMember = request.toEntity(group, newProfileId, ExpenseRole.PARTICIPANT);
+		newMember = groupMemberRepository.save(newMember);
 
 		return newMember;
 	}
@@ -51,12 +53,13 @@ public class GroupMemberUpdater {
 		return groupMember;
 	}
 
-	private String getProfileUrl(Long memberId) {
-		if (memberId == null || memberId < 1) {
-			return s3Bucket.getS3Url() + "profile/moddo.png";
+	private Integer findAvailableProfileId(List<Integer> usedProfiles) {
+		for (int i = 1; i <= 8; i++) {
+			if (!usedProfiles.contains(i)) {
+				return i;
+			}
 		}
 
-		Long finalId = (memberId - 1) % 9 + 1;
-		return s3Bucket.getS3Url() + "profile/" + finalId + ".png";
+		return (usedProfiles.size() % 8) + 1;
 	}
 }

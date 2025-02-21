@@ -27,6 +27,8 @@ public class GroupMemberCreator {
 		GroupMember groupMember = GroupMember.builder()
 			.name(name)
 			.group(group)
+			.profileId(null)
+			.profileId(0)
 			.role(ExpenseRole.MANAGER)
 			.build();
 

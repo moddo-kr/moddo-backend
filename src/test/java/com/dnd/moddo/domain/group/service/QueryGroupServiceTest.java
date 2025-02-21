@@ -41,9 +41,8 @@ class QueryGroupServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		// Given
 		group = new Group("groupName", 1L, "password", null, null, null, null);
-		groupMember = new GroupMember("김완숙", "profile", group, false, ExpenseRole.MANAGER);
+		groupMember = new GroupMember("김완숙", 1, group, false, ExpenseRole.MANAGER);
 
 		setField(group, "id", 1L);
 	}
@@ -117,8 +116,21 @@ class QueryGroupServiceTest {
 		assertThat(response.groupName()).isEqualTo(group.getName());
 		assertThat(response.bank()).isEqualTo(group.getBank());
 		assertThat(response.accountNumber()).isEqualTo(group.getAccountNumber());
-		assertThat(response.groupName()).isEqualTo(group.getName());
 
 		verify(groupReader, times(1)).findByHeader(group.getId());
+	}
+
+	@Test
+	@DisplayName("그룹 헤더를 찾을 수 없을 경우 예외가 발생한다.")
+	void FindByGroupHeader_Failure_WhenHeaderNotFound() {
+		// Given
+		when(groupReader.findByHeader(anyLong())).thenThrow(new RuntimeException("Header not found"));
+
+		// When & Then
+		assertThatThrownBy(() -> queryGroupService.findByGroupHeader(1L))
+			.isInstanceOf(RuntimeException.class)
+			.hasMessageContaining("Header not found");
+
+		verify(groupReader, times(1)).findByHeader(1L);
 	}
 }

@@ -40,7 +40,6 @@ class MemberExpenseReaderTest {
 			.group(mockGroup)
 			.role(ExpenseRole.MANAGER)
 			.isPaid(true)
-			.profile("profile.jpg")
 			.build();
 	}
 

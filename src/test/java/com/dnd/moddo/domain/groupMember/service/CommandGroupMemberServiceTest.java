@@ -46,8 +46,8 @@ public class CommandGroupMemberServiceTest {
 		Long userId = 1L;
 		GroupMember expectedMembers = GroupMember.builder()
 			.name("김모또")
-			.profile("profile")
 			.group(mockGroup)
+			.profileId(0)
 			.role(ExpenseRole.MANAGER)
 			.build();
 		Group mockGroup = mock(Group.class);
@@ -72,6 +72,7 @@ public class CommandGroupMemberServiceTest {
 		GroupMember expectedMember = GroupMember.builder()
 			.name("김반숙")
 			.group(mockGroup)
+			.profileId(1)
 			.role(ExpenseRole.PARTICIPANT)
 			.build();
 
@@ -94,6 +95,7 @@ public class CommandGroupMemberServiceTest {
 			.name("김반숙")
 			.group(mockGroup)
 			.isPaid(true)
+			.profileId(1)
 			.role(ExpenseRole.PARTICIPANT)
 			.build();
 		PaymentStatusUpdateRequest request = new PaymentStatusUpdateRequest(true);

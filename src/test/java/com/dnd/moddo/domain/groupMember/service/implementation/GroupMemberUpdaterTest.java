@@ -46,7 +46,7 @@ class GroupMemberUpdaterTest {
 		mockGroup = mock(Group.class);
 	}
 
-	@DisplayName("추가하려는 참여자의 이름이 기존 참여자의 이름과 중복되지 않을경우 참여자 추가에 성공한다.")
+	@DisplayName("추가하려는 참여자의 이름이 기존 참여자의 이름과 중복되지 않을 경우 참여자 추가에 성공한다.")
 	@Test
 	void addToGroupSuccess() {
 		// given
@@ -66,6 +66,7 @@ class GroupMemberUpdaterTest {
 			.name(newMemberName)
 			.group(mockGroup)
 			.role(ExpenseRole.PARTICIPANT)
+			.profileId(1)
 			.build();
 		when(groupMemberRepository.save(any())).thenReturn(expectedGroupMember);
 
@@ -76,6 +77,7 @@ class GroupMemberUpdaterTest {
 		assertThat(result).isNotNull();
 		assertThat(result.getGroup()).isEqualTo(mockGroup);
 		assertThat(result.getName()).isEqualTo(newMemberName);
+		assertThat(result.getProfileId()).isEqualTo(1);
 
 		verify(groupMemberRepository, times(1)).save(any());
 	}
@@ -124,5 +126,52 @@ class GroupMemberUpdaterTest {
 		// then
 		assertThat(result).isNotNull();
 		assertThat(result.isPaid()).isTrue();
+	}
+
+	@DisplayName("9번째 이상의 참여자가 추가될 때 프로필 ID가 올바르게 순환된다.")
+	@Test
+	void addToGroupProfileRotationSuccess() {
+		// given
+		Long groupId = 1L;
+		GroupMemberSaveRequest request = mock(GroupMemberSaveRequest.class);
+		String newMemberName = "김철수";
+
+		when(request.name()).thenReturn(newMemberName);
+		when(groupReader.read(eq(groupId))).thenReturn(mockGroup);
+
+		// 기존 멤버 8명 설정
+		List<GroupMember> mockGroupMembers = new ArrayList<>();
+		for (int i = 1; i <= 8; i++) {
+			mockGroupMembers.add(
+				GroupMember.builder()
+					.name("멤버" + i)
+					.group(mockGroup)
+					.profileId(i)
+					.role(ExpenseRole.PARTICIPANT)
+					.build()
+			);
+		}
+		when(groupMemberReader.findAllByGroupId(eq(groupId))).thenReturn(mockGroupMembers);
+
+		doNothing().when(groupMemberValidator).validateMemberNamesNotDuplicate(any());
+
+		GroupMember expectedGroupMember = GroupMember.builder()
+			.name(newMemberName)
+			.group(mockGroup)
+			.role(ExpenseRole.PARTICIPANT)
+			.profileId(1)
+			.build();
+		when(groupMemberRepository.save(any())).thenReturn(expectedGroupMember);
+
+		// when
+		GroupMember result = groupMemberUpdater.addToGroup(groupId, request);
+
+		// then
+		assertThat(result).isNotNull();
+		assertThat(result.getGroup()).isEqualTo(mockGroup);
+		assertThat(result.getName()).isEqualTo(newMemberName);
+		assertThat(result.getProfileId()).isEqualTo(1);
+
+		verify(groupMemberRepository, times(1)).save(any());
 	}
 }

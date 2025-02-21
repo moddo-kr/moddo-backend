@@ -44,7 +44,6 @@ class GroupMemberDeleterTest {
 		Long groupMemberId = 1L;
 		GroupMember expectedMember = GroupMember.builder()
 			.name("김반숙")
-			.profile("profile")
 			.group(mockGroup)
 			.role(ExpenseRole.PARTICIPANT)
 			.isPaid(false)
@@ -82,7 +81,6 @@ class GroupMemberDeleterTest {
 		Long groupMemberId = 1L;
 		GroupMember expectedMember = GroupMember.builder()
 			.name("김모또")
-			.profile("profile")
 			.group(mockGroup)
 			.role(ExpenseRole.MANAGER)
 			.isPaid(false)
