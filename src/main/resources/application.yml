@@ -14,11 +14,17 @@ spring:
 server:
   address: 0.0.0.0
   port: 8080
+  
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
 
-logging:
-  level:
-    org.springframework.web: DEBUG
-    org.springframework.web.servlet.DispatcherServlet: DEBUG
+#logging:
+#  level:
+#    org.springframework.web: DEBUG
+#    org.springframework.web.servlet.DispatcherServlet: DEBUG
 ---
 
 spring:
