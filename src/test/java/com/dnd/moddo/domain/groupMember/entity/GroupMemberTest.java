@@ -58,4 +58,45 @@ class GroupMemberTest {
 		// then
 		assertThat(isManager).isFalse();
 	}
+
+	@DisplayName("참여자가 입금 상태를 변경할 수 있다.")
+	@Test
+	void testUpdatePaymentStatus() {
+		// given
+		GroupMember groupMember = GroupMember.builder()
+			.name("김모또")
+			.group(mockGroup)
+			.role(ExpenseRole.PARTICIPANT)
+			.isPaid(false)
+			.profile("profile.jpg")
+			.build();
+
+		// when
+		groupMember.updatePaymentStatus(true);
+
+		// then
+		assertThat(groupMember.isPaid()).isTrue();
+		assertThat(groupMember.getPaidAt()).isNotNull();
+	}
+
+	@DisplayName("참여자의 프로필을 업데이트할 수 있다.")
+	@Test
+	void testUpdateProfile() {
+		// given
+		GroupMember groupMember = GroupMember.builder()
+			.name("김모또")
+			.group(mockGroup)
+			.role(ExpenseRole.PARTICIPANT)
+			.isPaid(true)
+			.profile("profile.jpg")
+			.build();
+
+		String newProfile = "newProfile.jpg";
+
+		// when
+		groupMember.updateProfile(newProfile);
+
+		// then
+		assertThat(groupMember.getProfile()).isEqualTo(newProfile);
+	}
 }
