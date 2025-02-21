@@ -24,7 +24,7 @@ public record GroupMemberResponse(
 			.role(groupMember.getRole())
 			.isPaid(groupMember.isPaid())
 			.paidAt(groupMember.getPaidAt())
-			.profile(groupMember.getProfileUrl(groupMember.getId()))
+			.profile(groupMember.getProfile())
 			.build();
 	}
 

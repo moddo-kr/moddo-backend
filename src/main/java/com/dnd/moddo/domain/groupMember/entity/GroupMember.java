@@ -35,10 +35,10 @@ public class GroupMember {
 	private String name;
 
 	@Column(name = "profile")
-	private Integer profile;
+	private String profile;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "group_id")
+	@JoinColumn(name = "group_id", nullable = false)
 	private Group group;
 
 	@Column(name = "is_paid", nullable = false)
@@ -48,22 +48,11 @@ public class GroupMember {
 	private LocalDateTime paidAt;
 
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	private ExpenseRole role;
 
-	public GroupMember(String name, Group group, ExpenseRole role) {
-		this(name, null, group, false, role);
-	}
-
-	public GroupMember(String name, Group group, boolean isPaid, ExpenseRole role) {
-		this(name, null, group, isPaid, role);
-	}
-
-	public GroupMember(String name, Integer profileId, Group group, ExpenseRole role) {
-		this(name, profileId, group, false, role);
-	}
-
 	@Builder
-	public GroupMember(String name, Integer profile, Group group, boolean isPaid, ExpenseRole role) {
+	public GroupMember(String name, String profile, Group group, boolean isPaid, ExpenseRole role) {
 		this.name = name;
 		this.profile = profile;
 		this.group = group;
@@ -77,18 +66,10 @@ public class GroupMember {
 
 	public void updatePaymentStatus(Boolean isPaid) {
 		this.isPaid = isPaid;
-		if (Boolean.TRUE.equals(isPaid)) {
-			this.paidAt = LocalDateTime.now();
-		} else {
-			this.paidAt = null;
-		}
+		this.paidAt = Boolean.TRUE.equals(isPaid) ? LocalDateTime.now() : null;
 	}
 
-	public String getProfileUrl(Long profileId) {
-		if (profileId > 8) {
-			Long finalId = profileId - 8;
-			return "https://moddo-s3.s3.ap-northeast-2.amazonaws.com/profile/" + finalId + ".png";
-		}
-		return "https://moddo-s3.s3.ap-northeast-2.amazonaws.com/profile/" + profileId + ".png";
+	public void updateProfile(String profile) {
+		this.profile = profile;
 	}
 }

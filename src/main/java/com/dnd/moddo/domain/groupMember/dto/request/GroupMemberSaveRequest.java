@@ -11,10 +11,14 @@ public record GroupMemberSaveRequest(
 	@NotBlank(message = "이름은 필수 입력값 입니다.")
 	@Pattern(regexp = "^[가-힣a-zA-Z]{1,5}$", message = "참여자 이름은 한글과 영어만 포함하여 5자 이내여야 합니다.")
 	String name
-
 ) {
-	public GroupMember toEntity(Group group, ExpenseRole role) {
-		Integer proflieId = null;
-		return new GroupMember(name(), group, role);
+	public GroupMember toEntity(Group group, String profile, ExpenseRole role) {
+		return GroupMember.builder()
+			.name(name)
+			.group(group)
+			.role(role)
+			.profile(profile)
+			.isPaid(false)
+			.build();
 	}
 }
