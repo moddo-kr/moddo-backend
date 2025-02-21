@@ -69,7 +69,7 @@ public class GroupMemberUpdater {
 		}
 
 		int maxProfileId = usedProfiles.stream().max(Integer::compareTo).orElse(0);
-		return (maxProfileId % 8) + 1;
+		return (usedProfiles.size() % 8) + 1;
 	}
 
 	private String getProfileUrl(int profileId) {
