@@ -43,14 +43,12 @@ public class GroupMemberReaderTest {
 		List<GroupMember> expectedMembers = List.of(
 			GroupMember.builder()
 				.name("김모또")
-				.profile("profile")
 				.group(mockGroup)
 				.role(ExpenseRole.MANAGER)
 				.isPaid(false)
 				.build(),
 			GroupMember.builder()
 				.name("김반숙")
-				.profile("profile")
 				.group(mockGroup)
 				.role(ExpenseRole.PARTICIPANT)
 				.isPaid(false)
@@ -77,7 +75,6 @@ public class GroupMemberReaderTest {
 		Long groupMemberId = 1L;
 		GroupMember expectedMember = GroupMember.builder()
 			.name("김반숙")
-			.profile("profile")
 			.group(mockGroup)
 			.role(ExpenseRole.PARTICIPANT)
 			.isPaid(false)

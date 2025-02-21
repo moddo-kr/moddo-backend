@@ -41,7 +41,6 @@ class MemberExpenseCreatorTest {
 			.group(mockGroup)
 			.role(ExpenseRole.MANAGER)
 			.isPaid(true)
-			.profile("profile.jpg")
 			.build();
 
 		mockMemberExpenseRequest = mock(MemberExpenseRequest.class);

@@ -46,8 +46,8 @@ public class CommandGroupMemberServiceTest {
 		Long userId = 1L;
 		GroupMember expectedMembers = GroupMember.builder()
 			.name("김모또")
-			.profile("profile")
 			.group(mockGroup)
+			.profileId(0)
 			.role(ExpenseRole.MANAGER)
 			.build();
 		Group mockGroup = mock(Group.class);

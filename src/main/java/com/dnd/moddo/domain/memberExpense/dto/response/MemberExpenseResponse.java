@@ -18,7 +18,7 @@ public record MemberExpenseResponse(
 			.id(memberExpense.getGroupMember().getId())
 			.name(memberExpense.getGroupMember().getName())
 			.role(memberExpense.getGroupMember().getRole())
-			.profile(memberExpense.getGroupMember().getProfile())
+			.profile(memberExpense.getGroupMember().getProfileUrl())
 			.amount(memberExpense.getAmount())
 			.build();
 	}

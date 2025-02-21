@@ -14,7 +14,7 @@ public record GroupMembersSaveRequest(
 ) {
 	public List<GroupMember> toEntity(Group group) {
 		return members.stream()
-			.map(m -> m.toEntity(group, null, null, PARTICIPANT))
+			.map(m -> m.toEntity(group, null, PARTICIPANT))
 			.toList();
 	}
 

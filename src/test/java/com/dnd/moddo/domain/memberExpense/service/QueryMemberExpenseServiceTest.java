@@ -48,17 +48,17 @@ class QueryMemberExpenseServiceTest {
 
 		mockGroupMember1 = GroupMember.builder()
 			.name("김모또")
-			.profile("profile1.jpg")
 			.group(mockGroup)
 			.isPaid(true)
+			.profileId(0)
 			.role(ExpenseRole.MANAGER)
 			.build();
 
 		mockGroupMember2 = GroupMember.builder()
 			.name("박완숙")
-			.profile("profile2.jpg")
 			.group(mockGroup)
 			.isPaid(false)
+			.profileId(1)
 			.role(ExpenseRole.PARTICIPANT)
 			.build();
 	}
