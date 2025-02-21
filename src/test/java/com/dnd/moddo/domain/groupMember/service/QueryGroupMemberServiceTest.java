@@ -40,10 +40,12 @@ public class QueryGroupMemberServiceTest {
 			GroupMember.builder()
 				.name("김모또")
 				.group(mockGroup)
+				.profileId(0)
 				.role(ExpenseRole.MANAGER)
 				.build(),
 			GroupMember.builder()
 				.name("김반숙")
+				.profileId(1)
 				.group(mockGroup)
 				.role(ExpenseRole.PARTICIPANT)
 				.build()
