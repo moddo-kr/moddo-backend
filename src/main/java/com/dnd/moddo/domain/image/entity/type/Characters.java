@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum Character {
+public enum Characters {
 	LUCKY(1, "러키 또또"),
 	ANGEL(2, "천사 모또"),
 	STRAWBERRY(2, "딸기 또또"),
@@ -18,7 +18,7 @@ public enum Character {
 	private final int rarity;
 	private final String name;
 
-	public static List<Character> getByRarity(int rarity) {
+	public static List<Characters> getByRarity(int rarity) {
 		return Arrays.stream(values())
 			.filter(character -> character.getRarity() == rarity)
 			.toList();
