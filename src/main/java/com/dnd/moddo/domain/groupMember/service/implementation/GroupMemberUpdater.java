@@ -67,8 +67,7 @@ public class GroupMemberUpdater {
 				return i;
 			}
 		}
-
-		int maxProfileId = usedProfiles.stream().max(Integer::compareTo).orElse(0);
+		
 		return (usedProfiles.size() % 8) + 1;
 	}
 
