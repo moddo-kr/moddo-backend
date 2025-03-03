@@ -24,8 +24,8 @@ public record CharacterResponse(
 		return new CharacterResponse(
 			characters.getName(),
 			rarityString,
-			getImageUrl(s3Bucket, characters.getFileName(), characters.getRarity()),
-			getBigImageUrl(s3Bucket, characters.getBigName(), characters.getRarity())
+			getImageUrl(s3Bucket, characters.getName(), characters.getRarity()),
+			getBigImageUrl(s3Bucket, characters.getName(), characters.getRarity())
 		);
 	}
 
