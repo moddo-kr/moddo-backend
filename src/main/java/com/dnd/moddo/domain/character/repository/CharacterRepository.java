@@ -1,10 +1,10 @@
-package com.dnd.moddo.character.repository;
+package com.dnd.moddo.domain.character.repository;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.dnd.moddo.character.entity.Character;
+import com.dnd.moddo.domain.character.entity.Character;
 import com.dnd.moddo.domain.image.exception.CharacterNotFoundException;
 
 public interface CharacterRepository extends JpaRepository<Character, Long> {

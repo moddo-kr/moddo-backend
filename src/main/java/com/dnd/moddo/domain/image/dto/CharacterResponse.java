@@ -1,6 +1,6 @@
 package com.dnd.moddo.domain.image.dto;
 
-import com.dnd.moddo.character.entity.Character;
+import com.dnd.moddo.domain.character.entity.Character;
 import com.dnd.moddo.domain.image.entity.type.Characters;
 import com.dnd.moddo.global.config.S3Bucket;
 

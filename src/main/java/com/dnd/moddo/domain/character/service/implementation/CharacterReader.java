@@ -1,9 +1,9 @@
-package com.dnd.moddo.character.service.implementation;
+package com.dnd.moddo.domain.character.service.implementation;
 
 import org.springframework.stereotype.Service;
 
-import com.dnd.moddo.character.entity.Character;
-import com.dnd.moddo.character.repository.CharacterRepository;
+import com.dnd.moddo.domain.character.entity.Character;
+import com.dnd.moddo.domain.character.repository.CharacterRepository;
 import com.dnd.moddo.domain.image.dto.CharacterResponse;
 import com.dnd.moddo.domain.image.exception.CharacterNotFoundException;
 

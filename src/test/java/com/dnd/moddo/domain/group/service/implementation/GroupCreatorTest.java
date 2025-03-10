@@ -14,8 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import com.dnd.moddo.character.entity.Character;
-import com.dnd.moddo.character.repository.CharacterRepository;
+import com.dnd.moddo.domain.character.entity.Character;
+import com.dnd.moddo.domain.character.repository.CharacterRepository;
 import com.dnd.moddo.domain.group.dto.request.GroupRequest;
 import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.group.repository.GroupRepository;
