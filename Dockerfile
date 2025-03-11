@@ -1,8 +1,22 @@
-FROM openjdk:17-jdk
-ARG JAR_FILE=build/libs/*.jar
+# 1단계: 빌드 환경 (Gradle 빌드)
+FROM gradle:7.4.2-jdk17 AS builder
 
-ENV SPRING_PROFILES_ACTIVE=prod
-COPY ${JAR_FILE} moddo.jar
-ENTRYPOINT ["java","-jar","/moddo.jar"]
 
-RUN ln -snf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
+WORKDIR /app
+COPY gradlew .
+COPY gradle gradle
+COPY build.gradle .
+COPY settings.gradle .
+
+RUN chmod +x ./gradlew
+RUN ./gradlew dependencies
+
+COPY src src
+RUN ./gradlew bootJar --no-daemon
+
+# 2단계: 실행 환경 (최종 실행 이미지만 남김)
+FROM openjdk:17-jdk-slim
+
+WORKDIR /app
+COPY --from=builder /app/build/libs/*.jar /app/moddo.jar
+ENTRYPOINT ["java", "-jar", "moddo.jar"]
