@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import com.dnd.moddo.domain.character.entity.Character;
 import com.dnd.moddo.domain.group.entity.Group;
 
 class CharacterTest {

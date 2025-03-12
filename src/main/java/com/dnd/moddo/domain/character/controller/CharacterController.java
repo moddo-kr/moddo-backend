@@ -1,4 +1,4 @@
-package com.dnd.moddo.character.controller;
+package com.dnd.moddo.domain.character.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dnd.moddo.character.service.QueryCharacterService;
+import com.dnd.moddo.domain.character.service.QueryCharacterService;
 import com.dnd.moddo.domain.image.dto.CharacterResponse;
 import com.dnd.moddo.global.jwt.service.JwtService;
 
