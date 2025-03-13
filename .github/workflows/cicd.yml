@@ -28,14 +28,15 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Make gradlew executable
-        run: chmod +x gradlew
+      - name: Pull the existing Docker image (if any)
+        run: |
+          docker pull ${{ env.DOCKER_IMAGE_NAME }}:latest || true
 
-      - name: Build with Gradle
-        run: ./gradlew build
-
-      - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag ${{ env.DOCKER_IMAGE_NAME }}:latest
+      - name: Build the Docker image with cache
+        run: |
+          docker build . --file Dockerfile --tag ${{ env.DOCKER_IMAGE_NAME }}:latest \
+          --cache-from=${{ env.DOCKER_IMAGE_NAME }}:latest \
+          --platform linux/amd64    
 
       - name: Login to Docker Hub using Access Token
         run: |
