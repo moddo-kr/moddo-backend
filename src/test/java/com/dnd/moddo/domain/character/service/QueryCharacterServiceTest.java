@@ -12,7 +12,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.character.service.implementation.CharacterReader;
+import com.dnd.moddo.domain.character.service.QueryCharacterService;
+import com.dnd.moddo.domain.character.service.implementation.CharacterReader;
 import com.dnd.moddo.domain.image.dto.CharacterResponse;
 import com.dnd.moddo.domain.image.exception.CharacterNotFoundException;
 

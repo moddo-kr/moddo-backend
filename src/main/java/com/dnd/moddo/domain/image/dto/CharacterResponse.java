@@ -1,6 +1,6 @@
 package com.dnd.moddo.domain.image.dto;
 
-import com.dnd.moddo.character.entity.Character;
+import com.dnd.moddo.domain.character.entity.Character;
 import com.dnd.moddo.domain.image.entity.type.Characters;
 import com.dnd.moddo.global.config.S3Bucket;
 
@@ -24,8 +24,8 @@ public record CharacterResponse(
 		return new CharacterResponse(
 			characters.getName(),
 			rarityString,
-			getImageUrl(s3Bucket, characters.getFileName(), characters.getRarity()),
-			getBigImageUrl(s3Bucket, characters.getBigName(), characters.getRarity())
+			getImageUrl(s3Bucket, characters.getName(), characters.getRarity()),
+			getBigImageUrl(s3Bucket, characters.getName(), characters.getRarity())
 		);
 	}
 

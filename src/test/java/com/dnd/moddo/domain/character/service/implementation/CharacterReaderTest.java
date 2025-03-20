@@ -14,8 +14,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.character.entity.Character;
-import com.dnd.moddo.character.repository.CharacterRepository;
+import com.dnd.moddo.domain.character.entity.Character;
+import com.dnd.moddo.domain.character.repository.CharacterRepository;
+import com.dnd.moddo.domain.character.service.implementation.CharacterReader;
 import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.image.dto.CharacterResponse;
 import com.dnd.moddo.domain.image.exception.CharacterNotFoundException;

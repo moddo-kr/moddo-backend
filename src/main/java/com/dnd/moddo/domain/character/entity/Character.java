@@ -1,4 +1,4 @@
-package com.dnd.moddo.character.entity;
+package com.dnd.moddo.domain.character.entity;
 
 import com.dnd.moddo.domain.group.entity.Group;
 

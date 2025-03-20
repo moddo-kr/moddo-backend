@@ -1,8 +1,8 @@
-package com.dnd.moddo.character.service;
+package com.dnd.moddo.domain.character.service;
 
 import org.springframework.stereotype.Service;
 
-import com.dnd.moddo.character.service.implementation.CharacterReader;
+import com.dnd.moddo.domain.character.service.implementation.CharacterReader;
 import com.dnd.moddo.domain.image.dto.CharacterResponse;
 
 import lombok.RequiredArgsConstructor;
