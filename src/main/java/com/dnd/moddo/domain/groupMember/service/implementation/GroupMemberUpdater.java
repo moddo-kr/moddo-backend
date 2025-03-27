@@ -3,7 +3,9 @@ package com.dnd.moddo.domain.groupMember.service.implementation;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.moddo.domain.group.entity.Group;
@@ -12,19 +14,20 @@ import com.dnd.moddo.domain.groupMember.dto.request.GroupMemberSaveRequest;
 import com.dnd.moddo.domain.groupMember.dto.request.PaymentStatusUpdateRequest;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
+import com.dnd.moddo.domain.groupMember.exception.PaymentConcurrencyException;
 import com.dnd.moddo.domain.groupMember.repository.GroupMemberRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class GroupMemberUpdater {
 	private final GroupMemberRepository groupMemberRepository;
 	private final GroupMemberReader groupMemberReader;
 	private final GroupMemberValidator groupMemberValidator;
 	private final GroupReader groupReader;
 
+	@Transactional
 	public GroupMember addToGroup(Long groupId, GroupMemberSaveRequest request) {
 		Group group = groupReader.read(groupId);
 		List<GroupMember> groupMembers = groupMemberReader.findAllByGroupId(groupId);
@@ -47,10 +50,18 @@ public class GroupMemberUpdater {
 		return newMember;
 	}
 
+	@Transactional(isolation = Isolation.READ_COMMITTED)
 	public GroupMember updatePaymentStatus(Long groupMemberId, PaymentStatusUpdateRequest request) {
-		GroupMember groupMember = groupMemberRepository.getById(groupMemberId);
-		groupMember.updatePaymentStatus(request.isPaid());
-		return groupMember;
+		try {
+			GroupMember groupMember = groupMemberRepository.getById(groupMemberId);
+			if (groupMember.isPaid() != request.isPaid()) {
+				groupMember.updatePaymentStatus(request.isPaid());
+				groupMemberRepository.save(groupMember);
+			}
+			return groupMember;
+		} catch (OptimisticLockingFailureException e) {
+			throw new PaymentConcurrencyException();
+		}
 	}
 
 	private Integer findAvailableProfileId(List<Integer> usedProfiles) {
@@ -63,3 +74,6 @@ public class GroupMemberUpdater {
 		return (usedProfiles.size() % 8) + 1;
 	}
 }
+
+
+

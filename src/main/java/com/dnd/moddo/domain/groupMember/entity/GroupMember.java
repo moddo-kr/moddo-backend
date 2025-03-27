@@ -16,6 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -50,6 +51,9 @@ public class GroupMember {
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private ExpenseRole role;
+
+	@Version
+	private Long version = 0L;
 
 	@Builder
 	public GroupMember(String name, Integer profileId, Group group, boolean isPaid, ExpenseRole role) {
