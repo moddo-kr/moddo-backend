@@ -58,7 +58,7 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ env.SERVER_HOST }}
-          username: ${{ env.SERVER_PASSWORD }}
+          username: ${{ env.SERVER_USER }}
           password: ${{ env.SERVER_PASSWORD }}
           port: 22
           envs: GITHUB_SHA
