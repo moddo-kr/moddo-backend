@@ -8,3 +8,9 @@ services:
     environment:
       - TZ=Asia/Seoul
     restart: always
+    networks:
+      - moddo_network
+
+networks:
+  moddo_network:
+    external: true
