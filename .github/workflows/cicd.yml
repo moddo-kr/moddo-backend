@@ -6,9 +6,9 @@ on:
       - main
 env:
   DOCKER_IMAGE_NAME: ${{  secrets.DOCKER_HUB_USERNAME  }}/moddo
-  EC2_HOST: ${{  secrets.EC2_HOST  }}
-  EC2_SSH_USER: ${{  secrets.EC2_USER  }}
-  PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+  SERVER_HOST: ${{  secrets.SERVER_HOST  }}
+  SERVER_USER: ${{  secrets.SERVER_USER  }}
+  SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
   DOKCER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN}}
 jobs:
   build-and-push-docker:
@@ -57,9 +57,9 @@ jobs:
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ env.EC2_HOST }}
-          username: ${{ env.EC2_SSH_USER }}
-          key: ${{ env.PRIVATE_KEY }}
+          host: ${{ env.SERVER_HOST }}
+          username: ${{ env.SERVER_USER }}
+          password: ${{ env.SERVER_PASSWORD }}
           port: 22
           envs: GITHUB_SHA
           script: |
