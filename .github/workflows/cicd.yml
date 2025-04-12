@@ -60,7 +60,7 @@ jobs:
           host: ${{ env.SERVER_HOST }}
           username: ${{ env.SERVER_USER }}
           password: ${{ env.SERVER_PASSWORD }}
-          port: 22
+          port: 2222
           envs: GITHUB_SHA
           script: |
             cd dnd-12th-7-backend
