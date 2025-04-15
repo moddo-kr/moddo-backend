@@ -59,7 +59,7 @@ jobs:
         with:
           host: ${{ env.SERVER_HOST }}
           username: ${{ env.SERVER_USER }}
-          password: ${{ env.SERVER_PASSWORD }}
+          key: ${{ env.SERVER_PASSWORD }}
           port: 22
           envs: GITHUB_SHA
           script: |
