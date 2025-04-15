@@ -6,9 +6,9 @@ on:
       - main
 env:
   DOCKER_IMAGE_NAME: ${{  secrets.DOCKER_HUB_USERNAME  }}/moddo
-  SERVER_HOST: ${{  secrets.SERVER_HOST  }}
-  SERVER_USER: ${{  secrets.SERVER_USER  }}
-  SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+  SERVER_HOST: ${{  secrets.EC2_HOST  }}
+  SERVER_USER: ${{  secrets.EC2_PASSWORD  }}
+  SERVER_PASSWORD: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
   DOKCER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN}}
 jobs:
   build-and-push-docker:
