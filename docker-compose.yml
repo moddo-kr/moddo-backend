@@ -1,10 +1,21 @@
 version: '3'
 services:
   app:
-    image: sudhdkso/moddo
+    image: sudhdkso/moddo:latest
     container_name: moddo
     ports:
       - "8080:8080"
-    environment:
-      - TZ=Asia/Seoul
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"  # 최대 로그 파일 크기 설정
+        max-file: "3"    # 보관할 로그 파일의 수
     restart: always
+    networks:
+      - backend
+    volumes:
+      - ./logs:/logs  # 로그 파일을 호스트 시스템의 ./logs 디렉토리로 매핑
+
+networks:
+  backend:
+    driver: bridge
