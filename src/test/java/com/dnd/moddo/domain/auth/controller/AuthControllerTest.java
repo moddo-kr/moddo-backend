@@ -63,7 +63,7 @@ public class AuthControllerTest {
 		mockMvc.perform(get("/api/v1/user/guest/token")
 				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
-			.andDo(document("auth-get-guest-token",
+			.andDo(document("auth",
 				responseFields(
 					fieldWithPath("accessToken").type(JsonFieldType.STRING).description("발급된 Access Token"),
 					fieldWithPath("refreshToken").type(JsonFieldType.STRING).description("발급된 Refresh Token")
@@ -74,14 +74,14 @@ public class AuthControllerTest {
 	@Test
 	void reissueAccessToken() throws Exception {
 		when(refreshTokenService.execute("Bearer refresh-token")).thenReturn(
-			RefreshResponse.builder().accessToken("new-access-token").build()
+			RefreshResponse.builder().accessToken("새로 발급된 Access Token").build()
 		);
 
 		mockMvc.perform(put("/api/v1/user/reissue/token")
 				.header("Authorization", "Bearer refresh-token")
 				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
-			.andDo(document("auth-put-reissue-token",
+			.andDo(document("auth",
 				requestHeaders(
 					headerWithName("Authorization").description("기존 Refresh Token")
 				),
