@@ -19,6 +19,7 @@ import com.dnd.moddo.domain.expense.dto.response.ExpenseResponse;
 import com.dnd.moddo.domain.expense.dto.response.ExpensesResponse;
 import com.dnd.moddo.domain.expense.service.CommandExpenseService;
 import com.dnd.moddo.domain.expense.service.QueryExpenseService;
+import com.dnd.moddo.domain.group.service.QueryGroupService;
 import com.dnd.moddo.global.common.annotation.VerifyManagerPermission;
 import com.dnd.moddo.global.jwt.service.JwtService;
 
@@ -34,19 +35,20 @@ public class ExpenseController {
 	private final CommandExpenseService commandExpenseService;
 	private final QueryExpenseService queryExpenseService;
 	private final JwtService jwtService;
+	private final QueryGroupService queryGroupService;
 
 	@PostMapping
 	public ResponseEntity<ExpensesResponse> saveExpenses(
-		@RequestParam("groupToken") String groupToken,
+		@RequestParam("code") String code,
 		@Valid @RequestBody ExpensesRequest request) {
-		Long groupId = jwtService.getGroupId(groupToken);
+		Long groupId = queryGroupService.findIdByCode(code);
 		ExpensesResponse response = commandExpenseService.createExpenses(groupId, request);
 		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping
-	public ResponseEntity<ExpensesResponse> getAllByGroupId(@RequestParam("groupToken") String groupToken) {
-		Long groupId = jwtService.getGroupId(groupToken);
+	public ResponseEntity<ExpensesResponse> getAllByGroupId(@RequestParam("code") String code) {
+		Long groupId = queryGroupService.findIdByCode(code);
 		ExpensesResponse response = queryExpenseService.findAllByGroupId(groupId);
 		return ResponseEntity.ok(response);
 	}
@@ -60,8 +62,8 @@ public class ExpenseController {
 
 	@GetMapping("/details")
 	public ResponseEntity<ExpenseDetailsResponse> getExpenseDetailsByGroupId(
-		@RequestParam("groupToken") String groupToken) {
-		Long groupId = jwtService.getGroupId(groupToken);
+		@RequestParam("code") String code) {
+		Long groupId = queryGroupService.findIdByCode(code);
 		ExpenseDetailsResponse response = queryExpenseService.findAllExpenseDetailsByGroupId(groupId);
 		return ResponseEntity.ok(response);
 	}
@@ -84,11 +86,11 @@ public class ExpenseController {
 
 	@PutMapping("/img/{expenseId}")
 	public void updateImgUrl(HttpServletRequest request,
-		@RequestParam("groupToken") String groupToken,
+		@RequestParam("code") String code,
 		@PathVariable("expenseId") Long expenseId,
 		@RequestBody ExpenseImageRequest expenseImageRequest) {
 		Long userId = jwtService.getUserId(request);
-		Long groupId = jwtService.getGroupId(groupToken);
+		Long groupId = queryGroupService.findIdByCode(code);
 		commandExpenseService.updateImgUrl(userId, groupId, expenseId, expenseImageRequest);
 	}
 }

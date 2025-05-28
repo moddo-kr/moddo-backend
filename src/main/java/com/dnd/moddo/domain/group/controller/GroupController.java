@@ -43,10 +43,10 @@ public class GroupController {
 	@PutMapping("/account")
 	public ResponseEntity<GroupResponse> updateAccount(
 		HttpServletRequest request,
-		@RequestParam("groupToken") String groupToken,
+		@RequestParam("code") String code,
 		@RequestBody GroupAccountRequest groupAccountRequest) {
 		Long userId = jwtService.getUserId(request);
-		Long groupId = jwtService.getGroupId(groupToken);
+		Long groupId = queryGroupService.findIdByCode(code);
 
 		GroupResponse response = commandGroupService.updateAccount(groupAccountRequest, userId, groupId);
 		return ResponseEntity.ok(response);
@@ -55,9 +55,9 @@ public class GroupController {
 	@GetMapping
 	public ResponseEntity<GroupDetailResponse> getGroup(
 		HttpServletRequest request,
-		@RequestParam("groupToken") String groupToken) {
+		@RequestParam("code") String code) {
 		Long userId = jwtService.getUserId(request);
-		Long groupId = jwtService.getGroupId(groupToken);
+		Long groupId = queryGroupService.findIdByCode(code);
 
 		GroupDetailResponse response = queryGroupService.findOne(groupId, userId);
 		return ResponseEntity.ok(response);
@@ -66,10 +66,10 @@ public class GroupController {
 	@PostMapping("/password")
 	public ResponseEntity<GroupPasswordResponse> isPasswordMatch(
 		HttpServletRequest request,
-		@RequestParam("groupToken") String groupToken,
+		@RequestParam("code") String code,
 		@RequestBody GroupPasswordRequest groupPasswordRequest) {
 		Long userId = jwtService.getUserId(request);
-		Long groupId = jwtService.getGroupId(groupToken);
+		Long groupId = queryGroupService.findIdByCode(code);
 
 		GroupPasswordResponse response = commandGroupService.isPasswordMatch(groupId, userId, groupPasswordRequest);
 		return ResponseEntity.ok(response);
@@ -77,9 +77,9 @@ public class GroupController {
 
 	@GetMapping("/header")
 	public ResponseEntity<GroupHeaderResponse> getHeader(
-		@RequestParam("groupToken") String groupToken) {
-		Long groupId = jwtService.getGroupId(groupToken);
-		
+		@RequestParam("code") String code) {
+		Long groupId = queryGroupService.findIdByCode(code);
+
 		GroupHeaderResponse response = queryGroupService.findByGroupHeader(groupId);
 		return ResponseEntity.ok(response);
 	}
