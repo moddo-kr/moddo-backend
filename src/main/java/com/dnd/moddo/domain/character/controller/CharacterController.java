@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dnd.moddo.domain.character.service.QueryCharacterService;
+import com.dnd.moddo.domain.group.service.QueryGroupService;
 import com.dnd.moddo.domain.image.dto.CharacterResponse;
 import com.dnd.moddo.global.jwt.service.JwtService;
 
@@ -19,12 +20,13 @@ public class CharacterController {
 
 	private final JwtService jwtService;
 	private final QueryCharacterService queryCharacterService;
+	private final QueryGroupService queryGroupService;
 
 	@GetMapping()
 	public ResponseEntity<CharacterResponse> getCharacter(
-		@RequestParam("groupToken") String groupToken
+		@RequestParam("code") String code
 	) {
-		Long groupId = jwtService.getGroupId(groupToken);
+		Long groupId = queryGroupService.findIdByCode(code);
 
 		CharacterResponse response = queryCharacterService.findCharacterByGroupId(groupId);
 		return ResponseEntity.ok(response);
