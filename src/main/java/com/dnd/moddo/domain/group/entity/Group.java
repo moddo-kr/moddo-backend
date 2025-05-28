@@ -44,9 +44,12 @@ public class Group {
 
 	private LocalDateTime deadline;
 
+	@Column(unique = true)
+	private String code;
+
 	@Builder
 	public Group(String name, Long writer, String password, LocalDateTime createdAt,
-		String bank, String accountNumber, LocalDateTime deadline) {
+		String bank, String accountNumber, String code, LocalDateTime deadline) {
 		this.name = name;
 		this.writer = writer;
 		this.password = password;
@@ -54,6 +57,7 @@ public class Group {
 		this.expiredAt = LocalDateTime.now().plusMonths(1);
 		this.bank = bank;
 		this.accountNumber = accountNumber;
+		this.code = code;
 		this.deadline = deadline;
 	}
 
