@@ -20,7 +20,7 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
 	Optional<Long> findIdByCode(@Param("code") String code);
 
 	default Long getIdByCode(String code) {
-		return findIdByCode(code).orElseThrow(() -> new IllegalArgumentException("code notFound"));
+		return findIdByCode(code).orElseThrow(() -> new GroupNotFoundException(code));
 	}
 
 }
