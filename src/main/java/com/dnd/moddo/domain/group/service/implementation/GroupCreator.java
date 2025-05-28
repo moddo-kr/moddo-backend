@@ -63,8 +63,6 @@ public class GroupCreator {
 			String uuid = UUID.randomUUID().toString();
 			String code = ShortUUIDGenerator.shortenUUID(uuid);
 			if (!groupRepository.existsByCode(code)) {
-				System.out.print(uuid + " -> ");
-				System.out.println(code);
 				return code;
 			}
 		}
