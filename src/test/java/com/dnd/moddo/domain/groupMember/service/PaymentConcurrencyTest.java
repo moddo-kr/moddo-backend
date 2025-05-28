@@ -2,7 +2,6 @@ package com.dnd.moddo.domain.groupMember.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 
-import java.time.LocalDateTime;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -26,6 +25,7 @@ import com.dnd.moddo.domain.groupMember.repository.GroupMemberRepository;
 import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberReader;
 import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberUpdater;
 import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberValidator;
+import com.dnd.moddo.support.GroupTestFactory;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = ModdoApplication.class) // 명시적으로 설정 클래스를 지정
@@ -47,8 +47,7 @@ public class PaymentConcurrencyTest {
 
 	@BeforeEach
 	void setUp() {
-		Group mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now().plusMinutes(1),
-			"은행", "계좌", LocalDateTime.now().plusDays(1));
+		Group mockGroup = GroupTestFactory.createDefault();
 
 		groupRepository.save(mockGroup);
 

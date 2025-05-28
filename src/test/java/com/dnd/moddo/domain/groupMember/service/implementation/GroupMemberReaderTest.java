@@ -3,7 +3,6 @@ package com.dnd.moddo.domain.groupMember.service.implementation;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.Mockito.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +18,7 @@ import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.groupMember.exception.GroupMemberNotFoundException;
 import com.dnd.moddo.domain.groupMember.repository.GroupMemberRepository;
+import com.dnd.moddo.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)
 public class GroupMemberReaderTest {
@@ -31,8 +31,7 @@ public class GroupMemberReaderTest {
 
 	@BeforeEach
 	void setUp() {
-		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now().plusMinutes(1),
-			"은행", "계좌", LocalDateTime.now().plusDays(1));
+		mockGroup = GroupTestFactory.createDefault();
 	}
 
 	@DisplayName("모임이 존재할때 모임의 모든 참여자를 조회에 성공한다.")

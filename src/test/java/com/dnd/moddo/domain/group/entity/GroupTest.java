@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.dnd.moddo.domain.group.dto.request.GroupAccountRequest;
+import com.dnd.moddo.support.GroupTestFactory;
 
 class GroupTest {
 
@@ -16,8 +17,7 @@ class GroupTest {
 
 	@BeforeEach
 	void setUp() {
-		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now().plusMinutes(1),
-			"은행", "계좌", LocalDateTime.now().plusDays(1));
+		mockGroup = GroupTestFactory.createDefault();
 	}
 
 	@DisplayName("그룹의 작성자(userId)가 해당 그룹의 작성자인지 확인한다.")

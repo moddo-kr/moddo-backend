@@ -3,8 +3,6 @@ package com.dnd.moddo.domain.groupMember.service;
 import static org.assertj.core.api.BDDAssertions.*;
 import static org.mockito.Mockito.*;
 
-import java.time.LocalDateTime;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +19,7 @@ import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberCreator;
 import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberUpdater;
+import com.dnd.moddo.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)
 public class CommandGroupMemberServiceTest {
@@ -35,8 +34,7 @@ public class CommandGroupMemberServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now().plusMinutes(1),
-			"은행", "계좌", LocalDateTime.now().plusDays(1));
+		mockGroup = GroupTestFactory.createDefault();
 	}
 
 	@DisplayName("모든 정보가 유효할때 총무 생성에 성공한다.")

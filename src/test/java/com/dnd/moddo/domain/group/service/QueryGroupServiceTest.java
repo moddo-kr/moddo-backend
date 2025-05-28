@@ -23,6 +23,7 @@ import com.dnd.moddo.domain.group.service.implementation.GroupReader;
 import com.dnd.moddo.domain.group.service.implementation.GroupValidator;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
+import com.dnd.moddo.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)
 class QueryGroupServiceTest {
@@ -41,7 +42,7 @@ class QueryGroupServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		group = new Group("groupName", 1L, "password", null, null, null, null);
+		group = GroupTestFactory.createDefault();
 		groupMember = new GroupMember("김완숙", 1, group, false, ExpenseRole.MANAGER);
 
 		setField(group, "id", 1L);
