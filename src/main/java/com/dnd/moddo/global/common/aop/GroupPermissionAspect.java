@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import com.dnd.moddo.domain.auth.exception.TokenNotFoundException;
 import com.dnd.moddo.domain.auth.exception.UserPermissionException;
 import com.dnd.moddo.domain.group.entity.Group;
+import com.dnd.moddo.domain.group.service.QueryGroupService;
 import com.dnd.moddo.domain.group.service.implementation.GroupReader;
 import com.dnd.moddo.global.common.annotation.VerifyManagerPermission;
 import com.dnd.moddo.global.jwt.service.JwtService;
@@ -20,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 @Component
 public class GroupPermissionAspect {
 	private final JwtService jwtService;
+	private final QueryGroupService queryGroupService;
 	private final HttpServletRequest request;
 	private final GroupReader groupReader;
 
@@ -34,13 +36,13 @@ public class GroupPermissionAspect {
 		Long userId = jwtService.getUserId(request);
 
 		//parameter에서 group token 추출
-		String groupToken = request.getParameter("groupToken");
+		String code = request.getParameter("code");
 
-		if (groupToken == null) {
+		if (code == null) {
 			throw new TokenNotFoundException("group token");
 		}
 
-		Long groupId = jwtService.getGroupId(groupToken);
+		Long groupId = queryGroupService.findIdByCode(code);
 
 		// 사용자 검증
 		if (!isAuthorized(userId, groupId)) {
