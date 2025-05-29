@@ -64,7 +64,7 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
-    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor:3.0.0'
+    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 
     //monitoring
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
@@ -97,6 +97,22 @@ asciidoctor {
     inputs.dir snippetsDir
     configurations 'asciidoctorExt'
     dependsOn test
+
+    baseDirFollowsSourceDir()
+}
+
+asciidoctor.doFirst {
+    delete file('src/main/resources/static/docs')
+}
+
+tasks.register('copyDocument', Copy) {
+    dependsOn asciidoctor
+    from file("build/docs/asciidoc")
+    into file("src/main/resources/static/docs")
+}
+
+build {
+    dependsOn copyDocument
 }
 
 bootJar {
