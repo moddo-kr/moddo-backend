@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.dnd.moddo.domain.group.dto.response.GroupDetailResponse;
 import com.dnd.moddo.domain.group.dto.response.GroupHeaderResponse;
 import com.dnd.moddo.domain.group.entity.Group;
+import com.dnd.moddo.domain.group.exception.GroupNotFoundException;
 import com.dnd.moddo.domain.group.service.implementation.GroupReader;
 import com.dnd.moddo.domain.group.service.implementation.GroupValidator;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
@@ -133,5 +134,31 @@ class QueryGroupServiceTest {
 			.hasMessageContaining("Header not found");
 
 		verify(groupReader, times(1)).findByHeader(1L);
+	}
+
+	@DisplayName("group code가 유효할 때 group Id를 찾을 수 있다.")
+	@Test
+	void FindByGroupId_Success() {
+		//given
+		Long expected = 1L;
+		when(groupReader.findIdByGroupCode(anyString())).thenReturn(expected);
+		//when
+		Long result = groupReader.findIdByGroupCode("code");
+		//then
+		assertThat(result).isEqualTo(expected);
+		verify(groupReader, times(1)).findIdByGroupCode(anyString());
+	}
+
+	@DisplayName("group code가 존재하지 않을때 예외가 발생한다..")
+	@Test
+	void FindByGroupId_ThrowException_WhenCodeNotFound() {
+		//given
+		when(groupReader.findIdByGroupCode(anyString())).thenThrow(new GroupNotFoundException("code"));
+		//when & then
+		assertThatThrownBy(() -> groupReader.findIdByGroupCode("code"))
+			.isInstanceOf(RuntimeException.class)
+			.hasMessageContaining("code");
+
+		verify(groupReader, times(1)).findIdByGroupCode(anyString());
 	}
 }

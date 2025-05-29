@@ -87,6 +87,9 @@ class GroupCreatorTest {
 		when(imageReader.getRandomCharacter()).thenReturn(mockCharacterResponse);
 		when(characterRepository.save(any(Character.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
+		when(groupRepository.existsByCode(anyString()))
+			.thenReturn(false);
+
 		// when
 		Group response = groupCreator.createGroup(request, userId);
 
@@ -99,5 +102,24 @@ class GroupCreatorTest {
 		verify(groupRepository, times(1)).save(any(Group.class));
 		verify(imageReader, times(1)).getRandomCharacter();
 		verify(characterRepository, times(1)).save(any(Character.class));
+		verify(groupRepository, times(1)).existsByCode(anyString());
+	}
+
+	@DisplayName("모임 생성 시 중복된 group code를 5번 생성시 예외가 발생한다. ")
+	@Test
+	void whenGroupCodeIsDuplicatedFiveTimes_thenThrowsException() {
+		// given
+		when(userRepository.getById(userId)).thenReturn(mockUser);
+		when(passwordEncoder.encode(request.password())).thenReturn(encodedPassword);
+
+		when(groupRepository.existsByCode(anyString())).thenReturn(true);
+
+		// when & then
+		assertThatThrownBy(() -> groupCreator.createGroup(request, userId))
+			.isInstanceOf(RuntimeException.class)
+			.hasMessageContaining("코드");
+
+		verify(userRepository, times(1)).getById(anyLong());
+		verify(groupRepository, times((5))).existsByCode(anyString());
 	}
 }

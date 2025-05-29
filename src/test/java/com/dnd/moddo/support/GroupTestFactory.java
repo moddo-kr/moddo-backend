@@ -13,7 +13,7 @@ public class GroupTestFactory {
 			LocalDateTime.now().plusMinutes(1),
 			"은행",
 			"계좌",
-			"A1B2C3D4",
+			"code",
 			LocalDateTime.now().plusDays(1)
 		);
 	}
