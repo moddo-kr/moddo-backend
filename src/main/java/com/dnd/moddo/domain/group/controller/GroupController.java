@@ -83,13 +83,4 @@ public class GroupController {
 		GroupHeaderResponse response = queryGroupService.findByGroupHeader(groupId);
 		return ResponseEntity.ok(response);
 	}
-
-	@GetMapping("/header/no-cache")
-	public ResponseEntity<GroupHeaderResponse> getHeaderNoCache(
-		@RequestParam("token") String code) {
-		Long groupId = queryGroupService.findIdByCodeNoCache(code);
-
-		GroupHeaderResponse response = queryGroupService.findByGroupHeader(groupId);
-		return ResponseEntity.ok(response);
-	}
 }
