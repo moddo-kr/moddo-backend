@@ -79,7 +79,7 @@ class CommandGroupServiceTest {
 
 		// Then
 		assertThat(response).isNotNull();
-		assertThat(response.code()).isEqualTo("code");
+		assertThat(response.groupToken()).isEqualTo("code");
 		assertThat(response.manager().role()).isEqualTo(ExpenseRole.MANAGER);
 
 		verify(groupCreator, times(1)).createGroup(any(GroupRequest.class), anyLong());

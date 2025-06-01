@@ -34,7 +34,7 @@ public class GroupMemberController {
 
 	@GetMapping
 	public ResponseEntity<GroupMembersResponse> getGroupMembers(
-		@RequestParam("token") String code
+		@RequestParam("groupToken") String code
 	) {
 		Long groupId = queryGroupService.findIdByCode(code);
 		GroupMembersResponse response = queryGroupMemberService.findAll(groupId);
@@ -44,7 +44,7 @@ public class GroupMemberController {
 	@VerifyManagerPermission
 	@PutMapping
 	public ResponseEntity<GroupMemberResponse> addGroupMember(
-		@RequestParam("token") String code,
+		@RequestParam("groupToken") String code,
 		@Valid @RequestBody GroupMemberSaveRequest request
 	) {
 		Long groupId = queryGroupService.findIdByCode(code);
@@ -54,7 +54,7 @@ public class GroupMemberController {
 
 	@PutMapping("/{groupMemberId}/payment")
 	public ResponseEntity<GroupMemberResponse> updatePaymentStatus(
-		@RequestParam("token") String code,
+		@RequestParam("groupToken") String code,
 		@PathVariable("groupMemberId") Long groupMemberId,
 		@RequestBody PaymentStatusUpdateRequest request) {
 		GroupMemberResponse response = commandGroupMemberService.updatePaymentStatus(groupMemberId, request);

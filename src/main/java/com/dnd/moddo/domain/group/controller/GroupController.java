@@ -43,7 +43,7 @@ public class GroupController {
 	@PutMapping("/account")
 	public ResponseEntity<GroupResponse> updateAccount(
 		HttpServletRequest request,
-		@RequestParam("token") String code,
+		@RequestParam("groupToken") String code,
 		@RequestBody GroupAccountRequest groupAccountRequest) {
 		Long userId = jwtService.getUserId(request);
 		Long groupId = queryGroupService.findIdByCode(code);
@@ -55,7 +55,7 @@ public class GroupController {
 	@GetMapping
 	public ResponseEntity<GroupDetailResponse> getGroup(
 		HttpServletRequest request,
-		@RequestParam("token") String code) {
+		@RequestParam("groupToken") String code) {
 		Long userId = jwtService.getUserId(request);
 		Long groupId = queryGroupService.findIdByCode(code);
 
@@ -66,7 +66,7 @@ public class GroupController {
 	@PostMapping("/password")
 	public ResponseEntity<GroupPasswordResponse> isPasswordMatch(
 		HttpServletRequest request,
-		@RequestParam("token") String code,
+		@RequestParam("groupToken") String code,
 		@RequestBody GroupPasswordRequest groupPasswordRequest) {
 		Long userId = jwtService.getUserId(request);
 		Long groupId = queryGroupService.findIdByCode(code);
@@ -77,7 +77,7 @@ public class GroupController {
 
 	@GetMapping("/header")
 	public ResponseEntity<GroupHeaderResponse> getHeader(
-		@RequestParam("token") String code) {
+		@RequestParam("groupToken") String code) {
 		Long groupId = queryGroupService.findIdByCode(code);
 
 		GroupHeaderResponse response = queryGroupService.findByGroupHeader(groupId);

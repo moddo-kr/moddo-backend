@@ -36,7 +36,7 @@ public class GroupPermissionAspect {
 		Long userId = jwtService.getUserId(request);
 
 		//parameter에서 group token 추출
-		String code = request.getParameter("token");
+		String code = request.getParameter("groupToken");
 
 		if (code == null) {
 			throw new TokenNotFoundException("group token");

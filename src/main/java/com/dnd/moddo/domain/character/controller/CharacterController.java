@@ -24,7 +24,7 @@ public class CharacterController {
 
 	@GetMapping()
 	public ResponseEntity<CharacterResponse> getCharacter(
-		@RequestParam("token") String code
+		@RequestParam("groupToken") String code
 	) {
 		Long groupId = queryGroupService.findIdByCode(code);
 

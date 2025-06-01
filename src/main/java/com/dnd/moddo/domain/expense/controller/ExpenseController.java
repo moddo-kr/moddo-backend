@@ -39,7 +39,7 @@ public class ExpenseController {
 
 	@PostMapping
 	public ResponseEntity<ExpensesResponse> saveExpenses(
-		@RequestParam("token") String code,
+		@RequestParam("groupToken") String code,
 		@Valid @RequestBody ExpensesRequest request) {
 		Long groupId = queryGroupService.findIdByCode(code);
 		ExpensesResponse response = commandExpenseService.createExpenses(groupId, request);
@@ -47,7 +47,7 @@ public class ExpenseController {
 	}
 
 	@GetMapping
-	public ResponseEntity<ExpensesResponse> getAllByGroupId(@RequestParam("token") String code) {
+	public ResponseEntity<ExpensesResponse> getAllByGroupId(@RequestParam("groupToken") String code) {
 		Long groupId = queryGroupService.findIdByCode(code);
 		ExpensesResponse response = queryExpenseService.findAllByGroupId(groupId);
 		return ResponseEntity.ok(response);
@@ -62,7 +62,7 @@ public class ExpenseController {
 
 	@GetMapping("/details")
 	public ResponseEntity<ExpenseDetailsResponse> getExpenseDetailsByGroupId(
-		@RequestParam("token") String code) {
+		@RequestParam("groupToken") String code) {
 		Long groupId = queryGroupService.findIdByCode(code);
 		ExpenseDetailsResponse response = queryExpenseService.findAllExpenseDetailsByGroupId(groupId);
 		return ResponseEntity.ok(response);
@@ -86,7 +86,7 @@ public class ExpenseController {
 
 	@PutMapping("/img/{expenseId}")
 	public void updateImgUrl(HttpServletRequest request,
-		@RequestParam("token") String code,
+		@RequestParam("groupToken") String code,
 		@PathVariable("expenseId") Long expenseId,
 		@RequestBody ExpenseImageRequest expenseImageRequest) {
 		Long userId = jwtService.getUserId(request);
