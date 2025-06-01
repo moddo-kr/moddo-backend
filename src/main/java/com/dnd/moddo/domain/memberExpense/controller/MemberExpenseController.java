@@ -23,7 +23,7 @@ public class MemberExpenseController {
 
 	@GetMapping
 	public ResponseEntity<GroupMembersExpenseResponse> getMemberExpensesDetails(
-		@RequestParam("code") String code
+		@RequestParam("token") String code
 	) {
 		Long groupId = queryGroupService.findIdByCode(code);
 		GroupMembersExpenseResponse response = queryMemberExpenseService.findMemberExpenseDetailsByGroupId(groupId);

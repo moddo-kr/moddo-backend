@@ -40,14 +40,19 @@ dependencies {
     implementation 'org.springframework.security:spring-security-core'
 
     implementation 'com.amazonaws:aws-java-sdk-s3:1.12.638'
-
+    //jwt
     implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
 
+    //db
+    implementation 'mysql:mysql-connector-java:8.0.30'
+
     compileOnly 'org.projectlombok:lombok'
     implementation 'mysql:mysql-connector-java:8.0.30'
     annotationProcessor 'org.projectlombok:lombok'
+
+    //test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'com.h2database:h2'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
