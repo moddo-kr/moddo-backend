@@ -7,4 +7,4 @@
 :toclevels: 2
 :sectnums:
 
-include::auth.adoc[]
+include::character.adoc[]

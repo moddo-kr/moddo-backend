@@ -1,0 +1,58 @@
+= 캐릭터 조회 API
+:toc: left
+:toclevels: 2
+
+== 캐릭터 정보 조회 성공
+
+캐릭터를 성공적으로 가져옵니다.
+
+=== 요청 예시
+
+include::{snippets}/character-controller-test/get-character-success/curl-request.adoc[]
+include::{snippets}/character-controller-test/get-character-success/httpie-request.adoc[]
+
+=== HTTP 요청
+
+include::{snippets}/character-controller-test/get-character-success/http-request.adoc[]
+
+=== HTTP 응답
+
+include::{snippets}/character-controller-test/get-character-success/http-response.adoc[]
+
+=== 응답 Body
+
+include::{snippets}/character-controller-test/get-character-success/response-body.adoc[]
+
+== 유효하지 않은 groupToken
+
+유효하지 않은 groupToken으로 요청 시 `401 Unauthorized` 에러가 발생합니다.
+
+=== 요청 예시
+
+include::{snippets}/character-controller-test/get-character-invalid-token/curl-request.adoc[]
+include::{snippets}/character-controller-test/get-character-invalid-token/httpie-request.adoc[]
+
+=== HTTP 요청
+
+include::{snippets}/character-controller-test/get-character-invalid-token/http-request.adoc[]
+
+=== HTTP 응답
+
+include::{snippets}/character-controller-test/get-character-invalid-token/http-response.adoc[]
+
+== groupToken 누락 시 조회 실패
+
+groupToken 파라미터가 없을 경우 `400 Bad Request` 에러가 발생합니다.
+
+=== 요청 예시
+
+include::{snippets}/character-controller-test/get-character-missing-token/curl-request.adoc[]
+include::{snippets}/character-controller-test/get-character-missing-token/httpie-request.adoc[]
+
+=== HTTP 요청
+
+include::{snippets}/character-controller-test/get-character-missing-token/http-request.adoc[]
+
+=== HTTP 응답
+
+include::{snippets}/character-controller-test/get-character-missing-token/http-response.adoc[]
