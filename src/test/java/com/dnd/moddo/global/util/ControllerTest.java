@@ -6,32 +6,39 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.dnd.moddo.domain.auth.controller.AuthController;
-import com.dnd.moddo.domain.auth.service.AuthService;
-import com.dnd.moddo.domain.auth.service.RefreshTokenService;
+import com.dnd.moddo.domain.character.controller.CharacterController;
+import com.dnd.moddo.domain.character.service.QueryCharacterService;
+import com.dnd.moddo.global.jwt.auth.JwtAuth;
+import com.dnd.moddo.global.jwt.auth.JwtFilter;
+import com.dnd.moddo.global.jwt.service.JwtService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Disabled
 @WebMvcTest({
-	AuthController.class
+	CharacterController.class
 })
 public abstract class ControllerTest {
 
 	@Autowired
-	public MockMvc mockMvc;
+	protected MockMvc mockMvc;
 
 	@Autowired
-	public ObjectMapper objectMapper;
+	protected ObjectMapper objectMapper;
 
 	// Service
-
-	// Auth
 	@MockBean
-	public AuthService authService;
+	protected JwtService jwtService;
 
 	@MockBean
-	public RefreshTokenService refreshTokenService;
+	protected QueryCharacterService queryCharacterService;
+
+	// Jwt
+	@MockBean
+	protected JwtAuth jwtAuth;
+
+	@MockBean
+	protected JwtFilter jwtFilter;
 
 	protected String toJson(Object object) throws JsonProcessingException {
 		return objectMapper.writeValueAsString(object);
