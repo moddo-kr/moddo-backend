@@ -8,6 +8,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.dnd.moddo.domain.character.controller.CharacterController;
 import com.dnd.moddo.domain.character.service.QueryCharacterService;
+import com.dnd.moddo.domain.expense.controller.ExpenseController;
+import com.dnd.moddo.domain.expense.service.CommandExpenseService;
+import com.dnd.moddo.domain.expense.service.QueryExpenseService;
 import com.dnd.moddo.global.jwt.auth.JwtAuth;
 import com.dnd.moddo.global.jwt.auth.JwtFilter;
 import com.dnd.moddo.global.jwt.service.JwtService;
@@ -16,7 +19,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Disabled
 @WebMvcTest({
-	CharacterController.class
+	CharacterController.class,
+	ExpenseController.class
 })
 public abstract class ControllerTest {
 
@@ -32,6 +36,12 @@ public abstract class ControllerTest {
 
 	@MockBean
 	protected QueryCharacterService queryCharacterService;
+
+	@MockBean
+	protected CommandExpenseService commandExpenseService;
+
+	@MockBean
+	protected QueryExpenseService queryExpenseService;
 
 	// Jwt
 	@MockBean
