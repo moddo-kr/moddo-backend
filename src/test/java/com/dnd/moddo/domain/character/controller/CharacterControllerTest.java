@@ -11,12 +11,13 @@ import org.springframework.http.MediaType;
 
 import com.dnd.moddo.domain.auth.exception.TokenInvalidException;
 import com.dnd.moddo.domain.image.dto.CharacterResponse;
+import com.dnd.moddo.global.jwt.exception.MissingTokenException;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
 
 public class CharacterControllerTest extends RestDocsTestSupport {
 
 	@Test
-	@DisplayName("캐릭터 정보를 정상적으로 조회한다")
+	@DisplayName("캐릭터 정보를 정상적으로 조회한다.")
 	void getCharacterSuccess() throws Exception {
 		// given
 		String groupToken = "groupToken";
@@ -62,14 +63,19 @@ public class CharacterControllerTest extends RestDocsTestSupport {
 	}
 
 	@Test
-	@DisplayName("groupToken이 비어있는 경우")
+	@DisplayName("groupToken이 비어있는 경우 에러가 발생한다.")
 	void getCharacterMissingToken() throws Exception {
-		// when & then
-		mockMvc.perform(get("/api/v1/character")
-				.accept(MediaType.APPLICATION_JSON))
-			.andExpect(status().isBadRequest());
+		// when
+		String groupToken = "";
+		when(jwtService.getGroupId(groupToken)).thenThrow(new MissingTokenException());
 
-		verify(jwtService, never()).getGroupId(any());
+		// then
+		mockMvc.perform(get("/api/v1/character")
+				.param("groupToken", groupToken)
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isUnauthorized());
+
+		verify(jwtService).getGroupId(groupToken);
 		verify(queryCharacterService, never()).findCharacterByGroupId(any());
 	}
 }
