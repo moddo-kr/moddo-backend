@@ -34,14 +34,12 @@ public abstract class RestDocsTestSupport extends ControllerTest {
 		final RestDocumentationContextProvider provider) {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
 			.apply(documentationConfiguration(provider)
-				.uris()
-				.withScheme("https")
-				.withHost("moddo.kro.kr")
-				.withPort(443)
-				.and()
 				.operationPreprocessors()
 				.withRequestDefaults(
-					modifyUris().host("moddo.kro.kr").removePort(),
+					modifyUris()
+						.scheme("https")
+						.host("moddo.kro.kr")
+						.removePort(),
 					prettyPrint()
 				)
 				.withResponseDefaults(prettyPrint())
