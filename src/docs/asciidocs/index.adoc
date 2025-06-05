@@ -8,3 +8,5 @@
 :sectnums:
 
 include::character.adoc[]
+
+include::expense.adoc[]
