@@ -23,6 +23,7 @@ public class GroupMemberControllerTest extends RestDocsTestSupport {
 	@Test
 	@DisplayName("모임원을 성공적으로 조회한다.")
 	void getGroupMembers() throws Exception {
+		// given
 		String groupToken = "groupToken";
 		Long groupId = 1L;
 
@@ -31,6 +32,7 @@ public class GroupMemberControllerTest extends RestDocsTestSupport {
 		when(jwtService.getGroupId(groupToken)).thenReturn(groupId);
 		when(queryGroupMemberService.findAll(groupId)).thenReturn(mockResponse);
 
+		// when & then
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/group-members")
 				.param("groupToken", groupToken))
 			.andExpect(status().isOk())
