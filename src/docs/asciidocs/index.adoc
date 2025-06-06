@@ -10,3 +10,5 @@
 include::character.adoc[]
 
 include::expense.adoc[]
+
+include::group.adoc[]
