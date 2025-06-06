@@ -2,6 +2,7 @@ package com.dnd.moddo.domain.group.service;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.dnd.moddo.domain.group.dto.response.GroupDetailResponse;
@@ -30,7 +31,12 @@ public class QueryGroupService {
 		return groupReader.findByHeader(groupId);
 	}
 
+	@Cacheable(cacheNames = "groups", key = "#code")
 	public Long findIdByCode(String code) {
+		return groupReader.findIdByGroupCode(code);
+	}
+
+	public Long findIdByCodeNoCache(String code) {
 		return groupReader.findIdByGroupCode(code);
 	}
 }

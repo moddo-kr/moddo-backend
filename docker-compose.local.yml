@@ -1,0 +1,10 @@
+# 로컬 개발용 도커 컴포즈 파일
+# docker compose -f docker-compose.local.yml up -d
+# docker compose -f docker-compose.local.yml down
+services:
+  redis:
+    container_name: redis
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
