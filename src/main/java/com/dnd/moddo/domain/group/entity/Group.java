@@ -60,7 +60,7 @@ public class Group {
 	public void updateAccount(GroupAccountRequest request) {
 		this.bank = request.bank();
 		this.accountNumber = request.accountNumber();
-		this.deadline = LocalDateTime.now().plusMinutes(5);
+		this.deadline = LocalDateTime.now().plusDays(1);
 	}
 
 	public boolean isWriter(Long userId) {

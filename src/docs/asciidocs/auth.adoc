@@ -1,0 +1,53 @@
+= 인증 (Auth)
+:toc: left
+:toclevels: 2
+
+== 게스트 토큰 발급
+
+비회원의 토큰을 발급받을 수 있습니다.
+
+- 비회원의 토큰 만료일: 토큰 생성일로부터 1달
+
+=== Example
+
+include::{snippets}/auth-controller-test/get-guest-token/curl-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/auth-controller-test/get-guest-token/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/auth-controller-test/get-guest-token/http-response.adoc[]
+
+=== Body
+
+==== 응답
+
+include::{snippets}/auth-controller-test/get-guest-token/response-body.adoc[]
+
+== 액세스 토큰 재발급
+
+refreshToken을 사용해 accessToken을 재발급 받을 수 있습니다.
+
+=== Example
+
+include::{snippets}/auth-controller-test/reissue-access-token/curl-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/auth-controller-test/reissue-access-token/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/auth-controller-test/reissue-access-token/http-response.adoc[]
+
+=== Body
+
+==== 응답
+
+include::{snippets}/auth-controller-test/reissue-access-token/response-body.adoc[]

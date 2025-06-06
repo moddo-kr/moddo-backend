@@ -1,0 +1,198 @@
+= 지출 (Expense)
+:toc: left
+:toclevels: 2
+
+== 지출 내역 추가
+
+지출 내역을 생성할 수 있습니다.
+
+=== Example
+
+include::{snippets}/expense-controller-test/save-expenses-success/curl-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/expense-controller-test/save-expenses-success/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/expense-controller-test/save-expenses-success/http-response.adoc[]
+
+=== Body
+
+==== 요청
+
+include::{snippets}/expense-controller-test/save-expenses-success/request-body.adoc[]
+
+==== 응답
+
+include::{snippets}/expense-controller-test/save-expenses-success/response-body.adoc[]
+
+==== 응답 - 존재하지 않는 참여자
+
+include::{snippets}/expense-controller-test/save-expenses-fail_when-member-not-found/response-body.adoc[]
+
+== 전체 지출 내역 조회
+
+모임의 전체 지출 내역을 조회할 수 있습니다.
+
+- 조회시 날짜를 기준으로 오름차순으로 조회됩니다.
+
+- 참여자의 지출 내역까지 함께 조회됩니다.
+
+=== Example
+
+include::{snippets}/expense-controller-test/get-all-by-group-id-success/curl-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/expense-controller-test/get-all-by-group-id-success/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/expense-controller-test/get-all-by-group-id-success/http-response.adoc[]
+
+=== Body
+
+==== 응답
+
+include::{snippets}/expense-controller-test/get-all-by-group-id-success/response-body.adoc[]
+
+==== 응답 -
+
+== 단일 지출 내역 조회
+
+지출 내역 하나를 조회할 수 있습니다.
+
+=== Example
+
+include::{snippets}/expense-controller-test/get-by-expense-id-success/curl-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/expense-controller-test/get-by-expense-id-success/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/expense-controller-test/get-by-expense-id-success/http-response.adoc[]
+
+=== Body
+
+==== 응답
+
+include::{snippets}/expense-controller-test/get-by-expense-id-success/response-body.adoc[]
+
+==== 응답 - 찾을 수 없는 지출내역
+
+include::{snippets}/expense-controller-test/get-by-expense-id-fail_when-expense-not-found/response-body.adoc[]
+
+== 지출 상세 내역 조회
+
+정산 내역의 전체 정산 내역을 조회합니다.
+
+- 조회시 날짜를 기준으로 오름차순으로 정렬됩니다.
+
+- 참여자의 이름을 List값으로 가져옵니다.
+
+=== Example
+
+include::{snippets}/expense-controller-test/get-expense-details-success/curl-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/expense-controller-test/get-expense-details-success/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/expense-controller-test/get-expense-details-success/http-response.adoc[]
+
+=== Body
+
+==== 응답
+
+include::{snippets}/expense-controller-test/get-expense-details-success/response-body.adoc[]
+
+== 지출 내역 수정
+
+지출 내역을 수정할 수 있습니다.
+
+- id = expenseId
+
+=== Example
+
+include::{snippets}/expense-controller-test/update-expense-success/curl-request.adoc[]
+include::{snippets}/expense-controller-test/update-expense-success/httpie-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/expense-controller-test/update-expense-success/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/expense-controller-test/update-expense-success/http-response.adoc[]
+
+=== Body
+
+==== 요청
+
+include::{snippets}/expense-controller-test/update-expense-success/request-body.adoc[]
+
+==== 응답
+
+include::{snippets}/expense-controller-test/update-expense-success/response-body.adoc[]
+
+==== 응답 - 찾을 수 없는 지출내역
+
+include::{snippets}/expense-controller-test/get-by-expense-id-fail_when-expense-not-found/response-body.adoc[]
+
+== 지출 내역 삭제
+
+지출 내역을 삭제합니다.
+
+=== Example
+
+include::{snippets}/expense-controller-test/delete-expense-success/curl-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/expense-controller-test/delete-expense-success/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/expense-controller-test/delete-expense-success/http-response.adoc[]
+
+== 지출 이미지 URL 수정
+
+지출 내역별 이미지 URL을 업데이트할 수 있습니다.
+
+=== Example
+
+include::{snippets}/expense-controller-test/update-img-url-success/curl-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/expense-controller-test/update-img-url-success/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/expense-controller-test/update-img-url-success/http-response.adoc[]
+
+=== Body
+
+==== 요청
+
+include::{snippets}/expense-controller-test/update-img-url-success/request-body.adoc[]
