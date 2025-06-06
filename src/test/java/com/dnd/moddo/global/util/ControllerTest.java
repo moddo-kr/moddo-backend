@@ -17,6 +17,9 @@ import com.dnd.moddo.domain.expense.service.QueryExpenseService;
 import com.dnd.moddo.domain.group.controller.GroupController;
 import com.dnd.moddo.domain.group.service.CommandGroupService;
 import com.dnd.moddo.domain.group.service.QueryGroupService;
+import com.dnd.moddo.domain.groupMember.controller.GroupMemberController;
+import com.dnd.moddo.domain.groupMember.service.CommandGroupMemberService;
+import com.dnd.moddo.domain.groupMember.service.QueryGroupMemberService;
 import com.dnd.moddo.global.jwt.auth.JwtAuth;
 import com.dnd.moddo.global.jwt.auth.JwtFilter;
 import com.dnd.moddo.global.jwt.service.JwtService;
@@ -28,7 +31,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 	AuthController.class,
 	CharacterController.class,
 	ExpenseController.class,
-	GroupController.class
+	GroupController.class,
+	GroupMemberController.class
 })
 public abstract class ControllerTest {
 
@@ -62,6 +66,12 @@ public abstract class ControllerTest {
 
 	@MockBean
 	protected CommandGroupService commandGroupService;
+
+	@MockBean
+	protected QueryGroupMemberService queryGroupMemberService;
+
+	@MockBean
+	protected CommandGroupMemberService commandGroupMemberService;
 
 	// Jwt
 	@MockBean
