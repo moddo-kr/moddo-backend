@@ -22,7 +22,7 @@ public class GroupMemberControllerTest extends RestDocsTestSupport {
 
 	@Test
 	@DisplayName("모임원을 성공적으로 조회한다.")
-	void testGetGroupMembers() throws Exception {
+	void getGroupMembers() throws Exception {
 		String groupToken = "groupToken";
 		Long groupId = 1L;
 		GroupMembersResponse mockResponse = GroupMembersResponse.of(Collections.emptyList());
@@ -41,7 +41,7 @@ public class GroupMemberControllerTest extends RestDocsTestSupport {
 
 	@Test
 	@DisplayName("모임원을 성공적으로 추가한다.")
-	void testAddGroupMember() throws Exception {
+	void saveGroupMember() throws Exception {
 		// given
 		String groupToken = "groupToken";
 		Long groupId = 1L;
@@ -65,7 +65,7 @@ public class GroupMemberControllerTest extends RestDocsTestSupport {
 
 	@Test
 	@DisplayName("결제 상태를 성공적으로 변경한다.")
-	void testUpdatePaymentStatus() throws Exception {
+	void updatePaymentStatus() throws Exception {
 		// given
 		String groupToken = "groupToken";
 		Long groupMemberId = 1L;
@@ -87,7 +87,7 @@ public class GroupMemberControllerTest extends RestDocsTestSupport {
 
 	@Test
 	@DisplayName("모임원을 성공적으로 삭제한다.")
-	void testDeleteGroupMember() throws Exception {
+	void deleteGroupMember() throws Exception {
 		// given
 		Long groupMemberId = 1L;
 
