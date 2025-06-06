@@ -30,7 +30,7 @@ public class GroupControllerTest extends RestDocsTestSupport {
 	void saveGroup() throws Exception {
 		// given
 		GroupRequest request = new GroupRequest("모또 모임", "1234");
-		GroupSaveResponse response = new GroupSaveResponse("group-token", new GroupMemberResponse(
+		GroupSaveResponse response = new GroupSaveResponse("groupToken", new GroupMemberResponse(
 			1L, MANAGER, "김모또", "https://moddo-s3.s3.amazonaws.com/profile/MODDO.png", true, LocalDateTime.now()
 		));
 
@@ -42,7 +42,7 @@ public class GroupControllerTest extends RestDocsTestSupport {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.groupToken").value("group-token"));
+			.andExpect(jsonPath("$.groupToken").value("groupToken"));
 	}
 
 	@Test
@@ -61,7 +61,7 @@ public class GroupControllerTest extends RestDocsTestSupport {
 
 		// when & then
 		mockMvc.perform(put("/api/v1/group/account")
-				.param("groupToken", "group-token")
+				.param("groupToken", "groupToken")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(accountRequest)))
 			.andExpect(status().isOk());
@@ -82,7 +82,7 @@ public class GroupControllerTest extends RestDocsTestSupport {
 
 		// when & then
 		mockMvc.perform(get("/api/v1/group")
-				.param("groupToken", "group-token"))
+				.param("groupToken", "groupToken"))
 			.andExpect(status().isOk());
 	}
 
@@ -99,7 +99,7 @@ public class GroupControllerTest extends RestDocsTestSupport {
 
 		// when & then
 		mockMvc.perform(post("/api/v1/group/password")
-				.param("groupToken", "group-token")
+				.param("groupToken", "groupToken")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isOk())
@@ -113,12 +113,12 @@ public class GroupControllerTest extends RestDocsTestSupport {
 		GroupHeaderResponse response = GroupHeaderResponse.of("모또 모임", 10000L, LocalDateTime.now().plusDays(1), "우리은행",
 			"1111-1111");
 
-		given(jwtService.getGroupId("group-token")).willReturn(100L);
+		given(jwtService.getGroupId("groupToken")).willReturn(100L);
 		given(queryGroupService.findByGroupHeader(100L)).willReturn(response);
 
 		// when & then
 		mockMvc.perform(get("/api/v1/group/header")
-				.param("groupToken", "group-token"))
+				.param("groupToken", "groupToken"))
 			.andExpect(status().isOk());
 	}
 }

@@ -63,7 +63,7 @@ class CommandGroupServiceTest {
 		groupResponse = new GroupResponse(1L, 1L, LocalDateTime.now(), LocalDateTime.now().plusDays(1), "bank",
 			"1234-1234", LocalDateTime.now().plusDays(1));
 		groupAccountRequest = new GroupAccountRequest("newBank", "5678-5678");
-		expectedResponse = new GroupSaveResponse("group-token", mock(GroupMemberResponse.class));
+		expectedResponse = new GroupSaveResponse("groupToken", mock(GroupMemberResponse.class));
 
 		group = mock(Group.class);
 	}
@@ -76,7 +76,7 @@ class CommandGroupServiceTest {
 			LocalDateTime.now());
 
 		when(groupCreator.createGroup(any(GroupRequest.class), anyLong())).thenReturn(group);
-		when(jwtProvider.generateGroupToken(any())).thenReturn("group-token");
+		when(jwtProvider.generateGroupToken(any())).thenReturn("groupToken");
 		when(group.getId()).thenReturn(1L);
 		when(commandGroupMemberService.createManager(any(), any())).thenReturn(groupMemberResponse);
 
@@ -85,7 +85,7 @@ class CommandGroupServiceTest {
 
 		// Then
 		assertThat(response).isNotNull();
-		assertThat(response.groupToken()).isEqualTo("group-token");
+		assertThat(response.groupToken()).isEqualTo("groupToken");
 		assertThat(response.manager().role()).isEqualTo(ExpenseRole.MANAGER);
 
 		verify(groupCreator, times(1)).createGroup(any(GroupRequest.class), anyLong());
