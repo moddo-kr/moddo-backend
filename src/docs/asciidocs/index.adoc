@@ -12,3 +12,9 @@ include::character.adoc[]
 include::expense.adoc[]
 
 include::group.adoc[]
+
+include::groupMember.adoc[]
+
+include::image.adoc[]
+
+include::memberExpenses.adoc[]
