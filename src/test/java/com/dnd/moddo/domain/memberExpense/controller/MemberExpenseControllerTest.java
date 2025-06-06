@@ -39,7 +39,7 @@ public class MemberExpenseControllerTest extends RestDocsTestSupport {
 			)
 		);
 
-		when(jwtService.getGroupId(groupToken)).thenReturn(groupId);
+		when(queryGroupService.findIdByCode(groupToken)).thenReturn(groupId);
 		when(queryMemberExpenseService.findMemberExpenseDetailsByGroupId(groupId)).thenReturn(
 			groupMembersExpenseResponse);
 
@@ -50,7 +50,7 @@ public class MemberExpenseControllerTest extends RestDocsTestSupport {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.memberExpenses").isArray());
 
-		verify(jwtService, times(1)).getGroupId(groupToken);
+		verify(queryGroupService, times(1)).findIdByCode(groupToken);
 		verify(queryMemberExpenseService, times(1)).findMemberExpenseDetailsByGroupId(groupId);
 	}
 }

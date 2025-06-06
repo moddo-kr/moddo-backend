@@ -8,12 +8,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -36,7 +36,7 @@ public class CacheIntegrationTest {
 	@Autowired
 	private GroupRepository groupRepository;
 
-	@MockitoBean
+	@MockBean
 	private GroupReader groupReader;
 
 	@Autowired
@@ -63,9 +63,9 @@ public class CacheIntegrationTest {
 		groupRepository.save(GroupTestFactory.createDefault());
 	}
 
-	@DisplayName("")
+	@DisplayName("groupCode로 groupId를 조회하면 Redis에 캐싱되고, 같은 코드로 재조회 시 캐시에서 반환한다")
 	@Test
-	void name() {
+	void findIdByCode_whenQueriedTwice_thenUsesCacheAndCallsReaderOnce() {
 		//given
 		String code = "code";
 
