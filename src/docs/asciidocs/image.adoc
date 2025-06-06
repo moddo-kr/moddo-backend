@@ -1,0 +1,51 @@
+= 이미지 (Image)
+:toc: left
+:toclevels: 2
+
+== 이미지 임시 저장
+
+지출내역 작성 완료 전, 임시로 이미지를 저장할 수 있습니다.
+
+=== Example
+
+include::{snippets}/image-controller-test/save-temp-image-success/curl-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/image-controller-test/save-temp-image-success/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/image-controller-test/save-temp-image-success/http-response.adoc[]
+
+=== Body
+
+==== 응답
+
+include::{snippets}/image-controller-test/save-temp-image-success/response-body.adoc[]
+
+== 이미지 실제 저장
+
+지출내역 작성 후, 임시로 저장된 이미지를 실제 폴더에 업로드할 수 있습니다.
+
+=== Example
+
+include::{snippets}/image-controller-test/update-image-success/curl-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/image-controller-test/update-image-success/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/image-controller-test/update-image-success/http-response.adoc[]
+
+=== Body
+
+==== 응답
+
+include::{snippets}/image-controller-test/update-image-success/response-body.adoc[]
