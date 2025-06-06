@@ -1,4 +1,4 @@
-package com.dnd.moddo.support;
+package com.dnd.moddo.global.support;
 
 import java.time.LocalDateTime;
 

@@ -19,7 +19,7 @@ import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberCreator;
 import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberUpdater;
-import com.dnd.moddo.support.GroupTestFactory;
+import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)
 public class CommandGroupMemberServiceTest {

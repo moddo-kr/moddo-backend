@@ -18,7 +18,7 @@ import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.expense.exception.ExpenseNotFoundException;
 import com.dnd.moddo.domain.expense.repository.ExpenseRepository;
 import com.dnd.moddo.domain.group.entity.Group;
-import com.dnd.moddo.support.GroupTestFactory;
+import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)
 class ExpenseReaderTest {

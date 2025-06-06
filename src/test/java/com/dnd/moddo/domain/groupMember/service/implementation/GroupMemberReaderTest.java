@@ -18,7 +18,7 @@ import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.groupMember.exception.GroupMemberNotFoundException;
 import com.dnd.moddo.domain.groupMember.repository.GroupMemberRepository;
-import com.dnd.moddo.support.GroupTestFactory;
+import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)
 public class GroupMemberReaderTest {

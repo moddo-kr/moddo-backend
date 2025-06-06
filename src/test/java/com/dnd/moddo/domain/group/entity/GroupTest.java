@@ -9,7 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.dnd.moddo.domain.group.dto.request.GroupAccountRequest;
-import com.dnd.moddo.support.GroupTestFactory;
+import com.dnd.moddo.global.support.GroupTestFactory;
 
 class GroupTest {
 

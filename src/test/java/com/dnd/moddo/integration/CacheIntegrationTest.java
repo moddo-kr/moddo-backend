@@ -21,7 +21,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import com.dnd.moddo.domain.group.repository.GroupRepository;
 import com.dnd.moddo.domain.group.service.QueryGroupService;
 import com.dnd.moddo.domain.group.service.implementation.GroupReader;
-import com.dnd.moddo.support.GroupTestFactory;
+import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ActiveProfiles("test")
 @SpringBootTest

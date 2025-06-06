@@ -31,7 +31,7 @@ import com.dnd.moddo.domain.group.service.implementation.GroupReader;
 import com.dnd.moddo.domain.group.service.implementation.GroupValidator;
 import com.dnd.moddo.domain.memberExpense.dto.response.MemberExpenseResponse;
 import com.dnd.moddo.domain.memberExpense.service.CommandMemberExpenseService;
-import com.dnd.moddo.support.GroupTestFactory;
+import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)
 class CommandExpenseServiceTest {

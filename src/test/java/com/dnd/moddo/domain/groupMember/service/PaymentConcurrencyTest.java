@@ -25,7 +25,7 @@ import com.dnd.moddo.domain.groupMember.repository.GroupMemberRepository;
 import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberReader;
 import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberUpdater;
 import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberValidator;
-import com.dnd.moddo.support.GroupTestFactory;
+import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = ModdoApplication.class) // 명시적으로 설정 클래스를 지정

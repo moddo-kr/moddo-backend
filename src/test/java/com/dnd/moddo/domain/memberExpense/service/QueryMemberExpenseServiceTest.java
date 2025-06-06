@@ -24,7 +24,7 @@ import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberReader
 import com.dnd.moddo.domain.memberExpense.dto.response.MemberExpenseResponse;
 import com.dnd.moddo.domain.memberExpense.entity.MemberExpense;
 import com.dnd.moddo.domain.memberExpense.service.implementation.MemberExpenseReader;
-import com.dnd.moddo.support.GroupTestFactory;
+import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)
 class QueryMemberExpenseServiceTest {
