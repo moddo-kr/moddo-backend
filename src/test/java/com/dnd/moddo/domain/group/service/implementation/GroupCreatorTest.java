@@ -55,7 +55,7 @@ class GroupCreatorTest {
 	@BeforeEach
 	void setUp() {
 		userId = 1L;
-		request = new GroupRequest("groupName", "password", LocalDateTime.now().plusDays(1));
+		request = new GroupRequest("groupName", "password");
 
 		mockUser = new User(userId, "test@example.com", "닉네임", "프로필", false, LocalDateTime.now(),
 			LocalDateTime.now().plusDays(1), Authority.USER);
