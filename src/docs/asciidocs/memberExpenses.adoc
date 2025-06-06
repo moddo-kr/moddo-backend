@@ -1,0 +1,31 @@
+= 모임원별 상세 지출 내역 (MemberExpenses)
+:toc: left
+:toclevels: 2
+
+== 모임원별 상세 지출 내역 조회
+
+받을 정산 내역의 참여자별 정산 내역 조회 기능입니다.
+
+- 입금순, 이름순으로 정렬되어 조회됩니다.
+
+=== Example
+
+include::{snippets}/member-expense-controller-test/get-member-expenses-details-success/curl-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/member-expense-controller-test/get-member-expenses-details-success/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/member-expense-controller-test/get-member-expenses-details-success/http-response.adoc[]
+
+=== Body
+
+==== 응답
+
+include::{snippets}/member-expense-controller-test/get-member-expenses-details-success/response-body.adoc[]
+
+
