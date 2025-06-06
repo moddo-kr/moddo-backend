@@ -11,6 +11,9 @@ import com.dnd.moddo.domain.character.service.QueryCharacterService;
 import com.dnd.moddo.domain.expense.controller.ExpenseController;
 import com.dnd.moddo.domain.expense.service.CommandExpenseService;
 import com.dnd.moddo.domain.expense.service.QueryExpenseService;
+import com.dnd.moddo.domain.group.controller.GroupController;
+import com.dnd.moddo.domain.group.service.CommandGroupService;
+import com.dnd.moddo.domain.group.service.QueryGroupService;
 import com.dnd.moddo.global.jwt.auth.JwtAuth;
 import com.dnd.moddo.global.jwt.auth.JwtFilter;
 import com.dnd.moddo.global.jwt.service.JwtService;
@@ -20,7 +23,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Disabled
 @WebMvcTest({
 	CharacterController.class,
-	ExpenseController.class
+	ExpenseController.class,
+	GroupController.class
 })
 public abstract class ControllerTest {
 
@@ -38,10 +42,16 @@ public abstract class ControllerTest {
 	protected QueryCharacterService queryCharacterService;
 
 	@MockBean
+	protected QueryExpenseService queryExpenseService;
+
+	@MockBean
 	protected CommandExpenseService commandExpenseService;
 
 	@MockBean
-	protected QueryExpenseService queryExpenseService;
+	protected QueryGroupService queryGroupService;
+
+	@MockBean
+	protected CommandGroupService commandGroupService;
 
 	// Jwt
 	@MockBean
