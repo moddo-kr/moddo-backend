@@ -1,8 +1,7 @@
 package com.dnd.moddo.domain.auth.controller;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -11,44 +10,33 @@ import java.time.ZonedDateTime;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.test.web.servlet.MockMvc;
 
-import com.dnd.moddo.domain.auth.service.AuthService;
-import com.dnd.moddo.domain.auth.service.RefreshTokenService;
 import com.dnd.moddo.global.jwt.dto.RefreshResponse;
 import com.dnd.moddo.global.jwt.dto.TokenResponse;
+import com.dnd.moddo.global.util.RestDocsTestSupport;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@AutoConfigureRestDocs(outputDir = "build/generated-snippets")
-class AuthControllerTest {
-
-	@Autowired
-	private MockMvc mockMvc;
-
-	@MockBean
-	private AuthService authService;
-
-	@MockBean
-	private RefreshTokenService refreshTokenService;
+class AuthControllerTest extends RestDocsTestSupport {
 
 	@Test
-	@DisplayName("게스트 토큰 발급")
+	@DisplayName("게스트 토큰을 성공적으로 발급한다.")
 	void getGuestToken() throws Exception {
-		TokenResponse response = new TokenResponse("access-token", "refresh-token", ZonedDateTime.now().plusDays(30),
-			false);
-		Mockito.when(authService.createGuestUser()).thenReturn(response);
+		// given
+		TokenResponse response = new TokenResponse(
+			"access-token",
+			"refresh-token",
+			ZonedDateTime.now().plusDays(30),
+			false
+		);
+		given(authService.createGuestUser()).willReturn(response);
 
+		// when & then
 		mockMvc.perform(get("/api/v1/user/guest/token"))
 			.andExpect(status().isOk())
-			.andDo(document("auth-get-guest-token",
+			.andExpect(jsonPath("$.accessToken").value("access-token"))
+			.andExpect(jsonPath("$.refreshToken").value("refresh-token"))
+			.andExpect(jsonPath("$.isMember").value(false))
+			.andDo(restDocs.document(
 				responseFields(
 					fieldWithPath("accessToken").type(JsonFieldType.STRING).description("액세스 토큰"),
 					fieldWithPath("refreshToken").type(JsonFieldType.STRING).description("리프레시 토큰"),
@@ -59,18 +47,20 @@ class AuthControllerTest {
 	}
 
 	@Test
-	@DisplayName("엑세스 토큰 재발급")
+	@DisplayName("리프레시 토큰으로 액세스 토큰을 성공적으로 재발급한다.")
 	void reissueAccessToken() throws Exception {
+		// given
 		RefreshResponse response = RefreshResponse.builder()
 			.accessToken("new-access-token")
 			.build();
+		given(refreshTokenService.execute(anyString())).willReturn(response);
 
-		Mockito.when(refreshTokenService.execute(anyString())).thenReturn(response);
-
+		// when & then
 		mockMvc.perform(put("/api/v1/user/reissue/token")
 				.header("Authorization", "Bearer refresh-token"))
 			.andExpect(status().isOk())
-			.andDo(document("auth-reissue-token",
+			.andExpect(jsonPath("$.accessToken").value("new-access-token"))
+			.andDo(restDocs.document(
 				requestHeaders(
 					headerWithName("Authorization").description("리프레시 토큰")
 				),
