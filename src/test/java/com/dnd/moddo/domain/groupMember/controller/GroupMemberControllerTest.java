@@ -25,6 +25,7 @@ public class GroupMemberControllerTest extends RestDocsTestSupport {
 	void getGroupMembers() throws Exception {
 		String groupToken = "groupToken";
 		Long groupId = 1L;
+
 		GroupMembersResponse mockResponse = GroupMembersResponse.of(Collections.emptyList());
 
 		when(jwtService.getGroupId(groupToken)).thenReturn(groupId);
