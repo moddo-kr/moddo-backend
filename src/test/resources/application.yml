@@ -16,7 +16,12 @@ spring:
         dialect: org.hibernate.dialect.H2Dialect
     show-sql: true
     generate-ddl: true
-
+  cache:
+    type: redis
+  data:
+    redis:
+      host: localhost
+      port: 6379
 jwt:
   header: Authorization
   prefix: prefix

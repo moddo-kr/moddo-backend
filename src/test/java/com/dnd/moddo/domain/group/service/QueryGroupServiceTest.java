@@ -143,7 +143,7 @@ class QueryGroupServiceTest {
 		Long expected = 1L;
 		when(groupReader.findIdByGroupCode(anyString())).thenReturn(expected);
 		//when
-		Long result = groupReader.findIdByGroupCode("code");
+		Long result = queryGroupService.findIdByCode("code");
 		//then
 		assertThat(result).isEqualTo(expected);
 		verify(groupReader, times(1)).findIdByGroupCode(anyString());
@@ -155,7 +155,33 @@ class QueryGroupServiceTest {
 		//given
 		when(groupReader.findIdByGroupCode(anyString())).thenThrow(new GroupNotFoundException("code"));
 		//when & then
-		assertThatThrownBy(() -> groupReader.findIdByGroupCode("code"))
+		assertThatThrownBy(() -> queryGroupService.findIdByCode("code"))
+			.isInstanceOf(RuntimeException.class)
+			.hasMessageContaining("code");
+
+		verify(groupReader, times(1)).findIdByGroupCode(anyString());
+	}
+
+	@DisplayName("group code가 유효할 때 group Id를 찾을 수 있다.")
+	@Test
+	void FindByGroupIdNoCache_Success() {
+		//given
+		Long expected = 1L;
+		when(groupReader.findIdByGroupCode(anyString())).thenReturn(expected);
+		//when
+		Long result = queryGroupService.findIdByCodeNoCache("code");
+		//then
+		assertThat(result).isEqualTo(expected);
+		verify(groupReader, times(1)).findIdByGroupCode(anyString());
+	}
+
+	@DisplayName("group code가 존재하지 않을때 예외가 발생한다..")
+	@Test
+	void FindByGroupIdNoCache_ThrowException_WhenCodeNotFound() {
+		//given
+		when(groupReader.findIdByGroupCode(anyString())).thenThrow(new GroupNotFoundException("code"));
+		//when & then
+		assertThatThrownBy(() -> queryGroupService.findIdByCodeNoCache("code"))
 			.isInstanceOf(RuntimeException.class)
 			.hasMessageContaining("code");
 
