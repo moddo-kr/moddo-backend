@@ -1,0 +1,12 @@
+${AnsiColor.BRIGHT_YELLOW}
+,--.   ,--. ,-----. ,------.  ,------.   ,-----.
+|   `.'   |'  .-.  '|  .-.  \ |  .-.  \ '  .-.  '
+|  |'.'|  ||  | |  ||  |  \  :|  |  \  :|  | |  |
+|  |   |  |'  '-'  '|  '--'  /|  '--'  /'  '-'  '
+`--'   `--' `-----' `-------' `-------'  `-----'
+
+${AnsiColor.BRIGHT_MAGENTA}Welcome to MODDO! 🐹${AnsiColor.DEFAULT}
+
+Contributors - @sudhdkso, @choyeseol
+SpringBoot - ${spring-boot.version}
+Java - ${java.version}

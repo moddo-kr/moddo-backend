@@ -1,0 +1,45 @@
+= 캐릭터 (Character)
+:toc: left
+:toclevels: 2
+
+== 캐릭터 조회
+
+모임의 캐릭터를 조회할 수 있습니다.
+
+- ★:
+러키 모또
+
+- ★★:
+천사 모또 / 딸기 또또
+
+- ★★★:
+마법사 또또 / 잠꾸러기 또또
+
+
+=== Example
+
+include::{snippets}/character-controller-test/get-character-success/curl-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/character-controller-test/get-character-success/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/character-controller-test/get-character-success/http-response.adoc[]
+
+=== Body
+
+==== 응답
+
+include::{snippets}/character-controller-test/get-character-success/response-body.adoc[]
+
+==== 응답 - 유효하지 않은 GroupToken
+
+include::{snippets}/character-controller-test/get-character-invalid-token/response-body.adoc[]
+
+==== 응답 - 누락된 GroupToken
+
+include::{snippets}/character-controller-test/get-character-missing-token/response-body.adoc[]

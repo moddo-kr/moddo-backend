@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +25,7 @@ import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.memberExpense.dto.response.MemberExpenseResponse;
 import com.dnd.moddo.domain.memberExpense.service.QueryMemberExpenseService;
+import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)
 class QueryExpenseServiceTest {
@@ -41,8 +41,7 @@ class QueryExpenseServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now().plusMinutes(1),
-			"은행", "계좌", LocalDateTime.now().plusDays(1));
+		mockGroup = GroupTestFactory.createDefault();
 	}
 
 	@DisplayName("모임이 존재하면 모임의 모든 지출내역을 조회할 수 있다.")

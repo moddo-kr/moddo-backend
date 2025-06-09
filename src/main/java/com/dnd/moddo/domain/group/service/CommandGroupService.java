@@ -34,8 +34,7 @@ public class CommandGroupService {
 	public GroupSaveResponse createGroup(GroupRequest request, Long userId) {
 		Group group = groupCreator.createGroup(request, userId);
 		GroupMemberResponse manager = commandGroupMemberService.createManager(group, userId);
-		String groupToken = jwtProvider.generateGroupToken(group.getId());
-		return new GroupSaveResponse(groupToken, manager);
+		return new GroupSaveResponse(group.getCode(), manager);
 	}
 
 	public GroupResponse updateAccount(GroupAccountRequest request, Long userId, Long groupId) {

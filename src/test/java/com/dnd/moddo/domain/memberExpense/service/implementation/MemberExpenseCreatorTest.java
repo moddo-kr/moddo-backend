@@ -3,8 +3,6 @@ package com.dnd.moddo.domain.memberExpense.service.implementation;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.time.LocalDateTime;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +17,7 @@ import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.memberExpense.dto.request.MemberExpenseRequest;
 import com.dnd.moddo.domain.memberExpense.entity.MemberExpense;
 import com.dnd.moddo.domain.memberExpense.repotiroy.MemberExpenseRepository;
+import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)
 class MemberExpenseCreatorTest {
@@ -33,8 +32,7 @@ class MemberExpenseCreatorTest {
 
 	@BeforeEach
 	void setUp() {
-		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now().plusMinutes(1),
-			"은행", "계좌", LocalDateTime.now().plusDays(1));
+		mockGroup = GroupTestFactory.createDefault();
 
 		mockGroupMember = GroupMember.builder()
 			.name("박완수")

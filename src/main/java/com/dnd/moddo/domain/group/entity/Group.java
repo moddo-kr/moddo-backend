@@ -44,9 +44,12 @@ public class Group {
 
 	private LocalDateTime deadline;
 
+	@Column(unique = true)
+	private String code;
+
 	@Builder
 	public Group(String name, Long writer, String password, LocalDateTime createdAt,
-		String bank, String accountNumber, LocalDateTime deadline) {
+		String bank, String accountNumber, String code, LocalDateTime deadline) {
 		this.name = name;
 		this.writer = writer;
 		this.password = password;
@@ -54,13 +57,14 @@ public class Group {
 		this.expiredAt = LocalDateTime.now().plusMonths(1);
 		this.bank = bank;
 		this.accountNumber = accountNumber;
+		this.code = code;
 		this.deadline = deadline;
 	}
 
 	public void updateAccount(GroupAccountRequest request) {
 		this.bank = request.bank();
 		this.accountNumber = request.accountNumber();
-		this.deadline = LocalDateTime.now().plusMinutes(5);
+		this.deadline = LocalDateTime.now().plusDays(1);
 	}
 
 	public boolean isWriter(Long userId) {

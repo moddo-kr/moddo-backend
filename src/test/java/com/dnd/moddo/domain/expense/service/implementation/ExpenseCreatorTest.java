@@ -4,7 +4,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +20,7 @@ import com.dnd.moddo.domain.expense.repository.ExpenseRepository;
 import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.group.repository.GroupRepository;
 import com.dnd.moddo.domain.memberExpense.service.implementation.MemberExpenseValidator;
+import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)
 class ExpenseCreatorTest {
@@ -37,8 +37,7 @@ class ExpenseCreatorTest {
 
 	@BeforeEach
 	void setUp() {
-		mockGroup = new Group("group 1", 1L, "1234", LocalDateTime.now().plusMinutes(1),
-			"은행", "계좌", LocalDateTime.now().plusDays(1));
+		mockGroup = GroupTestFactory.createDefault();
 	}
 
 	@DisplayName("모임이 존재하면 지출내역을 생성에 성공한다.")
