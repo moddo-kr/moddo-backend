@@ -5,7 +5,7 @@ spring:
     import: classpath:config/application-jwt.yml, classpath:config/application-s3.yml
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
