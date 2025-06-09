@@ -12,6 +12,7 @@ RUN chmod +x ./gradlew
 RUN ./gradlew dependencies
 
 COPY src src
+RUN ./gradlew test --no-daemon
 RUN ./gradlew bootJar --no-daemon
 
 # 2단계: 실행 환경 (최종 실행 이미지만 남김)
