@@ -24,6 +24,8 @@ services:
       - ./redis.conf:/etc/redis/redis.conf
       - redis-data:/data
     command: redis-server /etc/redis/redis.conf
+    networks:
+      - backend
 networks:
   backend:
     driver: bridge
