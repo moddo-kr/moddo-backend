@@ -67,7 +67,7 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 			)
 		));
 
-		when(jwtService.getGroupId(groupToken)).thenReturn(groupId);
+		when(queryGroupService.findIdByCode(groupToken)).thenReturn(groupId);
 		when(commandExpenseService.createExpenses(eq(groupId), any())).thenReturn(response);
 
 		mockMvc.perform(post("/api/v1/expenses")
@@ -114,7 +114,7 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 
 		ExpensesResponse response = new ExpensesResponse(expenseResponses);
 
-		when(jwtService.getGroupId(groupToken)).thenReturn(groupId);
+		when(queryGroupService.findIdByCode(groupToken)).thenReturn(groupId);
 		when(queryExpenseService.findAllByGroupId(groupId)).thenReturn(response);
 
 		// when & then
@@ -156,7 +156,7 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 		);
 		ExpenseDetailsResponse response = new ExpenseDetailsResponse(expenseDetail);
 
-		given(jwtService.getGroupId(groupToken)).willReturn(groupId);
+		given(queryGroupService.findIdByCode(groupToken)).willReturn(groupId);
 		given(queryExpenseService.findAllExpenseDetailsByGroupId(groupId)).willReturn(response);
 
 		// when & then
@@ -238,7 +238,7 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 		ExpensesRequest request = new ExpensesRequest(
 			List.of(new ExpenseRequest(100000L, "지출", LocalDate.now(), List.of())));
 
-		when(jwtService.getGroupId(groupToken)).thenReturn(groupId);
+		when(queryGroupService.findIdByCode(groupToken)).thenReturn(groupId);
 		when(commandExpenseService.createExpenses(eq(groupId), any()))
 			.thenThrow(new GroupMemberNotFoundException(1L));
 

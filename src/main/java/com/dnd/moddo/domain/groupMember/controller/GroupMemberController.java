@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dnd.moddo.domain.group.service.QueryGroupService;
 import com.dnd.moddo.domain.groupMember.dto.request.GroupMemberSaveRequest;
 import com.dnd.moddo.domain.groupMember.dto.request.PaymentStatusUpdateRequest;
 import com.dnd.moddo.domain.groupMember.dto.response.GroupMemberResponse;
@@ -29,12 +30,13 @@ public class GroupMemberController {
 	private final QueryGroupMemberService queryGroupMemberService;
 	private final CommandGroupMemberService commandGroupMemberService;
 	private final JwtService jwtService;
+	private final QueryGroupService queryGroupService;
 
 	@GetMapping
 	public ResponseEntity<GroupMembersResponse> getGroupMembers(
-		@RequestParam("groupToken") String groupToken
+		@RequestParam("groupToken") String code
 	) {
-		Long groupId = jwtService.getGroupId(groupToken);
+		Long groupId = queryGroupService.findIdByCode(code);
 		GroupMembersResponse response = queryGroupMemberService.findAll(groupId);
 		return ResponseEntity.ok(response);
 	}
@@ -42,17 +44,17 @@ public class GroupMemberController {
 	@VerifyManagerPermission
 	@PutMapping
 	public ResponseEntity<GroupMemberResponse> addGroupMember(
-		@RequestParam("groupToken") String groupToken,
+		@RequestParam("groupToken") String code,
 		@Valid @RequestBody GroupMemberSaveRequest request
 	) {
-		Long groupId = jwtService.getGroupId(groupToken);
+		Long groupId = queryGroupService.findIdByCode(code);
 		GroupMemberResponse response = commandGroupMemberService.addGroupMember(groupId, request);
 		return ResponseEntity.ok(response);
 	}
 
 	@PutMapping("/{groupMemberId}/payment")
 	public ResponseEntity<GroupMemberResponse> updatePaymentStatus(
-		@RequestParam("groupToken") String groupToken,
+		@RequestParam("groupToken") String code,
 		@PathVariable("groupMemberId") Long groupMemberId,
 		@RequestBody PaymentStatusUpdateRequest request) {
 		GroupMemberResponse response = commandGroupMemberService.updatePaymentStatus(groupMemberId, request);

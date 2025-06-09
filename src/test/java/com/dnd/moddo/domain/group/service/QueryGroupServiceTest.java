@@ -19,10 +19,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.dnd.moddo.domain.group.dto.response.GroupDetailResponse;
 import com.dnd.moddo.domain.group.dto.response.GroupHeaderResponse;
 import com.dnd.moddo.domain.group.entity.Group;
+import com.dnd.moddo.domain.group.exception.GroupNotFoundException;
 import com.dnd.moddo.domain.group.service.implementation.GroupReader;
 import com.dnd.moddo.domain.group.service.implementation.GroupValidator;
 import com.dnd.moddo.domain.groupMember.entity.GroupMember;
 import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
+import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)
 class QueryGroupServiceTest {
@@ -41,7 +43,7 @@ class QueryGroupServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		group = new Group("groupName", 1L, "password", null, null, null, null);
+		group = GroupTestFactory.createDefault();
 		groupMember = new GroupMember("김완숙", 1, group, false, ExpenseRole.MANAGER);
 
 		setField(group, "id", 1L);
@@ -132,5 +134,57 @@ class QueryGroupServiceTest {
 			.hasMessageContaining("Header not found");
 
 		verify(groupReader, times(1)).findByHeader(1L);
+	}
+
+	@DisplayName("group code가 유효할 때 group Id를 찾을 수 있다.")
+	@Test
+	void FindByGroupId_Success() {
+		//given
+		Long expected = 1L;
+		when(groupReader.findIdByGroupCode(anyString())).thenReturn(expected);
+		//when
+		Long result = queryGroupService.findIdByCode("code");
+		//then
+		assertThat(result).isEqualTo(expected);
+		verify(groupReader, times(1)).findIdByGroupCode(anyString());
+	}
+
+	@DisplayName("group code가 존재하지 않을때 예외가 발생한다..")
+	@Test
+	void FindByGroupId_ThrowException_WhenCodeNotFound() {
+		//given
+		when(groupReader.findIdByGroupCode(anyString())).thenThrow(new GroupNotFoundException("code"));
+		//when & then
+		assertThatThrownBy(() -> queryGroupService.findIdByCode("code"))
+			.isInstanceOf(RuntimeException.class)
+			.hasMessageContaining("code");
+
+		verify(groupReader, times(1)).findIdByGroupCode(anyString());
+	}
+
+	@DisplayName("group code가 유효할 때 group Id를 찾을 수 있다.")
+	@Test
+	void FindByGroupIdNoCache_Success() {
+		//given
+		Long expected = 1L;
+		when(groupReader.findIdByGroupCode(anyString())).thenReturn(expected);
+		//when
+		Long result = queryGroupService.findIdByCodeNoCache("code");
+		//then
+		assertThat(result).isEqualTo(expected);
+		verify(groupReader, times(1)).findIdByGroupCode(anyString());
+	}
+
+	@DisplayName("group code가 존재하지 않을때 예외가 발생한다..")
+	@Test
+	void FindByGroupIdNoCache_ThrowException_WhenCodeNotFound() {
+		//given
+		when(groupReader.findIdByGroupCode(anyString())).thenThrow(new GroupNotFoundException("code"));
+		//when & then
+		assertThatThrownBy(() -> queryGroupService.findIdByCodeNoCache("code"))
+			.isInstanceOf(RuntimeException.class)
+			.hasMessageContaining("code");
+
+		verify(groupReader, times(1)).findIdByGroupCode(anyString());
 	}
 }

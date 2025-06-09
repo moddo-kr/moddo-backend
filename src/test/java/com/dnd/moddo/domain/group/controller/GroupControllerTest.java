@@ -1,4 +1,4 @@
-package com.dnd.moddo.domain.group;
+package com.dnd.moddo.domain.group.controller;
 
 import static com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole.*;
 import static org.mockito.BDDMockito.*;
@@ -56,7 +56,7 @@ public class GroupControllerTest extends RestDocsTestSupport {
 		);
 
 		given(jwtService.getUserId(any())).willReturn(1L);
-		given(jwtService.getGroupId(anyString())).willReturn(100L);
+		given(queryGroupService.findIdByCode(anyString())).willReturn(100L);
 		given(commandGroupService.updateAccount(any(), eq(1L), eq(100L))).willReturn(response);
 
 		// when & then
@@ -77,7 +77,7 @@ public class GroupControllerTest extends RestDocsTestSupport {
 		));
 
 		given(jwtService.getUserId(any())).willReturn(1L);
-		given(jwtService.getGroupId(anyString())).willReturn(100L);
+		given(queryGroupService.findIdByCode(anyString())).willReturn(100L);
 		given(queryGroupService.findOne(100L, 1L)).willReturn(response);
 
 		// when & then
@@ -94,7 +94,7 @@ public class GroupControllerTest extends RestDocsTestSupport {
 		GroupPasswordResponse response = GroupPasswordResponse.from("확인되었습니다.");
 
 		given(jwtService.getUserId(any())).willReturn(1L);
-		given(jwtService.getGroupId(anyString())).willReturn(100L);
+		given(queryGroupService.findIdByCode(anyString())).willReturn(100L);
 		given(commandGroupService.isPasswordMatch(100L, 1L, request)).willReturn(response);
 
 		// when & then
@@ -113,7 +113,7 @@ public class GroupControllerTest extends RestDocsTestSupport {
 		GroupHeaderResponse response = GroupHeaderResponse.of("모또 모임", 10000L, LocalDateTime.now().plusDays(1), "우리은행",
 			"1111-1111");
 
-		given(jwtService.getGroupId("groupToken")).willReturn(100L);
+		given(queryGroupService.findIdByCode("groupToken")).willReturn(100L);
 		given(queryGroupService.findByGroupHeader(100L)).willReturn(response);
 
 		// when & then

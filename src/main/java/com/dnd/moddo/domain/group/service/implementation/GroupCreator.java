@@ -1,6 +1,7 @@
 package com.dnd.moddo.domain.group.service.implementation;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import com.dnd.moddo.domain.image.dto.CharacterResponse;
 import com.dnd.moddo.domain.image.service.implementation.ImageReader;
 import com.dnd.moddo.domain.user.entity.User;
 import com.dnd.moddo.domain.user.repository.UserRepository;
+import com.dnd.moddo.global.util.ShortUUIDGenerator;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,6 +38,7 @@ public class GroupCreator {
 			.name(request.name())
 			.password(encryptedPassword)
 			.createdAt(LocalDateTime.now())
+			.code(generateUniqueGroupCode())
 			.build();
 
 		group = groupRepository.save(group);
@@ -54,4 +57,16 @@ public class GroupCreator {
 
 		return group;
 	}
+
+	private String generateUniqueGroupCode() {
+		for (int i = 0; i < 5; i++) {
+			String uuid = UUID.randomUUID().toString();
+			String code = ShortUUIDGenerator.shortenUUID(uuid);
+			if (!groupRepository.existsByCode(code)) {
+				return code;
+			}
+		}
+		throw new RuntimeException("고유 코드 저장 실패");
+	}
+
 }

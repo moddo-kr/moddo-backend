@@ -29,7 +29,7 @@ public class GroupMemberControllerTest extends RestDocsTestSupport {
 
 		GroupMembersResponse mockResponse = GroupMembersResponse.of(Collections.emptyList());
 
-		when(jwtService.getGroupId(groupToken)).thenReturn(groupId);
+		when(queryGroupService.findIdByCode(groupToken)).thenReturn(groupId);
 		when(queryGroupMemberService.findAll(groupId)).thenReturn(mockResponse);
 
 		// when & then
@@ -38,7 +38,7 @@ public class GroupMemberControllerTest extends RestDocsTestSupport {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.members").isArray());
 
-		verify(jwtService).getGroupId(groupToken);
+		verify(queryGroupService).findIdByCode(groupToken);
 		verify(queryGroupMemberService).findAll(groupId);
 	}
 
@@ -53,7 +53,7 @@ public class GroupMemberControllerTest extends RestDocsTestSupport {
 		GroupMemberResponse response = new GroupMemberResponse(1L, PARTICIPANT, "김반숙",
 			"https://moddo-s3.s3.amazonaws.com/profile/1.png", false, null);
 
-		when(jwtService.getGroupId(groupToken)).thenReturn(groupId);
+		when(queryGroupService.findIdByCode(groupToken)).thenReturn(groupId);
 		when(commandGroupMemberService.addGroupMember(groupId, request)).thenReturn(response);
 
 		// when & then

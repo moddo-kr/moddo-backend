@@ -45,17 +45,27 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.security:spring-security-core'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+
+    // redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
     implementation 'com.amazonaws:aws-java-sdk-s3:1.12.638'
-
+    //jwt
     implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
+
+    //db
+    implementation 'mysql:mysql-connector-java:8.0.30'
 
     compileOnly 'org.projectlombok:lombok'
     implementation 'mysql:mysql-connector-java:8.0.30'
     annotationProcessor 'org.projectlombok:lombok'
 
+    //test
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.testcontainers:testcontainers'
     testImplementation 'com.h2database:h2'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
@@ -65,7 +75,6 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
-
     //monitoring
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.micrometer:micrometer-registry-prometheus'
@@ -118,6 +127,6 @@ build {
 bootJar {
     dependsOn asciidoctor
     from("${asciidoctor.outputDir}") {
-        into 'static/docs'
+        into 'src/main/resources/static/docs'
     }
 }

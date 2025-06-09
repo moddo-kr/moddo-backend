@@ -2,6 +2,7 @@ package com.dnd.moddo.domain.character.controller;
 
 import static org.mockito.BDDMockito.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.junit.jupiter.api.DisplayName;
@@ -28,7 +29,7 @@ public class CharacterControllerTest extends RestDocsTestSupport {
 			"https://moddo-s3.s3.amazonaws.com/character/천사 모또-2-big.png"
 		);
 
-		Mockito.when(jwtService.getGroupId(eq(groupToken))).thenReturn(groupId);
+		Mockito.when(queryGroupService.findIdByCode(groupToken)).thenReturn(groupId);
 		Mockito.when(queryCharacterService.findCharacterByGroupId(eq(groupId))).thenReturn(mockResponse);
 
 		// when & then
@@ -39,9 +40,10 @@ public class CharacterControllerTest extends RestDocsTestSupport {
 			.andExpect(jsonPath("$.name").value("천사 모또"))
 			.andExpect(jsonPath("$.rarity").value("2"))
 			.andExpect(jsonPath("$.imageUrl").value("https://moddo-s3.s3.amazonaws.com/character/천사 모또-2.png"))
-			.andExpect(jsonPath("$.imageBigUrl").value("https://moddo-s3.s3.amazonaws.com/character/천사 모또-2-big.png"));
+			.andExpect(jsonPath("$.imageBigUrl").value("https://moddo-s3.s3.amazonaws.com/character/천사 모또-2-big.png"))
+			.andDo(print());
 
-		verify(jwtService).getGroupId(groupToken);
+		verify(queryGroupService).findIdByCode(groupToken);
 		verify(queryCharacterService).findCharacterByGroupId(groupId);
 	}
 
@@ -50,7 +52,7 @@ public class CharacterControllerTest extends RestDocsTestSupport {
 	void getCharacterInvalidToken() throws Exception {
 		// given
 		String groupToken = "invalid.groupToken";
-		when(jwtService.getGroupId(groupToken)).thenThrow(new TokenInvalidException());
+		when(queryGroupService.findIdByCode(groupToken)).thenThrow(new TokenInvalidException());
 
 		// when & then
 		mockMvc.perform(get("/api/v1/character")
@@ -58,7 +60,7 @@ public class CharacterControllerTest extends RestDocsTestSupport {
 				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isUnauthorized());
 
-		verify(jwtService).getGroupId(groupToken);
+		verify(queryGroupService).findIdByCode(groupToken);
 		verify(queryCharacterService, never()).findCharacterByGroupId(any());
 	}
 
@@ -67,7 +69,7 @@ public class CharacterControllerTest extends RestDocsTestSupport {
 	void getCharacterMissingToken() throws Exception {
 		// when
 		String groupToken = "";
-		when(jwtService.getGroupId(groupToken)).thenThrow(new MissingTokenException());
+		when(queryGroupService.findIdByCode(groupToken)).thenThrow(new MissingTokenException());
 
 		// then
 		mockMvc.perform(get("/api/v1/character")
@@ -75,7 +77,7 @@ public class CharacterControllerTest extends RestDocsTestSupport {
 				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isUnauthorized());
 
-		verify(jwtService).getGroupId(groupToken);
+		verify(queryGroupService).findIdByCode(groupToken);
 		verify(queryCharacterService, never()).findCharacterByGroupId(any());
 	}
 }
