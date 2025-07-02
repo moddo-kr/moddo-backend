@@ -32,6 +32,12 @@ jobs:
         run: |
           docker pull ${{ env.DOCKER_IMAGE_NAME }}:latest || true
 
+      - name: Run tests (Testcontainers, Spring REST Docs)
+        run: ./gradlew test --no-daemon
+
+      - name: Build JAR
+        run: ./gradlew bootJar --no-daemon
+
       - name: Build the Docker image with cache
         run: |
           docker build . --file Dockerfile --tag ${{ env.DOCKER_IMAGE_NAME }}:latest \
