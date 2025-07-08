@@ -37,6 +37,15 @@ aws:
   region:
     static: ap-northeast-2
 
+cookie:
+  domain: moddo.kro.kr
+  secure: true
+  http-only: false
+  path: /
+  same-site: none
+  max-age: 7D
+
+
 kakao:
   auth:
     client_id: clientidclientidclientidclientidclientidclientidclientid

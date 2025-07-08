@@ -21,6 +21,7 @@ import org.springframework.util.MultiValueMap;
 
 import com.dnd.moddo.domain.auth.dto.KakaoProfile;
 import com.dnd.moddo.domain.auth.dto.KakaoTokenResponse;
+import com.dnd.moddo.global.exception.ModdoException;
 
 @ExtendWith(SpringExtension.class)
 @RestClientTest(value = KakaoClient.class)
@@ -46,19 +47,19 @@ public class KakaoClientTest {
 	@Test
 	void whenRequestKakaoAccessToken_thenReturnOauthToken() throws Exception {
 		// given
-		String code = "test-code";
+		String code = "test_code";
 
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add("code", "test-code");
-		params.add("grant_type", "authorization-code");
+		params.add("code", "test_code");
+		params.add("grant_type", "authorization_code");
 		params.add("client_id", clientId);
 		params.add("redirect_uri", redirectUri);
 
 		String expectResponse = """
 			{
-			  "access_token": "test-token",
+			  "access_token": "test_token",
 			  "token_type": "bearer",
-			  "refresh_token": "refresh-token",
+			  "refresh_token": "refresh_token",
 			  "expires_in": 3600,
 			  "scope": "profile",
 			  "refresh_token_expires_in": 7200
@@ -71,11 +72,11 @@ public class KakaoClientTest {
 			.andExpect(content().formData(params))
 			.andRespond(withSuccess(expectResponse, MediaType.APPLICATION_JSON));
 		// when
-		KakaoTokenResponse result = kakaoClient.join("test-code");
+		KakaoTokenResponse result = kakaoClient.join("test_code");
 
 		// then
 		assertThat(result).isNotNull();
-		assertThat(result.access_token()).isEqualTo("test-token");
+		assertThat(result.access_token()).isEqualTo("test_token");
 	}
 
 	@DisplayName("잘못된 인가 코드로 토큰 요청 시 IllegalArgumentException이 발생한다")
@@ -85,10 +86,10 @@ public class KakaoClientTest {
 		String code = "invalid_code";
 
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add("code", "invalid-code");
-		params.add("grant_type", "authorization-code");
+		params.add("grant_type", "authorization_code");
 		params.add("client_id", clientId);
 		params.add("redirect_uri", redirectUri);
+		params.add("code", "invalid_code");
 
 		mockServer.expect(requestTo("https://kauth.kakao.com/oauth/token"))
 			.andExpect(method(HttpMethod.POST))
@@ -98,8 +99,8 @@ public class KakaoClientTest {
 
 		//when & then
 		assertThatThrownBy(() -> kakaoClient.join(code))
-			.isInstanceOf(IllegalArgumentException.class)
-			.hasMessageContaining("400");
+			.isInstanceOf(ModdoException.class)
+			.hasMessageContaining("카카오 API HTTP 에러");
 	}
 
 	@DisplayName("정상 토큰으로 카카오 프로필 요청 시 KakaoProfile이 반환된다")
@@ -166,6 +167,6 @@ public class KakaoClientTest {
 
 		// when & then
 		assertThatThrownBy(() -> kakaoClient.getKakaoProfile(token))
-			.isInstanceOf(IllegalArgumentException.class);
+			.isInstanceOf(ModdoException.class);
 	}
 }
