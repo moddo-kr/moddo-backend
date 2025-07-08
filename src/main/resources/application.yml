@@ -25,10 +25,12 @@ management:
       exposure:
         include: health,info,prometheus
 
-#logging:
-#  level:
-#    org.springframework.web: DEBUG
-#    org.springframework.web.servlet.DispatcherServlet: DEBUG
+cookie:
+  http-only: false
+  path: /
+  same-site: none
+  max-age: 7D
+
 ---
 
 spring:
