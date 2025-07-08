@@ -8,6 +8,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.dnd.moddo.domain.auth.controller.AuthController;
 import com.dnd.moddo.domain.auth.service.AuthService;
+import com.dnd.moddo.domain.auth.service.KakaoClient;
 import com.dnd.moddo.domain.auth.service.RefreshTokenService;
 import com.dnd.moddo.domain.character.controller.CharacterController;
 import com.dnd.moddo.domain.character.service.QueryCharacterService;
@@ -54,6 +55,9 @@ public abstract class ControllerTest {
 
 	@MockBean
 	protected AuthService authService;
+
+	@MockBean
+	protected KakaoClient kakaoClient;
 
 	@MockBean
 	protected RefreshTokenService refreshTokenService;
