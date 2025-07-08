@@ -36,3 +36,16 @@ aws:
     secret-key: secretKeysecretKeysecretKeysecretKeysecretKeysecretKey
   region:
     static: ap-northeast-2
+
+cookie:
+  secure: true
+  http-only: false
+  path: /
+  same-site: none
+  max-age: 7D
+
+
+kakao:
+  auth:
+    client_id: clientidclientidclientidclientidclientidclientidclientid
+    redirect_uri: http://localhost:8080/api/v1/login/kakao/callback
