@@ -39,6 +39,9 @@ class AuthControllerTest extends RestDocsTestSupport {
 			.andExpect(jsonPath("$.refreshToken").value("refresh-token"))
 			.andExpect(jsonPath("$.isMember").value(false))
 			.andDo(restDocs.document(
+				responseHeaders(
+					headerWithName("Set-Cookie").description("엑세스 토큰")
+				),
 				responseFields(
 					fieldWithPath("accessToken").type(JsonFieldType.STRING).description("액세스 토큰"),
 					fieldWithPath("refreshToken").type(JsonFieldType.STRING).description("리프레시 토큰"),
