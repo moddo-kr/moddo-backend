@@ -35,7 +35,13 @@ public class AuthController {
 
 	@GetMapping("/user/guest/token")
 	public ResponseEntity<TokenResponse> getGuestToken() {
-		return ResponseEntity.ok(authService.createGuestUser());
+		TokenResponse tokenResponse = authService.createGuestUser();
+
+		String cookie = createCookie("accessToken", tokenResponse.accessToken()).toString();
+
+		return ResponseEntity.ok()
+			.header(HttpHeaders.SET_COOKIE, cookie)
+			.body(tokenResponse);
 	}
 
 	@PutMapping("/user/reissue/token")
