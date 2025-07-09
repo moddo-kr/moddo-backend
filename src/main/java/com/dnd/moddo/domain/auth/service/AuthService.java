@@ -32,6 +32,13 @@ public class AuthService {
 	@Value("${kakao.auth.redirect_uri}")
 	String redirect_uri;
 
+	/**
+	 * Creates a new guest user with a unique email and returns a JWT token for authentication.
+	 *
+	 * The guest user is assigned the name "Guest" and is not marked as a member.
+	 *
+	 * @return a JWT token representing the newly created guest user
+	 */
 	@Transactional
 	public TokenResponse createGuestUser() {
 		String guestEmail = "guest-" + UUID.randomUUID() + "@guest.com";
@@ -42,6 +49,17 @@ public class AuthService {
 			guestUser.getIsMember());
 	}
 
+	/**
+	 * Creates and persists a new user with the specified email, name, and membership status.
+	 *
+	 * The user is assigned the USER authority, a null profile, the current time as the creation date,
+	 * and an expiration date set to one month from creation.
+	 *
+	 * @param email the user's email address
+	 * @param name the user's display name
+	 * @param isMember whether the user is a registered member
+	 * @return the saved User entity
+	 */
 	private User createUser(String email, String name, boolean isMember) {
 		User user = User.builder()
 			.email(email)
@@ -56,6 +74,14 @@ public class AuthService {
 		return userRepository.save(user);
 	}
 
+	/**
+	 * Retrieves or creates a user based on Kakao OAuth profile and returns a JWT token for authentication.
+	 *
+	 * If a user with the Kakao email does not exist, a new user is created using the Kakao profile information and marked as a member.
+	 *
+	 * @param token the Kakao OAuth access token
+	 * @return a JWT token response containing authentication details for the Kakao user
+	 */
 	@Transactional
 	public TokenResponse getOrCreateKakaoUserToken(String token) {
 		KakaoProfile kakaoProfile = kakaoClient.getKakaoProfile(token);
