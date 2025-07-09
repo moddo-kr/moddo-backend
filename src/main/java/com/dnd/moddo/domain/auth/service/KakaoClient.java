@@ -30,6 +30,14 @@ public class KakaoClient {
 
 	private final RestClient.Builder builder;
 
+	/**
+	 * Exchanges the provided Kakao OAuth authorization code for an access token.
+	 *
+	 * @param code the authorization code received from Kakao OAuth
+	 * @return the token response containing access and refresh tokens
+	 * @throws ModdoException if an HTTP error occurs during the token exchange
+	 * @throws IllegalArgumentException if a non-HTTP error occurs during the process
+	 */
 	public KakaoTokenResponse join(String code) {
 		RestClient restClient = builder.build();
 
@@ -59,6 +67,13 @@ public class KakaoClient {
 		}
 	}
 
+	/**
+	 * Retrieves the Kakao user profile associated with the provided access token.
+	 *
+	 * @param token the OAuth access token issued by Kakao
+	 * @return the user's Kakao profile information
+	 * @throws ModdoException if an HTTP error occurs or the profile cannot be retrieved
+	 */
 	public KakaoProfile getKakaoProfile(String token) {
 		RestClient restClient = builder.build();
 
