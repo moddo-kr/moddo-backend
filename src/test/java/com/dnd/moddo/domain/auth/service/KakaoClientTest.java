@@ -4,12 +4,10 @@ import static org.assertj.core.api.Assertions.*;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -21,6 +19,7 @@ import org.springframework.util.MultiValueMap;
 
 import com.dnd.moddo.domain.auth.dto.KakaoProfile;
 import com.dnd.moddo.domain.auth.dto.KakaoTokenResponse;
+import com.dnd.moddo.global.config.KakaoProperties;
 import com.dnd.moddo.global.exception.ModdoException;
 
 @ExtendWith(SpringExtension.class)
@@ -32,16 +31,7 @@ public class KakaoClientTest {
 	@Autowired
 	private MockRestServiceServer mockServer;
 
-	@Value("${kakao.auth.client_id}")
-	private String clientId;
-
-	@Value("${kakao.auth.redirect_uri}")
-	private String redirectUri;
-
-	@AfterEach
-	void tearDown() {
-		mockServer.reset();
-	}
+	private KakaoProperties kakaoProperties;
 
 	@DisplayName("카카오 인가 코드로 토큰 요청하면 OauthToken을 반환한다")
 	@Test
@@ -52,17 +42,13 @@ public class KakaoClientTest {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add("code", "test_code");
 		params.add("grant_type", "authorization_code");
-		params.add("client_id", clientId);
-		params.add("redirect_uri", redirectUri);
+		params.add("client_id", kakaoProperties.clientId());
+		params.add("redirect_uri", kakaoProperties.redirectUri());
 
 		String expectResponse = """
 			{
 			  "access_token": "test_token",
-			  "token_type": "bearer",
-			  "refresh_token": "refresh_token",
-			  "expires_in": 3600,
-			  "scope": "profile",
-			  "refresh_token_expires_in": 7200
+			  "expires_in": 3600
 			}
 			""";
 
@@ -76,7 +62,7 @@ public class KakaoClientTest {
 
 		// then
 		assertThat(result).isNotNull();
-		assertThat(result.access_token()).isEqualTo("test_token");
+		assertThat(result.accessToken()).isEqualTo("test_token");
 	}
 
 	@DisplayName("잘못된 인가 코드로 토큰 요청 시 IllegalArgumentException이 발생한다")
@@ -87,8 +73,8 @@ public class KakaoClientTest {
 
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add("grant_type", "authorization_code");
-		params.add("client_id", clientId);
-		params.add("redirect_uri", redirectUri);
+		params.add("client_id", kakaoProperties.clientId());
+		params.add("redirect_uri", kakaoProperties.redirectUri());
 		params.add("code", "invalid_code");
 
 		mockServer.expect(requestTo("https://kauth.kakao.com/oauth/token"))

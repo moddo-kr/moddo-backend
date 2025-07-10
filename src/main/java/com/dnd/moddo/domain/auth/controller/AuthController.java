@@ -1,9 +1,9 @@
 package com.dnd.moddo.domain.auth.controller;
 
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dnd.moddo.domain.auth.dto.KakaoTokenResponse;
 import com.dnd.moddo.domain.auth.service.AuthService;
 import com.dnd.moddo.domain.auth.service.KakaoClient;
 import com.dnd.moddo.domain.auth.service.RefreshTokenService;
@@ -24,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
-@EnableConfigurationProperties(CookieProperties.class)
+@Validated
 @RequestMapping("/api/v1")
 public class AuthController {
 
@@ -35,7 +34,7 @@ public class AuthController {
 
 	@GetMapping("/user/guest/token")
 	public ResponseEntity<TokenResponse> getGuestToken() {
-		TokenResponse tokenResponse = authService.createGuestUser();
+		TokenResponse tokenResponse = authService.loginWithGuest();
 
 		String cookie = createCookie("accessToken", tokenResponse.accessToken()).toString();
 
@@ -50,10 +49,9 @@ public class AuthController {
 	}
 
 	@GetMapping("/login/oauth2/callback")
-	public ResponseEntity<Void> kakaoLoginCallback(@RequestParam String code) {
-		KakaoTokenResponse kakaoTokenResponse = kakaoClient.join(code);
+	public ResponseEntity<Void> kakaoLoginCallback(@RequestParam @NotBlank String code) {
 
-		TokenResponse tokenResponse = authService.getOrCreateKakaoUserToken(kakaoTokenResponse.access_token());
+		TokenResponse tokenResponse = authService.loginOrRegisterWithKakao(code);
 
 		String cookie = createCookie("accessToken", tokenResponse.accessToken()).toString();
 
@@ -93,4 +91,5 @@ public class AuthController {
 			.maxAge(0L)
 			.build();
 	}
+
 }

@@ -36,7 +36,7 @@ public class AuthServiceTest {
 		User user = createGuestDefault();
 		when(userRepository.save(any(User.class))).thenReturn(user);
 		//when
-		TokenResponse response = authService.createGuestUser();
+		TokenResponse response = authService.loginWithGuest();
 		//then
 		verify(userRepository, times(1)).save(any(User.class));
 	}
@@ -48,27 +48,14 @@ public class AuthServiceTest {
 		String token = "test_token";
 		KakaoProfile kakaoProfile = new KakaoProfile(
 			12345L,
-			"2025.06.29T00:00:00",
-			new KakaoProfile.Properties(
-				"테스트유저",
-				"profile_image",
-				"thumbnail_image"
-			),
 			new KakaoProfile.KakaoAccount(
-				true,
-				true,
+				"test@example.com",
 				new KakaoProfile.Profile(
-					"테스트 유저",
-					"thumbnail_image_url",
-					"profile_image_url",
-					true,
-					true
-				),
-				true,
-				true,
-				true,
-				true,
-				"test@example.com"
+					"테스트 유저"
+				)
+			),
+			new KakaoProfile.Properties(
+				"테스트유저"
 			)
 		);
 		String email = kakaoProfile.kakaoAccount().email();
@@ -77,7 +64,7 @@ public class AuthServiceTest {
 		when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
 
 		//when
-		TokenResponse response = authService.getOrCreateKakaoUserToken(token);
+		TokenResponse response = authService.loginOrRegisterWithKakao(token);
 
 		//then
 		verify(jwtProvider, times(1)).generateToken(any(), anyString(), anyString(), anyBoolean());
@@ -90,27 +77,14 @@ public class AuthServiceTest {
 		String token = "test_token";
 		KakaoProfile kakaoProfile = new KakaoProfile(
 			12345L,
-			"2025.06.29T00:00:00",
-			new KakaoProfile.Properties(
-				"테스트유저",
-				"profile_image",
-				"thumbnail_image"
-			),
 			new KakaoProfile.KakaoAccount(
-				true,
-				true,
+				"test@example.com",
 				new KakaoProfile.Profile(
-					"테스트 유저",
-					"thumbnail_image_url",
-					"profile_image_url",
-					true,
-					true
-				),
-				true,
-				true,
-				true,
-				true,
-				"test@example.com"
+					"테스트 유저"
+				)
+			),
+			new KakaoProfile.Properties(
+				"테스트유저"
 			)
 		);
 		String email = kakaoProfile.kakaoAccount().email();
@@ -121,7 +95,7 @@ public class AuthServiceTest {
 		when(userRepository.save(any(User.class))).thenReturn(user);
 
 		//when
-		TokenResponse response = authService.getOrCreateKakaoUserToken(token);
+		TokenResponse response = authService.loginOrRegisterWithKakao(token);
 
 		//then
 		verify(userRepository, times(1)).save(any(User.class));

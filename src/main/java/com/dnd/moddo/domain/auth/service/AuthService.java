@@ -1,16 +1,15 @@
 package com.dnd.moddo.domain.auth.service;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.moddo.domain.auth.dto.KakaoProfile;
+import com.dnd.moddo.domain.auth.dto.KakaoTokenResponse;
+import com.dnd.moddo.domain.user.dto.request.UserCreateRequest;
 import com.dnd.moddo.domain.user.entity.User;
-import com.dnd.moddo.domain.user.entity.type.Authority;
-import com.dnd.moddo.domain.user.repository.UserRepository;
+import com.dnd.moddo.domain.user.service.UserService;
 import com.dnd.moddo.global.jwt.dto.TokenResponse;
 import com.dnd.moddo.global.jwt.utill.JwtProvider;
 
@@ -22,54 +21,37 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AuthService {
 
-	private final UserRepository userRepository;
+	private final UserService userService;
 	private final JwtProvider jwtProvider;
 	private final KakaoClient kakaoClient;
 
-	@Value("${kakao.auth.client_id}")
-	String client_id;
-
-	@Value("${kakao.auth.redirect_uri}")
-	String redirect_uri;
-
 	@Transactional
-	public TokenResponse createGuestUser() {
+	public TokenResponse loginWithGuest() {
 		String guestEmail = "guest-" + UUID.randomUUID() + "@guest.com";
+		UserCreateRequest request = new UserCreateRequest(guestEmail, "Guest", null, false);
 
-		User guestUser = createUser(guestEmail, "Guest", false);
+		User user = userService.createGuestUser(request);
 
-		return jwtProvider.generateToken(guestUser.getId(), guestUser.getEmail(), guestUser.getAuthority().toString(),
-			guestUser.getIsMember());
-	}
-
-	private User createUser(String email, String name, boolean isMember) {
-		User user = User.builder()
-			.email(email)
-			.name(name)
-			.profile(null)
-			.createdAt(LocalDateTime.now())
-			.expiredAt(LocalDateTime.now().plusMonths(1))
-			.authority(Authority.USER)
-			.isMember(isMember)
-			.build();
-
-		return userRepository.save(user);
+		return jwtProvider.generateToken(user.getId(), user.getEmail(),
+			user.getAuthority().toString(), user.getIsMember());
 	}
 
 	@Transactional
-	public TokenResponse getOrCreateKakaoUserToken(String token) {
-		KakaoProfile kakaoProfile = kakaoClient.getKakaoProfile(token);
+	public TokenResponse loginOrRegisterWithKakao(String code) {
+		KakaoTokenResponse tokenResponse = kakaoClient.join(code);
+		KakaoProfile kakaoProfile = kakaoClient.getKakaoProfile(tokenResponse.accessToken());
 
 		String email = kakaoProfile.kakaoAccount().email();
 		String nickname = kakaoProfile.properties().nickname();
+		Long kakaoId = kakaoProfile.id();
 
-		User kakaoUser = userRepository.findByEmail(email)
-			.orElseGet(() -> createUser(email, nickname, true));
+		UserCreateRequest request = new UserCreateRequest(email, nickname, kakaoId, true);
+		User user = userService.getOrCreateUser(request);
 
-		log.info("[USER_LOGIN] 로그인 성공 : email={}, name={}", kakaoUser.getEmail(), kakaoUser.getName());
+		log.info("[USER_LOGIN] 로그인 성공 : code = {}, kakaoId =  {}, nickname = {}", code, kakaoId, nickname);
 
-		return jwtProvider.generateToken(kakaoUser.getId(), kakaoUser.getEmail(), kakaoUser.getAuthority().toString(),
-			kakaoUser.getIsMember());
+		return jwtProvider.generateToken(user.getId(), user.getEmail(), user.getAuthority().toString(),
+			user.getIsMember());
 	}
 
 }

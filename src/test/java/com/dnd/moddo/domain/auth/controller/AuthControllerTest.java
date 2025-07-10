@@ -30,7 +30,7 @@ class AuthControllerTest extends RestDocsTestSupport {
 			ZonedDateTime.now().plusDays(30),
 			false
 		);
-		given(authService.createGuestUser()).willReturn(response);
+		given(authService.loginWithGuest()).willReturn(response);
 
 		// when & then
 		mockMvc.perform(get("/api/v1/user/guest/token"))
@@ -79,14 +79,12 @@ class AuthControllerTest extends RestDocsTestSupport {
 	@DisplayName("카카오에서 인가코드를 통해 토큰을 발급받아 사용자 정보를 가져와 등록시킨 뒤 엑세스 토큰을 발급하여 쿠키로 전달한다.")
 	void kakaoLoginCallback() throws Exception {
 		//given
-		KakaoTokenResponse kakaoTokenResponse = new KakaoTokenResponse("kakao-access-token", "bearer",
-			"kakao-refresh-token",
-			3600, "profile", 7200);
+		KakaoTokenResponse kakaoTokenResponse = new KakaoTokenResponse("kakao-access-token", 3600);
 		given(kakaoClient.join(anyString())).willReturn(kakaoTokenResponse);
 
 		TokenResponse tokenResponse = new TokenResponse("access-token", "refresh-token",
 			ZonedDateTime.now().plusMonths(1), true);
-		given(authService.getOrCreateKakaoUserToken(anyString())).willReturn(tokenResponse);
+		given(authService.loginOrRegisterWithKakao(anyString())).willReturn(tokenResponse);
 
 		//when & then
 		mockMvc.perform(get("/api/v1/login/oauth2/callback")

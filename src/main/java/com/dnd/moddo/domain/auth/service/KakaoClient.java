@@ -1,6 +1,5 @@
 package com.dnd.moddo.domain.auth.service;
 
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 @Component
-@EnableConfigurationProperties(KakaoProfile.class)
 public class KakaoClient {
 	private final KakaoProperties kakaoProperties;
 	private final RestClient.Builder builder;
@@ -29,11 +27,11 @@ public class KakaoClient {
 	public KakaoTokenResponse join(String code) {
 		RestClient restClient = builder.build();
 
-		String uri = "https://kauth.kakao.com/oauth/token";
+		String uri = kakaoProperties.tokenRequestUri();
 
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add("grant_type", "authorization_code");
-		params.add("client_id", kakaoProperties.client_id());
+		params.add("client_id", kakaoProperties.clientId());
 		params.add("redirect_uri", kakaoProperties.redirectUri());
 		params.add("code", code);
 
@@ -58,13 +56,12 @@ public class KakaoClient {
 	public KakaoProfile getKakaoProfile(String token) {
 		RestClient restClient = builder.build();
 
-		String uri = "https://kapi.kakao.com/v2/user/me";
+		String uri = kakaoProperties.profileRequestUri();
 
 		try {
 			return restClient.get()
 				.uri(uri)
 				.header("Authorization", "Bearer " + token)
-				.header("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8")
 				.retrieve()
 				.body(KakaoProfile.class);
 
