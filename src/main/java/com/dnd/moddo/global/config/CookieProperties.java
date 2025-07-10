@@ -1,4 +1,4 @@
-package com.dnd.moddo.global.jwt.properties;
+package com.dnd.moddo.global.config;
 
 import java.time.Duration;
 

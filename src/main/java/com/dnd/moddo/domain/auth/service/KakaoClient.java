@@ -1,6 +1,6 @@
 package com.dnd.moddo.domain.auth.service;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,6 +12,7 @@ import org.springframework.web.client.RestClientResponseException;
 
 import com.dnd.moddo.domain.auth.dto.KakaoProfile;
 import com.dnd.moddo.domain.auth.dto.KakaoTokenResponse;
+import com.dnd.moddo.global.config.KakaoProperties;
 import com.dnd.moddo.global.exception.ModdoException;
 
 import lombok.RequiredArgsConstructor;
@@ -20,14 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 @Component
+@EnableConfigurationProperties(KakaoProfile.class)
 public class KakaoClient {
-
-	@Value("${kakao.auth.client_id}")
-	String client_id;
-
-	@Value("${kakao.auth.redirect_uri}")
-	String redirect_uri;
-
+	private final KakaoProperties kakaoProperties;
 	private final RestClient.Builder builder;
 
 	public KakaoTokenResponse join(String code) {
@@ -37,8 +33,8 @@ public class KakaoClient {
 
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add("grant_type", "authorization_code");
-		params.add("client_id", client_id);
-		params.add("redirect_uri", redirect_uri);
+		params.add("client_id", kakaoProperties.client_id());
+		params.add("redirect_uri", kakaoProperties.redirectUri());
 		params.add("code", code);
 
 		try {

@@ -149,7 +149,7 @@ public class KakaoClientTest {
 		// then
 		assertThat(profile).isNotNull();
 		assertThat(profile.id()).isEqualTo(12345L);
-		assertThat(profile.kakao_account().email()).isEqualTo("test@example.com");
+		assertThat(profile.kakaoAccount().email()).isEqualTo("test@example.com");
 		assertThat(profile.properties().nickname()).isEqualTo("테스트유저");
 	}
 

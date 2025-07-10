@@ -1,36 +1,38 @@
 package com.dnd.moddo.domain.auth.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public record KakaoProfile(
 	Long id,
-	String connected_at,
+	@JsonProperty("connected_at") String connectedAt,
 	Properties properties,
-	KakaoAccount kakao_account
+	@JsonProperty("kakao_account") KakaoAccount kakaoAccount
 ) {
 	public record Properties(
 		String nickname,
-		String profile_image,
-		String thumbnail_image
+		@JsonProperty("profile_image") String profileImage,
+		@JsonProperty("thumbnail_image") String thumbnailImage
 	) {
 	}
 
 	public record KakaoAccount(
-		Boolean profile_nickname_needs_agreement,
-		Boolean profile_image_needs_agreement,
+		@JsonProperty("profile_nickname_needs_agreement") Boolean profileNicknameNeedsAgreement,
+		@JsonProperty("profile_image_needs_agreement") Boolean profileImageNeedsAgreement,
 		Profile profile,
-		Boolean has_email,
-		Boolean email_needs_agreement,
-		Boolean is_email_valid,
-		Boolean is_email_verified,
+		@JsonProperty("has_email") Boolean hasEmail,
+		@JsonProperty("email_needs_agreement") Boolean emailNeedsAgreement,
+		@JsonProperty("is_email_valid") Boolean isEmailValid,
+		@JsonProperty("is_email_verified") Boolean isEmailVerified,
 		String email
 	) {
 	}
 
 	public record Profile(
 		String nickname,
-		String thumbnail_image_url,
-		String profile_image_url,
-		Boolean is_default_image,
-		Boolean is_default_nickname
+		@JsonProperty("thumbnail_image_url") String thumbnailImageUrl,
+		@JsonProperty("profile_image_url") String profileImageUrl,
+		@JsonProperty("is_default_image") Boolean isDefaultImage,
+		@JsonProperty("is_default_nickname") Boolean isDefaultNickname
 	) {
 	}
 }

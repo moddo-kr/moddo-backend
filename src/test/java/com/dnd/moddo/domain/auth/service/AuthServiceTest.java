@@ -71,7 +71,7 @@ public class AuthServiceTest {
 				"test@example.com"
 			)
 		);
-		String email = kakaoProfile.kakao_account().email();
+		String email = kakaoProfile.kakaoAccount().email();
 		User user = createWithEmail(email);
 		when(kakaoClient.getKakaoProfile(anyString())).thenReturn(kakaoProfile);
 		when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
@@ -113,7 +113,7 @@ public class AuthServiceTest {
 				"test@example.com"
 			)
 		);
-		String email = kakaoProfile.kakao_account().email();
+		String email = kakaoProfile.kakaoAccount().email();
 		User user = createWithEmail(email);
 
 		when(kakaoClient.getKakaoProfile(anyString())).thenReturn(kakaoProfile);

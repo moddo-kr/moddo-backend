@@ -60,7 +60,7 @@ public class AuthService {
 	public TokenResponse getOrCreateKakaoUserToken(String token) {
 		KakaoProfile kakaoProfile = kakaoClient.getKakaoProfile(token);
 
-		String email = kakaoProfile.kakao_account().email();
+		String email = kakaoProfile.kakaoAccount().email();
 		String nickname = kakaoProfile.properties().nickname();
 
 		User kakaoUser = userRepository.findByEmail(email)
