@@ -8,7 +8,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record CookieProperties(
 	boolean httpOnly,
 	boolean secure,
-	String domain,
 	String path,
 	String sameSite,
 	Duration maxAge

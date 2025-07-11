@@ -72,7 +72,6 @@ public class AuthController {
 			.httpOnly(cookieProperties.httpOnly())
 			.secure(cookieProperties.secure())
 			.path(cookieProperties.path())
-			.domain(cookieProperties.domain())
 			.sameSite(cookieProperties.sameSite())
 			.maxAge(cookieProperties.maxAge())
 			.build();
@@ -84,7 +83,6 @@ public class AuthController {
 			.httpOnly(cookieProperties.httpOnly())
 			.secure(cookieProperties.secure())
 			.path(cookieProperties.path())
-			.domain(cookieProperties.domain())
 			.sameSite(cookieProperties.sameSite())
 			.maxAge(0L)
 			.build();
