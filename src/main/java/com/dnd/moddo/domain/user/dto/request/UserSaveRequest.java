@@ -5,18 +5,17 @@ import java.time.LocalDateTime;
 import com.dnd.moddo.domain.user.entity.User;
 import com.dnd.moddo.domain.user.entity.type.Authority;
 
-public record UserCreateRequest(
+public record UserSaveRequest(
 	String email,
 	String name,
-	Long kakaoId,
-	boolean isMember
+	Long kakaoId
 ) {
 	public User toEntity() {
 		return User.builder()
 			.email(email)
 			.name(name)
 			.kakaoId(kakaoId)
-			.isMember(isMember)
+			.isMember(true)
 			.authority(Authority.USER)
 			.profile(null)
 			.createdAt(LocalDateTime.now())

@@ -2,14 +2,17 @@ package com.dnd.moddo.domain.auth.service;
 
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.moddo.domain.auth.dto.KakaoProfile;
 import com.dnd.moddo.domain.auth.dto.KakaoTokenResponse;
-import com.dnd.moddo.domain.user.dto.request.UserCreateRequest;
+import com.dnd.moddo.domain.user.dto.request.GuestUserSaveRequest;
+import com.dnd.moddo.domain.user.dto.request.UserSaveRequest;
 import com.dnd.moddo.domain.user.entity.User;
-import com.dnd.moddo.domain.user.service.UserService;
+import com.dnd.moddo.domain.user.service.CommandUserService;
+import com.dnd.moddo.global.exception.ModdoException;
 import com.dnd.moddo.global.jwt.dto.TokenResponse;
 import com.dnd.moddo.global.jwt.utill.JwtProvider;
 
@@ -21,19 +24,18 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AuthService {
 
-	private final UserService userService;
+	private final CommandUserService commandUserService;
 	private final JwtProvider jwtProvider;
 	private final KakaoClient kakaoClient;
 
 	@Transactional
 	public TokenResponse loginWithGuest() {
 		String guestEmail = "guest-" + UUID.randomUUID() + "@guest.com";
-		UserCreateRequest request = new UserCreateRequest(guestEmail, "Guest", null, false);
+		GuestUserSaveRequest request = new GuestUserSaveRequest(guestEmail, "Guest");
 
-		User user = userService.createGuestUser(request);
+		User user = commandUserService.createGuestUser(request);
 
-		return jwtProvider.generateToken(user.getId(), user.getEmail(),
-			user.getAuthority().toString(), user.getIsMember());
+		return jwtProvider.generateToken(user);
 	}
 
 	@Transactional
@@ -45,13 +47,16 @@ public class AuthService {
 		String nickname = kakaoProfile.properties().nickname();
 		Long kakaoId = kakaoProfile.id();
 
-		UserCreateRequest request = new UserCreateRequest(email, nickname, kakaoId, true);
-		User user = userService.getOrCreateUser(request);
+		if (email == null || nickname == null || kakaoId == null) {
+			throw new ModdoException(HttpStatus.BAD_REQUEST, "카카오 프로필 정보가 누락되었습니다.");
+		}
+
+		UserSaveRequest request = new UserSaveRequest(email, nickname, kakaoId);
+		User user = commandUserService.getOrCreateUser(request);
 
 		log.info("[USER_LOGIN] 로그인 성공 : code = {}, kakaoId =  {}, nickname = {}", code, kakaoId, nickname);
 
-		return jwtProvider.generateToken(user.getId(), user.getEmail(), user.getAuthority().toString(),
-			user.getIsMember());
+		return jwtProvider.generateToken(user);
 	}
 
 }

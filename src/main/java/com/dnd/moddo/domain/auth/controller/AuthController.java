@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dnd.moddo.domain.auth.service.AuthService;
-import com.dnd.moddo.domain.auth.service.KakaoClient;
 import com.dnd.moddo.domain.auth.service.RefreshTokenService;
 import com.dnd.moddo.global.config.CookieProperties;
 import com.dnd.moddo.global.jwt.dto.RefreshResponse;
@@ -29,7 +28,6 @@ public class AuthController {
 
 	private final AuthService authService;
 	private final RefreshTokenService refreshTokenService;
-	private final KakaoClient kakaoClient;
 	private final CookieProperties cookieProperties;
 
 	@GetMapping("/user/guest/token")
