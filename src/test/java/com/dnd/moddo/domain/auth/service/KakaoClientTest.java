@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ import com.dnd.moddo.global.exception.ModdoException;
 
 @ExtendWith(SpringExtension.class)
 @RestClientTest(value = KakaoClient.class)
+@EnableConfigurationProperties(KakaoProperties.class)
 public class KakaoClientTest {
 	@Autowired
 	private KakaoClient kakaoClient;
@@ -31,6 +33,7 @@ public class KakaoClientTest {
 	@Autowired
 	private MockRestServiceServer mockServer;
 
+	@Autowired
 	private KakaoProperties kakaoProperties;
 
 	@DisplayName("카카오 인가 코드로 토큰 요청하면 OauthToken을 반환한다")
@@ -52,7 +55,7 @@ public class KakaoClientTest {
 			}
 			""";
 
-		mockServer.expect(requestTo("https://kauth.kakao.com/oauth/token"))
+		mockServer.expect(requestTo(kakaoProperties.tokenRequestUri()))
 			.andExpect(method(HttpMethod.POST))
 			.andExpect(header("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8"))
 			.andExpect(content().formData(params))
@@ -77,7 +80,7 @@ public class KakaoClientTest {
 		params.add("redirect_uri", kakaoProperties.redirectUri());
 		params.add("code", "invalid_code");
 
-		mockServer.expect(requestTo("https://kauth.kakao.com/oauth/token"))
+		mockServer.expect(requestTo(kakaoProperties.tokenRequestUri()))
 			.andExpect(method(HttpMethod.POST))
 			.andExpect(header("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8"))
 			.andExpect(content().formData(params))
@@ -98,34 +101,20 @@ public class KakaoClientTest {
 		String expectResponse = """
 			{
 			  "id": 12345,
-			  "connected_at": "2025.06.29T00:00:00",
 			  "properties": {
-				"nickname": "테스트유저",
-				"profile_image": "profile_image",
-				"thumbnail_image": "thumbnail_image"
+				"nickname": "테스트유저"
 			  },
 			  "kakao_account": {
-				"profile_nickname_needs_agreement": true,
-				"profile_image_needs_agreement": true,
+			  	"email": "test@example.com",
 				"profile": {
-				  "nickname": "테스트 유저",
-				  "thumbnail_image_url": "thumbnail_image_url",
-				  "profile_image_url": "profile_image_url",
-				  "is_default_image": true,
-				  "is_default_nickname": true
-				},
-				"has_email": true,
-				"email_needs_agreement": true,
-				"is_email_valid": true,
-				"is_email_verified": true,
-				"email": "test@example.com"
+				  "nickname": "테스트 유저"
+				}
 			  }
 			}
 			""";
 
-		mockServer.expect(requestTo("https://kapi.kakao.com/v2/user/me"))
+		mockServer.expect(requestTo(kakaoProperties.profileRequestUri()))
 			.andExpect(method(HttpMethod.GET))
-			.andExpect(header("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8"))
 			.andExpect(header("Authorization", "Bearer " + token))
 			.andRespond(withSuccess(expectResponse, MediaType.APPLICATION_JSON));
 
@@ -145,9 +134,8 @@ public class KakaoClientTest {
 		// given
 		String token = "test_token";
 
-		mockServer.expect(requestTo("https://kapi.kakao.com/v2/user/me"))
+		mockServer.expect(requestTo(kakaoProperties.profileRequestUri()))
 			.andExpect(method(HttpMethod.GET))
-			.andExpect(header("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8"))
 			.andExpect(header("Authorization", "Bearer " + token))
 			.andRespond(withServerError());
 

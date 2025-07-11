@@ -23,6 +23,21 @@ public class UserTestFactory {
 			.build();
 	}
 
+	public static User createGuestWithNameAndEmail(String name, String email) {
+		LocalDateTime time = LocalDateTime.now();
+
+		return User
+			.builder()
+			.name(name)
+			.email(email)
+			.profile("profile.png")
+			.isMember(false)
+			.authority(USER)
+			.createdAt(time)
+			.expiredAt(time.plusDays(7))
+			.build();
+	}
+
 	public static User createWithEmail(String email) {
 		LocalDateTime time = LocalDateTime.now();
 		return User

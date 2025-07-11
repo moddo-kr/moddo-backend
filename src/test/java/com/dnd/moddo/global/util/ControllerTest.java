@@ -25,6 +25,7 @@ import com.dnd.moddo.domain.image.controller.ImageController;
 import com.dnd.moddo.domain.image.service.CommandImageService;
 import com.dnd.moddo.domain.memberExpense.controller.MemberExpenseController;
 import com.dnd.moddo.domain.memberExpense.service.QueryMemberExpenseService;
+import com.dnd.moddo.global.config.CookieProperties;
 import com.dnd.moddo.global.jwt.auth.JwtAuth;
 import com.dnd.moddo.global.jwt.auth.JwtFilter;
 import com.dnd.moddo.global.jwt.service.JwtService;
@@ -88,7 +89,9 @@ public abstract class ControllerTest {
 
 	@MockBean
 	protected QueryMemberExpenseService queryMemberExpenseService;
-
+	
+	@MockBean
+	protected CookieProperties cookieProperties;
 	// Jwt
 	@MockBean
 	protected JwtAuth jwtAuth;

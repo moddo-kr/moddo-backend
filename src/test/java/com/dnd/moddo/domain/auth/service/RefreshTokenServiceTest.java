@@ -1,9 +1,8 @@
 package com.dnd.moddo.domain.auth.service;
 
+import static com.dnd.moddo.global.support.UserTestFactory.*;
 import static org.assertj.core.api.BDDAssertions.*;
 import static org.mockito.Mockito.*;
-
-import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +14,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.dnd.moddo.domain.auth.exception.TokenInvalidException;
 import com.dnd.moddo.domain.user.entity.User;
-import com.dnd.moddo.domain.user.entity.type.Authority;
 import com.dnd.moddo.domain.user.repository.UserRepository;
 import com.dnd.moddo.global.jwt.dto.RefreshResponse;
 import com.dnd.moddo.global.jwt.properties.JwtConstants;
@@ -60,12 +58,11 @@ public class RefreshTokenServiceTest {
 		when(mockJws.getBody()).thenReturn(mockClaims);
 		when(mockClaims.get(JwtConstants.EMAIL.message)).thenReturn(email);
 
-		User user = new User("name", email, role, true, Authority.USER, LocalDateTime.now(),
-			LocalDateTime.now().plusDays(1));
+		User user = createGuestDefault();
 		ReflectionTestUtils.setField(user, "id", userId);
 
 		when(userRepository.getByEmail(email)).thenReturn(user);
-		when(jwtProvider.generateAccessToken(userId, email, role)).thenReturn(newAccessToken);
+		when(jwtProvider.generateAccessToken(userId, role)).thenReturn(newAccessToken);
 
 		// when
 		RefreshResponse response = refreshTokenService.execute(validToken);
@@ -73,7 +70,7 @@ public class RefreshTokenServiceTest {
 		// then
 		then(response.getAccessToken()).isEqualTo(newAccessToken);
 		verify(userRepository, times(1)).getByEmail(email);
-		verify(jwtProvider, times(1)).generateAccessToken(userId, email, role);
+		verify(jwtProvider, times(1)).generateAccessToken(userId, role);
 	}
 
 	@Test

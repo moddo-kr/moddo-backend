@@ -1,5 +1,6 @@
 package com.dnd.moddo.domain.group.service.implementation;
 
+import static com.dnd.moddo.global.support.UserTestFactory.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -22,7 +23,6 @@ import com.dnd.moddo.domain.group.repository.GroupRepository;
 import com.dnd.moddo.domain.image.dto.CharacterResponse;
 import com.dnd.moddo.domain.image.service.implementation.ImageReader;
 import com.dnd.moddo.domain.user.entity.User;
-import com.dnd.moddo.domain.user.entity.type.Authority;
 import com.dnd.moddo.domain.user.repository.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -57,8 +57,7 @@ class GroupCreatorTest {
 		userId = 1L;
 		request = new GroupRequest("groupName", "password");
 
-		mockUser = new User(userId, "test@example.com", "닉네임", "프로필", false, LocalDateTime.now(),
-			LocalDateTime.now().plusDays(1), Authority.USER);
+		mockUser = createGuestDefault();
 
 		encodedPassword = "encryptedPassword";
 
