@@ -196,5 +196,3 @@ include::{snippets}/expense-controller-test/update-img-url-success/http-response
 ==== 요청
 
 include::{snippets}/expense-controller-test/update-img-url-success/request-body.adoc[]
-
-operation::create-expense[snippets="path-parameters,http-request,request-body,request-fields,http-response"]
