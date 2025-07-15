@@ -4,7 +4,10 @@ import static com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole.*;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.BDDMockito.any;
 import static org.mockito.BDDMockito.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalDate;
@@ -13,6 +16,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.JsonFieldType;
 
 import com.dnd.moddo.domain.expense.dto.request.ExpenseImageRequest;
 import com.dnd.moddo.domain.expense.dto.request.ExpenseRequest;
@@ -74,7 +78,21 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 				.param("groupToken", groupToken)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
-			.andExpect(status().isOk());
+			.andExpect(status().isOk())
+			.andDo(document("create-expense",
+				requestFields(
+					fieldWithPath("expenses").type(JsonFieldType.ARRAY).description("지출 항목 목록"),
+					fieldWithPath("expenses[].amount").type(JsonFieldType.NUMBER).description("지출 금액"),
+					fieldWithPath("expenses[].content").type(JsonFieldType.STRING).description("지출 내용"),
+					fieldWithPath("expenses[].date").type(JsonFieldType.STRING).description("지출 일자 (yyyy-MM-dd)"),
+					fieldWithPath("expenses[].memberExpenses").type(JsonFieldType.ARRAY).description("멤버별 지출 내역"),
+					fieldWithPath("expenses[].memberExpenses[].id").type(JsonFieldType.NUMBER)
+						.description("멤버 ID"),
+					fieldWithPath("expenses[].memberExpenses[].amount").type(JsonFieldType.NUMBER)
+						.description("멤버가 실제로 부담한 금액")
+				))
+			)
+		;
 	}
 
 	@Test
@@ -123,7 +141,28 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.expenses.length()").value(4))
 			.andExpect(jsonPath("$.expenses[0].id").value(1))
-			.andExpect(jsonPath("$.expenses[0].memberExpenses[0].name").value("김모또"));
+			.andExpect(jsonPath("$.expenses[0].memberExpenses[0].name").value("김모또"))
+			.andDo(document("get-expenses",
+				queryParameters(
+					parameterWithName("groupToken").description("조회할 그룹 토큰")
+				),
+				responseFields(
+					fieldWithPath("expenses").type(JsonFieldType.ARRAY).description("지출 내역 목록"),
+					fieldWithPath("expenses[].id").type(JsonFieldType.NUMBER).description("지출 ID"),
+					fieldWithPath("expenses[].amount").type(JsonFieldType.NUMBER).description("지출 금액"),
+					fieldWithPath("expenses[].content").type(JsonFieldType.STRING).description("지출 내역 내용"),
+					fieldWithPath("expenses[].date").type(JsonFieldType.STRING).description("지출 날짜 (yyyy-MM-dd)"),
+					fieldWithPath("expenses[].memberExpenses").type(JsonFieldType.ARRAY).description("멤버별 지출 상세"),
+					fieldWithPath("expenses[].memberExpenses[].id").type(JsonFieldType.NUMBER).description("멤버 ID"),
+					fieldWithPath("expenses[].memberExpenses[].name").type(JsonFieldType.STRING).description("멤버 이름"),
+					fieldWithPath("expenses[].memberExpenses[].role").type(JsonFieldType.STRING)
+						.description("멤버 역할(MANAGER/PARTICIPANT)"),
+					fieldWithPath("expenses[].memberExpenses[].profile").type(JsonFieldType.STRING)
+						.description("프로필 이미지 URL"),
+					fieldWithPath("expenses[].memberExpenses[].amount").type(JsonFieldType.NUMBER)
+						.description("해당 멤버의 지출 금액")
+				)
+			));
 	}
 
 	@Test
