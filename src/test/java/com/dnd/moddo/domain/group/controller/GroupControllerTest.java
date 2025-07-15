@@ -23,6 +23,8 @@ import com.dnd.moddo.domain.group.dto.response.GroupSaveResponse;
 import com.dnd.moddo.domain.groupMember.dto.response.GroupMemberResponse;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 public class GroupControllerTest extends RestDocsTestSupport {
 
 	@Test
@@ -34,7 +36,7 @@ public class GroupControllerTest extends RestDocsTestSupport {
 			1L, MANAGER, "김모또", "https://moddo-s3.s3.amazonaws.com/profile/MODDO.png", true, LocalDateTime.now()
 		));
 
-		given(jwtService.getUserId(any())).willReturn(1L);
+		given(jwtService.getUserId(any(HttpServletRequest.class))).willReturn(1L);
 		given(commandGroupService.createGroup(any(), eq(1L))).willReturn(response);
 
 		// when & then
@@ -55,7 +57,7 @@ public class GroupControllerTest extends RestDocsTestSupport {
 			LocalDateTime.now().plusDays(1)
 		);
 
-		given(jwtService.getUserId(any())).willReturn(1L);
+		given(jwtService.getUserId(any(HttpServletRequest.class))).willReturn(1L);
 		given(queryGroupService.findIdByCode(anyString())).willReturn(100L);
 		given(commandGroupService.updateAccount(any(), eq(1L), eq(100L))).willReturn(response);
 
@@ -76,7 +78,7 @@ public class GroupControllerTest extends RestDocsTestSupport {
 				LocalDateTime.now())
 		));
 
-		given(jwtService.getUserId(any())).willReturn(1L);
+		given(jwtService.getUserId(any(HttpServletRequest.class))).willReturn(1L);
 		given(queryGroupService.findIdByCode(anyString())).willReturn(100L);
 		given(queryGroupService.findOne(100L, 1L)).willReturn(response);
 
@@ -93,7 +95,7 @@ public class GroupControllerTest extends RestDocsTestSupport {
 		GroupPasswordRequest request = new GroupPasswordRequest("1234");
 		GroupPasswordResponse response = GroupPasswordResponse.from("확인되었습니다.");
 
-		given(jwtService.getUserId(any())).willReturn(1L);
+		given(jwtService.getUserId(any(HttpServletRequest.class))).willReturn(1L);
 		given(queryGroupService.findIdByCode(anyString())).willReturn(100L);
 		given(commandGroupService.isPasswordMatch(100L, 1L, request)).willReturn(response);
 

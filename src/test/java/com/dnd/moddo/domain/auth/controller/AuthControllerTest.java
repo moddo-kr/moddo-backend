@@ -1,6 +1,7 @@
 package com.dnd.moddo.domain.auth.controller;
 
 import static org.mockito.BDDMockito.*;
+import static org.springframework.restdocs.cookies.CookieDocumentation.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -17,6 +18,8 @@ import com.dnd.moddo.domain.auth.dto.KakaoTokenResponse;
 import com.dnd.moddo.global.jwt.dto.RefreshResponse;
 import com.dnd.moddo.global.jwt.dto.TokenResponse;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
+
+import jakarta.servlet.http.Cookie;
 
 class AuthControllerTest extends RestDocsTestSupport {
 
@@ -96,6 +99,27 @@ class AuthControllerTest extends RestDocsTestSupport {
 				),
 				responseHeaders(
 					headerWithName("Set-Cookie").description("엑세스 토큰")
+				)
+			));
+	}
+
+	@Test
+	@DisplayName("카카오에서 인가코드를 통해 토큰을 발급받아 사용자 정보를 가져와 등록시킨 뒤 엑세스 토큰을 발급하여 쿠키로 전달한다.")
+	void kakaoLooutCallback() throws Exception {
+		//given
+		given(jwtService.getUserId(anyString())).willReturn(1L);
+		doNothing().when(authService).logout(any());
+
+		//when & then
+		mockMvc.perform(get("/api/v1/logout")
+				.cookie(new Cookie("accessToken", "access-token")))
+			.andExpect(status().isOk())
+			.andDo(restDocs.document(
+				requestCookies(
+					cookieWithName("accessToken").description("액세스 토큰")
+				),
+				responseFields(
+					fieldWithPath("message").type(JsonFieldType.STRING).description("로그아웃 성공 메시지")
 				)
 			));
 	}

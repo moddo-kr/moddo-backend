@@ -47,6 +47,8 @@ cookie:
 
 kakao:
   client-id: clientidclientidclientidclientidclientidclientidclientid
+  admin-key: adminkeyadminkeyadminkeyadminkeyadminkey
   redirect-uri: http://localhost:8080/api/v1/login/kakao/callback
   token-request-uri: https://kauth.kakao.com/oauth/token
   profile-request-uri: https://kapi.kakao.com/v2/user/me
+  logout-request-uri: https://kapi.kakao.com/v1/user/logout

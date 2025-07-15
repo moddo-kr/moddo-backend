@@ -1,6 +1,7 @@
 package com.dnd.moddo.domain.auth.service;
 
 import static com.dnd.moddo.global.support.UserTestFactory.*;
+import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.DisplayName;
@@ -10,10 +11,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.dnd.moddo.domain.auth.dto.KakaoLogoutResponse;
 import com.dnd.moddo.domain.auth.dto.KakaoProfile;
 import com.dnd.moddo.domain.auth.dto.KakaoTokenResponse;
 import com.dnd.moddo.domain.user.entity.User;
 import com.dnd.moddo.domain.user.service.CommandUserService;
+import com.dnd.moddo.domain.user.service.QueryUserService;
 import com.dnd.moddo.global.jwt.dto.TokenResponse;
 import com.dnd.moddo.global.jwt.utill.JwtProvider;
 
@@ -22,7 +25,9 @@ public class AuthServiceTest {
 	@Mock
 	private JwtProvider jwtProvider;
 	@Mock
-	CommandUserService commandUserService;
+	private CommandUserService commandUserService;
+	@Mock
+	private QueryUserService queryUserService;
 	@Mock
 	private KakaoClient kakaoClient;
 	@InjectMocks
@@ -71,5 +76,45 @@ public class AuthServiceTest {
 
 		//then
 		verify(jwtProvider, times(1)).generateToken(any());
+	}
+
+	@DisplayName("카카오ID와 응답ID가 같을 때 카카오 로그아웃 성공한다.")
+	@Test
+	void whenKakaoIdMatches_thenKakaoLogoutSuccess() {
+		//given
+		Long kakaoId = 123456L;
+		when(queryUserService.findKakaoIdById(any())).thenReturn(kakaoId);
+		when(kakaoClient.logout(any())).thenReturn(new KakaoLogoutResponse(kakaoId));
+		//when
+		authService.logout(1L);
+		//then
+		verify(queryUserService, times(1)).findKakaoIdById(1L);
+		verify(kakaoClient, times(1)).logout(kakaoId);
+	}
+
+	@DisplayName("카카오ID가 null일 때 게스트 로그아웃 성공한다.")
+	@Test
+	void whenKakaoIdNull_thenNoAction() {
+		//given
+		when(queryUserService.findKakaoIdById(any())).thenReturn(null);
+		//when
+		authService.logout(1L);
+		//then
+		verify(queryUserService, times(1)).findKakaoIdById(1L);
+		verify(kakaoClient, times(0)).logout(any());
+	}
+
+	@DisplayName("카카오ID와 응답ID가 다를 때 예외 발생한다.")
+	@Test
+	void whenKakaoIdDiffers_thenThrowsException() {
+		//given
+		Long kakaoId = 123456L;
+		when(queryUserService.findKakaoIdById(any())).thenReturn(kakaoId);
+		when(kakaoClient.logout(any())).thenReturn(new KakaoLogoutResponse(234567L));
+
+		//when & then
+		assertThatThrownBy(() -> authService.logout(1L))
+			.isInstanceOf(RuntimeException.class)
+			.hasMessageContaining("로그아웃 실패");
 	}
 }

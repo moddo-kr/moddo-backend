@@ -15,12 +15,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.dnd.moddo.domain.user.dto.request.GuestUserSaveRequest;
 import com.dnd.moddo.domain.user.dto.request.UserSaveRequest;
 import com.dnd.moddo.domain.user.entity.User;
-import com.dnd.moddo.domain.user.repository.UserRepository;
+import com.dnd.moddo.domain.user.service.implementation.UserCreator;
+import com.dnd.moddo.domain.user.service.implementation.UserReader;
 
 @ExtendWith(MockitoExtension.class)
 public class CommandUserServiceTest {
 	@Mock
-	private UserRepository userRepository;
+	private UserCreator userCreator;
+	@Mock
+	private UserReader userReader;
 	@InjectMocks
 	private CommandUserService commandUserService;
 
@@ -29,7 +32,7 @@ public class CommandUserServiceTest {
 	void whenSaveRequestIsValid_thenGuestUserIsSaved() {
 		//given
 		GuestUserSaveRequest request = new GuestUserSaveRequest("email", "Guest");
-		when(userRepository.save(any(User.class))).thenReturn(request.toEntity());
+		when(userCreator.createUser(any(User.class))).thenReturn(request.toEntity());
 		//when
 		User result = commandUserService.createGuestUser(request);
 		//then
@@ -43,7 +46,7 @@ public class CommandUserServiceTest {
 	void whenSaveRequestIsValid_thenKakaoUserIsSaved() {
 		//given
 		UserSaveRequest request = new UserSaveRequest("email", "Kakao", 123456L);
-		when(userRepository.save(any(User.class))).thenReturn(request.toEntity());
+		when(userCreator.createUser(any(User.class))).thenReturn(request.toEntity());
 		//when
 		User result = commandUserService.createKakaoUser(request);
 		//then
@@ -58,8 +61,8 @@ public class CommandUserServiceTest {
 		//given
 		UserSaveRequest request = new UserSaveRequest("email", "Kakao", 123456L);
 
-		when(userRepository.findByKakaoId(anyLong())).thenReturn(Optional.empty());
-		when(userRepository.save(any(User.class))).thenReturn(request.toEntity());
+		when(userReader.findByKakaoId(anyLong())).thenReturn(Optional.empty());
+		when(userCreator.createUser(any(User.class))).thenReturn(request.toEntity());
 		//when
 		User result = commandUserService.getOrCreateUser(request);
 
@@ -75,7 +78,7 @@ public class CommandUserServiceTest {
 		//given
 		UserSaveRequest request = new UserSaveRequest("email", "Kakao", 123456L);
 
-		when(userRepository.findByKakaoId(anyLong())).thenReturn(Optional.of(request.toEntity()));
+		when(userReader.findByKakaoId(anyLong())).thenReturn(Optional.of(request.toEntity()));
 		//when
 		User result = commandUserService.getOrCreateUser(request);
 

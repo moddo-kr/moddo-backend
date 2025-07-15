@@ -18,6 +18,7 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.dnd.moddo.domain.auth.dto.KakaoLogoutResponse;
 import com.dnd.moddo.domain.auth.dto.KakaoProfile;
 import com.dnd.moddo.domain.auth.dto.KakaoTokenResponse;
 import com.dnd.moddo.global.config.KakaoProperties;
@@ -142,5 +143,46 @@ public class KakaoClientTest {
 		// when & then
 		assertThatThrownBy(() -> kakaoClient.getKakaoProfile(token))
 			.isInstanceOf(ModdoException.class);
+	}
+
+	@DisplayName("카카오 로그아웃 API 호출 시 정상 응답을 반환한다")
+	@Test
+	void whenCallKakaoLogout_thenReturnValidResponse() {
+		//given
+		Long kakaoId = 123456L;
+		String expectResponse = """
+			{
+			  "id": 123456
+			}
+			""";
+
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add("target_id_type", "user_id");
+		params.add("target_id", "123456");
+
+		mockServer.expect(requestTo(kakaoProperties.logoutRequestUri()))
+			.andExpect(method(HttpMethod.POST))
+			.andExpect(header("Authorization", "KakaoAK " + kakaoProperties.adminKey()))
+			.andExpect(header("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8"))
+			.andRespond(withSuccess(expectResponse, MediaType.APPLICATION_JSON));
+		//when
+		KakaoLogoutResponse response = kakaoClient.logout(123456L);
+		//then
+		assertThat(response.id()).isEqualTo(kakaoId);
+	}
+
+	@DisplayName("카카오 로그아웃 API 호출 시 서버 오류가 발생하면 예외를 던진다")
+	@Test
+	void henCallKakaoLogout_withServerError_thenThrowException() {
+		//given
+		mockServer.expect(requestTo(kakaoProperties.logoutRequestUri()))
+			.andExpect(method(HttpMethod.POST))
+			.andExpect(header("Authorization", "KakaoAK " + kakaoProperties.adminKey()))
+			.andExpect(header("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8"))
+			.andRespond(withServerError());
+		//when & then
+
+		assertThatThrownBy(() -> kakaoClient.logout(123456L))
+			.hasMessageContaining("카카오 콜백 처리 실패");
 	}
 }
