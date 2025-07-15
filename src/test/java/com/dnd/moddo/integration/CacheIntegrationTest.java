@@ -3,7 +3,7 @@ package com.dnd.moddo.integration;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.Mockito.*;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -64,8 +64,8 @@ public class CacheIntegrationTest {
 		groupRepository.save(GroupTestFactory.createDefault());
 	}
 
-	@AfterEach
-	void tearDown() {
+	@AfterAll
+	static void tearDown() {
 		redis.close();
 	}
 

@@ -1,9 +1,12 @@
 package com.dnd.moddo.domain.auth.controller;
 
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import java.util.Collections;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -11,31 +14,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dnd.moddo.domain.auth.dto.KakaoTokenResponse;
 import com.dnd.moddo.domain.auth.service.AuthService;
-import com.dnd.moddo.domain.auth.service.KakaoClient;
 import com.dnd.moddo.domain.auth.service.RefreshTokenService;
+import com.dnd.moddo.global.config.CookieProperties;
 import com.dnd.moddo.global.jwt.dto.RefreshResponse;
 import com.dnd.moddo.global.jwt.dto.TokenResponse;
-import com.dnd.moddo.global.jwt.properties.CookieProperties;
+import com.dnd.moddo.global.jwt.service.JwtService;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
-@EnableConfigurationProperties(CookieProperties.class)
+@Validated
 @RequestMapping("/api/v1")
 public class AuthController {
 
 	private final AuthService authService;
 	private final RefreshTokenService refreshTokenService;
-	private final KakaoClient kakaoClient;
 	private final CookieProperties cookieProperties;
+	private final JwtService jwtService;
 
 	@GetMapping("/user/guest/token")
 	public ResponseEntity<TokenResponse> getGuestToken() {
-		TokenResponse tokenResponse = authService.createGuestUser();
+		TokenResponse tokenResponse = authService.loginWithGuest();
 
 		String cookie = createCookie("accessToken", tokenResponse.accessToken()).toString();
 
@@ -50,10 +52,9 @@ public class AuthController {
 	}
 
 	@GetMapping("/login/oauth2/callback")
-	public ResponseEntity<Void> kakaoLoginCallback(@RequestParam String code) {
-		KakaoTokenResponse kakaoTokenResponse = kakaoClient.join(code);
+	public ResponseEntity<Void> kakaoLoginCallback(@RequestParam @NotBlank String code) {
 
-		TokenResponse tokenResponse = authService.getOrCreateKakaoUserToken(kakaoTokenResponse.access_token());
+		TokenResponse tokenResponse = authService.loginOrRegisterWithKakao(code);
 
 		String cookie = createCookie("accessToken", tokenResponse.accessToken()).toString();
 
@@ -63,12 +64,13 @@ public class AuthController {
 	}
 
 	@GetMapping("/logout")
-	public ResponseEntity<Void> kakaoLogout() {
+	public ResponseEntity<?> kakaoLogout(@CookieValue(value = "accessToken") String token) {
 		String cookie = expireCookie("accessToken").toString();
-
+		Long userId = jwtService.getUserId(token);
+		authService.logout(userId);
 		return ResponseEntity.ok()
 			.header(HttpHeaders.SET_COOKIE, cookie)
-			.build();
+			.body(Collections.singletonMap("message", "Logout successful"));
 	}
 
 	private ResponseCookie createCookie(String name, String key) {
@@ -76,7 +78,6 @@ public class AuthController {
 			.httpOnly(cookieProperties.httpOnly())
 			.secure(cookieProperties.secure())
 			.path(cookieProperties.path())
-			.domain(cookieProperties.domain())
 			.sameSite(cookieProperties.sameSite())
 			.maxAge(cookieProperties.maxAge())
 			.build();
@@ -88,9 +89,9 @@ public class AuthController {
 			.httpOnly(cookieProperties.httpOnly())
 			.secure(cookieProperties.secure())
 			.path(cookieProperties.path())
-			.domain(cookieProperties.domain())
 			.sameSite(cookieProperties.sameSite())
 			.maxAge(0L)
 			.build();
 	}
+
 }

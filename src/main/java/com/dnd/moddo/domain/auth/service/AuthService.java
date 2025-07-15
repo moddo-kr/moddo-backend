@@ -1,16 +1,20 @@
 package com.dnd.moddo.domain.auth.service;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dnd.moddo.domain.auth.dto.KakaoLogoutResponse;
 import com.dnd.moddo.domain.auth.dto.KakaoProfile;
+import com.dnd.moddo.domain.auth.dto.KakaoTokenResponse;
+import com.dnd.moddo.domain.user.dto.request.GuestUserSaveRequest;
+import com.dnd.moddo.domain.user.dto.request.UserSaveRequest;
 import com.dnd.moddo.domain.user.entity.User;
-import com.dnd.moddo.domain.user.entity.type.Authority;
-import com.dnd.moddo.domain.user.repository.UserRepository;
+import com.dnd.moddo.domain.user.service.CommandUserService;
+import com.dnd.moddo.domain.user.service.QueryUserService;
+import com.dnd.moddo.global.exception.ModdoException;
 import com.dnd.moddo.global.jwt.dto.TokenResponse;
 import com.dnd.moddo.global.jwt.utill.JwtProvider;
 
@@ -22,54 +26,52 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AuthService {
 
-	private final UserRepository userRepository;
+	private final CommandUserService commandUserService;
+	private final QueryUserService queryUserService;
 	private final JwtProvider jwtProvider;
 	private final KakaoClient kakaoClient;
 
-	@Value("${kakao.auth.client_id}")
-	String client_id;
-
-	@Value("${kakao.auth.redirect_uri}")
-	String redirect_uri;
-
 	@Transactional
-	public TokenResponse createGuestUser() {
+	public TokenResponse loginWithGuest() {
 		String guestEmail = "guest-" + UUID.randomUUID() + "@guest.com";
+		GuestUserSaveRequest request = new GuestUserSaveRequest(guestEmail, "Guest");
 
-		User guestUser = createUser(guestEmail, "Guest", false);
+		User user = commandUserService.createGuestUser(request);
 
-		return jwtProvider.generateToken(guestUser.getId(), guestUser.getEmail(), guestUser.getAuthority().toString(),
-			guestUser.getIsMember());
-	}
-
-	private User createUser(String email, String name, boolean isMember) {
-		User user = User.builder()
-			.email(email)
-			.name(name)
-			.profile(null)
-			.createdAt(LocalDateTime.now())
-			.expiredAt(LocalDateTime.now().plusMonths(1))
-			.authority(Authority.USER)
-			.isMember(isMember)
-			.build();
-
-		return userRepository.save(user);
+		return jwtProvider.generateToken(user);
 	}
 
 	@Transactional
-	public TokenResponse getOrCreateKakaoUserToken(String token) {
-		KakaoProfile kakaoProfile = kakaoClient.getKakaoProfile(token);
+	public TokenResponse loginOrRegisterWithKakao(String code) {
+		KakaoTokenResponse tokenResponse = kakaoClient.join(code);
+		KakaoProfile kakaoProfile = kakaoClient.getKakaoProfile(tokenResponse.accessToken());
 
-		String email = kakaoProfile.kakao_account().email();
+		String email = kakaoProfile.kakaoAccount().email();
 		String nickname = kakaoProfile.properties().nickname();
+		Long kakaoId = kakaoProfile.id();
 
-		User kakaoUser = userRepository.findByEmail(email)
-			.orElseGet(() -> createUser(email, nickname, true));
+		if (email == null || nickname == null || kakaoId == null) {
+			throw new ModdoException(HttpStatus.BAD_REQUEST, "카카오 프로필 정보가 누락되었습니다.");
+		}
 
-		log.info("[USER_LOGIN] 로그인 성공 : email={}, name={}", kakaoUser.getEmail(), kakaoUser.getName());
+		UserSaveRequest request = new UserSaveRequest(email, nickname, kakaoId);
+		User user = commandUserService.getOrCreateUser(request);
 
-		return jwtProvider.generateToken(kakaoUser.getId(), kakaoUser.getEmail(), kakaoUser.getAuthority().toString(),
-			kakaoUser.getIsMember());
+		log.info("[USER_LOGIN] 로그인 성공 : code = {}, kakaoId =  {}, nickname = {}", code, kakaoId, nickname);
+
+		return jwtProvider.generateToken(user);
+	}
+
+	public void logout(Long userId) {
+		queryUserService.findKakaoIdById(userId).ifPresent(kakaoId -> {
+			KakaoLogoutResponse logoutResponse = kakaoClient.logout(kakaoId);
+
+			if (!kakaoId.equals(logoutResponse.id())) {
+				throw new ModdoException(HttpStatus.INTERNAL_SERVER_ERROR, "카카오 로그아웃 실패: id 불일치");
+			}
+
+			log.info("[USER_LOGOUT] 카카오 로그아웃 성공: userId={}, kakaoId={}", userId, kakaoId);
+		});
 	}
 
 }

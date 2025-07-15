@@ -1,4 +1,4 @@
-package com.dnd.moddo.global.jwt.properties;
+package com.dnd.moddo.global.config;
 
 import java.time.Duration;
 
@@ -8,7 +8,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record CookieProperties(
 	boolean httpOnly,
 	boolean secure,
-	String domain,
 	String path,
 	String sameSite,
 	Duration maxAge

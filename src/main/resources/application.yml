@@ -25,7 +25,13 @@ management:
       exposure:
         include: health,info,prometheus
 
+kakao:
+  token-request-uri: https://kauth.kakao.com/oauth/token
+  profile-request-uri: https://kapi.kakao.com/v2/user/me
+  logout-request-uri: https://kapi.kakao.com/v1/user/logout
+
 cookie:
+  secure: true
   http-only: false
   path: /
   same-site: none

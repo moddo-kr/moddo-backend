@@ -1,6 +1,7 @@
 package com.dnd.moddo.domain.auth.service;
 
 import static com.dnd.moddo.global.support.UserTestFactory.*;
+import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
@@ -12,18 +13,23 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.dnd.moddo.domain.auth.dto.KakaoLogoutResponse;
 import com.dnd.moddo.domain.auth.dto.KakaoProfile;
+import com.dnd.moddo.domain.auth.dto.KakaoTokenResponse;
 import com.dnd.moddo.domain.user.entity.User;
-import com.dnd.moddo.domain.user.repository.UserRepository;
+import com.dnd.moddo.domain.user.service.CommandUserService;
+import com.dnd.moddo.domain.user.service.QueryUserService;
 import com.dnd.moddo.global.jwt.dto.TokenResponse;
 import com.dnd.moddo.global.jwt.utill.JwtProvider;
 
 @ExtendWith(MockitoExtension.class)
 public class AuthServiceTest {
 	@Mock
-	private UserRepository userRepository;
-	@Mock
 	private JwtProvider jwtProvider;
+	@Mock
+	private CommandUserService commandUserService;
+	@Mock
+	private QueryUserService queryUserService;
 	@Mock
 	private KakaoClient kakaoClient;
 	@InjectMocks
@@ -34,97 +40,83 @@ public class AuthServiceTest {
 	void whenCreateGuestUser_thenSaveAndIssueToken() {
 		//given
 		User user = createGuestDefault();
-		when(userRepository.save(any(User.class))).thenReturn(user);
+		when(commandUserService.createGuestUser(any())).thenReturn(user);
 		//when
-		TokenResponse response = authService.createGuestUser();
+		TokenResponse response = authService.loginWithGuest();
 		//then
-		verify(userRepository, times(1)).save(any(User.class));
+		verify(jwtProvider, times(1)).generateToken(any());
+		verify(commandUserService, times(1)).createGuestUser(any());
 	}
 
-	@DisplayName("기존 카카오 사용자가 로그인하면 토큰을 발급한다")
+	@DisplayName("카카오 사용자가 로그인하면 토큰을 발급한다")
 	@Test
 	void whenKakaoUserExists_thenTokenIsIssued() {
 		//given
 		String token = "test_token";
 		KakaoProfile kakaoProfile = new KakaoProfile(
 			12345L,
-			"2025.06.29T00:00:00",
-			new KakaoProfile.Properties(
-				"테스트유저",
-				"profile_image",
-				"thumbnail_image"
-			),
 			new KakaoProfile.KakaoAccount(
-				true,
-				true,
+				"test@example.com",
 				new KakaoProfile.Profile(
-					"테스트 유저",
-					"thumbnail_image_url",
-					"profile_image_url",
-					true,
-					true
-				),
-				true,
-				true,
-				true,
-				true,
-				"test@example.com"
+					"테스트 유저"
+				)
+			),
+			new KakaoProfile.Properties(
+				"테스트유저"
 			)
 		);
-		String email = kakaoProfile.kakao_account().email();
+		KakaoTokenResponse kakaoTokenResponse = new KakaoTokenResponse("access-token", 3600);
+		String email = kakaoProfile.kakaoAccount().email();
 		User user = createWithEmail(email);
+
+		when(kakaoClient.join(anyString())).thenReturn(kakaoTokenResponse);
 		when(kakaoClient.getKakaoProfile(anyString())).thenReturn(kakaoProfile);
-		when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
+		when(commandUserService.getOrCreateUser(any())).thenReturn(user);
 
 		//when
-		TokenResponse response = authService.getOrCreateKakaoUserToken(token);
+		TokenResponse response = authService.loginOrRegisterWithKakao(token);
 
 		//then
-		verify(jwtProvider, times(1)).generateToken(any(), anyString(), anyString(), anyBoolean());
+		verify(jwtProvider, times(1)).generateToken(any());
 	}
 
-	@DisplayName("신규 카카오 사용자가 로그인하면 회원가입 후 토큰을 발급한다")
+	@DisplayName("카카오ID와 응답ID가 같을 때 카카오 로그아웃 성공한다.")
 	@Test
-	void whenNewKakaoUser_thenRegisterAndIssueToken() {
+	void whenKakaoIdMatches_thenKakaoLogoutSuccess() {
 		//given
-		String token = "test_token";
-		KakaoProfile kakaoProfile = new KakaoProfile(
-			12345L,
-			"2025.06.29T00:00:00",
-			new KakaoProfile.Properties(
-				"테스트유저",
-				"profile_image",
-				"thumbnail_image"
-			),
-			new KakaoProfile.KakaoAccount(
-				true,
-				true,
-				new KakaoProfile.Profile(
-					"테스트 유저",
-					"thumbnail_image_url",
-					"profile_image_url",
-					true,
-					true
-				),
-				true,
-				true,
-				true,
-				true,
-				"test@example.com"
-			)
-		);
-		String email = kakaoProfile.kakao_account().email();
-		User user = createWithEmail(email);
-
-		when(kakaoClient.getKakaoProfile(anyString())).thenReturn(kakaoProfile);
-		when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
-		when(userRepository.save(any(User.class))).thenReturn(user);
-
+		Long kakaoId = 123456L;
+		when(queryUserService.findKakaoIdById(any())).thenReturn(Optional.of(kakaoId));
+		when(kakaoClient.logout(any())).thenReturn(new KakaoLogoutResponse(kakaoId));
 		//when
-		TokenResponse response = authService.getOrCreateKakaoUserToken(token);
-
+		authService.logout(1L);
 		//then
-		verify(userRepository, times(1)).save(any(User.class));
-		verify(jwtProvider, times(1)).generateToken(any(), anyString(), anyString(), anyBoolean());
+		verify(queryUserService, times(1)).findKakaoIdById(1L);
+		verify(kakaoClient, times(1)).logout(kakaoId);
+	}
+
+	@DisplayName("카카오ID가 null일 때 게스트 로그아웃 성공한다.")
+	@Test
+	void whenKakaoIdNull_thenNoAction() {
+		//given
+		when(queryUserService.findKakaoIdById(any())).thenReturn(Optional.empty());
+		//when
+		authService.logout(1L);
+		//then
+		verify(queryUserService, times(1)).findKakaoIdById(1L);
+		verify(kakaoClient, times(0)).logout(any());
+	}
+
+	@DisplayName("카카오ID와 응답ID가 다를 때 예외 발생한다.")
+	@Test
+	void whenKakaoIdDiffers_thenThrowsException() {
+		//given
+		Long kakaoId = 123456L;
+		when(queryUserService.findKakaoIdById(any())).thenReturn(Optional.of(kakaoId));
+		when(kakaoClient.logout(any())).thenReturn(new KakaoLogoutResponse(234567L));
+
+		//when & then
+		assertThatThrownBy(() -> authService.logout(1L))
+			.isInstanceOf(RuntimeException.class)
+			.hasMessageContaining("로그아웃 실패");
 	}
 }
