@@ -1,9 +1,12 @@
 package com.dnd.moddo.domain.auth.controller;
 
+import java.util.Collections;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -16,6 +19,7 @@ import com.dnd.moddo.domain.auth.service.RefreshTokenService;
 import com.dnd.moddo.global.config.CookieProperties;
 import com.dnd.moddo.global.jwt.dto.RefreshResponse;
 import com.dnd.moddo.global.jwt.dto.TokenResponse;
+import com.dnd.moddo.global.jwt.service.JwtService;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +33,7 @@ public class AuthController {
 	private final AuthService authService;
 	private final RefreshTokenService refreshTokenService;
 	private final CookieProperties cookieProperties;
+	private final JwtService jwtService;
 
 	@GetMapping("/user/guest/token")
 	public ResponseEntity<TokenResponse> getGuestToken() {
@@ -59,12 +64,13 @@ public class AuthController {
 	}
 
 	@GetMapping("/logout")
-	public ResponseEntity<Void> kakaoLogout() {
+	public ResponseEntity<?> kakaoLogout(@CookieValue(value = "accessToken") String token) {
 		String cookie = expireCookie("accessToken").toString();
-
+		Long userId = jwtService.getUserId(token);
+		authService.logout(userId);
 		return ResponseEntity.ok()
 			.header(HttpHeaders.SET_COOKIE, cookie)
-			.build();
+			.body(Collections.singletonMap("message", "Logout successful"));
 	}
 
 	private ResponseCookie createCookie(String name, String key) {

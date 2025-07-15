@@ -6,12 +6,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dnd.moddo.domain.auth.dto.KakaoLogoutResponse;
 import com.dnd.moddo.domain.auth.dto.KakaoProfile;
 import com.dnd.moddo.domain.auth.dto.KakaoTokenResponse;
 import com.dnd.moddo.domain.user.dto.request.GuestUserSaveRequest;
 import com.dnd.moddo.domain.user.dto.request.UserSaveRequest;
 import com.dnd.moddo.domain.user.entity.User;
 import com.dnd.moddo.domain.user.service.CommandUserService;
+import com.dnd.moddo.domain.user.service.QueryUserService;
 import com.dnd.moddo.global.exception.ModdoException;
 import com.dnd.moddo.global.jwt.dto.TokenResponse;
 import com.dnd.moddo.global.jwt.utill.JwtProvider;
@@ -25,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthService {
 
 	private final CommandUserService commandUserService;
+	private final QueryUserService queryUserService;
 	private final JwtProvider jwtProvider;
 	private final KakaoClient kakaoClient;
 
@@ -57,6 +60,20 @@ public class AuthService {
 		log.info("[USER_LOGIN] 로그인 성공 : code = {}, kakaoId =  {}, nickname = {}", code, kakaoId, nickname);
 
 		return jwtProvider.generateToken(user);
+	}
+
+	public void logout(Long userId) {
+		Long kakaoId = queryUserService.findKakaoIdById(userId);
+		if (kakaoId == null)
+			return;
+
+		KakaoLogoutResponse logoutResponse = kakaoClient.logout(kakaoId);
+
+		if (!kakaoId.equals(logoutResponse.id())) {
+			throw new ModdoException(HttpStatus.INTERNAL_SERVER_ERROR, "카카오 로그아웃 실패: id 불일치");
+		}
+		
+		log.info("[USER_LOGOUT] 카카오 로그아웃 성공: userId={}, kakaoId={}", userId, kakaoId);
 	}
 
 }
