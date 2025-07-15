@@ -104,8 +104,8 @@ class AuthControllerTest extends RestDocsTestSupport {
 	}
 
 	@Test
-	@DisplayName("카카오에서 인가코드를 통해 토큰을 발급받아 사용자 정보를 가져와 등록시킨 뒤 엑세스 토큰을 발급하여 쿠키로 전달한다.")
-	void kakaoLooutCallback() throws Exception {
+	@DisplayName("액세스 토큰 쿠키를 통해 카카오 로그아웃을 성공적으로 수행한다.")
+	void kakaoLogout() throws Exception {
 		//given
 		given(jwtService.getUserId(anyString())).willReturn(1L);
 		doNothing().when(authService).logout(any());

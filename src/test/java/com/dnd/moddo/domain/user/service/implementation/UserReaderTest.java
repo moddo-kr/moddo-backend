@@ -30,7 +30,7 @@ public class UserReaderTest {
 		User user = createWithEmail("test@example.com");
 		Long kakaoId = user.getKakaoId();
 
-		when(userRepository.findByKakaoId(any())).thenReturn(Optional.of(user));
+		when(userRepository.findByKakaoId(kakaoId)).thenReturn(Optional.of(user));
 		//when
 		Optional<User> result = userReader.findByKakaoId(kakaoId);
 		//then

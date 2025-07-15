@@ -4,6 +4,8 @@ import static com.dnd.moddo.global.support.UserTestFactory.*;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -83,7 +85,7 @@ public class AuthServiceTest {
 	void whenKakaoIdMatches_thenKakaoLogoutSuccess() {
 		//given
 		Long kakaoId = 123456L;
-		when(queryUserService.findKakaoIdById(any())).thenReturn(kakaoId);
+		when(queryUserService.findKakaoIdById(any())).thenReturn(Optional.of(kakaoId));
 		when(kakaoClient.logout(any())).thenReturn(new KakaoLogoutResponse(kakaoId));
 		//when
 		authService.logout(1L);
@@ -96,7 +98,7 @@ public class AuthServiceTest {
 	@Test
 	void whenKakaoIdNull_thenNoAction() {
 		//given
-		when(queryUserService.findKakaoIdById(any())).thenReturn(null);
+		when(queryUserService.findKakaoIdById(any())).thenReturn(Optional.empty());
 		//when
 		authService.logout(1L);
 		//then
@@ -109,7 +111,7 @@ public class AuthServiceTest {
 	void whenKakaoIdDiffers_thenThrowsException() {
 		//given
 		Long kakaoId = 123456L;
-		when(queryUserService.findKakaoIdById(any())).thenReturn(kakaoId);
+		when(queryUserService.findKakaoIdById(any())).thenReturn(Optional.of(kakaoId));
 		when(kakaoClient.logout(any())).thenReturn(new KakaoLogoutResponse(234567L));
 
 		//when & then

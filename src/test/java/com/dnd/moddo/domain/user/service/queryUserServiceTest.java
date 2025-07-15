@@ -29,9 +29,10 @@ public class queryUserServiceTest {
 		Long kakaoId = 123456L;
 		when(userReader.findKakaoIdById(any())).thenReturn(Optional.of(kakaoId));
 		//when
-		Long result = queryUserService.findKakaoIdById(userId);
+		Optional<Long> result = queryUserService.findKakaoIdById(userId);
 		//then
-		assertThat(result).isEqualTo(kakaoId);
+		assertThat(result).isPresent();
+		assertThat(result.get()).isEqualTo(kakaoId);
 		verify(userReader, times(1)).findKakaoIdById(userId);
 	}
 
@@ -42,10 +43,10 @@ public class queryUserServiceTest {
 		when(userReader.findKakaoIdById(any())).thenReturn(Optional.empty());
 
 		//when
-		Long result = queryUserService.findKakaoIdById(1L);
+		Optional<Long> result = queryUserService.findKakaoIdById(1L);
 
 		//then
-		assertThat(result).isNull();
+		assertThat(result).isEmpty();
 		verify(userReader, times(1)).findKakaoIdById(1L);
 	}
 }

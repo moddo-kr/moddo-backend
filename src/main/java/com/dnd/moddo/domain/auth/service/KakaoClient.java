@@ -81,7 +81,6 @@ public class KakaoClient {
 		String uri = kakaoProperties.logoutRequestUri();
 
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add("Authorization", "KakaoAK " + kakaoProperties.adminKey());
 		params.add("target_id_type", "user_id");
 		params.add("target_id", kakaoId.toString());
 

@@ -63,17 +63,15 @@ public class AuthService {
 	}
 
 	public void logout(Long userId) {
-		Long kakaoId = queryUserService.findKakaoIdById(userId);
-		if (kakaoId == null)
-			return;
+		queryUserService.findKakaoIdById(userId).ifPresent(kakaoId -> {
+			KakaoLogoutResponse logoutResponse = kakaoClient.logout(kakaoId);
 
-		KakaoLogoutResponse logoutResponse = kakaoClient.logout(kakaoId);
+			if (!kakaoId.equals(logoutResponse.id())) {
+				throw new ModdoException(HttpStatus.INTERNAL_SERVER_ERROR, "카카오 로그아웃 실패: id 불일치");
+			}
 
-		if (!kakaoId.equals(logoutResponse.id())) {
-			throw new ModdoException(HttpStatus.INTERNAL_SERVER_ERROR, "카카오 로그아웃 실패: id 불일치");
-		}
-		
-		log.info("[USER_LOGOUT] 카카오 로그아웃 성공: userId={}, kakaoId={}", userId, kakaoId);
+			log.info("[USER_LOGOUT] 카카오 로그아웃 성공: userId={}, kakaoId={}", userId, kakaoId);
+		});
 	}
 
 }
