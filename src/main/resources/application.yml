@@ -25,10 +25,18 @@ management:
       exposure:
         include: health,info,prometheus
 
-#logging:
-#  level:
-#    org.springframework.web: DEBUG
-#    org.springframework.web.servlet.DispatcherServlet: DEBUG
+kakao:
+  token-request-uri: https://kauth.kakao.com/oauth/token
+  profile-request-uri: https://kapi.kakao.com/v2/user/me
+  logout-request-uri: https://kapi.kakao.com/v1/user/logout
+
+cookie:
+  secure: true
+  http-only: false
+  path: /
+  same-site: none
+  max-age: 7D
+
 ---
 
 spring:

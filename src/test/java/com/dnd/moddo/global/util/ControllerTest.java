@@ -8,6 +8,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.dnd.moddo.domain.auth.controller.AuthController;
 import com.dnd.moddo.domain.auth.service.AuthService;
+import com.dnd.moddo.domain.auth.service.KakaoClient;
 import com.dnd.moddo.domain.auth.service.RefreshTokenService;
 import com.dnd.moddo.domain.character.controller.CharacterController;
 import com.dnd.moddo.domain.character.service.QueryCharacterService;
@@ -24,6 +25,7 @@ import com.dnd.moddo.domain.image.controller.ImageController;
 import com.dnd.moddo.domain.image.service.CommandImageService;
 import com.dnd.moddo.domain.memberExpense.controller.MemberExpenseController;
 import com.dnd.moddo.domain.memberExpense.service.QueryMemberExpenseService;
+import com.dnd.moddo.global.config.CookieProperties;
 import com.dnd.moddo.global.jwt.auth.JwtAuth;
 import com.dnd.moddo.global.jwt.auth.JwtFilter;
 import com.dnd.moddo.global.jwt.service.JwtService;
@@ -56,6 +58,9 @@ public abstract class ControllerTest {
 	protected AuthService authService;
 
 	@MockBean
+	protected KakaoClient kakaoClient;
+
+	@MockBean
 	protected RefreshTokenService refreshTokenService;
 
 	@MockBean
@@ -84,7 +89,9 @@ public abstract class ControllerTest {
 
 	@MockBean
 	protected QueryMemberExpenseService queryMemberExpenseService;
-
+	
+	@MockBean
+	protected CookieProperties cookieProperties;
 	// Jwt
 	@MockBean
 	protected JwtAuth jwtAuth;

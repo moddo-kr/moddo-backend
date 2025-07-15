@@ -9,6 +9,7 @@ import java.util.Date;
 
 import org.springframework.stereotype.Component;
 
+import com.dnd.moddo.domain.user.entity.User;
 import com.dnd.moddo.global.jwt.dto.TokenResponse;
 import com.dnd.moddo.global.jwt.properties.JwtProperties;
 
@@ -22,14 +23,18 @@ public class JwtProvider {
 
 	private final JwtProperties jwtProperties;
 
-	public String generateAccessToken(Long id, String email, String role) {
-		return generateToken(id, email, role, ACCESS_KEY.getMessage(), jwtProperties.getAccessExpiration());
+	public String generateAccessToken(Long id, String role) {
+		return generateToken(id, role, ACCESS_KEY.getMessage(), jwtProperties.getAccessExpiration());
 	}
 
-	public TokenResponse generateToken(Long id, String email, String role, Boolean isMember) {
-		String accessToken = generateToken(id, email, role, ACCESS_KEY.getMessage(),
+	public TokenResponse generateToken(User user) {
+		return generateToken(user.getId(), user.getAuthority().toString(), user.getIsMember());
+	}
+
+	public TokenResponse generateToken(Long id, String role, Boolean isMember) {
+		String accessToken = generateToken(id, role, ACCESS_KEY.getMessage(),
 			jwtProperties.getAccessExpiration());
-		String refreshToken = generateToken(id, email, role, REFRESH_KEY.getMessage(),
+		String refreshToken = generateToken(id, role, REFRESH_KEY.getMessage(),
 			jwtProperties.getRefreshExpiration());
 
 		return new TokenResponse(accessToken, refreshToken, getExpiredTime(), isMember);
@@ -39,10 +44,9 @@ public class JwtProvider {
 		return generateGroupToken(groupId, GROUP_KEY.getMessage());
 	}
 
-	private String generateToken(Long id, String email, String role, String type, Long exp) {
+	private String generateToken(Long id, String role, String type, Long exp) {
 		return Jwts.builder()
 			.claim(AUTH_ID.getMessage(), id)
-			.claim(EMAIL.getMessage(), email)
 			.setHeaderParam(TYPE.message, type)
 			.claim(ROLE.getMessage(), role)
 			.signWith(jwtProperties.getSecretKey(), SignatureAlgorithm.HS256)

@@ -3,6 +3,7 @@ package com.dnd.moddo.integration;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.Mockito.*;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -61,6 +62,11 @@ public class CacheIntegrationTest {
 	@BeforeEach
 	void setUp() {
 		groupRepository.save(GroupTestFactory.createDefault());
+	}
+
+	@AfterAll
+	static void tearDown() {
+		redis.close();
 	}
 
 	@DisplayName("groupCode로 groupId를 조회하면 Redis에 캐싱되고, 같은 코드로 재조회 시 캐시에서 반환한다")

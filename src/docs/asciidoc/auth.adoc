@@ -51,3 +51,28 @@ include::{snippets}/auth-controller-test/reissue-access-token/http-response.adoc
 ==== 응답
 
 include::{snippets}/auth-controller-test/reissue-access-token/response-body.adoc[]
+
+== 카카오톡 소셜 로그인
+
+사용자가 카카오 소셜 로그인을 완료하면, 인가 코드를 통해 카카오 Access Token을 발급받고, 이를 이용해 카카오 사용자 정보를 조회합니다.
+조회된 사용자 정보로 서비스의 Access Token을 생성한 후, 해당 토큰은 쿠키를 통해 클라이언트에 전달됩니다.
+
+=== Example
+
+include::{snippets}/auth-controller-test/kakao-login-callback/curl-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/auth-controller-test/kakao-login-callback/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/auth-controller-test/kakao-login-callback/http-response.adoc[]
+
+=== Body
+
+==== 응답
+
+include::{snippets}/auth-controller-test/kakao-login-callback/response-body.adoc[]
