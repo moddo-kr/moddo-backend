@@ -3,6 +3,7 @@ package com.dnd.moddo.domain.auth.controller;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.restdocs.cookies.CookieDocumentation.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
@@ -42,8 +43,8 @@ class AuthControllerTest extends RestDocsTestSupport {
 			.andExpect(jsonPath("$.refreshToken").value("refresh-token"))
 			.andExpect(jsonPath("$.isMember").value(false))
 			.andDo(restDocs.document(
-				responseHeaders(
-					headerWithName("Set-Cookie").description("엑세스 토큰")
+				responseCookies(
+					cookieWithName("accessToken").description("엑세스 토큰")
 				),
 				responseFields(
 					fieldWithPath("accessToken").type(JsonFieldType.STRING).description("액세스 토큰"),
@@ -93,12 +94,12 @@ class AuthControllerTest extends RestDocsTestSupport {
 		mockMvc.perform(get("/api/v1/login/oauth2/callback")
 				.param("code", "test code"))
 			.andExpect(status().isOk())
-			.andDo(restDocs.document(
+			.andDo(document("login",
 				queryParameters(
 					parameterWithName("code").description("카카오 인가 코드")
 				),
-				responseHeaders(
-					headerWithName("Set-Cookie").description("엑세스 토큰")
+				responseCookies(
+					cookieWithName("accessToken").description("엑세스 토큰")
 				)
 			));
 	}
@@ -114,7 +115,7 @@ class AuthControllerTest extends RestDocsTestSupport {
 		mockMvc.perform(get("/api/v1/logout")
 				.cookie(new Cookie("accessToken", "access-token")))
 			.andExpect(status().isOk())
-			.andDo(restDocs.document(
+			.andDo(document("logout",
 				requestCookies(
 					cookieWithName("accessToken").description("액세스 토큰")
 				),
