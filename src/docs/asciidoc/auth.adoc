@@ -76,3 +76,27 @@ include::{snippets}/auth-controller-test/kakao-login-callback/http-response.adoc
 ==== 응답
 
 include::{snippets}/auth-controller-test/kakao-login-callback/response-body.adoc[]
+
+== 로그아웃
+
+서비스와 카카오 로그아웃을 처리합니다.
+
+=== Example
+
+include::{snippets}/auth-controller-test/kakao-logout/curl-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/auth-controller-test/kakao-logout/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/auth-controller-test/kakao-logout/http-response.adoc[]
+
+=== Body
+
+==== 응답
+
+include::{snippets}/auth-controller-test/kakao-logout/response-body.adoc[]
