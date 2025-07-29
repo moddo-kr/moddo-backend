@@ -6,7 +6,7 @@
 
 ## 💻프로젝트 소개
 ### 1. 개발 기간
-* 24.01.20 ~ (진행중)
+* 25.01.20 ~ (진행중)
 ### 2. 서비스 주소
 * [https://www.moddo.kr](https://www.moddo.kr)
 ### 3. 주요 기능
@@ -31,7 +31,7 @@
 * `jdk 17.0.14`
 * **IDE** : IntelliJ
 * **Framework** : Spring boot 3.4.1
-* **DataBase** : MariaDB
+* **DataBase** : MySQL
 * **ORM** : JPA
 
 ### 6. 멤버 구성 (백엔드)
@@ -55,4 +55,4 @@
 </table>
 
 ### 7. 관련 문서
- 1. [API문서](https://documenter.getpostman.com/view/36733858/2sAYX5L2pr)
+ 1. [API문서](https://moddo.kro.kr/docs/index.html)
