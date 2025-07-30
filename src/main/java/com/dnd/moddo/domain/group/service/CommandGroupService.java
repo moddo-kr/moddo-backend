@@ -1,5 +1,6 @@
 package com.dnd.moddo.domain.group.service;
 
+import com.dnd.moddo.domain.group.repository.GroupRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,7 @@ public class CommandGroupService {
 	private final GroupReader groupReader;
 	private final JwtProvider jwtProvider;
 	private final CommandGroupMemberService commandGroupMemberService;
+	private final GroupRepository groupRepository;
 
 	public GroupSaveResponse createGroup(GroupRequest request, Long userId) {
 		Group group = groupCreator.createGroup(request, userId);
@@ -49,5 +51,9 @@ public class CommandGroupService {
 		groupValidator.checkGroupAuthor(group, userId);
 		GroupPasswordResponse response = groupValidator.checkGroupPassword(request, group.getPassword());
 		return response;
+	}
+
+	public Group read(Long groupId) {
+		return groupRepository.getById(groupId);
 	}
 }

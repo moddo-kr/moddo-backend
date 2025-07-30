@@ -1,5 +1,6 @@
 package com.dnd.moddo.domain.group.controller;
 
+import com.dnd.moddo.domain.group.entity.Group;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -90,6 +91,14 @@ public class GroupController {
 		Long groupId = queryGroupService.findIdByCodeNoCache(code);
 
 		GroupHeaderResponse response = queryGroupService.findByGroupHeader(groupId);
+		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/get")
+	public ResponseEntity<Group> groupGet(
+			@RequestParam("groupToken") String code) {
+		Long groupId = queryGroupService.findIdByCode(code);
+		Group response = commandGroupService.read(groupId);
 		return ResponseEntity.ok(response);
 	}
 }
