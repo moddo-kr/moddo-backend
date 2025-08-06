@@ -93,7 +93,7 @@ class AuthControllerTest extends RestDocsTestSupport {
 		//when & then
 		mockMvc.perform(get("/api/v1/login/oauth2/callback")
 				.param("code", "test code"))
-			.andExpect(status().isOk())
+			.andExpect(status().is3xxRedirection())
 			.andDo(document("login",
 				queryParameters(
 					parameterWithName("code").description("카카오 인가 코드")
