@@ -45,8 +45,8 @@ public class KakaoClient {
 				.body(KakaoTokenResponse.class);
 
 		} catch (RestClientResponseException e) {
-			log.error("[KAKAO_API][GET_TOKEN][HTTP_ERROR] HTTP 에러 발생: status={}, body={}", e.getStatusCode(),
-				e.getResponseBodyAsString());
+			log.error("[KAKAO_API][GET_TOKEN][HTTP_ERROR] HTTP 에러 발생: status={}, body={} error={}", e.getStatusCode(),
+				e.getResponseBodyAsString(), e.getMessage());
 			throw new ModdoException(HttpStatus.INTERNAL_SERVER_ERROR, "카카오 API HTTP 에러");
 		} catch (Exception e) {
 			log.info("[USER_LOGIN_FAIL] 로그인 실패 : code = {}", code);
