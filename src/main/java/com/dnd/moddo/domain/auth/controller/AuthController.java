@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collections;
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -54,7 +55,7 @@ public class AuthController {
 	}
 
 	@GetMapping("/login/oauth2/callback")
-	public void kakaoLoginCallback(@RequestParam @NotBlank String code,
+	public ResponseEntity<?> kakaoLoginCallback(@RequestParam @NotBlank String code,
 		HttpServletResponse response) throws
 		IOException {
 
@@ -63,6 +64,11 @@ public class AuthController {
 		String cookie = createCookie("accessToken", tokenResponse.accessToken()).toString();
 		response.addHeader("Set-Cookie", cookie);
 		response.sendRedirect("https://www.moddo.kr");
+
+		return ResponseEntity.status(HttpStatus.FOUND)
+			.header(HttpHeaders.LOCATION, "https://www.moddo.kr")
+			.header(HttpHeaders.SET_COOKIE, cookie)
+			.build();
 	}
 
 	@GetMapping("/logout")
