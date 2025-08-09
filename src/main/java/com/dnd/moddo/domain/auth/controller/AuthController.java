@@ -1,8 +1,10 @@
 package com.dnd.moddo.domain.auth.controller;
 
+import java.io.IOException;
 import java.util.Collections;
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -21,6 +23,7 @@ import com.dnd.moddo.global.jwt.dto.RefreshResponse;
 import com.dnd.moddo.global.jwt.dto.TokenResponse;
 import com.dnd.moddo.global.jwt.service.JwtService;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 
@@ -52,13 +55,18 @@ public class AuthController {
 	}
 
 	@GetMapping("/login/oauth2/callback")
-	public ResponseEntity<Void> kakaoLoginCallback(@RequestParam @NotBlank String code) {
+	public ResponseEntity<?> kakaoLoginCallback(@RequestParam @NotBlank String code,
+		HttpServletResponse response) throws
+		IOException {
 
 		TokenResponse tokenResponse = authService.loginOrRegisterWithKakao(code);
 
 		String cookie = createCookie("accessToken", tokenResponse.accessToken()).toString();
+		response.addHeader("Set-Cookie", cookie);
+		response.sendRedirect("https://www.moddo.kr");
 
-		return ResponseEntity.ok()
+		return ResponseEntity.status(HttpStatus.FOUND)
+			.header(HttpHeaders.LOCATION, "https://www.moddo.kr")
 			.header(HttpHeaders.SET_COOKIE, cookie)
 			.build();
 	}
