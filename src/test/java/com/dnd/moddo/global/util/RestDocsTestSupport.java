@@ -38,7 +38,7 @@ public abstract class RestDocsTestSupport extends ControllerTest {
 				.withRequestDefaults(
 					modifyUris()
 						.scheme("https")
-						.host("moddo.kro.kr")
+						.host("api.moddo.kr")
 						.removePort(),
 					prettyPrint()
 				)
