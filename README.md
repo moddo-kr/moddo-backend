@@ -55,4 +55,4 @@
 </table>
 
 ### 7. 관련 문서
- 1. [API문서](https://moddo.kro.kr/docs/index.html)
+ 1. [API문서](https://api.moddo.kr/docs/index.html)
