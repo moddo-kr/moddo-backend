@@ -31,7 +31,7 @@ public class CommandSettlementService {
 	private final JwtProvider jwtProvider;
 	private final CommandAppointmentMemberService commandAppointmentMemberService;
 
-	public GroupSaveResponse createGroup(SettlementRequest request, Long userId) {
+	public GroupSaveResponse createSettlement(SettlementRequest request, Long userId) {
 		Settlement settlement = settlementCreator.createSettlement(request, userId);
 		AppointmentMemberResponse manager = commandAppointmentMemberService.createManager(settlement, userId);
 		return new GroupSaveResponse(settlement.getCode(), manager);

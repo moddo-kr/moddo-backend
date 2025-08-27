@@ -45,7 +45,7 @@ class ExpenseReaderTest {
 			new Expense(mockSettlement, 35000L, "보드게임카페", LocalDate.of(2025, 02, 03))
 		);
 
-		when(expenseRepository.findByGroupIdOrderByDateAsc(eq(groupId))).thenReturn(mockExpenses);
+		when(expenseRepository.findBySettlementIdOrderByDateAsc(eq(groupId))).thenReturn(mockExpenses);
 
 		//when
 		List<Expense> result = expenseReader.findAllByGroupId(groupId);
@@ -55,7 +55,7 @@ class ExpenseReaderTest {
 		assertThat(result.get(0).getContent()).isEqualTo("투썸플레이스");
 
 		//then
-		verify(expenseRepository, times(1)).findByGroupIdOrderByDateAsc(eq(groupId));
+		verify(expenseRepository, times(1)).findBySettlementIdOrderByDateAsc(eq(groupId));
 	}
 
 	@DisplayName("지출내역이 존재하면 해당 지출내역을 조회할 수 있다.")

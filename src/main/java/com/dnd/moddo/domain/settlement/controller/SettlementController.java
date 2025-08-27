@@ -36,7 +36,7 @@ public class SettlementController {
 	public ResponseEntity<GroupSaveResponse> saveSettlement(HttpServletRequest request,
 		@RequestBody SettlementRequest settlementRequest) {
 		Long userId = jwtService.getUserId(request);
-		GroupSaveResponse response = commandSettlementService.createGroup(settlementRequest, userId);
+		GroupSaveResponse response = commandSettlementService.createSettlement(settlementRequest, userId);
 		return ResponseEntity.ok(response);
 	}
 

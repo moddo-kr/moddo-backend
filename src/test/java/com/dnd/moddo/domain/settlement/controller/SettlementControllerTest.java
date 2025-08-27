@@ -37,7 +37,7 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 		));
 
 		given(jwtService.getUserId(any(HttpServletRequest.class))).willReturn(1L);
-		given(commandSettlementService.createGroup(any(), eq(1L))).willReturn(response);
+		given(commandSettlementService.createSettlement(any(), eq(1L))).willReturn(response);
 
 		// when & then
 		mockMvc.perform(post("/api/v1/group")

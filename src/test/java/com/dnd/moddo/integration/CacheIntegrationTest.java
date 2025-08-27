@@ -83,7 +83,7 @@ public class CacheIntegrationTest {
 		//then
 		assertThat(first).isEqualTo(second);
 
-		String cacheKey = "groups::" + code;
+		String cacheKey = "settlements::" + code;
 
 		Object cachedValue = redisTemplate.opsForValue().get(cacheKey);
 		assertThat(cachedValue).isNotNull();

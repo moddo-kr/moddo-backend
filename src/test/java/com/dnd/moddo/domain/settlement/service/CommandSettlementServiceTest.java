@@ -69,7 +69,7 @@ class CommandSettlementServiceTest {
 
 	@Test
 	@DisplayName("그룹과 총무를 생성할 수 있다.")
-	void createGroup() {
+	void createSettlement() {
 		// Given
 		AppointmentMemberResponse appointmentMemberResponse = new AppointmentMemberResponse(1L, ExpenseRole.MANAGER,
 			"김모또", null, true,
@@ -80,7 +80,7 @@ class CommandSettlementServiceTest {
 		when(commandAppointmentMemberService.createManager(any(), any())).thenReturn(appointmentMemberResponse);
 
 		// When
-		GroupSaveResponse response = commandSettlementService.createGroup(settlementRequest, 1L);
+		GroupSaveResponse response = commandSettlementService.createSettlement(settlementRequest, 1L);
 
 		// Then
 		assertThat(response).isNotNull();

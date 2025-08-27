@@ -31,7 +31,7 @@ public class QuerySettlementService {
 		return settlementReader.findByHeader(groupId);
 	}
 
-	@Cacheable(cacheNames = "settlement", key = "#code")
+	@Cacheable(cacheNames = "settlements", key = "#code")
 	public Long findIdByCode(String code) {
 		return settlementReader.findIdByGroupCode(code);
 	}

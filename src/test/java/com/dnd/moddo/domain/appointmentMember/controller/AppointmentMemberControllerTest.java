@@ -18,11 +18,11 @@ import com.dnd.moddo.domain.appointmentMember.dto.response.AppointmentMemberResp
 import com.dnd.moddo.domain.appointmentMember.dto.response.AppointmentMembersResponse;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
 
-public class SettlementMemberControllerTest extends RestDocsTestSupport {
+public class AppointmentMemberControllerTest extends RestDocsTestSupport {
 
 	@Test
 	@DisplayName("모임원을 성공적으로 조회한다.")
-	void getGroupMembers() throws Exception {
+	void getAppointmentMembers() throws Exception {
 		// given
 		String groupToken = "groupToken";
 		Long groupId = 1L;
@@ -44,7 +44,7 @@ public class SettlementMemberControllerTest extends RestDocsTestSupport {
 
 	@Test
 	@DisplayName("모임원을 성공적으로 추가한다.")
-	void saveGroupMember() throws Exception {
+	void saveAppointmentMember() throws Exception {
 		// given
 		String groupToken = "groupToken";
 		Long groupId = 1L;
@@ -90,7 +90,7 @@ public class SettlementMemberControllerTest extends RestDocsTestSupport {
 
 	@Test
 	@DisplayName("모임원을 성공적으로 삭제한다.")
-	void deleteGroupMember() throws Exception {
+	void deleteAppointmentMember() throws Exception {
 		// given
 		Long groupMemberId = 1L;
 
