@@ -15,7 +15,7 @@ public class CharacterReader {
 	private final CharacterRepository characterRepository;
 
 	public CharacterResponse getCharacterByGroupId(Long groupId) {
-		Character character = characterRepository.findByGroupId(groupId)
+		Character character = characterRepository.findBySettlementId(groupId)
 			.orElseThrow(CharacterNotFoundException::new);
 
 		return CharacterResponse.from(character);

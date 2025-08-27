@@ -1,6 +1,6 @@
 package com.dnd.moddo.domain.memberExpense.entity;
 
-import com.dnd.moddo.domain.groupMember.entity.GroupMember;
+import com.dnd.moddo.domain.appointmentMember.entity.AppointmentMember;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,15 +29,15 @@ public class MemberExpense {
 	private Long expenseId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "group_member_id")
-	private GroupMember groupMember;
+	@JoinColumn(name = "appointment_member_id")
+	private AppointmentMember appointmentMember;
 
 	private Long amount;
 
 	@Builder
-	public MemberExpense(Long expenseId, GroupMember groupMember, Long amount) {
+	public MemberExpense(Long expenseId, AppointmentMember appointmentMember, Long amount) {
 		this.expenseId = expenseId;
-		this.groupMember = groupMember;
+		this.appointmentMember = appointmentMember;
 		this.amount = amount;
 	}
 

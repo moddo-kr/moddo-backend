@@ -19,9 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.dnd.moddo.domain.group.repository.GroupRepository;
-import com.dnd.moddo.domain.group.service.QueryGroupService;
-import com.dnd.moddo.domain.group.service.implementation.GroupReader;
+import com.dnd.moddo.domain.settlement.repository.SettlementRepository;
+import com.dnd.moddo.domain.settlement.service.QuerySettlementService;
+import com.dnd.moddo.domain.settlement.service.implementation.SettlementReader;
 import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ActiveProfiles("test")
@@ -32,13 +32,13 @@ import com.dnd.moddo.global.support.GroupTestFactory;
 public class CacheIntegrationTest {
 
 	@Autowired
-	private QueryGroupService queryGroupService;
+	private QuerySettlementService querySettlementService;
 
 	@Autowired
-	private GroupRepository groupRepository;
+	private SettlementRepository settlementRepository;
 
 	@MockBean
-	private GroupReader groupReader;
+	private SettlementReader settlementReader;
 
 	@Autowired
 	private StringRedisTemplate redisTemplate;
@@ -61,7 +61,7 @@ public class CacheIntegrationTest {
 
 	@BeforeEach
 	void setUp() {
-		groupRepository.save(GroupTestFactory.createDefault());
+		settlementRepository.save(GroupTestFactory.createDefault());
 	}
 
 	@AfterAll
@@ -75,10 +75,10 @@ public class CacheIntegrationTest {
 		//given
 		String code = "code";
 
-		when(groupReader.findIdByGroupCode("code")).thenReturn(1L);
+		when(settlementReader.findIdByGroupCode("code")).thenReturn(1L);
 		//when
-		Long first = queryGroupService.findIdByCode(code);
-		Long second = queryGroupService.findIdByCode(code);
+		Long first = querySettlementService.findIdByCode(code);
+		Long second = querySettlementService.findIdByCode(code);
 
 		//then
 		assertThat(first).isEqualTo(second);
@@ -88,7 +88,7 @@ public class CacheIntegrationTest {
 		Object cachedValue = redisTemplate.opsForValue().get(cacheKey);
 		assertThat(cachedValue).isNotNull();
 
-		verify(groupReader, times(1)).findIdByGroupCode("code");
+		verify(settlementReader, times(1)).findIdByGroupCode("code");
 	}
 
 }

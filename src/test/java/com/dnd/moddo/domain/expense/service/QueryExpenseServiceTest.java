@@ -21,8 +21,8 @@ import com.dnd.moddo.domain.expense.dto.response.ExpensesResponse;
 import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.expense.exception.ExpenseNotFoundException;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseReader;
-import com.dnd.moddo.domain.group.entity.Group;
-import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
+import com.dnd.moddo.domain.settlement.entity.Settlement;
+import com.dnd.moddo.domain.appointmentMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.memberExpense.dto.response.MemberExpenseResponse;
 import com.dnd.moddo.domain.memberExpense.service.QueryMemberExpenseService;
 import com.dnd.moddo.global.support.GroupTestFactory;
@@ -37,21 +37,21 @@ class QueryExpenseServiceTest {
 	@InjectMocks
 	private QueryExpenseService queryExpenseService;
 
-	private Group mockGroup;
+	private Settlement mockSettlement;
 
 	@BeforeEach
 	void setUp() {
-		mockGroup = GroupTestFactory.createDefault();
+		mockSettlement = GroupTestFactory.createDefault();
 	}
 
 	@DisplayName("모임이 존재하면 모임의 모든 지출내역을 조회할 수 있다.")
 	@Test
 	void findAllByGroupId() {
 		//given
-		Long groupId = mockGroup.getId();
+		Long groupId = mockSettlement.getId();
 		List<Expense> mockExpenses = List.of(
-			new Expense(mockGroup, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03)),
-			new Expense(mockGroup, 35000L, "보드게임카페", LocalDate.of(2025, 02, 03))
+			new Expense(mockSettlement, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03)),
+			new Expense(mockSettlement, 35000L, "보드게임카페", LocalDate.of(2025, 02, 03))
 		);
 
 		when(expenseReader.findAllByGroupId(eq(groupId))).thenReturn(mockExpenses);
@@ -84,8 +84,8 @@ class QueryExpenseServiceTest {
 	@Test
 	void findOneByExpenseIdSuccess() {
 		//given
-		Long groupId = mockGroup.getId(), expenseId = 1L;
-		Expense mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
+		Long groupId = mockSettlement.getId(), expenseId = 1L;
+		Expense mockExpense = new Expense(mockSettlement, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
 
 		when(expenseReader.findByExpenseId(eq(expenseId))).thenReturn(mockExpense);
 

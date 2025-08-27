@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.dnd.moddo.domain.expense.entity.Expense;
-import com.dnd.moddo.domain.group.entity.Group;
+import com.dnd.moddo.domain.settlement.entity.Settlement;
 import com.dnd.moddo.domain.memberExpense.dto.request.MemberExpenseRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -26,7 +26,7 @@ public record ExpenseRequest(
 
 ) {
 
-	public Expense toEntity(Group group) {
-		return new Expense(group, amount(), content(), date());
+	public Expense toEntity(Settlement settlement) {
+		return new Expense(settlement, amount(), content(), date());
 	}
 }

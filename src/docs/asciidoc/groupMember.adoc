@@ -14,27 +14,27 @@ Enum
 
 === Example
 
-include::{snippets}/group-member-controller-test/save-group-member/curl-request.adoc[]
+include::{snippets}/settlement-member-controller-test/save-settlement-member/curl-request.adoc[]
 
 === HTTP
 
 ==== 요청
 
-include::{snippets}/group-member-controller-test/save-group-member/http-request.adoc[]
+include::{snippets}/settlement-member-controller-test/save-settlement-member/http-request.adoc[]
 
 ==== 응답
 
-include::{snippets}/group-member-controller-test/save-group-member/http-response.adoc[]
+include::{snippets}/settlement-member-controller-test/save-settlement-member/http-response.adoc[]
 
 === Body
 
 ==== 요청
 
-include::{snippets}/group-member-controller-test/save-group-member/request-body.adoc[]
+include::{snippets}/settlement-member-controller-test/save-settlement-member/request-body.adoc[]
 
 ==== 응답
 
-include::{snippets}/group-member-controller-test/save-group-member/response-body.adoc[]
+include::{snippets}/settlement-member-controller-test/save-settlement-member/response-body.adoc[]
 
 == 결제 상태 변경
 
@@ -42,27 +42,27 @@ include::{snippets}/group-member-controller-test/save-group-member/response-body
 
 === Example
 
-include::{snippets}/group-member-controller-test/update-payment-status/curl-request.adoc[]
+include::{snippets}/settlement-member-controller-test/update-payment-status/curl-request.adoc[]
 
 === HTTP
 
 ==== 요청
 
-include::{snippets}/group-member-controller-test/update-payment-status/http-request.adoc[]
+include::{snippets}/settlement-member-controller-test/update-payment-status/http-request.adoc[]
 
 ==== 응답
 
-include::{snippets}/group-member-controller-test/update-payment-status/http-response.adoc[]
+include::{snippets}/settlement-member-controller-test/update-payment-status/http-response.adoc[]
 
 === Body
 
 ==== 요청
 
-include::{snippets}/group-member-controller-test/update-payment-status/request-body.adoc[]
+include::{snippets}/settlement-member-controller-test/update-payment-status/request-body.adoc[]
 
 ==== 응답
 
-include::{snippets}/group-member-controller-test/update-payment-status/response-body.adoc[]
+include::{snippets}/settlement-member-controller-test/update-payment-status/response-body.adoc[]
 
 == 모임원 삭제
 
@@ -72,14 +72,14 @@ include::{snippets}/group-member-controller-test/update-payment-status/response-
 
 === Example
 
-include::{snippets}/group-member-controller-test/delete-group-member/curl-request.adoc[]
+include::{snippets}/settlement-member-controller-test/delete-settlement-member/curl-request.adoc[]
 
 === HTTP
 
 ==== 요청
 
-include::{snippets}/group-member-controller-test/delete-group-member/http-request.adoc[]
+include::{snippets}/settlement-member-controller-test/delete-settlement-member/http-request.adoc[]
 
 ==== 응답
 
-include::{snippets}/group-member-controller-test/delete-group-member/http-response.adoc[]
+include::{snippets}/settlement-member-controller-test/delete-settlement-member/http-response.adoc[]

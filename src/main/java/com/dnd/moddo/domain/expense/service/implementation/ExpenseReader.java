@@ -17,7 +17,7 @@ public class ExpenseReader {
 	private final ExpenseRepository expenseRepository;
 
 	public List<Expense> findAllByGroupId(Long groupId) {
-		return expenseRepository.findByGroupIdOrderByDateAsc(groupId);
+		return expenseRepository.findBySettlementIdOrderByDateAsc(groupId);
 	}
 
 	public Expense findByExpenseId(Long expenseId) {

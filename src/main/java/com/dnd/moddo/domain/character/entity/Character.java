@@ -1,6 +1,6 @@
 package com.dnd.moddo.domain.character.entity;
 
-import com.dnd.moddo.domain.group.entity.Group;
+import com.dnd.moddo.domain.settlement.entity.Settlement;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -27,7 +27,7 @@ public class Character {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "group_id", nullable = false)
-	private Group group;
+	private Settlement settlement;
 
 	private String name;
 	private String rarity;
@@ -35,8 +35,8 @@ public class Character {
 	private String imageBigUrl;
 
 	@Builder
-	public Character(Group group, String name, String rarity, String imageUrl, String imageBigUrl) {
-		this.group = group;
+	public Character(Settlement settlement, String name, String rarity, String imageUrl, String imageBigUrl) {
+		this.settlement = settlement;
 		this.name = name;
 		this.rarity = rarity;
 		this.imageUrl = imageUrl;

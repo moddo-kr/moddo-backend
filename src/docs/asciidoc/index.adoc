@@ -14,9 +14,9 @@ include::character.adoc[]
 
 include::expense.adoc[]
 
-include::group.adoc[]
+include::settlement.adoc[]
 
-include::groupMember.adoc[]
+include::appointmentMember.adoc[]
 
 include::image.adoc[]
 

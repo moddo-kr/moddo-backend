@@ -12,13 +12,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberReader;
+import com.dnd.moddo.domain.appointmentMember.service.implementation.AppointmentMemberReader;
 import com.dnd.moddo.domain.memberExpense.dto.request.MemberExpenseRequest;
 
 @ExtendWith(MockitoExtension.class)
 class MemberExpenseValidatorTest {
 	@Mock
-	private GroupMemberReader groupMemberReader;
+	private AppointmentMemberReader appointmentMemberReader;
 	@InjectMocks
 	private MemberExpenseValidator memberExpenseValidator;
 
@@ -32,7 +32,7 @@ class MemberExpenseValidatorTest {
 
 		List<Long> mockGroupMemberIds = List.of(1L, 2L);
 
-		when(groupMemberReader.findIdsByGroupId(eq(groupId))).thenReturn(mockGroupMemberIds);
+		when(appointmentMemberReader.findIdsByGroupId(eq(groupId))).thenReturn(mockGroupMemberIds);
 
 		//when & when
 		assertThatCode(() -> {
@@ -49,7 +49,7 @@ class MemberExpenseValidatorTest {
 			new MemberExpenseRequest(invalidMemberId, 5000L));
 
 		List<Long> mockGroupMemberIds = List.of(1L, 2L);
-		when(groupMemberReader.findIdsByGroupId(eq(groupId))).thenReturn(mockGroupMemberIds);
+		when(appointmentMemberReader.findIdsByGroupId(eq(groupId))).thenReturn(mockGroupMemberIds);
 
 		//when & then
 		assertThatThrownBy(() -> {

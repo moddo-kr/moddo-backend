@@ -44,23 +44,23 @@ include::{snippets}/expense-controller-test/save-expenses-fail_when-member-not-f
 
 === Example
 
-include::{snippets}/expense-controller-test/get-all-by-group-id-success/curl-request.adoc[]
+include::{snippets}/expense-controller-test/get-all-by-settlement-id-success/curl-request.adoc[]
 
 === HTTP
 
 ==== 요청
 
-include::{snippets}/expense-controller-test/get-all-by-group-id-success/http-request.adoc[]
+include::{snippets}/expense-controller-test/get-all-by-settlement-id-success/http-request.adoc[]
 
 ==== 응답
 
-include::{snippets}/expense-controller-test/get-all-by-group-id-success/http-response.adoc[]
+include::{snippets}/expense-controller-test/get-all-by-settlement-id-success/http-response.adoc[]
 
 === Body
 
 ==== 응답
 
-include::{snippets}/expense-controller-test/get-all-by-group-id-success/response-body.adoc[]
+include::{snippets}/expense-controller-test/get-all-by-settlement-id-success/response-body.adoc[]
 
 ==== 응답 -
 

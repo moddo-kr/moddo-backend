@@ -16,27 +16,27 @@
 
 === Example
 
-include::{snippets}/group-controller-test/save-group/curl-request.adoc[]
+include::{snippets}/settlement-controller-test/save-settlement/curl-request.adoc[]
 
 === HTTP
 
 ==== 요청
 
-include::{snippets}/group-controller-test/save-group/http-request.adoc[]
+include::{snippets}/settlement-controller-test/save-settlement/http-request.adoc[]
 
 ==== 응답
 
-include::{snippets}/group-controller-test/save-group/http-response.adoc[]
+include::{snippets}/settlement-controller-test/save-settlement/http-response.adoc[]
 
 === Body
 
 ==== 요청
 
-include::{snippets}/group-controller-test/save-group/request-body.adoc[]
+include::{snippets}/settlement-controller-test/save-settlement/request-body.adoc[]
 
 ==== 응답
 
-include::{snippets}/group-controller-test/save-group/response-body.adoc[]
+include::{snippets}/settlement-controller-test/save-settlement/response-body.adoc[]
 
 == 계좌 추가
 
@@ -44,27 +44,27 @@ include::{snippets}/group-controller-test/save-group/response-body.adoc[]
 
 === Example
 
-include::{snippets}/group-controller-test/update-account/curl-request.adoc[]
+include::{snippets}/settlement-controller-test/update-account/curl-request.adoc[]
 
 === HTTP
 
 ==== 요청
 
-include::{snippets}/group-controller-test/update-account/http-request.adoc[]
+include::{snippets}/settlement-controller-test/update-account/http-request.adoc[]
 
 ==== 응답
 
-include::{snippets}/group-controller-test/update-account/http-response.adoc[]
+include::{snippets}/settlement-controller-test/update-account/http-response.adoc[]
 
 === Body
 
 ==== 요청
 
-include::{snippets}/group-controller-test/update-account/request-body.adoc[]
+include::{snippets}/settlement-controller-test/update-account/request-body.adoc[]
 
 ==== 응답
 
-include::{snippets}/group-controller-test/update-account/response-body.adoc[]
+include::{snippets}/settlement-controller-test/update-account/response-body.adoc[]
 
 == 비밀번호 검증
 
@@ -72,27 +72,27 @@ include::{snippets}/group-controller-test/update-account/response-body.adoc[]
 
 === Example
 
-include::{snippets}/group-controller-test/is-password-match/curl-request.adoc[]
+include::{snippets}/settlement-controller-test/is-password-match/curl-request.adoc[]
 
 === HTTP
 
 ==== 요청
 
-include::{snippets}/group-controller-test/is-password-match/http-request.adoc[]
+include::{snippets}/settlement-controller-test/is-password-match/http-request.adoc[]
 
 ==== 응답
 
-include::{snippets}/group-controller-test/is-password-match/http-response.adoc[]
+include::{snippets}/settlement-controller-test/is-password-match/http-response.adoc[]
 
 === Body
 
 ==== 요청
 
-include::{snippets}/group-controller-test/is-password-match/request-body.adoc[]
+include::{snippets}/settlement-controller-test/is-password-match/request-body.adoc[]
 
 ==== 응답
 
-include::{snippets}/group-controller-test/is-password-match/response-body.adoc[]
+include::{snippets}/settlement-controller-test/is-password-match/response-body.adoc[]
 
 == 모임 조회
 
@@ -100,23 +100,23 @@ include::{snippets}/group-controller-test/is-password-match/response-body.adoc[]
 
 === Example
 
-include::{snippets}/group-controller-test/get-group/curl-request.adoc[]
+include::{snippets}/settlement-controller-test/get-settlement/curl-request.adoc[]
 
 === HTTP
 
 ==== 요청
 
-include::{snippets}/group-controller-test/get-group/http-request.adoc[]
+include::{snippets}/settlement-controller-test/get-settlement/http-request.adoc[]
 
 ==== 응답
 
-include::{snippets}/group-controller-test/get-group/http-response.adoc[]
+include::{snippets}/settlement-controller-test/get-settlement/http-response.adoc[]
 
 === Body
 
 ==== 응답
 
-include::{snippets}/group-controller-test/get-group/response-body.adoc[]
+include::{snippets}/settlement-controller-test/get-settlement/response-body.adoc[]
 
 == 모임 상단 조회
 
@@ -124,21 +124,21 @@ include::{snippets}/group-controller-test/get-group/response-body.adoc[]
 
 === Example
 
-include::{snippets}/group-controller-test/get-header/curl-request.adoc[]
+include::{snippets}/settlement-controller-test/get-header/curl-request.adoc[]
 
 === HTTP
 
 ==== 요청
 
-include::{snippets}/group-controller-test/get-header/http-request.adoc[]
+include::{snippets}/settlement-controller-test/get-header/http-request.adoc[]
 
 ==== 응답
 
-include::{snippets}/group-controller-test/get-header/http-response.adoc[]
+include::{snippets}/settlement-controller-test/get-header/http-response.adoc[]
 
 === Body
 
 ==== 응답
 
-include::{snippets}/group-controller-test/get-header/response-body.adoc[]
+include::{snippets}/settlement-controller-test/get-header/response-body.adoc[]
 

@@ -11,12 +11,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.domain.group.entity.Group;
-import com.dnd.moddo.domain.groupMember.entity.GroupMember;
-import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
+import com.dnd.moddo.domain.appointmentMember.entity.AppointmentMember;
+import com.dnd.moddo.domain.appointmentMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.memberExpense.dto.request.MemberExpenseRequest;
 import com.dnd.moddo.domain.memberExpense.entity.MemberExpense;
 import com.dnd.moddo.domain.memberExpense.repotiroy.MemberExpenseRepository;
+import com.dnd.moddo.domain.settlement.entity.Settlement;
 import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,17 +26,17 @@ class MemberExpenseCreatorTest {
 	@InjectMocks
 	private MemberExpenseCreator memberExpenseCreator;
 
-	private Group mockGroup;
-	private GroupMember mockGroupMember;
+	private Settlement mockSettlement;
+	private AppointmentMember mockAppointmentMember;
 	private MemberExpenseRequest mockMemberExpenseRequest;
 
 	@BeforeEach
 	void setUp() {
-		mockGroup = GroupTestFactory.createDefault();
+		mockSettlement = GroupTestFactory.createDefault();
 
-		mockGroupMember = GroupMember.builder()
+		mockAppointmentMember = AppointmentMember.builder()
 			.name("박완수")
-			.group(mockGroup)
+			.settlement(mockSettlement)
 			.role(ExpenseRole.MANAGER)
 			.isPaid(true)
 			.build();
@@ -49,19 +49,19 @@ class MemberExpenseCreatorTest {
 	void createMemberExpenseSuccess() {
 		//given
 		Long expenseId = 1L;
-		MemberExpense mockMemberExpense = new MemberExpense(expenseId, mockGroupMember, 10000L);
+		MemberExpense mockMemberExpense = new MemberExpense(expenseId, mockAppointmentMember, 10000L);
 
-		when(mockMemberExpenseRequest.toEntity(expenseId, mockGroupMember)).thenReturn(mockMemberExpense);
+		when(mockMemberExpenseRequest.toEntity(expenseId, mockAppointmentMember)).thenReturn(mockMemberExpense);
 		when(memberExpenseRepository.save(any(MemberExpense.class))).thenReturn(mockMemberExpense);
 
 		//when
-		MemberExpense result = memberExpenseCreator.create(expenseId, mockGroupMember, mockMemberExpenseRequest);
+		MemberExpense result = memberExpenseCreator.create(expenseId, mockAppointmentMember, mockMemberExpenseRequest);
 
 		//then
 		assertThat(result).isNotNull();
 		assertThat(result).isEqualTo(mockMemberExpense);
 		assertThat(result.getAmount()).isEqualTo(10000L);
-		assertThat(result.getGroupMember()).isEqualTo(mockGroupMember);
+		assertThat(result.getAppointmentMember()).isEqualTo(mockAppointmentMember);
 
 		verify(memberExpenseRepository, times(1)).save(any(MemberExpense.class));
 	}

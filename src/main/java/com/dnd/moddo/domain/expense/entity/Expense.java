@@ -3,13 +3,19 @@ package com.dnd.moddo.domain.expense.entity;
 import java.time.LocalDate;
 import java.util.List;
 
-import ch.qos.logback.core.testUtil.StringListAppender;
-import com.dnd.moddo.domain.expense.dto.request.ExpenseImageRequest;
-import com.dnd.moddo.domain.group.entity.Group;
+import com.dnd.moddo.domain.settlement.entity.Settlement;
 import com.dnd.moddo.global.converter.StringListConverter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,8 +31,8 @@ public class Expense {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "group_id")
-	private Group group;
+	@JoinColumn(name = "settlement_id")
+	private Settlement settlement;
 
 	private Long amount;
 
@@ -38,13 +44,13 @@ public class Expense {
 	@Convert(converter = StringListConverter.class)
 	private List<String> images;
 
-	public Expense(Group group, Long amount, String content, LocalDate date) {
-		this(group, amount, content, date, null);
+	public Expense(Settlement settlement, Long amount, String content, LocalDate date) {
+		this(settlement, amount, content, date, null);
 	}
 
 	@Builder
-	public Expense(Group group, Long amount, String content, LocalDate date, List<String> images) {
-		this.group = group;
+	public Expense(Settlement settlement, Long amount, String content, LocalDate date, List<String> images) {
+		this.settlement = settlement;
 		this.amount = amount;
 		this.content = content;
 		this.date = date;

@@ -5,7 +5,7 @@ import java.util.Random;
 
 import org.springframework.stereotype.Service;
 
-import com.dnd.moddo.domain.group.repository.GroupRepository;
+import com.dnd.moddo.domain.settlement.repository.SettlementRepository;
 import com.dnd.moddo.domain.image.dto.CharacterResponse;
 import com.dnd.moddo.domain.image.entity.type.Characters;
 import com.dnd.moddo.domain.image.exception.CharacterNotFoundException;
@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 public class ImageReader {
 
 	private final S3Bucket s3Bucket;
-	private final GroupRepository groupRepository;
+	private final SettlementRepository settlementRepository;
 
 	public CharacterResponse getRandomCharacter() {
 		int rarity = getRandomRarity();

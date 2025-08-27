@@ -21,7 +21,7 @@ public class MemberExpenseReader {
 	}
 
 	public List<MemberExpense> findAllByGroupMemberIds(List<Long> groupMemberIds) {
-		return memberExpenseRepository.findAllByGroupMemberIds(groupMemberIds);
+		return memberExpenseRepository.findAllByAppointmentMemberIds(groupMemberIds);
 	}
 
 	public List<MemberExpense> findAllByExpenseIds(List<Long> expenseIds) {

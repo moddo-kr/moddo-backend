@@ -1,6 +1,6 @@
 package com.dnd.moddo.domain.expense.controller;
 
-import static com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole.*;
+import static com.dnd.moddo.domain.appointmentMember.entity.type.ExpenseRole.*;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.BDDMockito.any;
 import static org.mockito.BDDMockito.*;
@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+import com.dnd.moddo.domain.appointmentMember.exception.AppointmentMemberNotFoundException;
 import com.dnd.moddo.domain.expense.dto.request.ExpenseImageRequest;
 import com.dnd.moddo.domain.expense.dto.request.ExpenseRequest;
 import com.dnd.moddo.domain.expense.dto.request.ExpensesRequest;
@@ -26,7 +27,6 @@ import com.dnd.moddo.domain.expense.dto.response.ExpenseDetailsResponse;
 import com.dnd.moddo.domain.expense.dto.response.ExpenseResponse;
 import com.dnd.moddo.domain.expense.dto.response.ExpensesResponse;
 import com.dnd.moddo.domain.expense.exception.ExpenseNotFoundException;
-import com.dnd.moddo.domain.groupMember.exception.GroupMemberNotFoundException;
 import com.dnd.moddo.domain.memberExpense.dto.request.MemberExpenseRequest;
 import com.dnd.moddo.domain.memberExpense.dto.response.MemberExpenseResponse;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
@@ -71,7 +71,7 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 			)
 		));
 
-		when(queryGroupService.findIdByCode(groupToken)).thenReturn(groupId);
+		when(querySettlementService.findIdByCode(groupToken)).thenReturn(groupId);
 		when(commandExpenseService.createExpenses(eq(groupId), any())).thenReturn(response);
 
 		mockMvc.perform(post("/api/v1/expenses")
@@ -132,7 +132,7 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 
 		ExpensesResponse response = new ExpensesResponse(expenseResponses);
 
-		when(queryGroupService.findIdByCode(groupToken)).thenReturn(groupId);
+		when(querySettlementService.findIdByCode(groupToken)).thenReturn(groupId);
 		when(queryExpenseService.findAllByGroupId(groupId)).thenReturn(response);
 
 		// when & then
@@ -195,7 +195,7 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 		);
 		ExpenseDetailsResponse response = new ExpenseDetailsResponse(expenseDetail);
 
-		given(queryGroupService.findIdByCode(groupToken)).willReturn(groupId);
+		given(querySettlementService.findIdByCode(groupToken)).willReturn(groupId);
 		given(queryExpenseService.findAllExpenseDetailsByGroupId(groupId)).willReturn(response);
 
 		// when & then
@@ -277,9 +277,9 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 		ExpensesRequest request = new ExpensesRequest(
 			List.of(new ExpenseRequest(100000L, "지출", LocalDate.now(), List.of())));
 
-		when(queryGroupService.findIdByCode(groupToken)).thenReturn(groupId);
+		when(querySettlementService.findIdByCode(groupToken)).thenReturn(groupId);
 		when(commandExpenseService.createExpenses(eq(groupId), any()))
-			.thenThrow(new GroupMemberNotFoundException(1L));
+			.thenThrow(new AppointmentMemberNotFoundException(1L));
 
 		mockMvc.perform(post("/api/v1/expenses")
 				.param("groupToken", groupToken)
