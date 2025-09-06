@@ -42,16 +42,16 @@ public class GroupPermissionAspect {
 			throw new TokenNotFoundException("group token");
 		}
 
-		Long groupId = querySettlementService.findIdByCode(code);
+		Long settlementId = querySettlementService.findIdByCode(code);
 
 		// 사용자 검증
-		if (!isAuthorized(userId, groupId)) {
+		if (!isAuthorized(userId, settlementId)) {
 			throw new UserPermissionException();
 		}
 	}
 
-	private boolean isAuthorized(Long userId, Long groupId) {
-		Settlement settlement = settlementReader.read(groupId);
+	private boolean isAuthorized(Long userId, Long settlementId) {
+		Settlement settlement = settlementReader.read(settlementId);
 		return settlement.isWriter(userId);
 	}
 }

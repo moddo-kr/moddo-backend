@@ -57,17 +57,18 @@ public class CommandMemberExpenseService {
 		Map<Long, MemberExpense> existingMemberExpenses,
 		MemberExpenseRequest request) {
 
-		Long groupMemberId = request.id();
+		Long appointmentMemberId = request.id();
 		MemberExpenseResponse response;
 
-		if (existingMemberExpenses.containsKey(groupMemberId)) {
+		if (existingMemberExpenses.containsKey(appointmentMemberId)) {
 			// 1. 기존 멤버가 있으면 업데이트
-			MemberExpense existingMemberExpense = existingMemberExpenses.get(groupMemberId);
+			MemberExpense existingMemberExpense = existingMemberExpenses.get(appointmentMemberId);
 			memberExpenseUpdater.update(existingMemberExpense, request);
 			response = MemberExpenseResponse.of(existingMemberExpense);
 		} else {
 			// 2. 없는 멤버면 추가
-			AppointmentMember appointmentMember = appointmentMemberReader.findByAppointmentMemberId(groupMemberId);
+			AppointmentMember appointmentMember = appointmentMemberReader.findByAppointmentMemberId(
+				appointmentMemberId);
 			MemberExpense newMemberExpense = memberExpenseCreator.create(expenseId, appointmentMember, request);
 			response = MemberExpenseResponse.of(newMemberExpense);
 		}

@@ -21,22 +21,23 @@ public class CommandAppointmentMemberService {
 	private final AppointmentMemberDeleter appointmentMemberDeleter;
 
 	public AppointmentMemberResponse createManager(Settlement settlement, Long userId) {
-		AppointmentMember appointmentMember = appointmentMemberCreator.createManagerForGroup(settlement, userId);
+		AppointmentMember appointmentMember = appointmentMemberCreator.createManagerForSettlement(settlement, userId);
 		return AppointmentMemberResponse.of(appointmentMember);
 	}
 
-	public AppointmentMemberResponse addAppointmentMember(Long groupId, appointmentMemberSaveRequest request) {
-		AppointmentMember appointmentMember = appointmentMemberUpdater.addToGroup(groupId, request);
+	public AppointmentMemberResponse addAppointmentMember(Long settlementId, appointmentMemberSaveRequest request) {
+		AppointmentMember appointmentMember = appointmentMemberUpdater.addToSettlement(settlementId, request);
 		return AppointmentMemberResponse.of(appointmentMember);
 	}
 
-	public AppointmentMemberResponse updatePaymentStatus(Long groupMemberId, PaymentStatusUpdateRequest request) {
-		AppointmentMember appointmentMember = appointmentMemberUpdater.updatePaymentStatus(groupMemberId, request);
+	public AppointmentMemberResponse updatePaymentStatus(Long appointmentMemberId, PaymentStatusUpdateRequest request) {
+		AppointmentMember appointmentMember = appointmentMemberUpdater.updatePaymentStatus(appointmentMemberId,
+			request);
 		return AppointmentMemberResponse.of(appointmentMember);
 	}
 
-	public void delete(Long groupMemberId) {
-		appointmentMemberDeleter.delete(groupMemberId);
+	public void delete(Long appointmentMemberId) {
+		appointmentMemberDeleter.delete(appointmentMemberId);
 	}
 
 }

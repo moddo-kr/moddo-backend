@@ -25,9 +25,9 @@ public class MemberExpenseController {
 	public ResponseEntity<AppointmentMembersExpenseResponse> getMemberExpensesDetails(
 		@RequestParam("groupToken") String code
 	) {
-		Long groupId = querySettlementService.findIdByCode(code);
-		AppointmentMembersExpenseResponse response = queryMemberExpenseService.findMemberExpenseDetailsByGroupId(
-			groupId);
+		Long settlementId = querySettlementService.findIdByCode(code);
+		AppointmentMembersExpenseResponse response = queryMemberExpenseService.findMemberExpenseDetailsBySettlementId(
+			settlementId);
 		return ResponseEntity.ok(response);
 	}
 }

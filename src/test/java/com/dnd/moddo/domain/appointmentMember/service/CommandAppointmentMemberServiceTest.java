@@ -49,7 +49,7 @@ public class CommandAppointmentMemberServiceTest {
 			.role(ExpenseRole.MANAGER)
 			.build();
 		Settlement mockSettlement = mock(Settlement.class);
-		when(appointmentMemberCreator.createManagerForGroup(any(Settlement.class), eq(userId))).thenReturn(
+		when(appointmentMemberCreator.createManagerForSettlement(any(Settlement.class), eq(userId))).thenReturn(
 			expectedMembers);
 
 		// when
@@ -59,12 +59,12 @@ public class CommandAppointmentMemberServiceTest {
 		assertThat(response).isNotNull();
 		assertThat(response.name()).isEqualTo("김모또");
 		assertThat(response.role()).isEqualTo(ExpenseRole.MANAGER);
-		verify(appointmentMemberCreator, times(1)).createManagerForGroup(any(Settlement.class), any());
+		verify(appointmentMemberCreator, times(1)).createManagerForSettlement(any(Settlement.class), any());
 	}
 
 	@DisplayName("모든 정보가 유효할때 기존 모임의 참여자 추가가 성공한다.")
 	@Test
-	void whenValidInfo_thenAddGroupMemberSuccess() {
+	void whenValidInfo_thenAddAppointmentMemberSuccess() {
 		//given
 		Long groupId = mockSettlement.getId();
 		appointmentMemberSaveRequest request = mock(appointmentMemberSaveRequest.class);
@@ -75,7 +75,7 @@ public class CommandAppointmentMemberServiceTest {
 			.role(ExpenseRole.PARTICIPANT)
 			.build();
 
-		when(appointmentMemberUpdater.addToGroup(eq(groupId), any(appointmentMemberSaveRequest.class))).thenReturn(
+		when(appointmentMemberUpdater.addToSettlement(eq(groupId), any(appointmentMemberSaveRequest.class))).thenReturn(
 			expectedMember);
 
 		//when
@@ -84,7 +84,8 @@ public class CommandAppointmentMemberServiceTest {
 		//then
 		assertThat(response).isNotNull();
 		assertThat(response.name()).isEqualTo("김반숙");
-		verify(appointmentMemberUpdater, times(1)).addToGroup(eq(groupId), any(appointmentMemberSaveRequest.class));
+		verify(appointmentMemberUpdater, times(1)).addToSettlement(eq(groupId),
+			any(appointmentMemberSaveRequest.class));
 	}
 
 	@DisplayName("참여자 입금 내역을 업데이트 할 수 있다.")

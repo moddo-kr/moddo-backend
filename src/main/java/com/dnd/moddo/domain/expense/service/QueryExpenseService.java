@@ -21,8 +21,8 @@ public class QueryExpenseService {
 	private final ExpenseReader expenseReader;
 	private final QueryMemberExpenseService queryMemberExpenseService;
 
-	public ExpensesResponse findAllByGroupId(Long groupId) {
-		List<Expense> expenses = expenseReader.findAllByGroupId(groupId);
+	public ExpensesResponse findAllBySettlementId(Long settlementId) {
+		List<Expense> expenses = expenseReader.findAllBySettlementId(settlementId);
 		return new ExpensesResponse(
 			expenses.stream()
 				.map(expense ->
@@ -36,9 +36,9 @@ public class QueryExpenseService {
 		return ExpenseResponse.of(expense);
 	}
 
-	public ExpenseDetailsResponse findAllExpenseDetailsByGroupId(Long groupId) {
+	public ExpenseDetailsResponse findAllExpenseDetailsBySettlementId(Long settlementId) {
 
-		List<Expense> expenses = expenseReader.findAllByGroupId(groupId);
+		List<Expense> expenses = expenseReader.findAllBySettlementId(settlementId);
 		List<Long> expenseIds = expenses.stream().map(Expense::getId).toList();
 
 		Map<Long, List<String>> memberNameByExpenseId = queryMemberExpenseService.getMemberNamesByExpenseIds(

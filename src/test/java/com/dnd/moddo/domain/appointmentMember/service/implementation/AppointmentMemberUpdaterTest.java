@@ -48,7 +48,7 @@ class AppointmentMemberUpdaterTest {
 
 	@DisplayName("추가하려는 참여자의 이름이 기존 참여자의 이름과 중복되지 않을 경우 참여자 추가에 성공한다.")
 	@Test
-	void addToGroupSuccess() {
+	void addToSettlementSuccess() {
 		// given
 		Long groupId = 1L;
 		appointmentMemberSaveRequest request = mock(appointmentMemberSaveRequest.class);
@@ -58,7 +58,7 @@ class AppointmentMemberUpdaterTest {
 		when(settlementReader.read(eq(groupId))).thenReturn(mockSettlement);
 
 		List<AppointmentMember> mockAppointmentMembers = new ArrayList<>();
-		when(appointmentMemberReader.findAllByGroupId(eq(groupId))).thenReturn(mockAppointmentMembers);
+		when(appointmentMemberReader.findAllBySettlementId(eq(groupId))).thenReturn(mockAppointmentMembers);
 
 		doNothing().when(appointmentMemberValidator).validateMemberNamesNotDuplicate(any());
 
@@ -71,7 +71,7 @@ class AppointmentMemberUpdaterTest {
 		when(appointmentMemberRepository.save(any())).thenReturn(expectedAppointmentMember);
 
 		// when
-		AppointmentMember result = appointmentMemberUpdater.addToGroup(groupId, request);
+		AppointmentMember result = appointmentMemberUpdater.addToSettlement(groupId, request);
 
 		// then
 		assertThat(result).isNotNull();
@@ -84,7 +84,7 @@ class AppointmentMemberUpdaterTest {
 
 	@DisplayName("추가하려는 참여자의 이름이 기존 참여자의 이름과 중복되는 경우 예외가 발생한다.")
 	@Test
-	void addToGroupDuplicatedName() {
+	void addToSettlementDuplicatedName() {
 		// given
 		Long groupId = 1L;
 		appointmentMemberSaveRequest request = mock(appointmentMemberSaveRequest.class);
@@ -96,14 +96,14 @@ class AppointmentMemberUpdaterTest {
 		List<AppointmentMember> mockAppointmentMembers = new ArrayList<>();
 		AppointmentMember existingMember = AppointmentMember.builder().name(duplicatedName).build();
 		mockAppointmentMembers.add(existingMember);
-		when(appointmentMemberReader.findAllByGroupId(eq(groupId))).thenReturn(mockAppointmentMembers);
+		when(appointmentMemberReader.findAllBySettlementId(eq(groupId))).thenReturn(mockAppointmentMembers);
 
 		doThrow(new AppointmentMemberDuplicateNameException()).when(appointmentMemberValidator)
 			.validateMemberNamesNotDuplicate(any());
 
 		// when & then
 		assertThatThrownBy(() -> {
-			appointmentMemberUpdater.addToGroup(groupId, request);
+			appointmentMemberUpdater.addToSettlement(groupId, request);
 		}).hasMessage("중복된 참여자의 이름은 저장할 수 없습니다.");
 	}
 
@@ -130,7 +130,7 @@ class AppointmentMemberUpdaterTest {
 
 	@DisplayName("9번째 이상의 참여자가 추가될 때 프로필 ID가 올바르게 순환된다.")
 	@Test
-	void addToGroupProfileRotationSuccess() {
+	void addToSettlementProfileRotationSuccess() {
 		// given
 		Long groupId = 1L;
 		appointmentMemberSaveRequest request = mock(appointmentMemberSaveRequest.class);
@@ -151,7 +151,7 @@ class AppointmentMemberUpdaterTest {
 					.build()
 			);
 		}
-		when(appointmentMemberReader.findAllByGroupId(eq(groupId))).thenReturn(mockAppointmentMembers);
+		when(appointmentMemberReader.findAllBySettlementId(eq(groupId))).thenReturn(mockAppointmentMembers);
 
 		doNothing().when(appointmentMemberValidator).validateMemberNamesNotDuplicate(any());
 
@@ -164,7 +164,7 @@ class AppointmentMemberUpdaterTest {
 		when(appointmentMemberRepository.save(any())).thenReturn(expectedAppointmentMember);
 
 		// when
-		AppointmentMember result = appointmentMemberUpdater.addToGroup(groupId, request);
+		AppointmentMember result = appointmentMemberUpdater.addToSettlement(groupId, request);
 
 		// then
 		assertThat(result).isNotNull();

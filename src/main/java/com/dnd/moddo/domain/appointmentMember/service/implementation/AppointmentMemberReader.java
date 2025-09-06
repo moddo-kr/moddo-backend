@@ -16,16 +16,16 @@ import lombok.RequiredArgsConstructor;
 public class AppointmentMemberReader {
 	private final AppointmentMemberRepository appointmentMemberRepository;
 
-	public List<AppointmentMember> findAllByGroupId(Long groupId) {
-		return appointmentMemberRepository.findByGroupId(groupId);
+	public List<AppointmentMember> findAllBySettlementId(Long settlementId) {
+		return appointmentMemberRepository.findBySettlementId(settlementId);
 	}
 
 	public AppointmentMember findByAppointmentMemberId(Long appointmentMemberId) {
 		return appointmentMemberRepository.getById(appointmentMemberId);
 	}
 
-	public List<Long> findIdsByGroupId(Long groupId) {
-		return appointmentMemberRepository.findAppointmentMemberIdsByGroupId(groupId);
+	public List<Long> findIdsBySettlementId(Long settlementId) {
+		return appointmentMemberRepository.findAppointmentMemberIdsBySettlementId(settlementId);
 	}
 
 }

@@ -15,8 +15,8 @@ import lombok.RequiredArgsConstructor;
 public class QueryAppointmentMemberService {
 	private final AppointmentMemberReader appointmentMemberReader;
 
-	public AppointmentMembersResponse findAll(Long groupId) {
-		List<AppointmentMember> members = appointmentMemberReader.findAllByGroupId(groupId);
+	public AppointmentMembersResponse findAll(Long settlementId) {
+		List<AppointmentMember> members = appointmentMemberReader.findAllBySettlementId(settlementId);
 		return AppointmentMembersResponse.of(members);
 	}
 }

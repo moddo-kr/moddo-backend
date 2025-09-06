@@ -41,15 +41,15 @@ public class ExpenseController {
 	public ResponseEntity<ExpensesResponse> saveExpenses(
 		@RequestParam("groupToken") String code,
 		@Valid @RequestBody ExpensesRequest request) {
-		Long groupId = querySettlementService.findIdByCode(code);
-		ExpensesResponse response = commandExpenseService.createExpenses(groupId, request);
+		Long settlementId = querySettlementService.findIdByCode(code);
+		ExpensesResponse response = commandExpenseService.createExpenses(settlementId, request);
 		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping
-	public ResponseEntity<ExpensesResponse> getAllByGroupId(@RequestParam("groupToken") String code) {
-		Long groupId = querySettlementService.findIdByCode(code);
-		ExpensesResponse response = queryExpenseService.findAllByGroupId(groupId);
+	public ResponseEntity<ExpensesResponse> getAllBySettlementId(@RequestParam("groupToken") String code) {
+		Long settlementId = querySettlementService.findIdByCode(code);
+		ExpensesResponse response = queryExpenseService.findAllBySettlementId(settlementId);
 		return ResponseEntity.ok(response);
 	}
 
@@ -61,10 +61,10 @@ public class ExpenseController {
 	}
 
 	@GetMapping("/details")
-	public ResponseEntity<ExpenseDetailsResponse> getExpenseDetailsByGroupId(
+	public ResponseEntity<ExpenseDetailsResponse> getExpenseDetailsBySettlementId(
 		@RequestParam("groupToken") String code) {
-		Long groupId = querySettlementService.findIdByCode(code);
-		ExpenseDetailsResponse response = queryExpenseService.findAllExpenseDetailsByGroupId(groupId);
+		Long settlementId = querySettlementService.findIdByCode(code);
+		ExpenseDetailsResponse response = queryExpenseService.findAllExpenseDetailsBySettlementId(settlementId);
 		return ResponseEntity.ok(response);
 	}
 
@@ -90,7 +90,7 @@ public class ExpenseController {
 		@PathVariable("expenseId") Long expenseId,
 		@RequestBody ExpenseImageRequest expenseImageRequest) {
 		Long userId = jwtService.getUserId(request);
-		Long groupId = querySettlementService.findIdByCode(code);
-		commandExpenseService.updateImgUrl(userId, groupId, expenseId, expenseImageRequest);
+		Long settlementId = querySettlementService.findIdByCode(code);
+		commandExpenseService.updateImgUrl(userId, settlementId, expenseId, expenseImageRequest);
 	}
 }

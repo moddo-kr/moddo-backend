@@ -1,4 +1,4 @@
-= 모임 (Group)
+= 모임 (Settlement)
 :toc: left
 :toclevels: 2
 

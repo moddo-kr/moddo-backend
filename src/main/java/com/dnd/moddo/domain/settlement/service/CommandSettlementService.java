@@ -5,12 +5,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.moddo.domain.appointmentMember.dto.response.AppointmentMemberResponse;
 import com.dnd.moddo.domain.appointmentMember.service.CommandAppointmentMemberService;
-import com.dnd.moddo.domain.settlement.dto.request.GroupPasswordRequest;
 import com.dnd.moddo.domain.settlement.dto.request.SettlementAccountRequest;
+import com.dnd.moddo.domain.settlement.dto.request.SettlementPasswordRequest;
 import com.dnd.moddo.domain.settlement.dto.request.SettlementRequest;
-import com.dnd.moddo.domain.settlement.dto.response.GroupPasswordResponse;
-import com.dnd.moddo.domain.settlement.dto.response.GroupResponse;
-import com.dnd.moddo.domain.settlement.dto.response.GroupSaveResponse;
+import com.dnd.moddo.domain.settlement.dto.response.SettlementPasswordResponse;
+import com.dnd.moddo.domain.settlement.dto.response.SettlementResponse;
+import com.dnd.moddo.domain.settlement.dto.response.SettlementSaveResponse;
 import com.dnd.moddo.domain.settlement.entity.Settlement;
 import com.dnd.moddo.domain.settlement.service.implementation.SettlementCreator;
 import com.dnd.moddo.domain.settlement.service.implementation.SettlementReader;
@@ -31,23 +31,25 @@ public class CommandSettlementService {
 	private final JwtProvider jwtProvider;
 	private final CommandAppointmentMemberService commandAppointmentMemberService;
 
-	public GroupSaveResponse createSettlement(SettlementRequest request, Long userId) {
+	public SettlementSaveResponse createSettlement(SettlementRequest request, Long userId) {
 		Settlement settlement = settlementCreator.createSettlement(request, userId);
 		AppointmentMemberResponse manager = commandAppointmentMemberService.createManager(settlement, userId);
-		return new GroupSaveResponse(settlement.getCode(), manager);
+		return new SettlementSaveResponse(settlement.getCode(), manager);
 	}
 
-	public GroupResponse updateAccount(SettlementAccountRequest request, Long userId, Long groupId) {
-		Settlement settlement = settlementReader.read(groupId);
-		settlementValidator.checkGroupAuthor(settlement, userId);
+	public SettlementResponse updateAccount(SettlementAccountRequest request, Long userId, Long settlementId) {
+		Settlement settlement = settlementReader.read(settlementId);
+		settlementValidator.checkSettlementAuthor(settlement, userId);
 		settlement = settlementUpdater.updateAccount(request, settlement.getId());
-		return GroupResponse.of(settlement);
+		return SettlementResponse.of(settlement);
 	}
 
-	public GroupPasswordResponse isPasswordMatch(Long groupId, Long userId, GroupPasswordRequest request) {
-		Settlement settlement = settlementReader.read(groupId);
-		settlementValidator.checkGroupAuthor(settlement, userId);
-		GroupPasswordResponse response = settlementValidator.checkGroupPassword(request, settlement.getPassword());
+	public SettlementPasswordResponse isPasswordMatch(Long settlementId, Long userId,
+		SettlementPasswordRequest request) {
+		Settlement settlement = settlementReader.read(settlementId);
+		settlementValidator.checkSettlementAuthor(settlement, userId);
+		SettlementPasswordResponse response = settlementValidator.checkSettlementPassword(request,
+			settlement.getPassword());
 		return response;
 	}
 }

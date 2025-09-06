@@ -36,23 +36,25 @@ public class QueryMemberExpenseService {
 			.toList();
 	}
 
-	public AppointmentMembersExpenseResponse findMemberExpenseDetailsByGroupId(Long groupId) {
-		List<AppointmentMember> appointmentMembers = appointmentMemberReader.findAllByGroupId(groupId);
+	public AppointmentMembersExpenseResponse findMemberExpenseDetailsBySettlementId(Long settlementId) {
+		List<AppointmentMember> appointmentMembers = appointmentMemberReader.findAllBySettlementId(settlementId);
 
-		Map<Long, AppointmentMember> groupMemberById = convertGroupMembersToMap(appointmentMembers);
+		Map<Long, AppointmentMember> appointmentMemberById = convertAppointmentMembersToMap(appointmentMembers);
 
-		Map<Long, List<MemberExpense>> memberExpenses = memberExpenseReader.findAllByGroupMemberIds(
-				groupMemberById.keySet().stream().toList())
+		Map<Long, List<MemberExpense>> memberExpenses = memberExpenseReader.findAllByAppointMemberIds(
+				appointmentMemberById.keySet().stream().toList())
 			.stream()
 			.collect(Collectors.groupingBy(me -> me.getAppointmentMember().getId()));
 		;
 
-		List<Expense> expenses = expenseReader.findAllByGroupId(groupId);
+		List<Expense> expenses = expenseReader.findAllBySettlementId(settlementId);
 
-		List<AppointmentMemberExpenseResponse> responses = groupMemberById.keySet()
+		List<AppointmentMemberExpenseResponse> responses = appointmentMemberById.keySet()
 			.stream()
 			.map(
-				key -> findMemberExpenseDetailByGroupMember(groupMemberById.get(key), memberExpenses.get(key), expenses)
+				key -> findMemberExpenseDetailByAppointmentMember(appointmentMemberById.get(key),
+					memberExpenses.get(key),
+					expenses)
 			)
 			.filter(Objects::nonNull)
 			.toList();
@@ -60,15 +62,15 @@ public class QueryMemberExpenseService {
 		return new AppointmentMembersExpenseResponse(responses);
 	}
 
-	private Map<Long, AppointmentMember> convertGroupMembersToMap(List<AppointmentMember> appointmentMembers) {
+	private Map<Long, AppointmentMember> convertAppointmentMembersToMap(List<AppointmentMember> appointmentMembers) {
 		return appointmentMembers.stream()
-			.collect(Collectors.toMap(AppointmentMember::getId, groupMember -> groupMember,
+			.collect(Collectors.toMap(AppointmentMember::getId, appointmentMember -> appointmentMember,
 				(existing, replacement) -> existing,
 				LinkedHashMap::new)
 			);
 	}
 
-	private AppointmentMemberExpenseResponse findMemberExpenseDetailByGroupMember(
+	private AppointmentMemberExpenseResponse findMemberExpenseDetailByAppointmentMember(
 		AppointmentMember appointmentMember, List<MemberExpense> memberExpenses, List<Expense> expenses) {
 
 		if (memberExpenses == null) {

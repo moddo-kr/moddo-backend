@@ -15,7 +15,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 	List<Expense> findBySettlementIdOrderByDateAsc(Long id);
 
 	@Query("SELECT SUM(e.amount) FROM Expense e WHERE e.settlement = :settlement")
-	Long sumAmountByGroup(Settlement settlement);
+	Long sumAmountBySettlement(Settlement settlement);
 
 	default Expense getById(Long id) {
 		return findById(id)

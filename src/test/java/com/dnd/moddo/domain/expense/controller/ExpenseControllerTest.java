@@ -97,7 +97,7 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 
 	@Test
 	@DisplayName("전체 지출 목록을 정상적으로 조회한다.")
-	void getAllByGroupIdSuccess() throws Exception {
+	void getAllBySettlementIdSuccess() throws Exception {
 		// given
 		List<ExpenseResponse> expenseResponses = List.of(
 			new ExpenseResponse(1L, 100000L, "지출", LocalDate.of(2025, 2, 3), List.of(
@@ -133,7 +133,7 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 		ExpensesResponse response = new ExpensesResponse(expenseResponses);
 
 		when(querySettlementService.findIdByCode(groupToken)).thenReturn(groupId);
-		when(queryExpenseService.findAllByGroupId(groupId)).thenReturn(response);
+		when(queryExpenseService.findAllBySettlementId(groupId)).thenReturn(response);
 
 		// when & then
 		mockMvc.perform(get("/api/v1/expenses")
@@ -196,7 +196,7 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 		ExpenseDetailsResponse response = new ExpenseDetailsResponse(expenseDetail);
 
 		given(querySettlementService.findIdByCode(groupToken)).willReturn(groupId);
-		given(queryExpenseService.findAllExpenseDetailsByGroupId(groupId)).willReturn(response);
+		given(queryExpenseService.findAllExpenseDetailsBySettlementId(groupId)).willReturn(response);
 
 		// when & then
 		mockMvc.perform(get("/api/v1/expenses/details")

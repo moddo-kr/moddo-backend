@@ -67,7 +67,7 @@ class MemberExpenseReaderTest {
 
 	@DisplayName("참여자별 지출내역을 참여자 id, 지출내역 map으로 변환하여 조회할 수 있다.")
 	@Test
-	void findAllByGroupMemberIds_Success() {
+	void findAllByAppointMemberIds_Success() {
 		// given
 		AppointmentMember appointmentMember1 = AppointmentMember.builder()
 			.name("김모또")
@@ -91,7 +91,7 @@ class MemberExpenseReaderTest {
 		when(memberExpenseRepository.findAllByAppointmentMemberIds(groupMemberIds)).thenReturn(mockExpenses);
 
 		// when
-		List<MemberExpense> result = memberExpenseReader.findAllByGroupMemberIds(groupMemberIds);
+		List<MemberExpense> result = memberExpenseReader.findAllByAppointMemberIds(groupMemberIds);
 
 		// then
 		assertThat(result).isNotEmpty();

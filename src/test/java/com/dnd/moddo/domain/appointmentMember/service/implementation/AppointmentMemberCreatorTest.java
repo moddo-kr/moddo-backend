@@ -58,7 +58,7 @@ public class AppointmentMemberCreatorTest {
 		when(appointmentMemberRepository.save(any(AppointmentMember.class))).thenReturn(expectedMember);
 
 		// when
-		AppointmentMember savedMember = appointmentMemberCreator.createManagerForGroup(mockSettlement, userId);
+		AppointmentMember savedMember = appointmentMemberCreator.createManagerForSettlement(mockSettlement, userId);
 
 		// then
 		assertThat(savedMember).isNotNull();
@@ -91,7 +91,7 @@ public class AppointmentMemberCreatorTest {
 		when(appointmentMemberRepository.save(any(AppointmentMember.class))).thenReturn(expectedMember);
 
 		// when
-		AppointmentMember savedMember = appointmentMemberCreator.createManagerForGroup(mockSettlement, userId);
+		AppointmentMember savedMember = appointmentMemberCreator.createManagerForSettlement(mockSettlement, userId);
 
 		// then
 		assertThat(savedMember).isNotNull();

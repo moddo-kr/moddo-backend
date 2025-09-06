@@ -17,14 +17,15 @@ import lombok.RequiredArgsConstructor;
 public class MemberExpenseValidator {
 	private final AppointmentMemberReader appointmentMemberReader;
 
-	public void validateMembersArePartOfGroup(Long groupId, List<MemberExpenseRequest> requests) {
-		Set<Long> validGroupMemberIds = new HashSet<>(appointmentMemberReader.findIdsByGroupId(groupId));
-		List<Long> requestedGroupMemberIds = requests.stream()
+	public void validateMembersArePartOfSettlement(Long settlementId, List<MemberExpenseRequest> requests) {
+		Set<Long> validAppointmentMemberIds = new HashSet<>(
+			appointmentMemberReader.findIdsBySettlementId(settlementId));
+		List<Long> requestedAppointmentMemberIds = requests.stream()
 			.map(MemberExpenseRequest::id)
 			.toList();
 
-		requestedGroupMemberIds.forEach(id -> {
-			if (!validGroupMemberIds.contains(id)) {
+		requestedAppointmentMemberIds.forEach(id -> {
+			if (!validAppointmentMemberIds.contains(id)) {
 				throw new InvalidAppointmentMemberException(id);
 			}
 		});

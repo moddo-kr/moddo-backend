@@ -3,8 +3,8 @@ package com.dnd.moddo.domain.settlement.service.implementation;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.dnd.moddo.domain.settlement.dto.request.GroupPasswordRequest;
-import com.dnd.moddo.domain.settlement.dto.response.GroupPasswordResponse;
+import com.dnd.moddo.domain.settlement.dto.request.SettlementPasswordRequest;
+import com.dnd.moddo.domain.settlement.dto.response.SettlementPasswordResponse;
 import com.dnd.moddo.domain.settlement.entity.Settlement;
 import com.dnd.moddo.domain.settlement.exception.GroupNotAuthorException;
 import com.dnd.moddo.domain.settlement.exception.InvalidPasswordException;
@@ -20,19 +20,20 @@ public class SettlementValidator {
 
 	private final SettlementRepository settlementRepository;
 
-	public void checkGroupAuthor(Settlement settlement, Long userId) {
+	public void checkSettlementAuthor(Settlement settlement, Long userId) {
 		if (!settlement.isWriter(userId)) {
 			throw new GroupNotAuthorException();
 		}
 	}
 
-	public GroupPasswordResponse checkGroupPassword(GroupPasswordRequest groupPasswordRequest, String getPassword) {
-		boolean isMatch = passwordEncoder.matches(groupPasswordRequest.password(), getPassword);
+	public SettlementPasswordResponse checkSettlementPassword(SettlementPasswordRequest settlementPasswordRequest,
+		String getPassword) {
+		boolean isMatch = passwordEncoder.matches(settlementPasswordRequest.password(), getPassword);
 
 		if (!isMatch) {
 			throw new InvalidPasswordException();
 		}
 
-		return GroupPasswordResponse.from("확인되었습니다.");
+		return SettlementPasswordResponse.from("확인되었습니다.");
 	}
 }

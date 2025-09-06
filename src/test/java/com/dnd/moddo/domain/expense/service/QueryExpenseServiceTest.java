@@ -15,16 +15,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.dnd.moddo.domain.appointmentMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.expense.dto.response.ExpenseDetailsResponse;
 import com.dnd.moddo.domain.expense.dto.response.ExpenseResponse;
 import com.dnd.moddo.domain.expense.dto.response.ExpensesResponse;
 import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.expense.exception.ExpenseNotFoundException;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseReader;
-import com.dnd.moddo.domain.settlement.entity.Settlement;
-import com.dnd.moddo.domain.appointmentMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.memberExpense.dto.response.MemberExpenseResponse;
 import com.dnd.moddo.domain.memberExpense.service.QueryMemberExpenseService;
+import com.dnd.moddo.domain.settlement.entity.Settlement;
 import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,7 +46,7 @@ class QueryExpenseServiceTest {
 
 	@DisplayName("모임이 존재하면 모임의 모든 지출내역을 조회할 수 있다.")
 	@Test
-	void findAllByGroupId() {
+	void findAllBySettlementId() {
 		//given
 		Long groupId = mockSettlement.getId();
 		List<Expense> mockExpenses = List.of(
@@ -54,7 +54,7 @@ class QueryExpenseServiceTest {
 			new Expense(mockSettlement, 35000L, "보드게임카페", LocalDate.of(2025, 02, 03))
 		);
 
-		when(expenseReader.findAllByGroupId(eq(groupId))).thenReturn(mockExpenses);
+		when(expenseReader.findAllBySettlementId(eq(groupId))).thenReturn(mockExpenses);
 		Long expenseId1 = 1L, expenseId2 = 2L;
 
 		List<MemberExpenseResponse> responses1 = List.of(
@@ -69,14 +69,14 @@ class QueryExpenseServiceTest {
 			.thenReturn(responses2);
 
 		//when
-		ExpensesResponse response = queryExpenseService.findAllByGroupId(groupId);
+		ExpensesResponse response = queryExpenseService.findAllBySettlementId(groupId);
 
 		//then
 		assertThat(response).isNotNull();
 		assertThat(response.expenses().size()).isEqualTo(mockExpenses.size());
 		assertThat(response.expenses().get(0).content()).isEqualTo("투썸플레이스");
 
-		verify(expenseReader, times(1)).findAllByGroupId(eq(groupId));
+		verify(expenseReader, times(1)).findAllBySettlementId(eq(groupId));
 
 	}
 
@@ -117,7 +117,7 @@ class QueryExpenseServiceTest {
 
 	@DisplayName("모임 id가 유효하면 모임에 속한 전체 지출내역을 조회할 수 있다.")
 	@Test
-	void findAllExpenseDetailsByGroupId_Success() {
+	void findAllExpenseDetailsBySettlementId_Success() {
 		//given
 		Long groupId = 1L;
 		Expense expense1 = mock(Expense.class);
@@ -130,7 +130,7 @@ class QueryExpenseServiceTest {
 
 		List<Expense> mockExpense = List.of(expense1, expense2, expense3);
 
-		when(expenseReader.findAllByGroupId(eq(groupId))).thenReturn(mockExpense);
+		when(expenseReader.findAllBySettlementId(eq(groupId))).thenReturn(mockExpense);
 
 		when(queryMemberExpenseService.getMemberNamesByExpenseIds(eq(List.of(1L, 2L, 3L)))).thenReturn(Map.of(
 			1L, List.of("김모또", "김반숙"),
@@ -139,14 +139,14 @@ class QueryExpenseServiceTest {
 		));
 
 		//when
-		ExpenseDetailsResponse response = queryExpenseService.findAllExpenseDetailsByGroupId(groupId);
+		ExpenseDetailsResponse response = queryExpenseService.findAllExpenseDetailsBySettlementId(groupId);
 
 		//then
 		assertThat(response).isNotNull();
 		assertThat(response.expenses()).hasSize(3);
 		assertThat(response.expenses().get(0).groupMembers()).hasSize(2);
 
-		verify(expenseReader, times(1)).findAllByGroupId(eq(groupId));
+		verify(expenseReader, times(1)).findAllBySettlementId(eq(groupId));
 		verify(queryMemberExpenseService, times(1)).getMemberNamesByExpenseIds(any());
 	}
 }

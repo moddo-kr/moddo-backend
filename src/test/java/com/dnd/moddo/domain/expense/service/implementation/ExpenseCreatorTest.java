@@ -17,9 +17,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.dnd.moddo.domain.expense.dto.request.ExpenseRequest;
 import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.expense.repository.ExpenseRepository;
+import com.dnd.moddo.domain.memberExpense.service.implementation.MemberExpenseValidator;
 import com.dnd.moddo.domain.settlement.entity.Settlement;
 import com.dnd.moddo.domain.settlement.repository.SettlementRepository;
-import com.dnd.moddo.domain.memberExpense.service.implementation.MemberExpenseValidator;
 import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,7 +50,7 @@ class ExpenseCreatorTest {
 
 		Expense mockExpense = new Expense(mockSettlement, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
 		when(expenseRepository.save(any())).thenReturn(mockExpense);
-		doNothing().when(memberExpenseValidator).validateMembersArePartOfGroup(groupId, new ArrayList<>());
+		doNothing().when(memberExpenseValidator).validateMembersArePartOfSettlement(groupId, new ArrayList<>());
 		//when
 		Expense result = expenseCreator.create(groupId, request);
 

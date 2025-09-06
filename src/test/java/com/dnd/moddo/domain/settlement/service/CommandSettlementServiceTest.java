@@ -17,12 +17,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.dnd.moddo.domain.appointmentMember.dto.response.AppointmentMemberResponse;
 import com.dnd.moddo.domain.appointmentMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.appointmentMember.service.CommandAppointmentMemberService;
-import com.dnd.moddo.domain.settlement.dto.request.GroupPasswordRequest;
 import com.dnd.moddo.domain.settlement.dto.request.SettlementAccountRequest;
+import com.dnd.moddo.domain.settlement.dto.request.SettlementPasswordRequest;
 import com.dnd.moddo.domain.settlement.dto.request.SettlementRequest;
-import com.dnd.moddo.domain.settlement.dto.response.GroupPasswordResponse;
-import com.dnd.moddo.domain.settlement.dto.response.GroupResponse;
-import com.dnd.moddo.domain.settlement.dto.response.GroupSaveResponse;
+import com.dnd.moddo.domain.settlement.dto.response.SettlementPasswordResponse;
+import com.dnd.moddo.domain.settlement.dto.response.SettlementResponse;
+import com.dnd.moddo.domain.settlement.dto.response.SettlementSaveResponse;
 import com.dnd.moddo.domain.settlement.entity.Settlement;
 import com.dnd.moddo.domain.settlement.service.implementation.SettlementCreator;
 import com.dnd.moddo.domain.settlement.service.implementation.SettlementReader;
@@ -54,16 +54,17 @@ class CommandSettlementServiceTest {
 	private SettlementRequest settlementRequest;
 	private SettlementAccountRequest settlementAccountRequest;
 	private Settlement settlement;
-	private GroupResponse groupResponse;
-	private GroupSaveResponse expectedResponse;
+	private SettlementResponse settlementResponse;
+	private SettlementSaveResponse expectedResponse;
 
 	@BeforeEach
 	void setUp() {
 		settlementRequest = new SettlementRequest("GroupName", "password123");
-		groupResponse = new GroupResponse(1L, 1L, LocalDateTime.now(), LocalDateTime.now().plusDays(1), "bank",
+		settlementResponse = new SettlementResponse(1L, 1L, LocalDateTime.now(), LocalDateTime.now().plusDays(1),
+			"bank",
 			"1234-1234", LocalDateTime.now().plusDays(1));
 		settlementAccountRequest = new SettlementAccountRequest("newBank", "5678-5678");
-		expectedResponse = new GroupSaveResponse("groupToken", mock(AppointmentMemberResponse.class));
+		expectedResponse = new SettlementSaveResponse("groupToken", mock(AppointmentMemberResponse.class));
 		settlement = mock(Settlement.class);
 	}
 
@@ -80,7 +81,7 @@ class CommandSettlementServiceTest {
 		when(commandAppointmentMemberService.createManager(any(), any())).thenReturn(appointmentMemberResponse);
 
 		// When
-		GroupSaveResponse response = commandSettlementService.createSettlement(settlementRequest, 1L);
+		SettlementSaveResponse response = commandSettlementService.createSettlement(settlementRequest, 1L);
 
 		// Then
 		assertThat(response).isNotNull();
@@ -97,16 +98,17 @@ class CommandSettlementServiceTest {
 		// Given
 		when(settlementReader.read(anyLong())).thenReturn(settlement);
 		when(settlementUpdater.updateAccount(any(SettlementAccountRequest.class), anyLong())).thenReturn(settlement);
-		doNothing().when(settlementValidator).checkGroupAuthor(any(Settlement.class), anyLong());
+		doNothing().when(settlementValidator).checkSettlementAuthor(any(Settlement.class), anyLong());
 
 		// When
-		GroupResponse result = commandSettlementService.updateAccount(settlementAccountRequest, settlement.getWriter(),
+		SettlementResponse result = commandSettlementService.updateAccount(settlementAccountRequest,
+			settlement.getWriter(),
 			settlement.getId());
 
 		// Then
 		assertThat(result).isNotNull();
 		verify(settlementReader, times(1)).read(anyLong());
-		verify(settlementValidator, times(1)).checkGroupAuthor(any(Settlement.class), anyLong());
+		verify(settlementValidator, times(1)).checkSettlementAuthor(any(Settlement.class), anyLong());
 		verify(settlementUpdater, times(1)).updateAccount(any(SettlementAccountRequest.class), anyLong());
 	}
 
@@ -114,38 +116,39 @@ class CommandSettlementServiceTest {
 	@DisplayName("올바른 비밀번호를 입력하면 확인 메시지를 반환한다.")
 	void VerifyPassword_Success() {
 		// Given
-		GroupPasswordRequest request = new GroupPasswordRequest("correctPassword");
-		GroupPasswordResponse expectedResponse = GroupPasswordResponse.from("확인되었습니다.");
+		SettlementPasswordRequest request = new SettlementPasswordRequest("correctPassword");
+		SettlementPasswordResponse expectedResponse = SettlementPasswordResponse.from("확인되었습니다.");
 
 		when(settlementReader.read(settlement.getId())).thenReturn(settlement);
-		doNothing().when(settlementValidator).checkGroupAuthor(settlement, 1L);
-		when(settlementValidator.checkGroupPassword(request, settlement.getPassword())).thenReturn(expectedResponse);
+		doNothing().when(settlementValidator).checkSettlementAuthor(settlement, 1L);
+		when(settlementValidator.checkSettlementPassword(request, settlement.getPassword())).thenReturn(
+			expectedResponse);
 
 		// When
-		GroupPasswordResponse response = commandSettlementService.isPasswordMatch(settlement.getId(), 1L, request);
+		SettlementPasswordResponse response = commandSettlementService.isPasswordMatch(settlement.getId(), 1L, request);
 
 		// Then
 		assertThat(response).isNotNull();
 		assertThat(response.status()).isEqualTo("확인되었습니다.");
 
 		verify(settlementReader, times(1)).read(settlement.getId());
-		verify(settlementValidator, times(1)).checkGroupAuthor(settlement, 1L);
-		verify(settlementValidator, times(1)).checkGroupPassword(request, settlement.getPassword());
+		verify(settlementValidator, times(1)).checkSettlementAuthor(settlement, 1L);
+		verify(settlementValidator, times(1)).checkSettlementPassword(request, settlement.getPassword());
 	}
 
 	@Test
 	@DisplayName("잘못된 비밀번호를 입력하면 예외가 발생한다.")
 	void VerifyPassword_Fail_WrongPassword() {
 		// Given
-		GroupPasswordRequest request = new GroupPasswordRequest("wrongPassword");
+		SettlementPasswordRequest request = new SettlementPasswordRequest("wrongPassword");
 		String storedPassword = "correctPassword";
 
 		when(settlementReader.read(settlement.getId())).thenReturn(settlement);
-		doNothing().when(settlementValidator).checkGroupAuthor(settlement, 1L);
+		doNothing().when(settlementValidator).checkSettlementAuthor(settlement, 1L);
 		when(settlement.getPassword()).thenReturn(storedPassword);
 
 		doThrow(new RuntimeException("비밀번호가 일치하지 않습니다."))
-			.when(settlementValidator).checkGroupPassword(request, storedPassword);
+			.when(settlementValidator).checkSettlementPassword(request, storedPassword);
 
 		// When & Then
 		assertThatThrownBy(() -> commandSettlementService.isPasswordMatch(settlement.getId(), 1L, request))
@@ -153,7 +156,7 @@ class CommandSettlementServiceTest {
 			.hasMessageContaining("비밀번호가 일치하지 않습니다.");
 
 		verify(settlementReader, times(1)).read(settlement.getId());
-		verify(settlementValidator, times(1)).checkGroupAuthor(settlement, 1L);
-		verify(settlementValidator, times(1)).checkGroupPassword(request, storedPassword);
+		verify(settlementValidator, times(1)).checkSettlementAuthor(settlement, 1L);
+		verify(settlementValidator, times(1)).checkSettlementPassword(request, storedPassword);
 	}
 }

@@ -28,9 +28,9 @@ public class AppointmentMemberUpdater {
 	private final SettlementReader settlementReader;
 
 	@Transactional
-	public AppointmentMember addToGroup(Long groupId, appointmentMemberSaveRequest request) {
-		Settlement settlement = settlementReader.read(groupId);
-		List<AppointmentMember> appointmentMembers = appointmentMemberReader.findAllByGroupId(groupId);
+	public AppointmentMember addToSettlement(Long settlementId, appointmentMemberSaveRequest request) {
+		Settlement settlement = settlementReader.read(settlementId);
+		List<AppointmentMember> appointmentMembers = appointmentMemberReader.findAllBySettlementId(settlementId);
 
 		List<String> existingNames = new ArrayList<>(
 			appointmentMembers.stream().map(AppointmentMember::getName).toList());

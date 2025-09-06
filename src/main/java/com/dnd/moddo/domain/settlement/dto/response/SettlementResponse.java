@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import com.dnd.moddo.domain.settlement.entity.Settlement;
 
-public record GroupResponse(
+public record SettlementResponse(
 	Long id,
 	Long writer,
 	LocalDateTime createdAt,
@@ -13,8 +13,8 @@ public record GroupResponse(
 	String accountNumber,
 	LocalDateTime deadline
 ) {
-	public static GroupResponse of(Settlement settlement) {
-		return new GroupResponse(
+	public static SettlementResponse of(Settlement settlement) {
+		return new SettlementResponse(
 			settlement.getId(),
 			settlement.getWriter(),
 			settlement.getCreatedAt(),

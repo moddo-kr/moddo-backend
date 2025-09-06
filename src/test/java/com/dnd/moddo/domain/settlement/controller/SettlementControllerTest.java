@@ -13,14 +13,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
 import com.dnd.moddo.domain.appointmentMember.dto.response.AppointmentMemberResponse;
-import com.dnd.moddo.domain.settlement.dto.request.GroupPasswordRequest;
 import com.dnd.moddo.domain.settlement.dto.request.SettlementAccountRequest;
+import com.dnd.moddo.domain.settlement.dto.request.SettlementPasswordRequest;
 import com.dnd.moddo.domain.settlement.dto.request.SettlementRequest;
-import com.dnd.moddo.domain.settlement.dto.response.GroupDetailResponse;
-import com.dnd.moddo.domain.settlement.dto.response.GroupHeaderResponse;
-import com.dnd.moddo.domain.settlement.dto.response.GroupPasswordResponse;
-import com.dnd.moddo.domain.settlement.dto.response.GroupResponse;
-import com.dnd.moddo.domain.settlement.dto.response.GroupSaveResponse;
+import com.dnd.moddo.domain.settlement.dto.response.SettlementDetailResponse;
+import com.dnd.moddo.domain.settlement.dto.response.SettlementHeaderResponse;
+import com.dnd.moddo.domain.settlement.dto.response.SettlementPasswordResponse;
+import com.dnd.moddo.domain.settlement.dto.response.SettlementResponse;
+import com.dnd.moddo.domain.settlement.dto.response.SettlementSaveResponse;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,10 +29,10 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 
 	@Test
 	@DisplayName("모임을 성공적으로 생성한다.")
-	void saveGroup() throws Exception {
+	void saveSettlement() throws Exception {
 		// given
 		SettlementRequest request = new SettlementRequest("모또 모임", "1234");
-		GroupSaveResponse response = new GroupSaveResponse("groupToken", new AppointmentMemberResponse(
+		SettlementSaveResponse response = new SettlementSaveResponse("groupToken", new AppointmentMemberResponse(
 			1L, MANAGER, "김모또", "https://moddo-s3.s3.amazonaws.com/profile/MODDO.png", true, LocalDateTime.now()
 		));
 
@@ -52,7 +52,7 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 	void updateAccount() throws Exception {
 		// given
 		SettlementAccountRequest accountRequest = new SettlementAccountRequest("우리은행", "1111-1111");
-		GroupResponse response = new GroupResponse(
+		SettlementResponse response = new SettlementResponse(
 			1L, 1L, LocalDateTime.now(), LocalDateTime.now().plusMonths(1), "우리은행", "1111-1111",
 			LocalDateTime.now().plusDays(1)
 		);
@@ -71,9 +71,9 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 
 	@Test
 	@DisplayName("모임을 성공적으로 조회한다.")
-	void getGroup() throws Exception {
+	void getSettlement() throws Exception {
 		// given
-		GroupDetailResponse response = new GroupDetailResponse(1L, "모또 모임", List.of(
+		SettlementDetailResponse response = new SettlementDetailResponse(1L, "모또 모임", List.of(
 			new AppointmentMemberResponse(1L, MANAGER, "김모또", "https://moddo-s3.s3.amazonaws.com/profile/MODDO.png",
 				true,
 				LocalDateTime.now())
@@ -93,8 +93,8 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 	@DisplayName("비밀번호를 성공적으로 검증한다.")
 	void isPasswordMatch() throws Exception {
 		// given
-		GroupPasswordRequest request = new GroupPasswordRequest("1234");
-		GroupPasswordResponse response = GroupPasswordResponse.from("확인되었습니다.");
+		SettlementPasswordRequest request = new SettlementPasswordRequest("1234");
+		SettlementPasswordResponse response = SettlementPasswordResponse.from("확인되었습니다.");
 
 		given(jwtService.getUserId(any(HttpServletRequest.class))).willReturn(1L);
 		given(querySettlementService.findIdByCode(anyString())).willReturn(100L);
@@ -113,7 +113,8 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 	@DisplayName("모임의 헤더를 성공적으로 조회한다.")
 	void getHeader() throws Exception {
 		// given
-		GroupHeaderResponse response = GroupHeaderResponse.of("모또 모임", 10000L, LocalDateTime.now().plusDays(1), "우리은행",
+		SettlementHeaderResponse response = SettlementHeaderResponse.of("모또 모임", 10000L,
+			LocalDateTime.now().plusDays(1), "우리은행",
 			"1111-1111");
 
 		given(querySettlementService.findIdByCode("groupToken")).willReturn(100L);

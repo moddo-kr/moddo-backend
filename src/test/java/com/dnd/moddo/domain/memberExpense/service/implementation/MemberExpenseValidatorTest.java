@@ -24,7 +24,7 @@ class MemberExpenseValidatorTest {
 
 	@DisplayName("해당 모임에 참여자 id가 존재하면 검증에 성공한다.")
 	@Test
-	void validateMembersArePartOfGroupSuccess() {
+	void validateMembersArePartOfSettlementSuccess() {
 		//given
 		Long groupId = 1L;
 		List<MemberExpenseRequest> requests = List.of(new MemberExpenseRequest(1L, 15000L),
@@ -32,28 +32,28 @@ class MemberExpenseValidatorTest {
 
 		List<Long> mockGroupMemberIds = List.of(1L, 2L);
 
-		when(appointmentMemberReader.findIdsByGroupId(eq(groupId))).thenReturn(mockGroupMemberIds);
+		when(appointmentMemberReader.findIdsBySettlementId(eq(groupId))).thenReturn(mockGroupMemberIds);
 
 		//when & when
 		assertThatCode(() -> {
-			memberExpenseValidator.validateMembersArePartOfGroup(groupId, requests);
+			memberExpenseValidator.validateMembersArePartOfSettlement(groupId, requests);
 		}).doesNotThrowAnyException();
 	}
 
 	@DisplayName("해당 모임에 참여자 id가 존재하지 않으면 예외가 발생한다.")
 	@Test
-	void validateMembersArePartOfGroupFail() {
+	void validateMembersArePartOfSettlementFail() {
 		//given
 		Long groupId = 1L, invalidMemberId = 3L;
 		List<MemberExpenseRequest> requests = List.of(new MemberExpenseRequest(1L, 15000L),
 			new MemberExpenseRequest(invalidMemberId, 5000L));
 
 		List<Long> mockGroupMemberIds = List.of(1L, 2L);
-		when(appointmentMemberReader.findIdsByGroupId(eq(groupId))).thenReturn(mockGroupMemberIds);
+		when(appointmentMemberReader.findIdsBySettlementId(eq(groupId))).thenReturn(mockGroupMemberIds);
 
 		//when & then
 		assertThatThrownBy(() -> {
-			memberExpenseValidator.validateMembersArePartOfGroup(groupId, requests);
+			memberExpenseValidator.validateMembersArePartOfSettlement(groupId, requests);
 		}).hasMessage("해당 모임에 속하지 않은 참여자가 포함되어 있습니다 (Member ID: " + invalidMemberId + ")");
 
 	}

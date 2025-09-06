@@ -19,7 +19,7 @@ public class AppointmentMemberCreator {
 	private final AppointmentMemberRepository appointmentMemberRepository;
 	private final UserRepository userRepository;
 
-	public AppointmentMember createManagerForGroup(Settlement settlement, Long userId) {
+	public AppointmentMember createManagerForSettlement(Settlement settlement, Long userId) {
 		User user = userRepository.getById(userId);
 
 		String name = user.getIsMember() ? user.getName() : "김모또";

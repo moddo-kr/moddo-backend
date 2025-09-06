@@ -14,10 +14,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.domain.expense.repository.ExpenseRepository;
 import com.dnd.moddo.domain.appointmentMember.entity.AppointmentMember;
 import com.dnd.moddo.domain.appointmentMember.repository.AppointmentMemberRepository;
-import com.dnd.moddo.domain.settlement.dto.response.GroupHeaderResponse;
+import com.dnd.moddo.domain.expense.repository.ExpenseRepository;
+import com.dnd.moddo.domain.settlement.dto.response.SettlementHeaderResponse;
 import com.dnd.moddo.domain.settlement.entity.Settlement;
 import com.dnd.moddo.domain.settlement.exception.GroupNotFoundException;
 import com.dnd.moddo.domain.settlement.repository.SettlementRepository;
@@ -56,20 +56,20 @@ class SettlementReaderTest {
 
 	@Test
 	@DisplayName("그룹을 통해 그룹 멤버 목록을 정상적으로 조회할 수 있다.")
-	void findByGroup_Success() {
+	void findBySettlement_Success() {
 		// Given
 		Settlement mockSettlement = mock(Settlement.class);
 		when(mockSettlement.getId()).thenReturn(1L);
 		List<AppointmentMember> mockMembers = List.of(mock(AppointmentMember.class), mock(AppointmentMember.class));
 
-		when(appointmentMemberRepository.findByGroupId(anyLong())).thenReturn(mockMembers);
+		when(appointmentMemberRepository.findBySettlementId(anyLong())).thenReturn(mockMembers);
 
 		// When
-		List<AppointmentMember> result = settlementReader.findByGroup(mockSettlement.getId());
+		List<AppointmentMember> result = settlementReader.findBySettlement(mockSettlement.getId());
 
 		// Then
 		assertThat(result).hasSize(2);
-		verify(appointmentMemberRepository, times(1)).findByGroupId(mockSettlement.getId());
+		verify(appointmentMemberRepository, times(1)).findBySettlementId(mockSettlement.getId());
 	}
 
 	@Test
@@ -84,10 +84,10 @@ class SettlementReaderTest {
 		when(settlementRepository.getById(anyLong())).thenReturn(mockSettlement);
 
 		Long totalAmount = 1000L;
-		when(expenseRepository.sumAmountByGroup(any(Settlement.class))).thenReturn(totalAmount);
+		when(expenseRepository.sumAmountBySettlement(any(Settlement.class))).thenReturn(totalAmount);
 
 		// When
-		GroupHeaderResponse result = settlementReader.findByHeader(groupId);
+		SettlementHeaderResponse result = settlementReader.findByHeader(groupId);
 
 		// Then
 		assertThat(result).isNotNull();
@@ -96,7 +96,7 @@ class SettlementReaderTest {
 		assertThat(result.bank()).isEqualTo("은행");
 		assertThat(result.accountNumber()).isEqualTo("1234-1234");
 		verify(settlementRepository, times(1)).getById(groupId);
-		verify(expenseRepository, times(1)).sumAmountByGroup(mockSettlement);
+		verify(expenseRepository, times(1)).sumAmountBySettlement(mockSettlement);
 	}
 
 	@DisplayName("group code로 group Id를 찾을 수 있다.")

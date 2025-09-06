@@ -40,7 +40,7 @@ public class MemberExpenseControllerTest extends RestDocsTestSupport {
 		);
 
 		when(querySettlementService.findIdByCode(groupToken)).thenReturn(groupId);
-		when(queryMemberExpenseService.findMemberExpenseDetailsByGroupId(groupId)).thenReturn(
+		when(queryMemberExpenseService.findMemberExpenseDetailsBySettlementId(groupId)).thenReturn(
 			appointmentMembersExpenseResponse);
 
 		// when & then
@@ -51,6 +51,6 @@ public class MemberExpenseControllerTest extends RestDocsTestSupport {
 			.andExpect(jsonPath("$.memberExpenses").isArray());
 
 		verify(querySettlementService, times(1)).findIdByCode(groupToken);
-		verify(queryMemberExpenseService, times(1)).findMemberExpenseDetailsByGroupId(groupId);
+		verify(queryMemberExpenseService, times(1)).findMemberExpenseDetailsBySettlementId(groupId);
 	}
 }

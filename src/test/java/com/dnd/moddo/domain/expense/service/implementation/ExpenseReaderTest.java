@@ -37,7 +37,7 @@ class ExpenseReaderTest {
 
 	@DisplayName("모임이 존재하면 모임에 해당하는 지출내역을 모두 조회할 수 있다.")
 	@Test
-	void findAllByGroupId() {
+	void findAllBySettlementId() {
 		//given
 		Long groupId = mockSettlement.getId();
 		List<Expense> mockExpenses = List.of(
@@ -48,7 +48,7 @@ class ExpenseReaderTest {
 		when(expenseRepository.findBySettlementIdOrderByDateAsc(eq(groupId))).thenReturn(mockExpenses);
 
 		//when
-		List<Expense> result = expenseReader.findAllByGroupId(groupId);
+		List<Expense> result = expenseReader.findAllBySettlementId(groupId);
 
 		assertThat(result).isNotNull();
 		assertThat(result.size()).isEqualTo(mockExpenses.size());

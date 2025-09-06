@@ -61,22 +61,22 @@ class AppointmentMemberDeleterTest {
 	@Test
 	void delete_ThrowException_WithInvalidExpenseId() {
 		//given
-		Long groupMemberId = 1L;
+		Long appointmentMember = 1L;
 
-		doThrow(new AppointmentMemberNotFoundException(groupMemberId)).when(appointmentMemberReader)
-			.findByAppointmentMemberId(eq(groupMemberId));
+		doThrow(new AppointmentMemberNotFoundException(appointmentMember)).when(appointmentMemberReader)
+			.findByAppointmentMemberId(eq(appointmentMember));
 
 		//when & then
 		assertThatThrownBy(() -> {
-			appointmentMemberDeleter.delete(groupMemberId);
-		}).hasMessage("해당 참여자를 찾을 수 없습니다. (GroupMember ID: " + groupMemberId + ")");
+			appointmentMemberDeleter.delete(appointmentMember);
+		}).hasMessage("해당 참여자를 찾을 수 없습니다. (AppointmentMember ID: " + appointmentMember + ")");
 	}
 
 	@DisplayName("유효한 참여자 id로 삭제를 요청하면 성공적으로 삭제된다.")
 	@Test
 	void delete_ThrowException_WhenRoleIsManager() {
 		//given
-		Long groupMemberId = 1L;
+		Long appointmentMember = 1L;
 		AppointmentMember expectedMember = AppointmentMember.builder()
 			.name("김모또")
 			.settlement(mockSettlement)
@@ -84,11 +84,11 @@ class AppointmentMemberDeleterTest {
 			.isPaid(false)
 			.build();
 
-		when(appointmentMemberReader.findByAppointmentMemberId(eq(groupMemberId))).thenReturn(expectedMember);
+		when(appointmentMemberReader.findByAppointmentMemberId(eq(appointmentMember))).thenReturn(expectedMember);
 
 		//when & then
 		assertThatThrownBy(() -> {
-			appointmentMemberDeleter.delete(groupMemberId);
-		}).hasMessage("총무(MANAGER)는 삭제할 수 없습니다. (Member ID: " + groupMemberId + ")");
+			appointmentMemberDeleter.delete(appointmentMember);
+		}).hasMessage("총무(MANAGER)는 삭제할 수 없습니다. (Member ID: " + appointmentMember + ")");
 	}
 }

@@ -87,7 +87,7 @@ class QueryMemberExpenseServiceTest {
 
 	@DisplayName("모임이 유효할 때 참여자별 정산내역 조회에 성공한다.")
 	@Test
-	void findMemberExpenseDetailsByGroupId_Success() {
+	void findMemberExpenseDetailsBySettlementId_Success() {
 		//given
 		Long groupId = 1L;
 		AppointmentMember appointmentMember1 = mock(AppointmentMember.class);
@@ -113,22 +113,22 @@ class QueryMemberExpenseServiceTest {
 		when(expense1.getId()).thenReturn(1L);
 		when(expense2.getId()).thenReturn(2L);
 
-		when(appointmentMemberReader.findAllByGroupId(eq(groupId))).thenReturn(appointmentMembers);
-		when(memberExpenseReader.findAllByGroupMemberIds(List.of(1L, 2L)))
+		when(appointmentMemberReader.findAllBySettlementId(eq(groupId))).thenReturn(appointmentMembers);
+		when(memberExpenseReader.findAllByAppointMemberIds(List.of(1L, 2L)))
 			.thenReturn(List.of(memberExpense1, memberExpense2));
-		when(expenseReader.findAllByGroupId(any())).thenReturn(List.of(expense1, expense2));
+		when(expenseReader.findAllBySettlementId(any())).thenReturn(List.of(expense1, expense2));
 
 		// when
-		AppointmentMembersExpenseResponse response = queryMemberExpenseService.findMemberExpenseDetailsByGroupId(
+		AppointmentMembersExpenseResponse response = queryMemberExpenseService.findMemberExpenseDetailsBySettlementId(
 			groupId);
 
 		// then
 		assertThat(response).isNotNull();
 		assertThat(response.memberExpenses()).hasSize(2);
 
-		verify(appointmentMemberReader, times(1)).findAllByGroupId(groupId);
-		verify(memberExpenseReader, times(1)).findAllByGroupMemberIds(anyList());
-		verify(expenseReader, times(1)).findAllByGroupId(groupId);
+		verify(appointmentMemberReader, times(1)).findAllBySettlementId(groupId);
+		verify(memberExpenseReader, times(1)).findAllByAppointMemberIds(anyList());
+		verify(expenseReader, times(1)).findAllBySettlementId(groupId);
 	}
 
 	@DisplayName("지출내역 id를 통해 참여자 지출내역을 찾아 지출내역 id에 해당하는 참여자 이름들을 map으로 조회할 수 있다.")

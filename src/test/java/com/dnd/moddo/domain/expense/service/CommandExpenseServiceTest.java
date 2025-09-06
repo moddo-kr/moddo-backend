@@ -26,11 +26,11 @@ import com.dnd.moddo.domain.expense.service.implementation.ExpenseCreator;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseDeleter;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseReader;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseUpdater;
+import com.dnd.moddo.domain.memberExpense.dto.response.MemberExpenseResponse;
+import com.dnd.moddo.domain.memberExpense.service.CommandMemberExpenseService;
 import com.dnd.moddo.domain.settlement.entity.Settlement;
 import com.dnd.moddo.domain.settlement.service.implementation.SettlementReader;
 import com.dnd.moddo.domain.settlement.service.implementation.SettlementValidator;
-import com.dnd.moddo.domain.memberExpense.dto.response.MemberExpenseResponse;
-import com.dnd.moddo.domain.memberExpense.service.CommandMemberExpenseService;
 import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)
@@ -172,14 +172,14 @@ class CommandExpenseServiceTest {
 		Settlement mockSettlement = mock(Settlement.class);
 
 		when(settlementReader.read(groupId)).thenReturn(mockSettlement);
-		doNothing().when(settlementValidator).checkGroupAuthor(mockSettlement, userId);
+		doNothing().when(settlementValidator).checkSettlementAuthor(mockSettlement, userId);
 
 		// when
 		commandExpenseService.updateImgUrl(userId, groupId, expenseId, request);
 
 		// then
 		verify(settlementReader, times(1)).read(groupId);
-		verify(settlementValidator, times(1)).checkGroupAuthor(mockSettlement, userId);
+		verify(settlementValidator, times(1)).checkSettlementAuthor(mockSettlement, userId);
 		verify(expenseUpdater, times(1)).updateImgUrl(expenseId, request);
 	}
 

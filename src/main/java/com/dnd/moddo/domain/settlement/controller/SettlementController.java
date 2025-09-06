@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dnd.moddo.domain.settlement.dto.request.GroupPasswordRequest;
 import com.dnd.moddo.domain.settlement.dto.request.SettlementAccountRequest;
+import com.dnd.moddo.domain.settlement.dto.request.SettlementPasswordRequest;
 import com.dnd.moddo.domain.settlement.dto.request.SettlementRequest;
-import com.dnd.moddo.domain.settlement.dto.response.GroupDetailResponse;
-import com.dnd.moddo.domain.settlement.dto.response.GroupHeaderResponse;
-import com.dnd.moddo.domain.settlement.dto.response.GroupPasswordResponse;
-import com.dnd.moddo.domain.settlement.dto.response.GroupResponse;
-import com.dnd.moddo.domain.settlement.dto.response.GroupSaveResponse;
+import com.dnd.moddo.domain.settlement.dto.response.SettlementDetailResponse;
+import com.dnd.moddo.domain.settlement.dto.response.SettlementHeaderResponse;
+import com.dnd.moddo.domain.settlement.dto.response.SettlementPasswordResponse;
+import com.dnd.moddo.domain.settlement.dto.response.SettlementResponse;
+import com.dnd.moddo.domain.settlement.dto.response.SettlementSaveResponse;
 import com.dnd.moddo.domain.settlement.service.CommandSettlementService;
 import com.dnd.moddo.domain.settlement.service.QuerySettlementService;
 import com.dnd.moddo.global.jwt.service.JwtService;
@@ -33,64 +33,65 @@ public class SettlementController {
 	private final QuerySettlementService querySettlementService;
 
 	@PostMapping
-	public ResponseEntity<GroupSaveResponse> saveSettlement(HttpServletRequest request,
+	public ResponseEntity<SettlementSaveResponse> saveSettlement(HttpServletRequest request,
 		@RequestBody SettlementRequest settlementRequest) {
 		Long userId = jwtService.getUserId(request);
-		GroupSaveResponse response = commandSettlementService.createSettlement(settlementRequest, userId);
+		SettlementSaveResponse response = commandSettlementService.createSettlement(settlementRequest, userId);
 		return ResponseEntity.ok(response);
 	}
 
 	@PutMapping("/account")
-	public ResponseEntity<GroupResponse> updateAccount(
+	public ResponseEntity<SettlementResponse> updateAccount(
 		HttpServletRequest request,
 		@RequestParam("groupToken") String code,
 		@RequestBody SettlementAccountRequest settlementAccountRequest) {
 		Long userId = jwtService.getUserId(request);
-		Long groupId = querySettlementService.findIdByCode(code);
+		Long settlementId = querySettlementService.findIdByCode(code);
 
-		GroupResponse response = commandSettlementService.updateAccount(settlementAccountRequest, userId, groupId);
+		SettlementResponse response = commandSettlementService.updateAccount(settlementAccountRequest, userId,
+			settlementId);
 		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping
-	public ResponseEntity<GroupDetailResponse> getSettlement(
+	public ResponseEntity<SettlementDetailResponse> getSettlement(
 		HttpServletRequest request,
 		@RequestParam("groupToken") String code) {
 		Long userId = jwtService.getUserId(request);
-		Long groupId = querySettlementService.findIdByCode(code);
+		Long settlementId = querySettlementService.findIdByCode(code);
 
-		GroupDetailResponse response = querySettlementService.findOne(groupId, userId);
+		SettlementDetailResponse response = querySettlementService.findOne(settlementId, userId);
 		return ResponseEntity.ok(response);
 	}
 
 	@PostMapping("/password")
-	public ResponseEntity<GroupPasswordResponse> isPasswordMatch(
+	public ResponseEntity<SettlementPasswordResponse> isPasswordMatch(
 		HttpServletRequest request,
 		@RequestParam("groupToken") String code,
-		@RequestBody GroupPasswordRequest groupPasswordRequest) {
+		@RequestBody SettlementPasswordRequest settlementPasswordRequest) {
 		Long userId = jwtService.getUserId(request);
-		Long groupId = querySettlementService.findIdByCode(code);
+		Long settlementId = querySettlementService.findIdByCode(code);
 
-		GroupPasswordResponse response = commandSettlementService.isPasswordMatch(groupId, userId,
-			groupPasswordRequest);
+		SettlementPasswordResponse response = commandSettlementService.isPasswordMatch(settlementId, userId,
+			settlementPasswordRequest);
 		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping("/header")
-	public ResponseEntity<GroupHeaderResponse> getHeader(
+	public ResponseEntity<SettlementHeaderResponse> getHeader(
 		@RequestParam("groupToken") String code) {
-		Long groupId = querySettlementService.findIdByCode(code);
+		Long settlementId = querySettlementService.findIdByCode(code);
 
-		GroupHeaderResponse response = querySettlementService.findBySettlementHeader(groupId);
+		SettlementHeaderResponse response = querySettlementService.findBySettlementHeader(settlementId);
 		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping("/header/no-cache")
-	public ResponseEntity<GroupHeaderResponse> getHeaderNoCache(
+	public ResponseEntity<SettlementHeaderResponse> getHeaderNoCache(
 		@RequestParam("groupToken") String code) {
-		Long groupId = querySettlementService.findIdByCodeNoCache(code);
+		Long settlementId = querySettlementService.findIdByCodeNoCache(code);
 
-		GroupHeaderResponse response = querySettlementService.findBySettlementHeader(groupId);
+		SettlementHeaderResponse response = querySettlementService.findBySettlementHeader(settlementId);
 		return ResponseEntity.ok(response);
 	}
 }

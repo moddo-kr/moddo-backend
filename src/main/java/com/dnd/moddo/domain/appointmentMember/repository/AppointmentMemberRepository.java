@@ -11,15 +11,15 @@ import com.dnd.moddo.domain.appointmentMember.exception.AppointmentMemberNotFoun
 
 public interface AppointmentMemberRepository extends JpaRepository<AppointmentMember, Long> {
 
-	@Query("select gm from AppointmentMember gm where gm.settlement.id = :groupId order by "
+	@Query("select gm from AppointmentMember gm where gm.settlement.id = :settlementId order by "
 		+ "case when gm.role = 'MANAGER' then 1 else 2 end, "
 		+ "case when gm.paidAt is null then 1 else 0 end, "
 		+ "gm.paidAt asc, "
 		+ "gm.name asc")
-	List<AppointmentMember> findByGroupId(@Param("groupId") Long groupId);
+	List<AppointmentMember> findBySettlementId(@Param("settlementId") Long settlementId);
 
-	@Query("select gm.id from AppointmentMember gm where gm.settlement.id = :groupId")
-	List<Long> findAppointmentMemberIdsByGroupId(@Param("groupId") Long groupId);
+	@Query("select gm.id from AppointmentMember gm where gm.settlement.id = :settlementId")
+	List<Long> findAppointmentMemberIdsBySettlementId(@Param("settlementId") Long settlementId);
 
 	default AppointmentMember getById(Long id) {
 		return findById(id)

@@ -18,8 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.dnd.moddo.domain.appointmentMember.entity.AppointmentMember;
 import com.dnd.moddo.domain.appointmentMember.entity.type.ExpenseRole;
-import com.dnd.moddo.domain.settlement.dto.response.GroupDetailResponse;
-import com.dnd.moddo.domain.settlement.dto.response.GroupHeaderResponse;
+import com.dnd.moddo.domain.settlement.dto.response.SettlementDetailResponse;
+import com.dnd.moddo.domain.settlement.dto.response.SettlementHeaderResponse;
 import com.dnd.moddo.domain.settlement.entity.Settlement;
 import com.dnd.moddo.domain.settlement.exception.GroupNotFoundException;
 import com.dnd.moddo.domain.settlement.service.implementation.SettlementReader;
@@ -54,11 +54,11 @@ class QuerySettlementServiceTest {
 	void FindOne_Success() {
 		// Given
 		when(settlementReader.read(anyLong())).thenReturn(settlement);
-		when(settlementReader.findByGroup(settlement.getId())).thenReturn(List.of(appointmentMember));
-		doNothing().when(settlementValidator).checkGroupAuthor(settlement, 1L);
+		when(settlementReader.findBySettlement(settlement.getId())).thenReturn(List.of(appointmentMember));
+		doNothing().when(settlementValidator).checkSettlementAuthor(settlement, 1L);
 
 		// When
-		GroupDetailResponse response = querySettlementService.findOne(settlement.getId(), 1L);
+		SettlementDetailResponse response = querySettlementService.findOne(settlement.getId(), 1L);
 
 		// Then
 		assertThat(response).isNotNull();
@@ -68,8 +68,8 @@ class QuerySettlementServiceTest {
 		assertThat(response.members().get(0).name()).isEqualTo(appointmentMember.getName());
 
 		verify(settlementReader, times(1)).read(1L);
-		verify(settlementReader, times(1)).findByGroup(settlement.getId());
-		verify(settlementValidator, times(1)).checkGroupAuthor(settlement, 1L);
+		verify(settlementReader, times(1)).findBySettlement(settlement.getId());
+		verify(settlementValidator, times(1)).checkSettlementAuthor(settlement, 1L);
 	}
 
 	@Test
@@ -77,7 +77,7 @@ class QuerySettlementServiceTest {
 	void FindOne_Failure_WhenNotGroupAuthor() {
 		// Given
 		when(settlementReader.read(anyLong())).thenReturn(settlement);
-		doThrow(new RuntimeException("Not an author")).when(settlementValidator).checkGroupAuthor(settlement, 2L);
+		doThrow(new RuntimeException("Not an author")).when(settlementValidator).checkSettlementAuthor(settlement, 2L);
 
 		// When & Then
 		assertThatThrownBy(() -> querySettlementService.findOne(1L, 2L))
@@ -85,7 +85,7 @@ class QuerySettlementServiceTest {
 			.hasMessageContaining("Not an author");
 
 		verify(settlementReader, times(1)).read(1L);
-		verify(settlementValidator, times(1)).checkGroupAuthor(settlement, 2L);
+		verify(settlementValidator, times(1)).checkSettlementAuthor(settlement, 2L);
 	}
 
 	@Test
@@ -106,12 +106,12 @@ class QuerySettlementServiceTest {
 	@DisplayName("그룹 헤더를 정상적으로 조회할 수 있다.")
 	void FindBySettlementHeader_Success() {
 		// Given
-		GroupHeaderResponse expectedResponse = new GroupHeaderResponse(settlement.getName(), 1000L,
+		SettlementHeaderResponse expectedResponse = new SettlementHeaderResponse(settlement.getName(), 1000L,
 			LocalDateTime.now().plusDays(1), settlement.getBank(), settlement.getAccountNumber());
 		when(settlementReader.findByHeader(settlement.getId())).thenReturn(expectedResponse);
 
 		// When
-		GroupHeaderResponse response = querySettlementService.findBySettlementHeader(settlement.getId());
+		SettlementHeaderResponse response = querySettlementService.findBySettlementHeader(settlement.getId());
 
 		// Then
 		assertThat(response).isNotNull();

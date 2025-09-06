@@ -4,10 +4,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.dnd.moddo.domain.expense.repository.ExpenseRepository;
 import com.dnd.moddo.domain.appointmentMember.entity.AppointmentMember;
 import com.dnd.moddo.domain.appointmentMember.repository.AppointmentMemberRepository;
-import com.dnd.moddo.domain.settlement.dto.response.GroupHeaderResponse;
+import com.dnd.moddo.domain.expense.repository.ExpenseRepository;
+import com.dnd.moddo.domain.settlement.dto.response.SettlementHeaderResponse;
 import com.dnd.moddo.domain.settlement.entity.Settlement;
 import com.dnd.moddo.domain.settlement.repository.SettlementRepository;
 
@@ -20,19 +20,20 @@ public class SettlementReader {
 	private final AppointmentMemberRepository appointmentMemberRepository;
 	private final ExpenseRepository expenseRepository;
 
-	public Settlement read(Long groupId) {
-		return settlementRepository.getById(groupId);
+	public Settlement read(Long settlementId) {
+		return settlementRepository.getById(settlementId);
 	}
 
-	public List<AppointmentMember> findByGroup(Long groupId) {
-		return appointmentMemberRepository.findByGroupId(groupId);
+	public List<AppointmentMember> findBySettlement(Long settlementId) {
+		return appointmentMemberRepository.findBySettlementId(settlementId);
 	}
 
-	public GroupHeaderResponse findByHeader(Long groupId) {
-		Settlement settlement = settlementRepository.getById(groupId);
-		Long totalAmount = expenseRepository.sumAmountByGroup(settlement);
+	public SettlementHeaderResponse findByHeader(Long settlementId) {
+		Settlement settlement = settlementRepository.getById(settlementId);
+		Long totalAmount = expenseRepository.sumAmountBySettlement(settlement);
 
-		return GroupHeaderResponse.of(settlement.getName(), totalAmount, settlement.getDeadline(), settlement.getBank(),
+		return SettlementHeaderResponse.of(settlement.getName(), totalAmount, settlement.getDeadline(),
+			settlement.getBank(),
 			settlement.getAccountNumber());
 	}
 

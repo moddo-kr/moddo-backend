@@ -36,8 +36,8 @@ public class AppointmentMemberController {
 	public ResponseEntity<AppointmentMembersResponse> getAppointmentMembers(
 		@RequestParam("groupToken") String code
 	) {
-		Long groupId = querySettlementService.findIdByCode(code);
-		AppointmentMembersResponse response = queryAppointmentMemberService.findAll(groupId);
+		Long settlementId = querySettlementService.findIdByCode(code);
+		AppointmentMembersResponse response = queryAppointmentMemberService.findAll(settlementId);
 		return ResponseEntity.ok(response);
 	}
 
@@ -47,8 +47,9 @@ public class AppointmentMemberController {
 		@RequestParam("groupToken") String code,
 		@Valid @RequestBody appointmentMemberSaveRequest request
 	) {
-		Long groupId = querySettlementService.findIdByCode(code);
-		AppointmentMemberResponse response = commandAppointmentMemberService.addAppointmentMember(groupId, request);
+		Long settlementId = querySettlementService.findIdByCode(code);
+		AppointmentMemberResponse response = commandAppointmentMemberService.addAppointmentMember(settlementId,
+			request);
 		return ResponseEntity.ok(response);
 	}
 

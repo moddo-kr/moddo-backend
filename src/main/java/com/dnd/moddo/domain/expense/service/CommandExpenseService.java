@@ -2,13 +2,9 @@ package com.dnd.moddo.domain.expense.service;
 
 import java.util.List;
 
-import com.dnd.moddo.domain.expense.dto.request.ExpenseImageRequest;
-import com.dnd.moddo.domain.settlement.entity.Settlement;
-import com.dnd.moddo.domain.settlement.service.implementation.SettlementReader;
-import com.dnd.moddo.domain.settlement.service.implementation.SettlementValidator;
-
 import org.springframework.stereotype.Service;
 
+import com.dnd.moddo.domain.expense.dto.request.ExpenseImageRequest;
 import com.dnd.moddo.domain.expense.dto.request.ExpenseRequest;
 import com.dnd.moddo.domain.expense.dto.request.ExpensesRequest;
 import com.dnd.moddo.domain.expense.dto.response.ExpenseResponse;
@@ -20,6 +16,9 @@ import com.dnd.moddo.domain.expense.service.implementation.ExpenseReader;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseUpdater;
 import com.dnd.moddo.domain.memberExpense.dto.response.MemberExpenseResponse;
 import com.dnd.moddo.domain.memberExpense.service.CommandMemberExpenseService;
+import com.dnd.moddo.domain.settlement.entity.Settlement;
+import com.dnd.moddo.domain.settlement.service.implementation.SettlementReader;
+import com.dnd.moddo.domain.settlement.service.implementation.SettlementValidator;
 
 import lombok.RequiredArgsConstructor;
 
@@ -60,7 +59,7 @@ public class CommandExpenseService {
 
 	public void updateImgUrl(Long userId, Long groupId, Long expenseId, ExpenseImageRequest request) {
 		Settlement settlement = settlementReader.read(groupId);
-		settlementValidator.checkGroupAuthor(settlement, userId);
+		settlementValidator.checkSettlementAuthor(settlement, userId);
 		expenseUpdater.updateImgUrl(expenseId, request);
 	}
 

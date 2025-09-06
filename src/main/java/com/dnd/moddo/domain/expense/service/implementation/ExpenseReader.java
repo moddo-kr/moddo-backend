@@ -16,8 +16,8 @@ import lombok.RequiredArgsConstructor;
 public class ExpenseReader {
 	private final ExpenseRepository expenseRepository;
 
-	public List<Expense> findAllByGroupId(Long groupId) {
-		return expenseRepository.findBySettlementIdOrderByDateAsc(groupId);
+	public List<Expense> findAllBySettlementId(Long settlementId) {
+		return expenseRepository.findBySettlementIdOrderByDateAsc(settlementId);
 	}
 
 	public Expense findByExpenseId(Long expenseId) {

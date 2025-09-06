@@ -1,6 +1,6 @@
 package com.dnd.moddo.domain.settlement.dto.request;
 
-public record GroupPasswordRequest(
+public record SettlementPasswordRequest(
 	String password
 ) {
 }

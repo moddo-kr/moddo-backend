@@ -57,7 +57,7 @@ public class QueryAppointmentMemberServiceTest {
 		//given
 		Long groupId = mockSettlement.getId();
 
-		when(appointmentMemberReader.findAllByGroupId(eq(groupId))).thenReturn(mockMembers);
+		when(appointmentMemberReader.findAllBySettlementId(eq(groupId))).thenReturn(mockMembers);
 
 		//when
 		AppointmentMembersResponse response = queryAppointmentMemberService.findAll(groupId);
@@ -66,6 +66,6 @@ public class QueryAppointmentMemberServiceTest {
 		assertThat(response).isNotNull();
 		assertThat(response.members().size()).isEqualTo(2);
 		assertThat(response.members().get(0).name()).isEqualTo("김모또");
-		verify(appointmentMemberReader, times(1)).findAllByGroupId(eq(groupId));
+		verify(appointmentMemberReader, times(1)).findAllBySettlementId(eq(groupId));
 	}
 }
