@@ -20,15 +20,15 @@ public class QuerySettlementService {
 	private final SettlementReader settlementReader;
 	private final SettlementValidator settlementValidator;
 
-	public SettlementDetailResponse findOne(Long groupId, Long userId) {
-		Settlement settlement = settlementReader.read(groupId);
+	public SettlementDetailResponse findOne(Long settlementId, Long userId) {
+		Settlement settlement = settlementReader.read(settlementId);
 		settlementValidator.checkSettlementAuthor(settlement, userId);
-		List<AppointmentMember> members = settlementReader.findBySettlement(groupId);
+		List<AppointmentMember> members = settlementReader.findBySettlement(settlementId);
 		return SettlementDetailResponse.of(settlement, members);
 	}
 
-	public SettlementHeaderResponse findBySettlementHeader(Long groupId) {
-		return settlementReader.findByHeader(groupId);
+	public SettlementHeaderResponse findBySettlementHeader(Long settlementId) {
+		return settlementReader.findByHeader(settlementId);
 	}
 
 	@Cacheable(cacheNames = "settlements", key = "#code")

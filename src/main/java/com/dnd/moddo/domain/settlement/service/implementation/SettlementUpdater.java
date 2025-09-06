@@ -15,8 +15,8 @@ import lombok.RequiredArgsConstructor;
 public class SettlementUpdater {
 	private final SettlementRepository settlementRepository;
 
-	public Settlement updateAccount(SettlementAccountRequest request, Long groupId) {
-		Settlement settlement = settlementRepository.getById(groupId);
+	public Settlement updateAccount(SettlementAccountRequest request, Long settlementId) {
+		Settlement settlement = settlementRepository.getById(settlementId);
 		settlement.updateAccount(request);
 		return settlement;
 	}
