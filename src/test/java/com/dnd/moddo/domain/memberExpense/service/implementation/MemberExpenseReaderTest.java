@@ -13,11 +13,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.domain.group.entity.Group;
-import com.dnd.moddo.domain.groupMember.entity.GroupMember;
-import com.dnd.moddo.domain.groupMember.entity.type.ExpenseRole;
+import com.dnd.moddo.domain.appointmentMember.entity.AppointmentMember;
+import com.dnd.moddo.domain.appointmentMember.entity.type.ExpenseRole;
 import com.dnd.moddo.domain.memberExpense.entity.MemberExpense;
 import com.dnd.moddo.domain.memberExpense.repotiroy.MemberExpenseRepository;
+import com.dnd.moddo.domain.settlement.entity.Settlement;
 import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,16 +27,16 @@ class MemberExpenseReaderTest {
 	@InjectMocks
 	private MemberExpenseReader memberExpenseReader;
 
-	private Group mockGroup;
-	private GroupMember mockGroupMember;
+	private Settlement mockSettlement;
+	private AppointmentMember mockAppointmentMember;
 
 	@BeforeEach
 	void setUp() {
-		mockGroup = GroupTestFactory.createDefault();
+		mockSettlement = GroupTestFactory.createDefault();
 
-		mockGroupMember = GroupMember.builder()
+		mockAppointmentMember = AppointmentMember.builder()
 			.name("박완숙")
-			.group(mockGroup)
+			.settlement(mockSettlement)
 			.role(ExpenseRole.MANAGER)
 			.isPaid(true)
 			.build();
@@ -49,7 +49,7 @@ class MemberExpenseReaderTest {
 		Long expenseId = 1L;
 		// Mock 데이터 준비
 		List<MemberExpense> expectedMemberExpense = List.of(
-			new MemberExpense(expenseId, mockGroupMember, 15000L)
+			new MemberExpense(expenseId, mockAppointmentMember, 15000L)
 		);
 
 		when(memberExpenseRepository.findByExpenseId(eq(expenseId))).thenReturn(expectedMemberExpense);
@@ -60,57 +60,65 @@ class MemberExpenseReaderTest {
 		// then
 		assertThat(result).isNotEmpty();
 		assertThat(result.get(0).getAmount()).isEqualTo(15000L);
-		assertThat(result.get(0).getGroupMember()).isEqualTo(mockGroupMember);
+		assertThat(result.get(0).getAppointmentMember()).isEqualTo(mockAppointmentMember);
 
 		verify(memberExpenseRepository, times(1)).findByExpenseId(eq(expenseId));
 	}
 
 	@DisplayName("참여자별 지출내역을 참여자 id, 지출내역 map으로 변환하여 조회할 수 있다.")
 	@Test
-	void findAllByGroupMemberIds_Success() {
+	void findAllByAppointMemberIds_Success() {
 		// given
-		GroupMember groupMember1 = GroupMember.builder()
+		AppointmentMember appointmentMember1 = AppointmentMember.builder()
 			.name("김모또")
-			.group(mockGroup)
+			.settlement(mockSettlement)
 			.role(ExpenseRole.PARTICIPANT)
 			.build();
-		GroupMember groupMember2 = GroupMember.builder().name("박완숙").group(mockGroup).role(ExpenseRole.MANAGER).build();
+		AppointmentMember appointmentMember2 = AppointmentMember.builder()
+			.name("박완숙")
+			.settlement(mockSettlement)
+			.role(ExpenseRole.MANAGER)
+			.build();
 
 		List<MemberExpense> mockExpenses = List.of(
-			new MemberExpense(1L, groupMember1, 1000L),
-			new MemberExpense(2L, groupMember1, 2000L),
-			new MemberExpense(1L, groupMember2, 3000L)
+			new MemberExpense(1L, appointmentMember1, 1000L),
+			new MemberExpense(2L, appointmentMember1, 2000L),
+			new MemberExpense(1L, appointmentMember2, 3000L)
 		);
 
 		List<Long> groupMemberIds = List.of(1L, 2L);
 
-		when(memberExpenseRepository.findAllByGroupMemberIds(groupMemberIds)).thenReturn(mockExpenses);
+		when(memberExpenseRepository.findAllByAppointmentMemberIds(groupMemberIds)).thenReturn(mockExpenses);
 
 		// when
-		List<MemberExpense> result = memberExpenseReader.findAllByGroupMemberIds(groupMemberIds);
+		List<MemberExpense> result = memberExpenseReader.findAllByAppointMemberIds(groupMemberIds);
 
 		// then
 		assertThat(result).isNotEmpty();
 		assertThat(result).hasSize(mockExpenses.size());
 
-		verify(memberExpenseRepository, times(1)).findAllByGroupMemberIds(groupMemberIds);
+		verify(memberExpenseRepository, times(1)).findAllByAppointmentMemberIds(groupMemberIds);
 	}
 
 	@DisplayName("지출내역 id들로 모든 참여자별 지출내역을 조회할 수 있다.")
 	@Test
 	void findAllByExpenseIds_Success() {
 		// given
-		GroupMember groupMember1 = GroupMember.builder()
+		AppointmentMember appointmentMember1 = AppointmentMember.builder()
 			.name("김모또")
-			.group(mockGroup)
+			.settlement(mockSettlement)
 			.role(ExpenseRole.PARTICIPANT)
 			.build();
-		GroupMember groupMember2 = GroupMember.builder().name("박완숙").group(mockGroup).role(ExpenseRole.MANAGER).build();
+		AppointmentMember appointmentMember2 = AppointmentMember.builder()
+			.name("박완숙")
+			.settlement(mockSettlement)
+			.role(ExpenseRole.MANAGER)
+			.build();
 
 		List<MemberExpense> mockExpenses = List.of(
-			new MemberExpense(1L, groupMember1, 1000L),
-			new MemberExpense(2L, groupMember1, 2000L),
-			new MemberExpense(1L, groupMember2, 3000L)
+			new MemberExpense(1L, appointmentMember1, 1000L),
+			new MemberExpense(2L, appointmentMember1, 2000L),
+			new MemberExpense(1L, appointmentMember2, 3000L)
 		);
 
 		List<Long> expenseIds = List.of(1L, 2L);

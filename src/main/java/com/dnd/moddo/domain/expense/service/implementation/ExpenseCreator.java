@@ -6,9 +6,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dnd.moddo.domain.expense.dto.request.ExpenseRequest;
 import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.expense.repository.ExpenseRepository;
-import com.dnd.moddo.domain.group.entity.Group;
-import com.dnd.moddo.domain.group.repository.GroupRepository;
 import com.dnd.moddo.domain.memberExpense.service.implementation.MemberExpenseValidator;
+import com.dnd.moddo.domain.settlement.entity.Settlement;
+import com.dnd.moddo.domain.settlement.repository.SettlementRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,14 +18,14 @@ import lombok.RequiredArgsConstructor;
 public class ExpenseCreator {
 	private final ExpenseRepository expenseRepository;
 	private final MemberExpenseValidator memberExpenseValidator;
-	private final GroupRepository groupRepository;
+	private final SettlementRepository settlementRepository;
 
-	public Expense create(Long groupId, ExpenseRequest request) {
-		Group group = groupRepository.getById(groupId);
+	public Expense create(Long settlementId, ExpenseRequest request) {
+		Settlement settlement = settlementRepository.getById(settlementId);
 
-		memberExpenseValidator.validateMembersArePartOfGroup(groupId, request.memberExpenses());
+		memberExpenseValidator.validateMembersArePartOfSettlement(settlementId, request.memberExpenses());
 
-		Expense expense = request.toEntity(group);
+		Expense expense = request.toEntity(settlement);
 		return expenseRepository.save(expense);
 	}
 

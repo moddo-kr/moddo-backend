@@ -19,7 +19,7 @@ import com.dnd.moddo.domain.expense.dto.response.ExpenseResponse;
 import com.dnd.moddo.domain.expense.dto.response.ExpensesResponse;
 import com.dnd.moddo.domain.expense.service.CommandExpenseService;
 import com.dnd.moddo.domain.expense.service.QueryExpenseService;
-import com.dnd.moddo.domain.group.service.QueryGroupService;
+import com.dnd.moddo.domain.settlement.service.QuerySettlementService;
 import com.dnd.moddo.global.common.annotation.VerifyManagerPermission;
 import com.dnd.moddo.global.jwt.service.JwtService;
 
@@ -35,21 +35,21 @@ public class ExpenseController {
 	private final CommandExpenseService commandExpenseService;
 	private final QueryExpenseService queryExpenseService;
 	private final JwtService jwtService;
-	private final QueryGroupService queryGroupService;
+	private final QuerySettlementService querySettlementService;
 
 	@PostMapping
 	public ResponseEntity<ExpensesResponse> saveExpenses(
 		@RequestParam("groupToken") String code,
 		@Valid @RequestBody ExpensesRequest request) {
-		Long groupId = queryGroupService.findIdByCode(code);
-		ExpensesResponse response = commandExpenseService.createExpenses(groupId, request);
+		Long settlementId = querySettlementService.findIdByCode(code);
+		ExpensesResponse response = commandExpenseService.createExpenses(settlementId, request);
 		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping
-	public ResponseEntity<ExpensesResponse> getAllByGroupId(@RequestParam("groupToken") String code) {
-		Long groupId = queryGroupService.findIdByCode(code);
-		ExpensesResponse response = queryExpenseService.findAllByGroupId(groupId);
+	public ResponseEntity<ExpensesResponse> getAllBySettlementId(@RequestParam("groupToken") String code) {
+		Long settlementId = querySettlementService.findIdByCode(code);
+		ExpensesResponse response = queryExpenseService.findAllBySettlementId(settlementId);
 		return ResponseEntity.ok(response);
 	}
 
@@ -61,10 +61,10 @@ public class ExpenseController {
 	}
 
 	@GetMapping("/details")
-	public ResponseEntity<ExpenseDetailsResponse> getExpenseDetailsByGroupId(
+	public ResponseEntity<ExpenseDetailsResponse> getExpenseDetailsBySettlementId(
 		@RequestParam("groupToken") String code) {
-		Long groupId = queryGroupService.findIdByCode(code);
-		ExpenseDetailsResponse response = queryExpenseService.findAllExpenseDetailsByGroupId(groupId);
+		Long settlementId = querySettlementService.findIdByCode(code);
+		ExpenseDetailsResponse response = queryExpenseService.findAllExpenseDetailsBySettlementId(settlementId);
 		return ResponseEntity.ok(response);
 	}
 
@@ -90,7 +90,7 @@ public class ExpenseController {
 		@PathVariable("expenseId") Long expenseId,
 		@RequestBody ExpenseImageRequest expenseImageRequest) {
 		Long userId = jwtService.getUserId(request);
-		Long groupId = queryGroupService.findIdByCode(code);
-		commandExpenseService.updateImgUrl(userId, groupId, expenseId, expenseImageRequest);
+		Long settlementId = querySettlementService.findIdByCode(code);
+		commandExpenseService.updateImgUrl(userId, settlementId, expenseId, expenseImageRequest);
 	}
 }

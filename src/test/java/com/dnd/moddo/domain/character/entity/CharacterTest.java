@@ -8,7 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.dnd.moddo.domain.character.entity.Character;
-import com.dnd.moddo.domain.group.entity.Group;
+import com.dnd.moddo.domain.settlement.entity.Settlement;
 
 class CharacterTest {
 
@@ -16,7 +16,7 @@ class CharacterTest {
 	@Test
 	void characterEntityCreationTest() {
 		// given
-		Group group = Group.builder()
+		Settlement settlement = Settlement.builder()
 			.writer(1L)
 			.name("Test Group")
 			.password("testPassword")
@@ -25,7 +25,7 @@ class CharacterTest {
 
 		// when
 		Character character = Character.builder()
-			.group(group)
+			.settlement(settlement)
 			.name("러키 모또")
 			.rarity("1")
 			.imageUrl("https://moddo-s3.s3.amazonaws.com/character/lucky-1.png")
@@ -34,7 +34,7 @@ class CharacterTest {
 
 		// then
 		assertThat(character).isNotNull();
-		assertThat(character.getGroup()).isEqualTo(group);
+		assertThat(character.getSettlement()).isEqualTo(settlement);
 		assertThat(character.getName()).isEqualTo("러키 모또");
 		assertThat(character.getRarity()).isEqualTo("1");
 		assertThat(character.getImageUrl()).isEqualTo("https://moddo-s3.s3.amazonaws.com/character/lucky-1.png");

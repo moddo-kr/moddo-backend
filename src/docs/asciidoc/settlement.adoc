@@ -1,0 +1,144 @@
+= 모임 (Settlement)
+:toc: left
+:toclevels: 2
+
+== 모임 생성
+
+모임을 생성할 수 있습니다.
+
+- 모임을 생성하는 사용자의 accessToken을 넣어준다.
+
+- 만들고자하는 모임의 이름과 비밀번호를 넣어준다.
+
+- 생성된 모임의 Id, 생성자(정산 담당자)의 Id, 생성 시간, 만료 시간, 계좌 여부를 알 수 있다.
+
+- 비회원이 생성한 모임은 1달 후 자동 삭제된다.
+
+=== Example
+
+include::{snippets}/settlement-controller-test/save-settlement/curl-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/settlement-controller-test/save-settlement/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/settlement-controller-test/save-settlement/http-response.adoc[]
+
+=== Body
+
+==== 요청
+
+include::{snippets}/settlement-controller-test/save-settlement/request-body.adoc[]
+
+==== 응답
+
+include::{snippets}/settlement-controller-test/save-settlement/response-body.adoc[]
+
+== 계좌 추가
+
+은행과 계좌 정보를 추가할 수 있습니다.
+
+=== Example
+
+include::{snippets}/settlement-controller-test/update-account/curl-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/settlement-controller-test/update-account/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/settlement-controller-test/update-account/http-response.adoc[]
+
+=== Body
+
+==== 요청
+
+include::{snippets}/settlement-controller-test/update-account/request-body.adoc[]
+
+==== 응답
+
+include::{snippets}/settlement-controller-test/update-account/response-body.adoc[]
+
+== 비밀번호 검증
+
+비밀번호를 검증할 수 있습니다.
+
+=== Example
+
+include::{snippets}/settlement-controller-test/is-password-match/curl-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/settlement-controller-test/is-password-match/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/settlement-controller-test/is-password-match/http-response.adoc[]
+
+=== Body
+
+==== 요청
+
+include::{snippets}/settlement-controller-test/is-password-match/request-body.adoc[]
+
+==== 응답
+
+include::{snippets}/settlement-controller-test/is-password-match/response-body.adoc[]
+
+== 모임 조회
+
+모임과 참가자를 조회할 수 있습니다.
+
+=== Example
+
+include::{snippets}/settlement-controller-test/get-settlement/curl-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/settlement-controller-test/get-settlement/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/settlement-controller-test/get-settlement/http-response.adoc[]
+
+=== Body
+
+==== 응답
+
+include::{snippets}/settlement-controller-test/get-settlement/response-body.adoc[]
+
+== 모임 상단 조회
+
+지출 내역의 상단 부분을 조회할 수 있습니다.
+
+=== Example
+
+include::{snippets}/settlement-controller-test/get-header/curl-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/settlement-controller-test/get-header/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/settlement-controller-test/get-header/http-response.adoc[]
+
+=== Body
+
+==== 응답
+
+include::{snippets}/settlement-controller-test/get-header/response-body.adoc[]
+

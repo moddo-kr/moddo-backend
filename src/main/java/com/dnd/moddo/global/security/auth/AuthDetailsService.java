@@ -20,7 +20,16 @@ public class AuthDetailsService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
-		return userRepository.findById(Long.parseLong(id))
+		if (id == null) {
+			throw new UsernameNotFoundException("id is null");
+		}
+		final Long userId;
+		try {
+			userId = Long.parseLong(id);
+		} catch (NumberFormatException e) {
+			throw new UsernameNotFoundException("invalid id: " + id);
+		}
+		return userRepository.findById(userId)
 			.map(AuthDetails::new)
 			.orElseThrow(() -> new UserNotFoundException(id));
 	}

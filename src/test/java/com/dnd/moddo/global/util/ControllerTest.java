@@ -15,16 +15,16 @@ import com.dnd.moddo.domain.character.service.QueryCharacterService;
 import com.dnd.moddo.domain.expense.controller.ExpenseController;
 import com.dnd.moddo.domain.expense.service.CommandExpenseService;
 import com.dnd.moddo.domain.expense.service.QueryExpenseService;
-import com.dnd.moddo.domain.group.controller.GroupController;
-import com.dnd.moddo.domain.group.service.CommandGroupService;
-import com.dnd.moddo.domain.group.service.QueryGroupService;
-import com.dnd.moddo.domain.groupMember.controller.GroupMemberController;
-import com.dnd.moddo.domain.groupMember.service.CommandGroupMemberService;
-import com.dnd.moddo.domain.groupMember.service.QueryGroupMemberService;
+import com.dnd.moddo.domain.appointmentMember.controller.AppointmentMemberController;
+import com.dnd.moddo.domain.appointmentMember.service.CommandAppointmentMemberService;
+import com.dnd.moddo.domain.appointmentMember.service.QueryAppointmentMemberService;
 import com.dnd.moddo.domain.image.controller.ImageController;
 import com.dnd.moddo.domain.image.service.CommandImageService;
 import com.dnd.moddo.domain.memberExpense.controller.MemberExpenseController;
 import com.dnd.moddo.domain.memberExpense.service.QueryMemberExpenseService;
+import com.dnd.moddo.domain.settlement.controller.SettlementController;
+import com.dnd.moddo.domain.settlement.service.CommandSettlementService;
+import com.dnd.moddo.domain.settlement.service.QuerySettlementService;
 import com.dnd.moddo.global.config.CookieProperties;
 import com.dnd.moddo.global.jwt.auth.JwtAuth;
 import com.dnd.moddo.global.jwt.auth.JwtFilter;
@@ -37,8 +37,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 	AuthController.class,
 	CharacterController.class,
 	ExpenseController.class,
-	GroupController.class,
-	GroupMemberController.class,
+	SettlementController.class,
+	AppointmentMemberController.class,
 	ImageController.class,
 	MemberExpenseController.class
 })
@@ -73,23 +73,23 @@ public abstract class ControllerTest {
 	protected CommandExpenseService commandExpenseService;
 
 	@MockBean
-	protected QueryGroupService queryGroupService;
+	protected QuerySettlementService querySettlementService;
 
 	@MockBean
-	protected CommandGroupService commandGroupService;
+	protected CommandSettlementService commandSettlementService;
 
 	@MockBean
-	protected QueryGroupMemberService queryGroupMemberService;
+	protected QueryAppointmentMemberService queryAppointmentMemberService;
 
 	@MockBean
-	protected CommandGroupMemberService commandGroupMemberService;
+	protected CommandAppointmentMemberService commandAppointmentMemberService;
 
 	@MockBean
 	protected CommandImageService commandImageService;
 
 	@MockBean
 	protected QueryMemberExpenseService queryMemberExpenseService;
-	
+
 	@MockBean
 	protected CookieProperties cookieProperties;
 	// Jwt

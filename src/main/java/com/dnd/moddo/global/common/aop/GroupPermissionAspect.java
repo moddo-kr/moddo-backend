@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 
 import com.dnd.moddo.domain.auth.exception.TokenNotFoundException;
 import com.dnd.moddo.domain.auth.exception.UserPermissionException;
-import com.dnd.moddo.domain.group.entity.Group;
-import com.dnd.moddo.domain.group.service.QueryGroupService;
-import com.dnd.moddo.domain.group.service.implementation.GroupReader;
+import com.dnd.moddo.domain.settlement.entity.Settlement;
+import com.dnd.moddo.domain.settlement.service.QuerySettlementService;
+import com.dnd.moddo.domain.settlement.service.implementation.SettlementReader;
 import com.dnd.moddo.global.common.annotation.VerifyManagerPermission;
 import com.dnd.moddo.global.jwt.service.JwtService;
 
@@ -21,9 +21,9 @@ import lombok.RequiredArgsConstructor;
 @Component
 public class GroupPermissionAspect {
 	private final JwtService jwtService;
-	private final QueryGroupService queryGroupService;
+	private final QuerySettlementService querySettlementService;
 	private final HttpServletRequest request;
-	private final GroupReader groupReader;
+	private final SettlementReader settlementReader;
 
 	@Before("@annotation(verifyManagerPermission)")
 	public void checkPermission(JoinPoint joinPoint, VerifyManagerPermission verifyManagerPermission) {
@@ -42,16 +42,16 @@ public class GroupPermissionAspect {
 			throw new TokenNotFoundException("group token");
 		}
 
-		Long groupId = queryGroupService.findIdByCode(code);
+		Long settlementId = querySettlementService.findIdByCode(code);
 
 		// 사용자 검증
-		if (!isAuthorized(userId, groupId)) {
+		if (!isAuthorized(userId, settlementId)) {
 			throw new UserPermissionException();
 		}
 	}
 
-	private boolean isAuthorized(Long userId, Long groupId) {
-		Group group = groupReader.read(groupId);
-		return group.isWriter(userId);
+	private boolean isAuthorized(Long userId, Long settlementId) {
+		Settlement settlement = settlementReader.read(settlementId);
+		return settlement.isWriter(userId);
 	}
 }

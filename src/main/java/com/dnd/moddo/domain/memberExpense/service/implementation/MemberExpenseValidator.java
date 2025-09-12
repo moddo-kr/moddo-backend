@@ -6,8 +6,8 @@ import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
-import com.dnd.moddo.domain.groupMember.exception.InvalidGroupMemberException;
-import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberReader;
+import com.dnd.moddo.domain.appointmentMember.exception.InvalidAppointmentMemberException;
+import com.dnd.moddo.domain.appointmentMember.service.implementation.AppointmentMemberReader;
 import com.dnd.moddo.domain.memberExpense.dto.request.MemberExpenseRequest;
 
 import lombok.RequiredArgsConstructor;
@@ -15,17 +15,18 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Component
 public class MemberExpenseValidator {
-	private final GroupMemberReader groupMemberReader;
+	private final AppointmentMemberReader appointmentMemberReader;
 
-	public void validateMembersArePartOfGroup(Long groupId, List<MemberExpenseRequest> requests) {
-		Set<Long> validGroupMemberIds = new HashSet<>(groupMemberReader.findIdsByGroupId(groupId));
-		List<Long> requestedGroupMemberIds = requests.stream()
+	public void validateMembersArePartOfSettlement(Long settlementId, List<MemberExpenseRequest> requests) {
+		Set<Long> validAppointmentMemberIds = new HashSet<>(
+			appointmentMemberReader.findIdsBySettlementId(settlementId));
+		List<Long> requestedAppointmentMemberIds = requests.stream()
 			.map(MemberExpenseRequest::id)
 			.toList();
 
-		requestedGroupMemberIds.forEach(id -> {
-			if (!validGroupMemberIds.contains(id)) {
-				throw new InvalidGroupMemberException(id);
+		requestedAppointmentMemberIds.forEach(id -> {
+			if (!validAppointmentMemberIds.contains(id)) {
+				throw new InvalidAppointmentMemberException(id);
 			}
 		});
 

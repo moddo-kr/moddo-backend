@@ -29,7 +29,7 @@ public class CharacterControllerTest extends RestDocsTestSupport {
 			"https://moddo-s3.s3.amazonaws.com/character/천사 모또-2-big.png"
 		);
 
-		Mockito.when(queryGroupService.findIdByCode(groupToken)).thenReturn(groupId);
+		Mockito.when(querySettlementService.findIdByCode(groupToken)).thenReturn(groupId);
 		Mockito.when(queryCharacterService.findCharacterByGroupId(eq(groupId))).thenReturn(mockResponse);
 
 		// when & then
@@ -43,7 +43,7 @@ public class CharacterControllerTest extends RestDocsTestSupport {
 			.andExpect(jsonPath("$.imageBigUrl").value("https://moddo-s3.s3.amazonaws.com/character/천사 모또-2-big.png"))
 			.andDo(print());
 
-		verify(queryGroupService).findIdByCode(groupToken);
+		verify(querySettlementService).findIdByCode(groupToken);
 		verify(queryCharacterService).findCharacterByGroupId(groupId);
 	}
 
@@ -52,7 +52,7 @@ public class CharacterControllerTest extends RestDocsTestSupport {
 	void getCharacterInvalidToken() throws Exception {
 		// given
 		String groupToken = "invalid.groupToken";
-		when(queryGroupService.findIdByCode(groupToken)).thenThrow(new TokenInvalidException());
+		when(querySettlementService.findIdByCode(groupToken)).thenThrow(new TokenInvalidException());
 
 		// when & then
 		mockMvc.perform(get("/api/v1/character")
@@ -60,7 +60,7 @@ public class CharacterControllerTest extends RestDocsTestSupport {
 				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isUnauthorized());
 
-		verify(queryGroupService).findIdByCode(groupToken);
+		verify(querySettlementService).findIdByCode(groupToken);
 		verify(queryCharacterService, never()).findCharacterByGroupId(any());
 	}
 
@@ -69,7 +69,7 @@ public class CharacterControllerTest extends RestDocsTestSupport {
 	void getCharacterMissingToken() throws Exception {
 		// when
 		String groupToken = "";
-		when(queryGroupService.findIdByCode(groupToken)).thenThrow(new MissingTokenException());
+		when(querySettlementService.findIdByCode(groupToken)).thenThrow(new MissingTokenException());
 
 		// then
 		mockMvc.perform(get("/api/v1/character")
@@ -77,7 +77,7 @@ public class CharacterControllerTest extends RestDocsTestSupport {
 				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isUnauthorized());
 
-		verify(queryGroupService).findIdByCode(groupToken);
+		verify(querySettlementService).findIdByCode(groupToken);
 		verify(queryCharacterService, never()).findCharacterByGroupId(any());
 	}
 }

@@ -8,16 +8,16 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.dnd.moddo.domain.group.entity.Group;
+import com.dnd.moddo.domain.settlement.entity.Settlement;
 import com.dnd.moddo.global.support.GroupTestFactory;
 
 class ExpenseTest {
 
-	private Group mockGroup;
+	private Settlement mockSettlement;
 
 	@BeforeEach
 	void setUp() {
-		mockGroup = GroupTestFactory.createDefault();
+		mockSettlement = GroupTestFactory.createDefault();
 	}
 
 	@Test
@@ -26,7 +26,7 @@ class ExpenseTest {
 		Long initAmount = 20000L;
 		String initContent = "old content";
 		LocalDate initDate = LocalDate.of(2025, 02, 03);
-		Expense expense = new Expense(mockGroup, initAmount, initContent, initDate);
+		Expense expense = new Expense(mockSettlement, initAmount, initContent, initDate);
 
 		// when
 		Long newAmount = 30000L;
@@ -47,7 +47,7 @@ class ExpenseTest {
 		Long initAmount = 20000L;
 		String initContent = "old content";
 		LocalDate initDate = LocalDate.of(2025, 02, 03);
-		Expense expense = new Expense(mockGroup, initAmount, initContent, initDate);
+		Expense expense = new Expense(mockSettlement, initAmount, initContent, initDate);
 		List<String> images = List.of("image1.jpg", "image2.jpg");
 		expense.updateImgUrl(images);
 

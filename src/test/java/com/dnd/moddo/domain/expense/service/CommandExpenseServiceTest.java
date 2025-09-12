@@ -26,11 +26,11 @@ import com.dnd.moddo.domain.expense.service.implementation.ExpenseCreator;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseDeleter;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseReader;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseUpdater;
-import com.dnd.moddo.domain.group.entity.Group;
-import com.dnd.moddo.domain.group.service.implementation.GroupReader;
-import com.dnd.moddo.domain.group.service.implementation.GroupValidator;
 import com.dnd.moddo.domain.memberExpense.dto.response.MemberExpenseResponse;
 import com.dnd.moddo.domain.memberExpense.service.CommandMemberExpenseService;
+import com.dnd.moddo.domain.settlement.entity.Settlement;
+import com.dnd.moddo.domain.settlement.service.implementation.SettlementReader;
+import com.dnd.moddo.domain.settlement.service.implementation.SettlementValidator;
 import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,26 +45,26 @@ class CommandExpenseServiceTest {
 	@Mock
 	private ExpenseDeleter expenseDeleter;
 	@Mock
-	private GroupReader groupReader;
+	private SettlementReader settlementReader;
 	@Mock
-	private GroupValidator groupValidator;
+	private SettlementValidator settlementValidator;
 	@Mock
 	private CommandMemberExpenseService commandMemberExpenseService;
 	@InjectMocks
 	private CommandExpenseService commandExpenseService;
 
-	private Group mockGroup;
+	private Settlement mockSettlement;
 
 	@BeforeEach
 	void setUp() {
-		mockGroup = GroupTestFactory.createDefault();
+		mockSettlement = GroupTestFactory.createDefault();
 	}
 
 	@DisplayName("모임이 존재할 때 여러 지출 내역 생성에 성공한다.")
 	@Test
 	void createExpense() {
 		//given
-		Long groupId = mockGroup.getId();
+		Long groupId = mockSettlement.getId();
 
 		ExpenseRequest expenseRequest1 = new ExpenseRequest(20000L, "투썸플레이스", LocalDate.of(2025, 02, 03),
 			new ArrayList<>());
@@ -73,8 +73,8 @@ class CommandExpenseServiceTest {
 
 		ExpensesRequest request = new ExpensesRequest(List.of(expenseRequest1, expenseRequest2));
 
-		Expense expense1 = new Expense(mockGroup, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
-		Expense expense2 = new Expense(mockGroup, 100000L, "하이디라오", LocalDate.of(2025, 02, 03));
+		Expense expense1 = new Expense(mockSettlement, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
+		Expense expense2 = new Expense(mockSettlement, 100000L, "하이디라오", LocalDate.of(2025, 02, 03));
 		when(expenseCreator.create(eq(groupId), any(ExpenseRequest.class)))
 			.thenReturn(expense1)
 			.thenReturn(expense2);
@@ -93,8 +93,8 @@ class CommandExpenseServiceTest {
 	@Test
 	void updateSuccess() {
 		//given
-		Long groupId = mockGroup.getId(), expenseId = 1L;
-		Expense mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
+		Long groupId = mockSettlement.getId(), expenseId = 1L;
+		Expense mockExpense = new Expense(mockSettlement, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
 		ExpenseRequest expenseRequest = mock(ExpenseRequest.class);
 		ExpenseResponse expectedResponse = ExpenseResponse.of(mockExpense);
 
@@ -167,19 +167,19 @@ class CommandExpenseServiceTest {
 	@Test
 	void updateImgUrlSuccess() {
 		// given
-		Long userId = mockGroup.getWriter(), groupId = mockGroup.getId(), expenseId = 1L;
+		Long userId = this.mockSettlement.getWriter(), groupId = this.mockSettlement.getId(), expenseId = 1L;
 		ExpenseImageRequest request = mock(ExpenseImageRequest.class);
-		Group mockGroup = mock(Group.class);
+		Settlement mockSettlement = mock(Settlement.class);
 
-		when(groupReader.read(groupId)).thenReturn(mockGroup);
-		doNothing().when(groupValidator).checkGroupAuthor(mockGroup, userId);
+		when(settlementReader.read(groupId)).thenReturn(mockSettlement);
+		doNothing().when(settlementValidator).checkSettlementAuthor(mockSettlement, userId);
 
 		// when
 		commandExpenseService.updateImgUrl(userId, groupId, expenseId, request);
 
 		// then
-		verify(groupReader, times(1)).read(groupId);
-		verify(groupValidator, times(1)).checkGroupAuthor(mockGroup, userId);
+		verify(settlementReader, times(1)).read(groupId);
+		verify(settlementValidator, times(1)).checkSettlementAuthor(mockSettlement, userId);
 		verify(expenseUpdater, times(1)).updateImgUrl(expenseId, request);
 	}
 

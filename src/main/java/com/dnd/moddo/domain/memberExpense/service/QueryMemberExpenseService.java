@@ -9,12 +9,12 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.dnd.moddo.domain.appointmentMember.dto.response.AppointmentMemberExpenseResponse;
+import com.dnd.moddo.domain.appointmentMember.dto.response.AppointmentMembersExpenseResponse;
+import com.dnd.moddo.domain.appointmentMember.entity.AppointmentMember;
+import com.dnd.moddo.domain.appointmentMember.service.implementation.AppointmentMemberReader;
 import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.expense.service.implementation.ExpenseReader;
-import com.dnd.moddo.domain.groupMember.dto.response.GroupMemberExpenseResponse;
-import com.dnd.moddo.domain.groupMember.dto.response.GroupMembersExpenseResponse;
-import com.dnd.moddo.domain.groupMember.entity.GroupMember;
-import com.dnd.moddo.domain.groupMember.service.implementation.GroupMemberReader;
 import com.dnd.moddo.domain.memberExpense.dto.response.MemberExpenseDetailResponse;
 import com.dnd.moddo.domain.memberExpense.dto.response.MemberExpenseResponse;
 import com.dnd.moddo.domain.memberExpense.entity.MemberExpense;
@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class QueryMemberExpenseService {
 	private final MemberExpenseReader memberExpenseReader;
-	private final GroupMemberReader groupMemberReader;
+	private final AppointmentMemberReader appointmentMemberReader;
 	private final ExpenseReader expenseReader;
 
 	public List<MemberExpenseResponse> findAllByExpenseId(Long expenseId) {
@@ -36,49 +36,51 @@ public class QueryMemberExpenseService {
 			.toList();
 	}
 
-	public GroupMembersExpenseResponse findMemberExpenseDetailsByGroupId(Long groupId) {
-		List<GroupMember> groupMembers = groupMemberReader.findAllByGroupId(groupId);
+	public AppointmentMembersExpenseResponse findMemberExpenseDetailsBySettlementId(Long settlementId) {
+		List<AppointmentMember> appointmentMembers = appointmentMemberReader.findAllBySettlementId(settlementId);
 
-		Map<Long, GroupMember> groupMemberById = convertGroupMembersToMap(groupMembers);
+		Map<Long, AppointmentMember> appointmentMemberById = convertAppointmentMembersToMap(appointmentMembers);
 
-		Map<Long, List<MemberExpense>> memberExpenses = memberExpenseReader.findAllByGroupMemberIds(
-				groupMemberById.keySet().stream().toList())
+		Map<Long, List<MemberExpense>> memberExpenses = memberExpenseReader.findAllByAppointMemberIds(
+				appointmentMemberById.keySet().stream().toList())
 			.stream()
-			.collect(Collectors.groupingBy(me -> me.getGroupMember().getId()));
+			.collect(Collectors.groupingBy(me -> me.getAppointmentMember().getId()));
 		;
 
-		List<Expense> expenses = expenseReader.findAllByGroupId(groupId);
+		List<Expense> expenses = expenseReader.findAllBySettlementId(settlementId);
 
-		List<GroupMemberExpenseResponse> responses = groupMemberById.keySet()
+		List<AppointmentMemberExpenseResponse> responses = appointmentMemberById.keySet()
 			.stream()
 			.map(
-				key -> findMemberExpenseDetailByGroupMember(groupMemberById.get(key), memberExpenses.get(key), expenses)
+				key -> findMemberExpenseDetailByAppointmentMember(appointmentMemberById.get(key),
+					memberExpenses.get(key),
+					expenses)
 			)
 			.filter(Objects::nonNull)
 			.toList();
 
-		return new GroupMembersExpenseResponse(responses);
+		return new AppointmentMembersExpenseResponse(responses);
 	}
 
-	private Map<Long, GroupMember> convertGroupMembersToMap(List<GroupMember> groupMembers) {
-		return groupMembers.stream()
-			.collect(Collectors.toMap(GroupMember::getId, groupMember -> groupMember,
+	private Map<Long, AppointmentMember> convertAppointmentMembersToMap(List<AppointmentMember> appointmentMembers) {
+		return appointmentMembers.stream()
+			.collect(Collectors.toMap(AppointmentMember::getId, appointmentMember -> appointmentMember,
 				(existing, replacement) -> existing,
 				LinkedHashMap::new)
 			);
 	}
 
-	private GroupMemberExpenseResponse findMemberExpenseDetailByGroupMember(
-		GroupMember groupMember, List<MemberExpense> memberExpenses, List<Expense> expenses) {
+	private AppointmentMemberExpenseResponse findMemberExpenseDetailByAppointmentMember(
+		AppointmentMember appointmentMember, List<MemberExpense> memberExpenses, List<Expense> expenses) {
 
 		if (memberExpenses == null) {
-			return GroupMemberExpenseResponse.of(groupMember, 0L, new ArrayList<>());
+			return AppointmentMemberExpenseResponse.of(appointmentMember, 0L, new ArrayList<>());
 		}
 
 		List<MemberExpenseDetailResponse> memberExpenseDetails = mapToMemberExpenseDetails(memberExpenses, expenses);
 		Long totalAmount = calculateTotalAmount(memberExpenses);
 
-		return GroupMemberExpenseResponse.of(groupMember, totalAmount, memberExpenseDetails);
+		return AppointmentMemberExpenseResponse.of(appointmentMember, totalAmount, memberExpenseDetails);
 	}
 
 	private Long calculateTotalAmount(List<MemberExpense> memberExpenses) {
@@ -113,7 +115,7 @@ public class QueryMemberExpenseService {
 	}
 
 	private String formatMemberName(MemberExpense me) {
-		String name = me.getGroupMember().getName();
-		return me.getGroupMember().isManager() ? name + "(총무)" : name;
+		String name = me.getAppointmentMember().getName();
+		return me.getAppointmentMember().isManager() ? name + "(총무)" : name;
 	}
 }

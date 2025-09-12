@@ -2,11 +2,11 @@ package com.dnd.moddo.global.support;
 
 import java.time.LocalDateTime;
 
-import com.dnd.moddo.domain.group.entity.Group;
+import com.dnd.moddo.domain.settlement.entity.Settlement;
 
 public class GroupTestFactory {
-	public static Group createDefault() {
-		return new Group(
+	public static Settlement createDefault() {
+		return new Settlement(
 			"group 1",
 			1L,
 			"1234",
@@ -18,8 +18,8 @@ public class GroupTestFactory {
 		);
 	}
 
-	public static Group createWithCode(String code) {
-		return new Group(
+	public static Settlement createWithCode(String code) {
+		return new Settlement(
 			"group 1",
 			1L,
 			"1234",

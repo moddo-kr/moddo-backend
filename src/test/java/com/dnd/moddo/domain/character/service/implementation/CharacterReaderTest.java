@@ -17,9 +17,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.dnd.moddo.domain.character.entity.Character;
 import com.dnd.moddo.domain.character.repository.CharacterRepository;
 import com.dnd.moddo.domain.character.service.implementation.CharacterReader;
-import com.dnd.moddo.domain.group.entity.Group;
 import com.dnd.moddo.domain.image.dto.CharacterResponse;
 import com.dnd.moddo.domain.image.exception.CharacterNotFoundException;
+import com.dnd.moddo.domain.settlement.entity.Settlement;
 
 @ExtendWith(MockitoExtension.class)
 class CharacterReaderTest {
@@ -36,14 +36,14 @@ class CharacterReaderTest {
 	@BeforeEach
 	void setUp() {
 		groupId = 1L;
-		Group mockGroup = Group.builder()
+		Settlement mockSettlement = Settlement.builder()
 			.writer(1L)
 			.name("Test Group")
 			.password("testPassword")
 			.build();
 
 		mockCharacter = Character.builder()
-			.group(mockGroup)
+			.settlement(mockSettlement)
 			.name("러키 모또")
 			.rarity("1")
 			.imageUrl("https://moddo-s3.s3.amazonaws.com/character/lucky-1.png")
@@ -55,7 +55,7 @@ class CharacterReaderTest {
 	@Test
 	void getCharacterByGroupIdSuccess() {
 		// given
-		when(characterRepository.findByGroupId(groupId)).thenReturn(Optional.of(mockCharacter));
+		when(characterRepository.findBySettlementId(groupId)).thenReturn(Optional.of(mockCharacter));
 
 		// when
 		CharacterResponse response = characterReader.getCharacterByGroupId(groupId);
@@ -67,18 +67,18 @@ class CharacterReaderTest {
 		assertThat(response.imageUrl()).isEqualTo(mockCharacter.getImageUrl());
 		assertThat(response.imageBigUrl()).isEqualTo(mockCharacter.getImageBigUrl());
 
-		verify(characterRepository, times(1)).findByGroupId(groupId);
+		verify(characterRepository, times(1)).findBySettlementId(groupId);
 	}
 
 	@DisplayName("존재하지 않는 groupId로 캐릭터를 조회하면 예외가 발생한다.")
 	@Test
 	void getCharacterByGroupIdNotFound() {
 		// given
-		when(characterRepository.findByGroupId(groupId)).thenReturn(Optional.empty());
+		when(characterRepository.findBySettlementId(groupId)).thenReturn(Optional.empty());
 
 		// when & then
 		assertThrows(CharacterNotFoundException.class, () -> characterReader.getCharacterByGroupId(groupId));
 
-		verify(characterRepository, times(1)).findByGroupId(groupId);
+		verify(characterRepository, times(1)).findBySettlementId(groupId);
 	}
 }

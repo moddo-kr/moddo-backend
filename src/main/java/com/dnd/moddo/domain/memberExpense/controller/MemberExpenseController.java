@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dnd.moddo.domain.group.service.QueryGroupService;
-import com.dnd.moddo.domain.groupMember.dto.response.GroupMembersExpenseResponse;
+import com.dnd.moddo.domain.appointmentMember.dto.response.AppointmentMembersExpenseResponse;
 import com.dnd.moddo.domain.memberExpense.service.QueryMemberExpenseService;
+import com.dnd.moddo.domain.settlement.service.QuerySettlementService;
 import com.dnd.moddo.global.jwt.service.JwtService;
 
 import lombok.RequiredArgsConstructor;
@@ -19,14 +19,15 @@ import lombok.RequiredArgsConstructor;
 public class MemberExpenseController {
 	private final QueryMemberExpenseService queryMemberExpenseService;
 	private final JwtService jwtService;
-	private final QueryGroupService queryGroupService;
+	private final QuerySettlementService querySettlementService;
 
 	@GetMapping
-	public ResponseEntity<GroupMembersExpenseResponse> getMemberExpensesDetails(
+	public ResponseEntity<AppointmentMembersExpenseResponse> getMemberExpensesDetails(
 		@RequestParam("groupToken") String code
 	) {
-		Long groupId = queryGroupService.findIdByCode(code);
-		GroupMembersExpenseResponse response = queryMemberExpenseService.findMemberExpenseDetailsByGroupId(groupId);
+		Long settlementId = querySettlementService.findIdByCode(code);
+		AppointmentMembersExpenseResponse response = queryMemberExpenseService.findMemberExpenseDetailsBySettlementId(
+			settlementId);
 		return ResponseEntity.ok(response);
 	}
 }

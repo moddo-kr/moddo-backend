@@ -12,5 +12,5 @@ public interface CharacterRepository extends JpaRepository<Character, Long> {
 		return findById(characterId).orElseThrow(() -> new CharacterNotFoundException());
 	}
 
-	Optional<Character> findByGroupId(Long groupId);
+	Optional<Character> findBySettlementId(Long settlementId);
 }

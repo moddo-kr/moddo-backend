@@ -1,6 +1,6 @@
 package com.dnd.moddo.domain.memberExpense.dto.request;
 
-import com.dnd.moddo.domain.groupMember.entity.GroupMember;
+import com.dnd.moddo.domain.appointmentMember.entity.AppointmentMember;
 import com.dnd.moddo.domain.memberExpense.entity.MemberExpense;
 
 import jakarta.validation.constraints.Max;
@@ -15,10 +15,10 @@ public record MemberExpenseRequest(
 	@Positive(message = "지출내역 값은 양수여야 합니다.")
 	@Max(value = 5_000_000, message = "지출내역 값은 최대 500만원까지 입력할 수 있습니다.")
 	Long amount) {
-	public MemberExpense toEntity(Long expenseId, GroupMember groupMember) {
+	public MemberExpense toEntity(Long expenseId, AppointmentMember appointmentMember) {
 		return MemberExpense.builder()
 			.expenseId(expenseId)
-			.groupMember(groupMember)
+			.appointmentMember(appointmentMember)
 			.amount(amount())
 			.build();
 	}

@@ -17,9 +17,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.dnd.moddo.domain.expense.dto.request.ExpenseRequest;
 import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.expense.repository.ExpenseRepository;
-import com.dnd.moddo.domain.group.entity.Group;
-import com.dnd.moddo.domain.group.repository.GroupRepository;
 import com.dnd.moddo.domain.memberExpense.service.implementation.MemberExpenseValidator;
+import com.dnd.moddo.domain.settlement.entity.Settlement;
+import com.dnd.moddo.domain.settlement.repository.SettlementRepository;
 import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,30 +27,30 @@ class ExpenseCreatorTest {
 	@Mock
 	private ExpenseRepository expenseRepository;
 	@Mock
-	private GroupRepository groupRepository;
+	private SettlementRepository settlementRepository;
 	@Mock
 	private MemberExpenseValidator memberExpenseValidator;
 	@InjectMocks
 	private ExpenseCreator expenseCreator;
 
-	private Group mockGroup;
+	private Settlement mockSettlement;
 
 	@BeforeEach
 	void setUp() {
-		mockGroup = GroupTestFactory.createDefault();
+		mockSettlement = GroupTestFactory.createDefault();
 	}
 
 	@DisplayName("모임이 존재하면 지출내역을 생성에 성공한다.")
 	@Test
 	void createSuccess() {
 		//given
-		Long groupId = mockGroup.getId();
-		when(groupRepository.getById(eq(groupId))).thenReturn(mockGroup);
+		Long groupId = mockSettlement.getId();
+		when(settlementRepository.getById(eq(groupId))).thenReturn(mockSettlement);
 		ExpenseRequest request = mock(ExpenseRequest.class);
 
-		Expense mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
+		Expense mockExpense = new Expense(mockSettlement, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
 		when(expenseRepository.save(any())).thenReturn(mockExpense);
-		doNothing().when(memberExpenseValidator).validateMembersArePartOfGroup(groupId, new ArrayList<>());
+		doNothing().when(memberExpenseValidator).validateMembersArePartOfSettlement(groupId, new ArrayList<>());
 		//when
 		Expense result = expenseCreator.create(groupId, request);
 

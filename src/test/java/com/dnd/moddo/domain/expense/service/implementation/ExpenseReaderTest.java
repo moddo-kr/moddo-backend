@@ -17,7 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.dnd.moddo.domain.expense.entity.Expense;
 import com.dnd.moddo.domain.expense.exception.ExpenseNotFoundException;
 import com.dnd.moddo.domain.expense.repository.ExpenseRepository;
-import com.dnd.moddo.domain.group.entity.Group;
+import com.dnd.moddo.domain.settlement.entity.Settlement;
 import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,34 +28,34 @@ class ExpenseReaderTest {
 	@InjectMocks
 	private ExpenseReader expenseReader;
 
-	private Group mockGroup;
+	private Settlement mockSettlement;
 
 	@BeforeEach
 	void setUp() {
-		mockGroup = GroupTestFactory.createDefault();
+		mockSettlement = GroupTestFactory.createDefault();
 	}
 
 	@DisplayName("모임이 존재하면 모임에 해당하는 지출내역을 모두 조회할 수 있다.")
 	@Test
-	void findAllByGroupId() {
+	void findAllBySettlementId() {
 		//given
-		Long groupId = mockGroup.getId();
+		Long groupId = mockSettlement.getId();
 		List<Expense> mockExpenses = List.of(
-			new Expense(mockGroup, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03)),
-			new Expense(mockGroup, 35000L, "보드게임카페", LocalDate.of(2025, 02, 03))
+			new Expense(mockSettlement, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03)),
+			new Expense(mockSettlement, 35000L, "보드게임카페", LocalDate.of(2025, 02, 03))
 		);
 
-		when(expenseRepository.findByGroupIdOrderByDateAsc(eq(groupId))).thenReturn(mockExpenses);
+		when(expenseRepository.findBySettlementIdOrderByDateAsc(eq(groupId))).thenReturn(mockExpenses);
 
 		//when
-		List<Expense> result = expenseReader.findAllByGroupId(groupId);
+		List<Expense> result = expenseReader.findAllBySettlementId(groupId);
 
 		assertThat(result).isNotNull();
 		assertThat(result.size()).isEqualTo(mockExpenses.size());
 		assertThat(result.get(0).getContent()).isEqualTo("투썸플레이스");
 
 		//then
-		verify(expenseRepository, times(1)).findByGroupIdOrderByDateAsc(eq(groupId));
+		verify(expenseRepository, times(1)).findBySettlementIdOrderByDateAsc(eq(groupId));
 	}
 
 	@DisplayName("지출내역이 존재하면 해당 지출내역을 조회할 수 있다.")
@@ -63,7 +63,7 @@ class ExpenseReaderTest {
 	void findByExpenseIdSuccess() {
 		//given
 		Long expenseId = 1L;
-		Expense mockExpense = new Expense(mockGroup, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
+		Expense mockExpense = new Expense(mockSettlement, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
 
 		when(expenseRepository.getById(eq(expenseId))).thenReturn(mockExpense);
 		//when
