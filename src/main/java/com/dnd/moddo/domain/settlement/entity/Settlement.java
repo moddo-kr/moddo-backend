@@ -38,6 +38,8 @@ public class Settlement {
 
 	private LocalDateTime expiredAt;
 
+	private LocalDateTime completedAt;
+
 	private String bank;
 
 	private String accountNumber;
@@ -69,5 +71,9 @@ public class Settlement {
 
 	public boolean isWriter(Long userId) {
 		return this.writer.equals(userId);
+	}
+
+	public void complete() {
+		this.completedAt = LocalDateTime.now();
 	}
 }

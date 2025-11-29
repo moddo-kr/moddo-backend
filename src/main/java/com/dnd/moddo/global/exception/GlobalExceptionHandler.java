@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 
-import com.dnd.moddo.global.logging.DiscordFeignClient;
 import com.dnd.moddo.global.logging.DiscordMessage;
+import com.dnd.moddo.global.logging.DiscordNotifier;
 import com.dnd.moddo.global.logging.LoggingUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RestControllerAdvice
 @RequiredArgsConstructor
 public class GlobalExceptionHandler {
-	private final DiscordFeignClient discordClient;
+	private final DiscordNotifier discordNotifier;
 
 	@ExceptionHandler({ModdoException.class})
 	public ResponseEntity<ErrorResponse> handleDefineException(ModdoException exception) {
@@ -58,7 +58,7 @@ public class GlobalExceptionHandler {
 	}
 
 	private void sendDiscordAlarm(Exception e, WebRequest request) {
-		discordClient.sendMessage(createMessage(e, request));
+		discordNotifier.sendError(createMessage(e, request));
 	}
 
 	private DiscordMessage createMessage(Exception e, WebRequest request) {

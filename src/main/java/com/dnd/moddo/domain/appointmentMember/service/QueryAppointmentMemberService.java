@@ -19,4 +19,8 @@ public class QueryAppointmentMemberService {
 		List<AppointmentMember> members = appointmentMemberReader.findAllBySettlementId(settlementId);
 		return AppointmentMembersResponse.of(members);
 	}
+
+	public List<AppointmentMember> findAllBySettlementId(Long settlementId) {
+		return appointmentMemberReader.findAllBySettlementId(settlementId);
+	}
 }

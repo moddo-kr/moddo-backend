@@ -26,7 +26,7 @@ public class QuerySettlementService {
 		List<AppointmentMember> members = settlementReader.findBySettlement(settlementId);
 		return SettlementDetailResponse.of(settlement, members);
 	}
-
+	
 	public SettlementHeaderResponse findBySettlementHeader(Long settlementId) {
 		return settlementReader.findByHeader(settlementId);
 	}

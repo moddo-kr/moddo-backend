@@ -1,5 +1,7 @@
 package com.dnd.moddo.domain.appointmentMember.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.dnd.moddo.domain.appointmentMember.dto.request.PaymentStatusUpdateRequest;
@@ -20,6 +22,8 @@ public class CommandAppointmentMemberService {
 	private final AppointmentMemberUpdater appointmentMemberUpdater;
 	private final AppointmentMemberDeleter appointmentMemberDeleter;
 
+	private final QueryAppointmentMemberService queryAppointmentMemberService;
+
 	public AppointmentMemberResponse createManager(Settlement settlement, Long userId) {
 		AppointmentMember appointmentMember = appointmentMemberCreator.createManagerForSettlement(settlement, userId);
 		return AppointmentMemberResponse.of(appointmentMember);
@@ -33,6 +37,16 @@ public class CommandAppointmentMemberService {
 	public AppointmentMemberResponse updatePaymentStatus(Long appointmentMemberId, PaymentStatusUpdateRequest request) {
 		AppointmentMember appointmentMember = appointmentMemberUpdater.updatePaymentStatus(appointmentMemberId,
 			request);
+		List<AppointmentMember> members = queryAppointmentMemberService.findAllBySettlementId(
+			appointmentMember.getSettlement().getId());
+
+		boolean allPaid = members.stream()
+			.allMatch(AppointmentMember::isPaid);
+
+		if (allPaid) {
+			appointmentMember.getSettlement().complete();
+		}
+
 		return AppointmentMemberResponse.of(appointmentMember);
 	}
 
