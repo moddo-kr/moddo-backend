@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: test
   datasource:
     url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driverClassName: org.h2.Driver
@@ -52,3 +54,9 @@ kakao:
   token-request-uri: https://kauth.kakao.com/oauth/token
   profile-request-uri: https://kapi.kakao.com/v2/user/me
   logout-request-uri: https://kapi.kakao.com/v1/user/logout
+
+discord:
+  error-name: error-discord-client
+  error-webhook-url: test-error
+  stats-name: stats-discord-client
+  stats-webhook-url: test-stats

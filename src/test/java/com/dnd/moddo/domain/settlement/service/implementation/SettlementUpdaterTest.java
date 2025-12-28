@@ -14,7 +14,7 @@ import com.dnd.moddo.event.application.impl.SettlementUpdater;
 import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.domain.settlement.exception.GroupNotFoundException;
 import com.dnd.moddo.event.infrastructure.SettlementRepository;
-import com.dnd.moddo.event.presentation.request.request.SettlementAccountRequest;
+import com.dnd.moddo.event.presentation.request.SettlementAccountRequest;
 
 @ExtendWith(MockitoExtension.class)
 class SettlementUpdaterTest {

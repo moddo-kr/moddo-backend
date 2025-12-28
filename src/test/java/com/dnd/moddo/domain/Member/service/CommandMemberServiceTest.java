@@ -1,7 +1,9 @@
-package com.dnd.moddo.domain.appointmentMember.service;
+package com.dnd.moddo.domain.Member.service;
 
 import static org.assertj.core.api.BDDAssertions.*;
 import static org.mockito.Mockito.*;
+
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.dnd.moddo.event.application.command.CommandMemberService;
 import com.dnd.moddo.event.application.impl.MemberCreator;
 import com.dnd.moddo.event.application.impl.MemberUpdater;
+import com.dnd.moddo.event.application.query.QueryMemberService;
 import com.dnd.moddo.event.domain.member.ExpenseRole;
 import com.dnd.moddo.event.domain.member.Member;
 import com.dnd.moddo.event.domain.settlement.Settlement;
@@ -28,6 +31,8 @@ public class CommandMemberServiceTest {
 	private MemberCreator memberCreator;
 	@Mock
 	private MemberUpdater memberUpdater;
+	@Mock
+	private QueryMemberService queryMemberService;
 	@InjectMocks
 	private CommandMemberService commandMemberService;
 
@@ -89,29 +94,42 @@ public class CommandMemberServiceTest {
 			any(MemberSaveRequest.class));
 	}
 
-	@DisplayName("참여자 입금 내역을 업데이트 할 수 있다.")
+	@DisplayName("모든 참여자가 입금 완료되면 정산이 완료된다")
 	@Test
-	void whenUpdatePaymentStatus_thenSuccess() {
-		//given
-		Member expectedMember = Member.builder()
+	void whenAllMembersPaid_thenSettlementCompleted() {
+		// given
+		Settlement mockSettlement = mock(Settlement.class);
+
+		Member paidMember = Member.builder()
 			.name("김반숙")
 			.settlement(mockSettlement)
 			.isPaid(true)
 			.profileId(1)
 			.role(ExpenseRole.PARTICIPANT)
 			.build();
-		PaymentStatusUpdateRequest request = new PaymentStatusUpdateRequest(true);
-		when(memberUpdater.updatePaymentStatus(any(), eq(request))).thenReturn(expectedMember);
 
-		//then
-		MemberResponse response = commandMemberService.updatePaymentStatus(1L, request);
+		PaymentStatusUpdateRequest request =
+			new PaymentStatusUpdateRequest(true);
 
-		//then
+		when(memberUpdater.updatePaymentStatus(any(), eq(request)))
+			.thenReturn(paidMember);
+
+		when(queryMemberService.findAllBySettlementId(any()))
+			.thenReturn(List.of(paidMember));
+
+		// when
+		MemberResponse response =
+			commandMemberService.updatePaymentStatus(1L, request);
+
+		// then
 		assertThat(response).isNotNull();
 		assertThat(response.name()).isEqualTo("김반숙");
-		assertThat(response.role()).isEqualTo(ExpenseRole.PARTICIPANT);
 		assertThat(response.isPaid()).isTrue();
 
-		verify(memberUpdater, times(1)).updatePaymentStatus(any(), eq(request));
+		verify(memberUpdater).updatePaymentStatus(any(), eq(request));
+		verify(queryMemberService).findAllBySettlementId(any());
+		
+		verify(mockSettlement).complete();
 	}
+
 }

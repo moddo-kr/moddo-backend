@@ -1,4 +1,4 @@
-package com.dnd.moddo.domain.appointmentMember.service;
+package com.dnd.moddo.domain.Member.service;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;

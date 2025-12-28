@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
@@ -29,9 +30,13 @@ import com.dnd.moddo.event.presentation.response.ExpenseDetailsResponse;
 import com.dnd.moddo.event.presentation.response.ExpenseResponse;
 import com.dnd.moddo.event.presentation.response.ExpensesResponse;
 import com.dnd.moddo.event.presentation.response.MemberExpenseResponse;
+import com.dnd.moddo.global.logging.ErrorNotifier;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
 
 public class ExpenseControllerTest extends RestDocsTestSupport {
+
+	@MockBean
+	ErrorNotifier errorNotifier;
 
 	private final String groupToken = "groupToken";
 	private final Long groupId = 1L;

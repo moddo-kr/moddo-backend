@@ -39,7 +39,7 @@ public class CommandMemberService {
 		Member member = memberUpdater.updatePaymentStatus(appointmentMemberId,
 			request);
 		List<Member> members = queryMemberService.findAllBySettlementId(
-			member.getSettlement().getId());
+			member.getSettlementId());
 
 		boolean allPaid = members.stream()
 			.allMatch(Member::isPaid);

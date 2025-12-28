@@ -1,4 +1,4 @@
-package com.dnd.moddo.domain.appointmentMember.controller;
+package com.dnd.moddo.domain.Member.controller;
 
 import static com.dnd.moddo.event.domain.member.ExpenseRole.*;
 import static org.mockito.Mockito.*;
@@ -9,6 +9,7 @@ import java.util.Collections;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -16,9 +17,13 @@ import com.dnd.moddo.event.presentation.request.MemberSaveRequest;
 import com.dnd.moddo.event.presentation.request.PaymentStatusUpdateRequest;
 import com.dnd.moddo.event.presentation.response.MemberResponse;
 import com.dnd.moddo.event.presentation.response.MembersResponse;
+import com.dnd.moddo.global.logging.ErrorNotifier;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
 
 public class MemberControllerTest extends RestDocsTestSupport {
+
+	@MockBean
+	ErrorNotifier errorNotifier;
 
 	@Test
 	@DisplayName("모임원을 성공적으로 조회한다.")

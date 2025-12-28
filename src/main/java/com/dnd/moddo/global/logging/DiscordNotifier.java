@@ -1,20 +1,19 @@
 package com.dnd.moddo.global.logging;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
-public class DiscordNotifier {
+@Profile("prod")
+public class DiscordNotifier implements ErrorNotifier {
 	private final DiscordErrorFeignClient errorClient;
-	private final DiscordStatsFeignClient statsClient;
 
-	public void sendError(DiscordMessage msg) {
+	@Override
+	public void notifyError(DiscordMessage msg) {
 		errorClient.sendMessage(msg);
 	}
 
-	public void sendStats(DiscordMessage msg) {
-		statsClient.sendMessage(msg);
-	}
 }

@@ -1,4 +1,4 @@
-package com.dnd.moddo.domain.appointmentMember.entity;
+package com.dnd.moddo.domain.Member.entity;
 
 import static org.assertj.core.api.Assertions.*;
 

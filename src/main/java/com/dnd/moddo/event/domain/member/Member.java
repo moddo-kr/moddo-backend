@@ -72,6 +72,10 @@ public class Member {
 		this.paidAt = Boolean.TRUE.equals(isPaid) ? LocalDateTime.now() : null;
 	}
 
+	public Long getSettlementId() {
+		return settlement.getId();
+	}
+
 	public String getProfileUrl() {
 		if (profileId == 0) {
 			return "https://moddo-s3.s3.amazonaws.com/profile/MODDO.png";
