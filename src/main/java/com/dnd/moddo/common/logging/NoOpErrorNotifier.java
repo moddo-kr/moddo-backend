@@ -1,4 +1,4 @@
-package com.dnd.moddo.global.logging;
+package com.dnd.moddo.common.logging;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;

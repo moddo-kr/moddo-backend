@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dnd.moddo.common.support.VerifyManagerPermission;
 import com.dnd.moddo.event.application.command.CommandExpenseService;
 import com.dnd.moddo.event.application.query.QueryExpenseService;
 import com.dnd.moddo.event.application.query.QuerySettlementService;
@@ -20,7 +21,6 @@ import com.dnd.moddo.event.presentation.request.ExpensesRequest;
 import com.dnd.moddo.event.presentation.response.ExpenseDetailsResponse;
 import com.dnd.moddo.event.presentation.response.ExpenseResponse;
 import com.dnd.moddo.event.presentation.response.ExpensesResponse;
-import com.dnd.moddo.global.common.annotation.VerifyManagerPermission;
 import com.dnd.moddo.global.jwt.service.JwtService;
 
 import jakarta.servlet.http.HttpServletRequest;

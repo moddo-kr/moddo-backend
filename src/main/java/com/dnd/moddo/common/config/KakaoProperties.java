@@ -1,4 +1,4 @@
-package com.dnd.moddo.global.config;
+package com.dnd.moddo.common.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

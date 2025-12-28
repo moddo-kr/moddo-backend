@@ -13,11 +13,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import com.dnd.moddo.common.logging.ErrorNotifier;
 import com.dnd.moddo.event.presentation.request.MemberSaveRequest;
 import com.dnd.moddo.event.presentation.request.PaymentStatusUpdateRequest;
 import com.dnd.moddo.event.presentation.response.MemberResponse;
 import com.dnd.moddo.event.presentation.response.MembersResponse;
-import com.dnd.moddo.global.logging.ErrorNotifier;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
 
 public class MemberControllerTest extends RestDocsTestSupport {

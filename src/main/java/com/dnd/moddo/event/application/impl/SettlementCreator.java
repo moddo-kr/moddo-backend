@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.dnd.moddo.common.util.ShortUUIDGenerator;
 import com.dnd.moddo.domain.character.entity.Character;
 import com.dnd.moddo.domain.character.repository.CharacterRepository;
 import com.dnd.moddo.domain.image.dto.CharacterResponse;
@@ -15,7 +16,6 @@ import com.dnd.moddo.domain.user.repository.UserRepository;
 import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.infrastructure.SettlementRepository;
 import com.dnd.moddo.event.presentation.request.SettlementRequest;
-import com.dnd.moddo.global.util.ShortUUIDGenerator;
 
 import lombok.RequiredArgsConstructor;
 

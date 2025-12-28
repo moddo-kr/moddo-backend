@@ -1,4 +1,4 @@
-package com.dnd.moddo.global.logging;
+package com.dnd.moddo.common.logging;
 
 import java.util.List;
 

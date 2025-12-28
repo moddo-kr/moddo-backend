@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
+import com.dnd.moddo.common.logging.ErrorNotifier;
 import com.dnd.moddo.event.presentation.request.SettlementAccountRequest;
 import com.dnd.moddo.event.presentation.request.SettlementPasswordRequest;
 import com.dnd.moddo.event.presentation.request.SettlementRequest;
@@ -22,7 +23,6 @@ import com.dnd.moddo.event.presentation.response.SettlementHeaderResponse;
 import com.dnd.moddo.event.presentation.response.SettlementPasswordResponse;
 import com.dnd.moddo.event.presentation.response.SettlementResponse;
 import com.dnd.moddo.event.presentation.response.SettlementSaveResponse;
-import com.dnd.moddo.global.logging.ErrorNotifier;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +31,7 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 
 	@MockBean
 	ErrorNotifier errorNotifier;
-	
+
 	@Test
 	@DisplayName("모임을 성공적으로 생성한다.")
 	void saveSettlement() throws Exception {

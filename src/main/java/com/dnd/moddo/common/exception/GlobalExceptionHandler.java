@@ -1,4 +1,4 @@
-package com.dnd.moddo.global.exception;
+package com.dnd.moddo.common.exception;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 
-import com.dnd.moddo.global.logging.DiscordMessage;
-import com.dnd.moddo.global.logging.ErrorNotifier;
-import com.dnd.moddo.global.logging.LoggingUtils;
+import com.dnd.moddo.common.logging.DiscordMessage;
+import com.dnd.moddo.common.logging.ErrorNotifier;
+import com.dnd.moddo.common.logging.LoggingUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

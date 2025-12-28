@@ -3,8 +3,8 @@ package com.dnd.moddo.event.domain.expense;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.dnd.moddo.common.converter.StringListConverter;
 import com.dnd.moddo.event.domain.settlement.Settlement;
-import com.dnd.moddo.global.converter.StringListConverter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Convert;

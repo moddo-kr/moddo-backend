@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dnd.moddo.common.config.CookieProperties;
 import com.dnd.moddo.domain.auth.service.AuthService;
 import com.dnd.moddo.domain.auth.service.RefreshTokenService;
-import com.dnd.moddo.global.config.CookieProperties;
 import com.dnd.moddo.global.jwt.dto.RefreshResponse;
 import com.dnd.moddo.global.jwt.dto.TokenResponse;
 import com.dnd.moddo.global.jwt.service.JwtService;

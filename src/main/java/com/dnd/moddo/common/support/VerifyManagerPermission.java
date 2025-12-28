@@ -1,4 +1,4 @@
-package com.dnd.moddo.global.common.annotation;
+package com.dnd.moddo.common.support;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

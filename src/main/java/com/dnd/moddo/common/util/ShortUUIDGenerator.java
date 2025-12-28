@@ -1,4 +1,4 @@
-package com.dnd.moddo.global.util;
+package com.dnd.moddo.common.util;
 
 import java.math.BigInteger;
 

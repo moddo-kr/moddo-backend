@@ -1,4 +1,4 @@
-package com.dnd.moddo.global.config;
+package com.dnd.moddo.common.config;
 
 import java.time.Duration;
 

@@ -19,6 +19,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+import com.dnd.moddo.common.logging.ErrorNotifier;
 import com.dnd.moddo.event.domain.expense.exception.ExpenseNotFoundException;
 import com.dnd.moddo.event.domain.member.exception.MemberNotFoundException;
 import com.dnd.moddo.event.presentation.request.ExpenseImageRequest;
@@ -30,7 +31,6 @@ import com.dnd.moddo.event.presentation.response.ExpenseDetailsResponse;
 import com.dnd.moddo.event.presentation.response.ExpenseResponse;
 import com.dnd.moddo.event.presentation.response.ExpensesResponse;
 import com.dnd.moddo.event.presentation.response.MemberExpenseResponse;
-import com.dnd.moddo.global.logging.ErrorNotifier;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
 
 public class ExpenseControllerTest extends RestDocsTestSupport {

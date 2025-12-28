@@ -16,10 +16,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+import com.dnd.moddo.common.logging.ErrorNotifier;
 import com.dnd.moddo.domain.auth.dto.KakaoTokenResponse;
 import com.dnd.moddo.global.jwt.dto.RefreshResponse;
 import com.dnd.moddo.global.jwt.dto.TokenResponse;
-import com.dnd.moddo.global.logging.ErrorNotifier;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
 
 import jakarta.servlet.http.Cookie;

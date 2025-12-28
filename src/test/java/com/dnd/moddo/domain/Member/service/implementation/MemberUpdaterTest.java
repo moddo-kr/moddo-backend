@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.dnd.moddo.common.config.S3Bucket;
 import com.dnd.moddo.event.application.impl.MemberReader;
 import com.dnd.moddo.event.application.impl.MemberUpdater;
 import com.dnd.moddo.event.application.impl.MemberValidator;
@@ -25,7 +26,6 @@ import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.infrastructure.MemberRepository;
 import com.dnd.moddo.event.presentation.request.MemberSaveRequest;
 import com.dnd.moddo.event.presentation.request.PaymentStatusUpdateRequest;
-import com.dnd.moddo.global.config.S3Bucket;
 
 @ExtendWith(MockitoExtension.class)
 class MemberUpdaterTest {

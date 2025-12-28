@@ -2,7 +2,7 @@ package com.dnd.moddo.event.domain.member.exception;
 
 import org.springframework.http.HttpStatus;
 
-import com.dnd.moddo.global.exception.ModdoException;
+import com.dnd.moddo.common.exception.ModdoException;
 
 public class InvalidExpenseParticipantsException extends ModdoException {
 	public InvalidExpenseParticipantsException() {

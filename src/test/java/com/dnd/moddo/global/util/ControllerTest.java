@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.dnd.moddo.common.config.CookieProperties;
 import com.dnd.moddo.domain.auth.controller.AuthController;
 import com.dnd.moddo.domain.auth.service.AuthService;
 import com.dnd.moddo.domain.auth.service.KakaoClient;
@@ -25,7 +26,6 @@ import com.dnd.moddo.event.presentation.ExpenseController;
 import com.dnd.moddo.event.presentation.MemberController;
 import com.dnd.moddo.event.presentation.MemberExpenseController;
 import com.dnd.moddo.event.presentation.SettlementController;
-import com.dnd.moddo.global.config.CookieProperties;
 import com.dnd.moddo.global.jwt.auth.JwtAuth;
 import com.dnd.moddo.global.jwt.auth.JwtFilter;
 import com.dnd.moddo.global.jwt.service.JwtService;

@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dnd.moddo.common.exception.ModdoException;
 import com.dnd.moddo.domain.auth.dto.KakaoLogoutResponse;
 import com.dnd.moddo.domain.auth.dto.KakaoProfile;
 import com.dnd.moddo.domain.auth.dto.KakaoTokenResponse;
@@ -14,7 +15,6 @@ import com.dnd.moddo.domain.user.dto.request.UserSaveRequest;
 import com.dnd.moddo.domain.user.entity.User;
 import com.dnd.moddo.domain.user.service.CommandUserService;
 import com.dnd.moddo.domain.user.service.QueryUserService;
-import com.dnd.moddo.global.exception.ModdoException;
 import com.dnd.moddo.global.jwt.dto.TokenResponse;
 import com.dnd.moddo.global.jwt.utill.JwtProvider;
 

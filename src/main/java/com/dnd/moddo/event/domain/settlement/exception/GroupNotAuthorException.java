@@ -2,7 +2,7 @@ package com.dnd.moddo.event.domain.settlement.exception;
 
 import org.springframework.http.HttpStatus;
 
-import com.dnd.moddo.global.exception.ModdoException;
+import com.dnd.moddo.common.exception.ModdoException;
 
 public class GroupNotAuthorException extends ModdoException {
 	public GroupNotAuthorException() {

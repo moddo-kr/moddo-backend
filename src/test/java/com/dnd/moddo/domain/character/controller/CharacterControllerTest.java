@@ -11,10 +11,10 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
+import com.dnd.moddo.common.logging.ErrorNotifier;
 import com.dnd.moddo.domain.auth.exception.TokenInvalidException;
 import com.dnd.moddo.domain.image.dto.CharacterResponse;
 import com.dnd.moddo.global.jwt.exception.MissingTokenException;
-import com.dnd.moddo.global.logging.ErrorNotifier;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
 
 public class CharacterControllerTest extends RestDocsTestSupport {
