@@ -19,9 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.dnd.moddo.domain.settlement.repository.SettlementRepository;
-import com.dnd.moddo.domain.settlement.service.QuerySettlementService;
-import com.dnd.moddo.domain.settlement.service.implementation.SettlementReader;
+import com.dnd.moddo.event.application.impl.SettlementReader;
+import com.dnd.moddo.event.application.query.QuerySettlementService;
+import com.dnd.moddo.event.infrastructure.SettlementRepository;
 import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ActiveProfiles("test")

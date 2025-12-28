@@ -10,10 +10,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.domain.appointmentMember.entity.AppointmentMember;
-import com.dnd.moddo.domain.memberExpense.dto.request.MemberExpenseRequest;
-import com.dnd.moddo.domain.memberExpense.entity.MemberExpense;
-import com.dnd.moddo.domain.memberExpense.repotiroy.MemberExpenseRepository;
+import com.dnd.moddo.event.application.impl.MemberExpenseUpdater;
+import com.dnd.moddo.event.domain.member.Member;
+import com.dnd.moddo.event.domain.memberExpense.MemberExpense;
+import com.dnd.moddo.event.infrastructure.MemberExpenseRepository;
+import com.dnd.moddo.event.presentation.request.MemberExpenseRequest;
 
 @ExtendWith(MockitoExtension.class)
 class MemberExpenseUpdaterTest {
@@ -28,7 +29,7 @@ class MemberExpenseUpdaterTest {
 		//given
 		Long expectedAmount = 5000L;
 
-		MemberExpense memberExpense = new MemberExpense(1L, mock(AppointmentMember.class), 15000L);
+		MemberExpense memberExpense = new MemberExpense(1L, mock(Member.class), 15000L);
 		MemberExpenseRequest request = new MemberExpenseRequest(1L, expectedAmount);
 
 		when(memberExpenseRepository.save(memberExpense)).thenReturn(any(MemberExpense.class));

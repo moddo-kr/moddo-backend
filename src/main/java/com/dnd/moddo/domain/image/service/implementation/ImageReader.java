@@ -5,10 +5,10 @@ import java.util.Random;
 
 import org.springframework.stereotype.Service;
 
-import com.dnd.moddo.domain.settlement.repository.SettlementRepository;
 import com.dnd.moddo.domain.image.dto.CharacterResponse;
 import com.dnd.moddo.domain.image.entity.type.Characters;
 import com.dnd.moddo.domain.image.exception.CharacterNotFoundException;
+import com.dnd.moddo.event.infrastructure.SettlementRepository;
 import com.dnd.moddo.global.config.S3Bucket;
 
 import lombok.RequiredArgsConstructor;

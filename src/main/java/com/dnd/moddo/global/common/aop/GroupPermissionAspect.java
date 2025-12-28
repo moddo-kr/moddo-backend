@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 
 import com.dnd.moddo.domain.auth.exception.TokenNotFoundException;
 import com.dnd.moddo.domain.auth.exception.UserPermissionException;
-import com.dnd.moddo.domain.settlement.entity.Settlement;
-import com.dnd.moddo.domain.settlement.service.QuerySettlementService;
-import com.dnd.moddo.domain.settlement.service.implementation.SettlementReader;
+import com.dnd.moddo.event.application.impl.SettlementReader;
+import com.dnd.moddo.event.application.query.QuerySettlementService;
+import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.global.common.annotation.VerifyManagerPermission;
 import com.dnd.moddo.global.jwt.service.JwtService;
 

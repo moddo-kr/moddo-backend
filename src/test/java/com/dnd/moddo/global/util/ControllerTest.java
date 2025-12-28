@@ -12,19 +12,19 @@ import com.dnd.moddo.domain.auth.service.KakaoClient;
 import com.dnd.moddo.domain.auth.service.RefreshTokenService;
 import com.dnd.moddo.domain.character.controller.CharacterController;
 import com.dnd.moddo.domain.character.service.QueryCharacterService;
-import com.dnd.moddo.domain.expense.controller.ExpenseController;
-import com.dnd.moddo.domain.expense.service.CommandExpenseService;
-import com.dnd.moddo.domain.expense.service.QueryExpenseService;
-import com.dnd.moddo.domain.appointmentMember.controller.AppointmentMemberController;
-import com.dnd.moddo.domain.appointmentMember.service.CommandAppointmentMemberService;
-import com.dnd.moddo.domain.appointmentMember.service.QueryAppointmentMemberService;
 import com.dnd.moddo.domain.image.controller.ImageController;
 import com.dnd.moddo.domain.image.service.CommandImageService;
-import com.dnd.moddo.domain.memberExpense.controller.MemberExpenseController;
-import com.dnd.moddo.domain.memberExpense.service.QueryMemberExpenseService;
-import com.dnd.moddo.domain.settlement.controller.SettlementController;
-import com.dnd.moddo.domain.settlement.service.CommandSettlementService;
-import com.dnd.moddo.domain.settlement.service.QuerySettlementService;
+import com.dnd.moddo.event.application.command.CommandExpenseService;
+import com.dnd.moddo.event.application.command.CommandMemberService;
+import com.dnd.moddo.event.application.command.CommandSettlementService;
+import com.dnd.moddo.event.application.query.QueryExpenseService;
+import com.dnd.moddo.event.application.query.QueryMemberExpenseService;
+import com.dnd.moddo.event.application.query.QueryMemberService;
+import com.dnd.moddo.event.application.query.QuerySettlementService;
+import com.dnd.moddo.event.presentation.ExpenseController;
+import com.dnd.moddo.event.presentation.MemberController;
+import com.dnd.moddo.event.presentation.MemberExpenseController;
+import com.dnd.moddo.event.presentation.SettlementController;
 import com.dnd.moddo.global.config.CookieProperties;
 import com.dnd.moddo.global.jwt.auth.JwtAuth;
 import com.dnd.moddo.global.jwt.auth.JwtFilter;
@@ -38,7 +38,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 	CharacterController.class,
 	ExpenseController.class,
 	SettlementController.class,
-	AppointmentMemberController.class,
+	MemberController.class,
 	ImageController.class,
 	MemberExpenseController.class
 })
@@ -79,10 +79,10 @@ public abstract class ControllerTest {
 	protected CommandSettlementService commandSettlementService;
 
 	@MockBean
-	protected QueryAppointmentMemberService queryAppointmentMemberService;
+	protected QueryMemberService queryMemberService;
 
 	@MockBean
-	protected CommandAppointmentMemberService commandAppointmentMemberService;
+	protected CommandMemberService commandMemberService;
 
 	@MockBean
 	protected CommandImageService commandImageService;

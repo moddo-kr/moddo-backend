@@ -15,35 +15,35 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.dnd.moddo.ModdoApplication;
-import com.dnd.moddo.domain.appointmentMember.dto.request.PaymentStatusUpdateRequest;
-import com.dnd.moddo.domain.appointmentMember.entity.AppointmentMember;
-import com.dnd.moddo.domain.appointmentMember.entity.type.ExpenseRole;
-import com.dnd.moddo.domain.appointmentMember.repository.AppointmentMemberRepository;
-import com.dnd.moddo.domain.appointmentMember.service.implementation.AppointmentMemberReader;
-import com.dnd.moddo.domain.appointmentMember.service.implementation.AppointmentMemberUpdater;
-import com.dnd.moddo.domain.appointmentMember.service.implementation.AppointmentMemberValidator;
-import com.dnd.moddo.domain.settlement.entity.Settlement;
-import com.dnd.moddo.domain.settlement.repository.SettlementRepository;
-import com.dnd.moddo.domain.settlement.service.implementation.SettlementReader;
+import com.dnd.moddo.event.application.impl.MemberReader;
+import com.dnd.moddo.event.application.impl.MemberUpdater;
+import com.dnd.moddo.event.application.impl.MemberValidator;
+import com.dnd.moddo.event.application.impl.SettlementReader;
+import com.dnd.moddo.event.domain.member.ExpenseRole;
+import com.dnd.moddo.event.domain.member.Member;
+import com.dnd.moddo.event.domain.settlement.Settlement;
+import com.dnd.moddo.event.infrastructure.MemberRepository;
+import com.dnd.moddo.event.infrastructure.SettlementRepository;
+import com.dnd.moddo.event.presentation.request.PaymentStatusUpdateRequest;
 import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = ModdoApplication.class) // 명시적으로 설정 클래스를 지정
 public class PaymentConcurrencyTest {
 	@Autowired
-	private AppointmentMemberUpdater appointmentMemberUpdater;
+	private MemberUpdater memberUpdater;
 	@Autowired
-	private AppointmentMemberRepository appointmentMemberRepository;
+	private MemberRepository memberRepository;
 	@Autowired
 	private SettlementRepository settlementRepository;
 	@Autowired
-	private AppointmentMemberValidator appointmentMemberValidator;
+	private MemberValidator memberValidator;
 	@Autowired
-	private AppointmentMemberReader appointmentMemberReader;
+	private MemberReader memberReader;
 	@Autowired
 	private SettlementReader settlementReader;
 
-	private AppointmentMember appointmentMember;
+	private Member member;
 
 	@BeforeEach
 	void setUp() {
@@ -51,8 +51,8 @@ public class PaymentConcurrencyTest {
 
 		settlementRepository.save(mockSettlement);
 
-		appointmentMember = appointmentMemberRepository.save(
-			AppointmentMember.builder()
+		member = memberRepository.save(
+			Member.builder()
 				.name("김반숙")
 				.settlement(mockSettlement)
 				.profileId(1)
@@ -64,7 +64,7 @@ public class PaymentConcurrencyTest {
 	@Test
 	void optimisticLock_shouldThrowExceptionOnConflict() throws InterruptedException {
 		//given
-		Long groupMemberId = appointmentMember.getId();
+		Long groupMemberId = member.getId();
 		int threadCount = 10;
 		CountDownLatch latch = new CountDownLatch(threadCount);
 
@@ -75,7 +75,7 @@ public class PaymentConcurrencyTest {
 		for (int i = 0; i < threadCount; i++) {
 			new Thread(() -> {
 				try {
-					appointmentMemberUpdater.updatePaymentStatus(groupMemberId, new PaymentStatusUpdateRequest(true));
+					memberUpdater.updatePaymentStatus(groupMemberId, new PaymentStatusUpdateRequest(true));
 					successCount.incrementAndGet();
 				} catch (OptimisticLockingFailureException e) {
 					failureCount.incrementAndGet(); // 동시 수정 충돌 발생
@@ -89,7 +89,7 @@ public class PaymentConcurrencyTest {
 
 		//then
 
-		AppointmentMember result = appointmentMemberRepository.getById(groupMemberId);
+		Member result = memberRepository.getById(groupMemberId);
 
 		assertThat(result.isPaid()).isTrue();
 		assertThat(successCount.get()).isGreaterThan(0);

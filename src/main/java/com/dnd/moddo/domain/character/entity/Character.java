@@ -1,6 +1,6 @@
 package com.dnd.moddo.domain.character.entity;
 
-import com.dnd.moddo.domain.settlement.entity.Settlement;
+import com.dnd.moddo.event.domain.settlement.Settlement;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

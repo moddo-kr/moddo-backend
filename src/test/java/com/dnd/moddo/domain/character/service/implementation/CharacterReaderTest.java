@@ -19,7 +19,7 @@ import com.dnd.moddo.domain.character.repository.CharacterRepository;
 import com.dnd.moddo.domain.character.service.implementation.CharacterReader;
 import com.dnd.moddo.domain.image.dto.CharacterResponse;
 import com.dnd.moddo.domain.image.exception.CharacterNotFoundException;
-import com.dnd.moddo.domain.settlement.entity.Settlement;
+import com.dnd.moddo.event.domain.settlement.Settlement;
 
 @ExtendWith(MockitoExtension.class)
 class CharacterReaderTest {

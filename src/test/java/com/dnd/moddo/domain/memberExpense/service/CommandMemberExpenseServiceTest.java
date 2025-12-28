@@ -12,21 +12,22 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.domain.appointmentMember.entity.AppointmentMember;
-import com.dnd.moddo.domain.appointmentMember.service.implementation.AppointmentMemberReader;
-import com.dnd.moddo.domain.memberExpense.dto.request.MemberExpenseRequest;
-import com.dnd.moddo.domain.memberExpense.dto.response.MemberExpenseResponse;
-import com.dnd.moddo.domain.memberExpense.entity.MemberExpense;
-import com.dnd.moddo.domain.memberExpense.service.implementation.MemberExpenseCreator;
-import com.dnd.moddo.domain.memberExpense.service.implementation.MemberExpenseDeleter;
-import com.dnd.moddo.domain.memberExpense.service.implementation.MemberExpenseReader;
-import com.dnd.moddo.domain.memberExpense.service.implementation.MemberExpenseUpdater;
-import com.dnd.moddo.domain.settlement.entity.Settlement;
+import com.dnd.moddo.event.application.command.CommandMemberExpenseService;
+import com.dnd.moddo.event.application.impl.MemberExpenseCreator;
+import com.dnd.moddo.event.application.impl.MemberExpenseDeleter;
+import com.dnd.moddo.event.application.impl.MemberExpenseReader;
+import com.dnd.moddo.event.application.impl.MemberExpenseUpdater;
+import com.dnd.moddo.event.application.impl.MemberReader;
+import com.dnd.moddo.event.domain.member.Member;
+import com.dnd.moddo.event.domain.memberExpense.MemberExpense;
+import com.dnd.moddo.event.domain.settlement.Settlement;
+import com.dnd.moddo.event.presentation.request.MemberExpenseRequest;
+import com.dnd.moddo.event.presentation.response.MemberExpenseResponse;
 
 @ExtendWith(MockitoExtension.class)
 class CommandMemberExpenseServiceTest {
 	@Mock
-	private AppointmentMemberReader appointmentMemberReader;
+	private MemberReader memberReader;
 	@Mock
 	private MemberExpenseCreator memberExpenseCreator;
 	@Mock
@@ -49,25 +50,25 @@ class CommandMemberExpenseServiceTest {
 		MemberExpenseRequest request2 = new MemberExpenseRequest(2L, 10000L);
 		List<MemberExpenseRequest> requests = List.of(request1, request2);
 
-		AppointmentMember appointmentMember1 = mock(AppointmentMember.class);
-		AppointmentMember appointmentMember2 = mock(AppointmentMember.class);
+		Member member1 = mock(Member.class);
+		Member member2 = mock(Member.class);
 
-		when(appointmentMember1.getId()).thenReturn(1L);
-		when(appointmentMember2.getId()).thenReturn(2L);
+		when(member1.getId()).thenReturn(1L);
+		when(member2.getId()).thenReturn(2L);
 
-		when(appointmentMemberReader.findByAppointmentMemberId(any()))
-			.thenReturn(appointmentMember1)
-			.thenReturn(appointmentMember2);
+		when(memberReader.findByAppointmentMemberId(any()))
+			.thenReturn(member1)
+			.thenReturn(member2);
 
 		MemberExpense memberExpense1 = mock(MemberExpense.class);
 		MemberExpense memberExpense2 = mock(MemberExpense.class);
 
-		when(memberExpense1.getAppointmentMember()).thenReturn(appointmentMember1);
-		when(memberExpense2.getAppointmentMember()).thenReturn(appointmentMember2);
+		when(memberExpense1.getMember()).thenReturn(member1);
+		when(memberExpense2.getMember()).thenReturn(member2);
 
-		when(memberExpenseCreator.create(eq(expenseId), eq(appointmentMember1), eq(request1)))
+		when(memberExpenseCreator.create(eq(expenseId), eq(member1), eq(request1)))
 			.thenReturn(memberExpense1);
-		when(memberExpenseCreator.create(eq(expenseId), eq(appointmentMember2), eq(request2)))
+		when(memberExpenseCreator.create(eq(expenseId), eq(member2), eq(request2)))
 			.thenReturn(memberExpense2);
 
 		//when
@@ -77,7 +78,7 @@ class CommandMemberExpenseServiceTest {
 		assertThat(responses).isNotEmpty();
 		assertThat(responses).hasSize(2);
 
-		verify(memberExpenseCreator, times(2)).create(eq(expenseId), any(AppointmentMember.class),
+		verify(memberExpenseCreator, times(2)).create(eq(expenseId), any(Member.class),
 			any(MemberExpenseRequest.class));
 	}
 
@@ -90,17 +91,17 @@ class CommandMemberExpenseServiceTest {
 		MemberExpenseRequest request2 = new MemberExpenseRequest(2L, 30000L);
 		List<MemberExpenseRequest> requests = List.of(request1, request2);
 
-		AppointmentMember appointmentMember1 = mock(AppointmentMember.class);
-		AppointmentMember appointmentMember2 = mock(AppointmentMember.class);
+		Member member1 = mock(Member.class);
+		Member member2 = mock(Member.class);
 
-		when(appointmentMember1.getId()).thenReturn(1L);
-		when(appointmentMember2.getId()).thenReturn(2L);
+		when(member1.getId()).thenReturn(1L);
+		when(member2.getId()).thenReturn(2L);
 
 		MemberExpense existingMemberExpense1 = mock(MemberExpense.class);
 		MemberExpense existingMemberExpense2 = mock(MemberExpense.class);
 
-		when(existingMemberExpense1.getAppointmentMember()).thenReturn(appointmentMember1);
-		when(existingMemberExpense2.getAppointmentMember()).thenReturn(appointmentMember2);
+		when(existingMemberExpense1.getMember()).thenReturn(member1);
+		when(existingMemberExpense2.getMember()).thenReturn(member2);
 
 		List<MemberExpense> exisitingMemberExpenses = List.of(existingMemberExpense1, existingMemberExpense2);
 
@@ -130,29 +131,29 @@ class CommandMemberExpenseServiceTest {
 		MemberExpenseRequest request3 = new MemberExpenseRequest(3L, 30000L);
 		List<MemberExpenseRequest> requests = List.of(request1, request2, request3);
 
-		AppointmentMember appointmentMember1 = mock(AppointmentMember.class);
-		AppointmentMember appointmentMember2 = mock(AppointmentMember.class);
-		AppointmentMember expectedAppointmentMember = mock(AppointmentMember.class);
+		Member member1 = mock(Member.class);
+		Member member2 = mock(Member.class);
+		Member expectedMember = mock(Member.class);
 
-		when(appointmentMember1.getId()).thenReturn(1L);
-		when(appointmentMember2.getId()).thenReturn(2L);
-		when(expectedAppointmentMember.getId()).thenReturn(3L);
+		when(member1.getId()).thenReturn(1L);
+		when(member2.getId()).thenReturn(2L);
+		when(expectedMember.getId()).thenReturn(3L);
 
 		MemberExpense existingMemberExpense1 = mock(MemberExpense.class);
 		MemberExpense existingMemberExpense2 = mock(MemberExpense.class);
 
-		when(existingMemberExpense1.getAppointmentMember()).thenReturn(appointmentMember1);
-		when(existingMemberExpense2.getAppointmentMember()).thenReturn(appointmentMember2);
+		when(existingMemberExpense1.getMember()).thenReturn(member1);
+		when(existingMemberExpense2.getMember()).thenReturn(member2);
 
-		MemberExpense expectedMemberExpense = new MemberExpense(expenseId, expectedAppointmentMember, 30000L);
+		MemberExpense expectedMemberExpense = new MemberExpense(expenseId, expectedMember, 30000L);
 
 		when(memberExpenseReader.findAllByExpenseId(eq(expenseId))).thenReturn(
 			List.of(existingMemberExpense1, existingMemberExpense2));
-		when(appointmentMemberReader.findByAppointmentMemberId(3L)).thenReturn(expectedAppointmentMember);
+		when(memberReader.findByAppointmentMemberId(3L)).thenReturn(expectedMember);
 
 		doNothing().when(memberExpenseUpdater).update(existingMemberExpense1, request1);
 		doNothing().when(memberExpenseUpdater).update(existingMemberExpense2, request2);
-		when(memberExpenseCreator.create(eq(expenseId), any(AppointmentMember.class), eq(request3))).thenReturn(
+		when(memberExpenseCreator.create(eq(expenseId), any(Member.class), eq(request3))).thenReturn(
 			expectedMemberExpense);
 
 		// when
@@ -163,7 +164,7 @@ class CommandMemberExpenseServiceTest {
 		assertThat(responses).hasSize(3);
 
 		verify(memberExpenseUpdater, times(2)).update(any(MemberExpense.class), any(MemberExpenseRequest.class));
-		verify(memberExpenseCreator, times(1)).create(eq(expenseId), any(AppointmentMember.class),
+		verify(memberExpenseCreator, times(1)).create(eq(expenseId), any(Member.class),
 			any(MemberExpenseRequest.class));
 	}
 
@@ -175,17 +176,17 @@ class CommandMemberExpenseServiceTest {
 		MemberExpenseRequest request1 = new MemberExpenseRequest(1L, 20000L);
 		List<MemberExpenseRequest> requests = List.of(request1);
 
-		AppointmentMember appointmentMember1 = mock(AppointmentMember.class);
-		AppointmentMember appointmentMember2 = mock(AppointmentMember.class);
+		Member member1 = mock(Member.class);
+		Member member2 = mock(Member.class);
 
-		when(appointmentMember1.getId()).thenReturn(1L);
-		when(appointmentMember2.getId()).thenReturn(2L);
+		when(member1.getId()).thenReturn(1L);
+		when(member2.getId()).thenReturn(2L);
 
 		MemberExpense existingMemberExpense1 = mock(MemberExpense.class);
 		MemberExpense existingMemberExpense2 = mock(MemberExpense.class);
 
-		when(existingMemberExpense1.getAppointmentMember()).thenReturn(appointmentMember1);
-		when(existingMemberExpense2.getAppointmentMember()).thenReturn(appointmentMember2);
+		when(existingMemberExpense1.getMember()).thenReturn(member1);
+		when(existingMemberExpense2.getMember()).thenReturn(member2);
 		when(existingMemberExpense1.getAmount()).thenReturn(5000L);
 
 		when(memberExpenseReader.findAllByExpenseId(eq(expenseId))).thenReturn(

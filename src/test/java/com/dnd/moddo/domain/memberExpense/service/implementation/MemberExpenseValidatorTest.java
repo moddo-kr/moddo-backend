@@ -12,13 +12,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.domain.appointmentMember.service.implementation.AppointmentMemberReader;
-import com.dnd.moddo.domain.memberExpense.dto.request.MemberExpenseRequest;
+import com.dnd.moddo.event.application.impl.MemberExpenseValidator;
+import com.dnd.moddo.event.application.impl.MemberReader;
+import com.dnd.moddo.event.presentation.request.MemberExpenseRequest;
 
 @ExtendWith(MockitoExtension.class)
 class MemberExpenseValidatorTest {
 	@Mock
-	private AppointmentMemberReader appointmentMemberReader;
+	private MemberReader memberReader;
 	@InjectMocks
 	private MemberExpenseValidator memberExpenseValidator;
 
@@ -32,7 +33,7 @@ class MemberExpenseValidatorTest {
 
 		List<Long> mockGroupMemberIds = List.of(1L, 2L);
 
-		when(appointmentMemberReader.findIdsBySettlementId(eq(groupId))).thenReturn(mockGroupMemberIds);
+		when(memberReader.findIdsBySettlementId(eq(groupId))).thenReturn(mockGroupMemberIds);
 
 		//when & when
 		assertThatCode(() -> {
@@ -49,7 +50,7 @@ class MemberExpenseValidatorTest {
 			new MemberExpenseRequest(invalidMemberId, 5000L));
 
 		List<Long> mockGroupMemberIds = List.of(1L, 2L);
-		when(appointmentMemberReader.findIdsBySettlementId(eq(groupId))).thenReturn(mockGroupMemberIds);
+		when(memberReader.findIdsBySettlementId(eq(groupId))).thenReturn(mockGroupMemberIds);
 
 		//when & then
 		assertThatThrownBy(() -> {

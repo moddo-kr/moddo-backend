@@ -15,16 +15,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.domain.appointmentMember.entity.type.ExpenseRole;
-import com.dnd.moddo.domain.expense.dto.response.ExpenseDetailsResponse;
-import com.dnd.moddo.domain.expense.dto.response.ExpenseResponse;
-import com.dnd.moddo.domain.expense.dto.response.ExpensesResponse;
-import com.dnd.moddo.domain.expense.entity.Expense;
-import com.dnd.moddo.domain.expense.exception.ExpenseNotFoundException;
-import com.dnd.moddo.domain.expense.service.implementation.ExpenseReader;
-import com.dnd.moddo.domain.memberExpense.dto.response.MemberExpenseResponse;
-import com.dnd.moddo.domain.memberExpense.service.QueryMemberExpenseService;
-import com.dnd.moddo.domain.settlement.entity.Settlement;
+import com.dnd.moddo.event.application.impl.ExpenseReader;
+import com.dnd.moddo.event.application.query.QueryExpenseService;
+import com.dnd.moddo.event.application.query.QueryMemberExpenseService;
+import com.dnd.moddo.event.domain.expense.Expense;
+import com.dnd.moddo.event.domain.expense.exception.ExpenseNotFoundException;
+import com.dnd.moddo.event.domain.member.ExpenseRole;
+import com.dnd.moddo.event.domain.settlement.Settlement;
+import com.dnd.moddo.event.presentation.response.ExpenseDetailsResponse;
+import com.dnd.moddo.event.presentation.response.ExpenseResponse;
+import com.dnd.moddo.event.presentation.response.ExpensesResponse;
+import com.dnd.moddo.event.presentation.response.MemberExpenseResponse;
 import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)

@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
 
-import com.dnd.moddo.domain.expense.repository.ExpenseRepository;
-import com.dnd.moddo.domain.settlement.repository.SettlementRepository;
+import com.dnd.moddo.event.infrastructure.ExpenseRepository;
+import com.dnd.moddo.event.infrastructure.SettlementRepository;
 import com.dnd.moddo.global.statistics.entity.DailyStats;
 import com.dnd.moddo.global.statistics.repository.DailyStatsRepository;
 

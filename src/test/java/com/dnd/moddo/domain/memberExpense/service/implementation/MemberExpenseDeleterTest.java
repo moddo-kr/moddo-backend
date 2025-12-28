@@ -11,8 +11,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.domain.memberExpense.entity.MemberExpense;
-import com.dnd.moddo.domain.memberExpense.repotiroy.MemberExpenseRepository;
+import com.dnd.moddo.event.application.impl.MemberExpenseDeleter;
+import com.dnd.moddo.event.domain.memberExpense.MemberExpense;
+import com.dnd.moddo.event.infrastructure.MemberExpenseRepository;
 
 @ExtendWith(MockitoExtension.class)
 class MemberExpenseDeleterTest {

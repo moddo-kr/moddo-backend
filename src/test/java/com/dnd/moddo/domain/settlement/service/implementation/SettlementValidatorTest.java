@@ -10,11 +10,12 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.dnd.moddo.domain.settlement.dto.request.SettlementPasswordRequest;
-import com.dnd.moddo.domain.settlement.dto.response.SettlementPasswordResponse;
-import com.dnd.moddo.domain.settlement.entity.Settlement;
-import com.dnd.moddo.domain.settlement.exception.GroupNotAuthorException;
-import com.dnd.moddo.domain.settlement.exception.InvalidPasswordException;
+import com.dnd.moddo.event.application.impl.SettlementValidator;
+import com.dnd.moddo.event.domain.settlement.Settlement;
+import com.dnd.moddo.event.domain.settlement.exception.GroupNotAuthorException;
+import com.dnd.moddo.event.domain.settlement.exception.InvalidPasswordException;
+import com.dnd.moddo.event.presentation.request.SettlementPasswordRequest;
+import com.dnd.moddo.event.presentation.response.SettlementPasswordResponse;
 
 class SettlementValidatorTest {
 

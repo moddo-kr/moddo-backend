@@ -13,11 +13,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.domain.appointmentMember.entity.AppointmentMember;
-import com.dnd.moddo.domain.appointmentMember.entity.type.ExpenseRole;
-import com.dnd.moddo.domain.memberExpense.entity.MemberExpense;
-import com.dnd.moddo.domain.memberExpense.repotiroy.MemberExpenseRepository;
-import com.dnd.moddo.domain.settlement.entity.Settlement;
+import com.dnd.moddo.event.application.impl.MemberExpenseReader;
+import com.dnd.moddo.event.domain.member.ExpenseRole;
+import com.dnd.moddo.event.domain.member.Member;
+import com.dnd.moddo.event.domain.memberExpense.MemberExpense;
+import com.dnd.moddo.event.domain.settlement.Settlement;
+import com.dnd.moddo.event.infrastructure.MemberExpenseRepository;
 import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,13 +29,13 @@ class MemberExpenseReaderTest {
 	private MemberExpenseReader memberExpenseReader;
 
 	private Settlement mockSettlement;
-	private AppointmentMember mockAppointmentMember;
+	private Member mockMember;
 
 	@BeforeEach
 	void setUp() {
 		mockSettlement = GroupTestFactory.createDefault();
 
-		mockAppointmentMember = AppointmentMember.builder()
+		mockMember = Member.builder()
 			.name("박완숙")
 			.settlement(mockSettlement)
 			.role(ExpenseRole.MANAGER)
@@ -49,7 +50,7 @@ class MemberExpenseReaderTest {
 		Long expenseId = 1L;
 		// Mock 데이터 준비
 		List<MemberExpense> expectedMemberExpense = List.of(
-			new MemberExpense(expenseId, mockAppointmentMember, 15000L)
+			new MemberExpense(expenseId, mockMember, 15000L)
 		);
 
 		when(memberExpenseRepository.findByExpenseId(eq(expenseId))).thenReturn(expectedMemberExpense);
@@ -60,7 +61,7 @@ class MemberExpenseReaderTest {
 		// then
 		assertThat(result).isNotEmpty();
 		assertThat(result.get(0).getAmount()).isEqualTo(15000L);
-		assertThat(result.get(0).getAppointmentMember()).isEqualTo(mockAppointmentMember);
+		assertThat(result.get(0).getMember()).isEqualTo(mockMember);
 
 		verify(memberExpenseRepository, times(1)).findByExpenseId(eq(expenseId));
 	}
@@ -69,21 +70,21 @@ class MemberExpenseReaderTest {
 	@Test
 	void findAllByAppointMemberIds_Success() {
 		// given
-		AppointmentMember appointmentMember1 = AppointmentMember.builder()
+		Member member1 = Member.builder()
 			.name("김모또")
 			.settlement(mockSettlement)
 			.role(ExpenseRole.PARTICIPANT)
 			.build();
-		AppointmentMember appointmentMember2 = AppointmentMember.builder()
+		Member member2 = Member.builder()
 			.name("박완숙")
 			.settlement(mockSettlement)
 			.role(ExpenseRole.MANAGER)
 			.build();
 
 		List<MemberExpense> mockExpenses = List.of(
-			new MemberExpense(1L, appointmentMember1, 1000L),
-			new MemberExpense(2L, appointmentMember1, 2000L),
-			new MemberExpense(1L, appointmentMember2, 3000L)
+			new MemberExpense(1L, member1, 1000L),
+			new MemberExpense(2L, member1, 2000L),
+			new MemberExpense(1L, member2, 3000L)
 		);
 
 		List<Long> groupMemberIds = List.of(1L, 2L);
@@ -104,21 +105,21 @@ class MemberExpenseReaderTest {
 	@Test
 	void findAllByExpenseIds_Success() {
 		// given
-		AppointmentMember appointmentMember1 = AppointmentMember.builder()
+		Member member1 = Member.builder()
 			.name("김모또")
 			.settlement(mockSettlement)
 			.role(ExpenseRole.PARTICIPANT)
 			.build();
-		AppointmentMember appointmentMember2 = AppointmentMember.builder()
+		Member member2 = Member.builder()
 			.name("박완숙")
 			.settlement(mockSettlement)
 			.role(ExpenseRole.MANAGER)
 			.build();
 
 		List<MemberExpense> mockExpenses = List.of(
-			new MemberExpense(1L, appointmentMember1, 1000L),
-			new MemberExpense(2L, appointmentMember1, 2000L),
-			new MemberExpense(1L, appointmentMember2, 3000L)
+			new MemberExpense(1L, member1, 1000L),
+			new MemberExpense(2L, member1, 2000L),
+			new MemberExpense(1L, member2, 3000L)
 		);
 
 		List<Long> expenseIds = List.of(1L, 2L);
