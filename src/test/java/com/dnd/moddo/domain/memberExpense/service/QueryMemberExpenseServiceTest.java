@@ -14,16 +14,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.domain.appointmentMember.dto.response.AppointmentMembersExpenseResponse;
-import com.dnd.moddo.domain.appointmentMember.entity.AppointmentMember;
-import com.dnd.moddo.domain.appointmentMember.entity.type.ExpenseRole;
-import com.dnd.moddo.domain.appointmentMember.service.implementation.AppointmentMemberReader;
-import com.dnd.moddo.domain.expense.entity.Expense;
-import com.dnd.moddo.domain.expense.service.implementation.ExpenseReader;
-import com.dnd.moddo.domain.memberExpense.dto.response.MemberExpenseResponse;
-import com.dnd.moddo.domain.memberExpense.entity.MemberExpense;
-import com.dnd.moddo.domain.memberExpense.service.implementation.MemberExpenseReader;
-import com.dnd.moddo.domain.settlement.entity.Settlement;
+import com.dnd.moddo.event.application.impl.ExpenseReader;
+import com.dnd.moddo.event.application.impl.MemberExpenseReader;
+import com.dnd.moddo.event.application.impl.MemberReader;
+import com.dnd.moddo.event.application.query.QueryMemberExpenseService;
+import com.dnd.moddo.event.domain.expense.Expense;
+import com.dnd.moddo.event.domain.member.ExpenseRole;
+import com.dnd.moddo.event.domain.member.Member;
+import com.dnd.moddo.event.domain.memberExpense.MemberExpense;
+import com.dnd.moddo.event.domain.settlement.Settlement;
+import com.dnd.moddo.event.presentation.response.MemberExpenseResponse;
+import com.dnd.moddo.event.presentation.response.MembersExpenseResponse;
 import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,19 +34,19 @@ class QueryMemberExpenseServiceTest {
 	@Mock
 	private ExpenseReader expenseReader;
 	@Mock
-	private AppointmentMemberReader appointmentMemberReader;
+	private MemberReader memberReader;
 	@InjectMocks
 	private QueryMemberExpenseService queryMemberExpenseService;
 
 	private Settlement mockSettlement;
-	private AppointmentMember mockAppointmentMember1;
-	private AppointmentMember mockAppointmentMember2;
+	private Member mockMember1;
+	private Member mockMember2;
 
 	@BeforeEach
 	void setUp() {
 		mockSettlement = GroupTestFactory.createDefault();
 
-		mockAppointmentMember1 = AppointmentMember.builder()
+		mockMember1 = Member.builder()
 			.name("김모또")
 			.settlement(mockSettlement)
 			.isPaid(true)
@@ -53,7 +54,7 @@ class QueryMemberExpenseServiceTest {
 			.role(ExpenseRole.MANAGER)
 			.build();
 
-		mockAppointmentMember2 = AppointmentMember.builder()
+		mockMember2 = Member.builder()
 			.name("박완숙")
 			.settlement(mockSettlement)
 			.isPaid(false)
@@ -69,8 +70,8 @@ class QueryMemberExpenseServiceTest {
 		Long expenseId = 1L;
 
 		List<MemberExpense> expectedMemberExpense = List.of(
-			new MemberExpense(expenseId, mockAppointmentMember1, 15000L),
-			new MemberExpense(expenseId, mockAppointmentMember2, 5000L)
+			new MemberExpense(expenseId, mockMember1, 15000L),
+			new MemberExpense(expenseId, mockMember2, 5000L)
 		);
 
 		when(memberExpenseReader.findAllByExpenseId(eq(expenseId))).thenReturn(expectedMemberExpense);
@@ -90,43 +91,43 @@ class QueryMemberExpenseServiceTest {
 	void findMemberExpenseDetailsBySettlementId_Success() {
 		//given
 		Long groupId = 1L;
-		AppointmentMember appointmentMember1 = mock(AppointmentMember.class);
-		AppointmentMember appointmentMember2 = mock(AppointmentMember.class);
+		Member member1 = mock(Member.class);
+		Member member2 = mock(Member.class);
 
-		when(appointmentMember1.getId()).thenReturn(1L);
-		when(appointmentMember2.getId()).thenReturn(2L);
+		when(member1.getId()).thenReturn(1L);
+		when(member2.getId()).thenReturn(2L);
 
-		List<AppointmentMember> appointmentMembers = List.of(appointmentMember1, appointmentMember2);
+		List<Member> members = List.of(member1, member2);
 
 		MemberExpense memberExpense1 = mock(MemberExpense.class);
 		MemberExpense memberExpense2 = mock(MemberExpense.class);
 		when(memberExpense1.getExpenseId()).thenReturn(1L);
 		when(memberExpense1.getAmount()).thenReturn(10000L);
-		when(memberExpense1.getAppointmentMember()).thenReturn(appointmentMember1);
+		when(memberExpense1.getMember()).thenReturn(member1);
 
 		when(memberExpense2.getExpenseId()).thenReturn(2L);
 		when(memberExpense2.getAmount()).thenReturn(15000L);
-		when(memberExpense2.getAppointmentMember()).thenReturn(appointmentMember2);
+		when(memberExpense2.getMember()).thenReturn(member2);
 
 		Expense expense1 = mock(Expense.class);
 		Expense expense2 = mock(Expense.class);
 		when(expense1.getId()).thenReturn(1L);
 		when(expense2.getId()).thenReturn(2L);
 
-		when(appointmentMemberReader.findAllBySettlementId(eq(groupId))).thenReturn(appointmentMembers);
+		when(memberReader.findAllBySettlementId(eq(groupId))).thenReturn(members);
 		when(memberExpenseReader.findAllByAppointMemberIds(List.of(1L, 2L)))
 			.thenReturn(List.of(memberExpense1, memberExpense2));
 		when(expenseReader.findAllBySettlementId(any())).thenReturn(List.of(expense1, expense2));
 
 		// when
-		AppointmentMembersExpenseResponse response = queryMemberExpenseService.findMemberExpenseDetailsBySettlementId(
+		MembersExpenseResponse response = queryMemberExpenseService.findMemberExpenseDetailsBySettlementId(
 			groupId);
 
 		// then
 		assertThat(response).isNotNull();
 		assertThat(response.memberExpenses()).hasSize(2);
 
-		verify(appointmentMemberReader, times(1)).findAllBySettlementId(groupId);
+		verify(memberReader, times(1)).findAllBySettlementId(groupId);
 		verify(memberExpenseReader, times(1)).findAllByAppointMemberIds(anyList());
 		verify(expenseReader, times(1)).findAllBySettlementId(groupId);
 	}
@@ -135,21 +136,21 @@ class QueryMemberExpenseServiceTest {
 	@Test
 	void getMemberNamesByExpenseIds_Success() {
 		//given
-		AppointmentMember appointmentMember1 = mock(AppointmentMember.class);
-		AppointmentMember appointmentMember2 = mock(AppointmentMember.class);
+		Member member1 = mock(Member.class);
+		Member member2 = mock(Member.class);
 
-		when(appointmentMember1.getName()).thenReturn("김모또");
-		when(appointmentMember2.getName()).thenReturn("김반숙");
+		when(member1.getName()).thenReturn("김모또");
+		when(member2.getName()).thenReturn("김반숙");
 
-		when(appointmentMember1.isManager()).thenReturn(true);
-		when(appointmentMember2.isManager()).thenReturn(false);
+		when(member1.isManager()).thenReturn(true);
+		when(member2.isManager()).thenReturn(false);
 
 		List<Long> expenseIds = List.of(1L, 2L);
 
 		List<MemberExpense> mockExpenses = List.of(
-			new MemberExpense(1L, appointmentMember1, 1000L),
-			new MemberExpense(2L, appointmentMember1, 2000L),
-			new MemberExpense(1L, appointmentMember2, 3000L)
+			new MemberExpense(1L, member1, 1000L),
+			new MemberExpense(2L, member1, 2000L),
+			new MemberExpense(1L, member2, 3000L)
 		);
 
 		when(memberExpenseReader.findAllByExpenseIds(eq(expenseIds))).thenReturn(mockExpenses);

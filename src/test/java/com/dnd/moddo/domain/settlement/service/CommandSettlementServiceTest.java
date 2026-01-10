@@ -14,20 +14,21 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.domain.appointmentMember.dto.response.AppointmentMemberResponse;
-import com.dnd.moddo.domain.appointmentMember.entity.type.ExpenseRole;
-import com.dnd.moddo.domain.appointmentMember.service.CommandAppointmentMemberService;
-import com.dnd.moddo.domain.settlement.dto.request.SettlementAccountRequest;
-import com.dnd.moddo.domain.settlement.dto.request.SettlementPasswordRequest;
-import com.dnd.moddo.domain.settlement.dto.request.SettlementRequest;
-import com.dnd.moddo.domain.settlement.dto.response.SettlementPasswordResponse;
-import com.dnd.moddo.domain.settlement.dto.response.SettlementResponse;
-import com.dnd.moddo.domain.settlement.dto.response.SettlementSaveResponse;
-import com.dnd.moddo.domain.settlement.entity.Settlement;
-import com.dnd.moddo.domain.settlement.service.implementation.SettlementCreator;
-import com.dnd.moddo.domain.settlement.service.implementation.SettlementReader;
-import com.dnd.moddo.domain.settlement.service.implementation.SettlementUpdater;
-import com.dnd.moddo.domain.settlement.service.implementation.SettlementValidator;
+import com.dnd.moddo.event.application.command.CommandMemberService;
+import com.dnd.moddo.event.application.command.CommandSettlementService;
+import com.dnd.moddo.event.application.impl.SettlementCreator;
+import com.dnd.moddo.event.application.impl.SettlementReader;
+import com.dnd.moddo.event.application.impl.SettlementUpdater;
+import com.dnd.moddo.event.application.impl.SettlementValidator;
+import com.dnd.moddo.event.domain.member.ExpenseRole;
+import com.dnd.moddo.event.domain.settlement.Settlement;
+import com.dnd.moddo.event.presentation.request.SettlementAccountRequest;
+import com.dnd.moddo.event.presentation.request.SettlementPasswordRequest;
+import com.dnd.moddo.event.presentation.request.SettlementRequest;
+import com.dnd.moddo.event.presentation.response.MemberResponse;
+import com.dnd.moddo.event.presentation.response.SettlementPasswordResponse;
+import com.dnd.moddo.event.presentation.response.SettlementResponse;
+import com.dnd.moddo.event.presentation.response.SettlementSaveResponse;
 import com.dnd.moddo.global.jwt.utill.JwtProvider;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,7 +48,7 @@ class CommandSettlementServiceTest {
 	@Mock
 	private JwtProvider jwtProvider;
 	@Mock
-	private CommandAppointmentMemberService commandAppointmentMemberService;
+	private CommandMemberService commandMemberService;
 	@InjectMocks
 	private CommandSettlementService commandSettlementService;
 
@@ -64,7 +65,7 @@ class CommandSettlementServiceTest {
 			"bank",
 			"1234-1234", LocalDateTime.now().plusDays(1));
 		settlementAccountRequest = new SettlementAccountRequest("newBank", "5678-5678");
-		expectedResponse = new SettlementSaveResponse("groupToken", mock(AppointmentMemberResponse.class));
+		expectedResponse = new SettlementSaveResponse("groupToken", mock(MemberResponse.class));
 		settlement = mock(Settlement.class);
 	}
 
@@ -72,13 +73,13 @@ class CommandSettlementServiceTest {
 	@DisplayName("그룹과 총무를 생성할 수 있다.")
 	void createSettlement() {
 		// Given
-		AppointmentMemberResponse appointmentMemberResponse = new AppointmentMemberResponse(1L, ExpenseRole.MANAGER,
+		MemberResponse memberResponse = new MemberResponse(1L, ExpenseRole.MANAGER,
 			"김모또", null, true,
 			LocalDateTime.now());
 
 		when(settlementCreator.createSettlement(any(SettlementRequest.class), anyLong())).thenReturn(settlement);
 		when(settlement.getCode()).thenReturn("code");
-		when(commandAppointmentMemberService.createManager(any(), any())).thenReturn(appointmentMemberResponse);
+		when(commandMemberService.createManager(any(), any())).thenReturn(memberResponse);
 
 		// When
 		SettlementSaveResponse response = commandSettlementService.createSettlement(settlementRequest, 1L);
@@ -89,7 +90,7 @@ class CommandSettlementServiceTest {
 		assertThat(response.manager().role()).isEqualTo(ExpenseRole.MANAGER);
 
 		verify(settlementCreator, times(1)).createSettlement(any(SettlementRequest.class), anyLong());
-		verify(commandAppointmentMemberService, times(1)).createManager(any(), any());
+		verify(commandMemberService, times(1)).createManager(any(), any());
 	}
 
 	@Test

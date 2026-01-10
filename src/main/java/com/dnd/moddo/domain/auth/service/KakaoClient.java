@@ -9,11 +9,11 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientResponseException;
 
+import com.dnd.moddo.common.config.KakaoProperties;
+import com.dnd.moddo.common.exception.ModdoException;
 import com.dnd.moddo.domain.auth.dto.KakaoLogoutResponse;
 import com.dnd.moddo.domain.auth.dto.KakaoProfile;
 import com.dnd.moddo.domain.auth.dto.KakaoTokenResponse;
-import com.dnd.moddo.global.config.KakaoProperties;
-import com.dnd.moddo.global.exception.ModdoException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

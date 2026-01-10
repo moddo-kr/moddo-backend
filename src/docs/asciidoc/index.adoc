@@ -16,7 +16,7 @@ include::expense.adoc[]
 
 include::settlement.adoc[]
 
-include::appointmentMember.adoc[]
+include::member.adoc[]
 
 include::image.adoc[]
 

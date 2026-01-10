@@ -8,7 +8,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.dnd.moddo.domain.settlement.entity.Settlement;
+import com.dnd.moddo.event.domain.expense.Expense;
+import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.global.support.GroupTestFactory;
 
 class ExpenseTest {

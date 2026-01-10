@@ -16,14 +16,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.domain.appointmentMember.entity.AppointmentMember;
-import com.dnd.moddo.domain.appointmentMember.entity.type.ExpenseRole;
-import com.dnd.moddo.domain.settlement.dto.response.SettlementDetailResponse;
-import com.dnd.moddo.domain.settlement.dto.response.SettlementHeaderResponse;
-import com.dnd.moddo.domain.settlement.entity.Settlement;
-import com.dnd.moddo.domain.settlement.exception.GroupNotFoundException;
-import com.dnd.moddo.domain.settlement.service.implementation.SettlementReader;
-import com.dnd.moddo.domain.settlement.service.implementation.SettlementValidator;
+import com.dnd.moddo.event.application.impl.SettlementReader;
+import com.dnd.moddo.event.application.impl.SettlementValidator;
+import com.dnd.moddo.event.application.query.QuerySettlementService;
+import com.dnd.moddo.event.domain.member.ExpenseRole;
+import com.dnd.moddo.event.domain.member.Member;
+import com.dnd.moddo.event.domain.settlement.Settlement;
+import com.dnd.moddo.event.domain.settlement.exception.GroupNotFoundException;
+import com.dnd.moddo.event.presentation.response.SettlementDetailResponse;
+import com.dnd.moddo.event.presentation.response.SettlementHeaderResponse;
 import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,12 +40,12 @@ class QuerySettlementServiceTest {
 	private SettlementValidator settlementValidator;
 
 	private Settlement settlement;
-	private AppointmentMember appointmentMember;
+	private Member member;
 
 	@BeforeEach
 	void setUp() {
 		settlement = GroupTestFactory.createDefault();
-		appointmentMember = new AppointmentMember("김완숙", 1, settlement, false, ExpenseRole.MANAGER);
+		member = new Member("김완숙", 1, settlement, false, ExpenseRole.MANAGER);
 
 		setField(settlement, "id", 1L);
 	}
@@ -54,7 +55,7 @@ class QuerySettlementServiceTest {
 	void FindOne_Success() {
 		// Given
 		when(settlementReader.read(anyLong())).thenReturn(settlement);
-		when(settlementReader.findBySettlement(settlement.getId())).thenReturn(List.of(appointmentMember));
+		when(settlementReader.findBySettlement(settlement.getId())).thenReturn(List.of(member));
 		doNothing().when(settlementValidator).checkSettlementAuthor(settlement, 1L);
 
 		// When
@@ -65,7 +66,7 @@ class QuerySettlementServiceTest {
 		assertThat(response.id()).isEqualTo(settlement.getId());
 		assertThat(response.groupName()).isEqualTo(settlement.getName());
 		assertThat(response.members()).hasSize(1);
-		assertThat(response.members().get(0).name()).isEqualTo(appointmentMember.getName());
+		assertThat(response.members().get(0).name()).isEqualTo(member.getName());
 
 		verify(settlementReader, times(1)).read(1L);
 		verify(settlementReader, times(1)).findBySettlement(settlement.getId());

@@ -2,7 +2,7 @@ package com.dnd.moddo.global.support;
 
 import java.time.LocalDateTime;
 
-import com.dnd.moddo.domain.settlement.entity.Settlement;
+import com.dnd.moddo.event.domain.settlement.Settlement;
 
 public class GroupTestFactory {
 	public static Settlement createDefault() {

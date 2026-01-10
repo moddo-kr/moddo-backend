@@ -1,6 +1,6 @@
 package com.dnd.moddo.domain.settlement.controller;
 
-import static com.dnd.moddo.domain.appointmentMember.entity.type.ExpenseRole.*;
+import static com.dnd.moddo.event.domain.member.ExpenseRole.*;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -10,29 +10,34 @@ import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
-import com.dnd.moddo.domain.appointmentMember.dto.response.AppointmentMemberResponse;
-import com.dnd.moddo.domain.settlement.dto.request.SettlementAccountRequest;
-import com.dnd.moddo.domain.settlement.dto.request.SettlementPasswordRequest;
-import com.dnd.moddo.domain.settlement.dto.request.SettlementRequest;
-import com.dnd.moddo.domain.settlement.dto.response.SettlementDetailResponse;
-import com.dnd.moddo.domain.settlement.dto.response.SettlementHeaderResponse;
-import com.dnd.moddo.domain.settlement.dto.response.SettlementPasswordResponse;
-import com.dnd.moddo.domain.settlement.dto.response.SettlementResponse;
-import com.dnd.moddo.domain.settlement.dto.response.SettlementSaveResponse;
+import com.dnd.moddo.common.logging.ErrorNotifier;
+import com.dnd.moddo.event.presentation.request.SettlementAccountRequest;
+import com.dnd.moddo.event.presentation.request.SettlementPasswordRequest;
+import com.dnd.moddo.event.presentation.request.SettlementRequest;
+import com.dnd.moddo.event.presentation.response.MemberResponse;
+import com.dnd.moddo.event.presentation.response.SettlementDetailResponse;
+import com.dnd.moddo.event.presentation.response.SettlementHeaderResponse;
+import com.dnd.moddo.event.presentation.response.SettlementPasswordResponse;
+import com.dnd.moddo.event.presentation.response.SettlementResponse;
+import com.dnd.moddo.event.presentation.response.SettlementSaveResponse;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 public class SettlementControllerTest extends RestDocsTestSupport {
 
+	@MockBean
+	ErrorNotifier errorNotifier;
+
 	@Test
 	@DisplayName("모임을 성공적으로 생성한다.")
 	void saveSettlement() throws Exception {
 		// given
 		SettlementRequest request = new SettlementRequest("모또 모임", "1234");
-		SettlementSaveResponse response = new SettlementSaveResponse("groupToken", new AppointmentMemberResponse(
+		SettlementSaveResponse response = new SettlementSaveResponse("groupToken", new MemberResponse(
 			1L, MANAGER, "김모또", "https://moddo-s3.s3.amazonaws.com/profile/MODDO.png", true, LocalDateTime.now()
 		));
 
@@ -74,7 +79,7 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 	void getSettlement() throws Exception {
 		// given
 		SettlementDetailResponse response = new SettlementDetailResponse(1L, "모또 모임", List.of(
-			new AppointmentMemberResponse(1L, MANAGER, "김모또", "https://moddo-s3.s3.amazonaws.com/profile/MODDO.png",
+			new MemberResponse(1L, MANAGER, "김모또", "https://moddo-s3.s3.amazonaws.com/profile/MODDO.png",
 				true,
 				LocalDateTime.now())
 		));

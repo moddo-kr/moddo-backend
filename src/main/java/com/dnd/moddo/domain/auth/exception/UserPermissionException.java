@@ -2,7 +2,7 @@ package com.dnd.moddo.domain.auth.exception;
 
 import org.springframework.http.HttpStatus;
 
-import com.dnd.moddo.global.exception.ModdoException;
+import com.dnd.moddo.common.exception.ModdoException;
 
 public class UserPermissionException extends ModdoException {
 	public UserPermissionException() {

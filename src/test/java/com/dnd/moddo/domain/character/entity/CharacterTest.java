@@ -8,7 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.dnd.moddo.domain.character.entity.Character;
-import com.dnd.moddo.domain.settlement.entity.Settlement;
+import com.dnd.moddo.event.domain.settlement.Settlement;
 
 class CharacterTest {
 

@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dnd.moddo.domain.character.service.QueryCharacterService;
-import com.dnd.moddo.domain.settlement.service.QuerySettlementService;
 import com.dnd.moddo.domain.image.dto.CharacterResponse;
+import com.dnd.moddo.event.application.query.QuerySettlementService;
 import com.dnd.moddo.global.jwt.service.JwtService;
 
 import lombok.RequiredArgsConstructor;

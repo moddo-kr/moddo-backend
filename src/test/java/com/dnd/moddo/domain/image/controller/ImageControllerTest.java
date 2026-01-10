@@ -8,14 +8,19 @@ import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 
+import com.dnd.moddo.common.logging.ErrorNotifier;
 import com.dnd.moddo.domain.image.dto.ImageResponse;
 import com.dnd.moddo.domain.image.dto.TempImageResponse;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
 
 public class ImageControllerTest extends RestDocsTestSupport {
+
+	@MockBean
+	ErrorNotifier errorNotifier;
 
 	@Test
 	@DisplayName("임시 이미지를 성공적으로 업로드한다.")

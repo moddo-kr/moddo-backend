@@ -13,9 +13,9 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.dnd.moddo.common.config.S3Bucket;
 import com.dnd.moddo.domain.image.dto.CharacterResponse;
 import com.dnd.moddo.domain.image.entity.type.Characters;
-import com.dnd.moddo.global.config.S3Bucket;
 
 @ExtendWith(MockitoExtension.class)
 class ImageReaderTest {

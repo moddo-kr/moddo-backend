@@ -19,11 +19,12 @@ import com.dnd.moddo.domain.character.entity.Character;
 import com.dnd.moddo.domain.character.repository.CharacterRepository;
 import com.dnd.moddo.domain.image.dto.CharacterResponse;
 import com.dnd.moddo.domain.image.service.implementation.ImageReader;
-import com.dnd.moddo.domain.settlement.dto.request.SettlementRequest;
-import com.dnd.moddo.domain.settlement.entity.Settlement;
-import com.dnd.moddo.domain.settlement.repository.SettlementRepository;
 import com.dnd.moddo.domain.user.entity.User;
 import com.dnd.moddo.domain.user.repository.UserRepository;
+import com.dnd.moddo.event.application.impl.SettlementCreator;
+import com.dnd.moddo.event.domain.settlement.Settlement;
+import com.dnd.moddo.event.infrastructure.SettlementRepository;
+import com.dnd.moddo.event.presentation.request.SettlementRequest;
 
 @ExtendWith(MockitoExtension.class)
 class SettlementCreatorTest {

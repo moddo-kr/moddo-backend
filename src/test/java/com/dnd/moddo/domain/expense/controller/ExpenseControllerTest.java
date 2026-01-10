@@ -1,9 +1,9 @@
 package com.dnd.moddo.domain.expense.controller;
 
-import static com.dnd.moddo.domain.appointmentMember.entity.type.ExpenseRole.*;
+import static com.dnd.moddo.event.domain.member.ExpenseRole.*;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.BDDMockito.any;
 import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.any;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -15,23 +15,28 @@ import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
-import com.dnd.moddo.domain.appointmentMember.exception.AppointmentMemberNotFoundException;
-import com.dnd.moddo.domain.expense.dto.request.ExpenseImageRequest;
-import com.dnd.moddo.domain.expense.dto.request.ExpenseRequest;
-import com.dnd.moddo.domain.expense.dto.request.ExpensesRequest;
-import com.dnd.moddo.domain.expense.dto.response.ExpenseDetailResponse;
-import com.dnd.moddo.domain.expense.dto.response.ExpenseDetailsResponse;
-import com.dnd.moddo.domain.expense.dto.response.ExpenseResponse;
-import com.dnd.moddo.domain.expense.dto.response.ExpensesResponse;
-import com.dnd.moddo.domain.expense.exception.ExpenseNotFoundException;
-import com.dnd.moddo.domain.memberExpense.dto.request.MemberExpenseRequest;
-import com.dnd.moddo.domain.memberExpense.dto.response.MemberExpenseResponse;
+import com.dnd.moddo.common.logging.ErrorNotifier;
+import com.dnd.moddo.event.domain.expense.exception.ExpenseNotFoundException;
+import com.dnd.moddo.event.domain.member.exception.MemberNotFoundException;
+import com.dnd.moddo.event.presentation.request.ExpenseImageRequest;
+import com.dnd.moddo.event.presentation.request.ExpenseRequest;
+import com.dnd.moddo.event.presentation.request.ExpensesRequest;
+import com.dnd.moddo.event.presentation.request.MemberExpenseRequest;
+import com.dnd.moddo.event.presentation.response.ExpenseDetailResponse;
+import com.dnd.moddo.event.presentation.response.ExpenseDetailsResponse;
+import com.dnd.moddo.event.presentation.response.ExpenseResponse;
+import com.dnd.moddo.event.presentation.response.ExpensesResponse;
+import com.dnd.moddo.event.presentation.response.MemberExpenseResponse;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
 
 public class ExpenseControllerTest extends RestDocsTestSupport {
+
+	@MockBean
+	ErrorNotifier errorNotifier;
 
 	private final String groupToken = "groupToken";
 	private final Long groupId = 1L;
@@ -279,7 +284,7 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 
 		when(querySettlementService.findIdByCode(groupToken)).thenReturn(groupId);
 		when(commandExpenseService.createExpenses(eq(groupId), any()))
-			.thenThrow(new AppointmentMemberNotFoundException(1L));
+			.thenThrow(new MemberNotFoundException(1L));
 
 		mockMvc.perform(post("/api/v1/expenses")
 				.param("groupToken", groupToken)

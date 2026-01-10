@@ -14,12 +14,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.domain.expense.dto.request.ExpenseRequest;
-import com.dnd.moddo.domain.expense.entity.Expense;
-import com.dnd.moddo.domain.expense.repository.ExpenseRepository;
-import com.dnd.moddo.domain.memberExpense.service.implementation.MemberExpenseValidator;
-import com.dnd.moddo.domain.settlement.entity.Settlement;
-import com.dnd.moddo.domain.settlement.repository.SettlementRepository;
+import com.dnd.moddo.event.application.impl.ExpenseCreator;
+import com.dnd.moddo.event.application.impl.MemberExpenseValidator;
+import com.dnd.moddo.event.domain.expense.Expense;
+import com.dnd.moddo.event.domain.settlement.Settlement;
+import com.dnd.moddo.event.infrastructure.ExpenseRepository;
+import com.dnd.moddo.event.infrastructure.SettlementRepository;
+import com.dnd.moddo.event.presentation.request.ExpenseRequest;
 import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)

@@ -2,8 +2,8 @@ package com.dnd.moddo.domain.settlement.service.implementation;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
 
 import java.util.List;
 
@@ -14,13 +14,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.domain.appointmentMember.entity.AppointmentMember;
-import com.dnd.moddo.domain.appointmentMember.repository.AppointmentMemberRepository;
-import com.dnd.moddo.domain.expense.repository.ExpenseRepository;
-import com.dnd.moddo.domain.settlement.dto.response.SettlementHeaderResponse;
-import com.dnd.moddo.domain.settlement.entity.Settlement;
-import com.dnd.moddo.domain.settlement.exception.GroupNotFoundException;
-import com.dnd.moddo.domain.settlement.repository.SettlementRepository;
+import com.dnd.moddo.event.application.impl.SettlementReader;
+import com.dnd.moddo.event.domain.member.Member;
+import com.dnd.moddo.event.domain.settlement.Settlement;
+import com.dnd.moddo.event.domain.settlement.exception.GroupNotFoundException;
+import com.dnd.moddo.event.infrastructure.ExpenseRepository;
+import com.dnd.moddo.event.infrastructure.MemberRepository;
+import com.dnd.moddo.event.infrastructure.SettlementRepository;
+import com.dnd.moddo.event.presentation.response.SettlementHeaderResponse;
 
 @ExtendWith(MockitoExtension.class)
 class SettlementReaderTest {
@@ -32,7 +33,7 @@ class SettlementReaderTest {
 	private ExpenseRepository expenseRepository;
 
 	@Mock
-	private AppointmentMemberRepository appointmentMemberRepository;
+	private MemberRepository memberRepository;
 
 	@InjectMocks
 	private SettlementReader settlementReader;
@@ -60,16 +61,16 @@ class SettlementReaderTest {
 		// Given
 		Settlement mockSettlement = mock(Settlement.class);
 		when(mockSettlement.getId()).thenReturn(1L);
-		List<AppointmentMember> mockMembers = List.of(mock(AppointmentMember.class), mock(AppointmentMember.class));
+		List<Member> mockMembers = List.of(mock(Member.class), mock(Member.class));
 
-		when(appointmentMemberRepository.findBySettlementId(anyLong())).thenReturn(mockMembers);
+		when(memberRepository.findBySettlementId(anyLong())).thenReturn(mockMembers);
 
 		// When
-		List<AppointmentMember> result = settlementReader.findBySettlement(mockSettlement.getId());
+		List<Member> result = settlementReader.findBySettlement(mockSettlement.getId());
 
 		// Then
 		assertThat(result).hasSize(2);
-		verify(appointmentMemberRepository, times(1)).findBySettlementId(mockSettlement.getId());
+		verify(memberRepository, times(1)).findBySettlementId(mockSettlement.getId());
 	}
 
 	@Test

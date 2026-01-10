@@ -78,8 +78,15 @@ dependencies {
     //monitoring
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 }
 
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:2023.0.1"
+    }
+}
 tasks.named('test') {
     useJUnitPlatform()
 }
@@ -95,7 +102,7 @@ jacocoTestReport {
         classDirectories.setFrom(
                 files(
                         classDirectories.files.collect {
-                            fileTree(dir: it, includes: ['**/service/**', '**/entity/**'])
+                            fileTree(dir: it, includes: ['**/application/**', '**/domain/**'])
                         }
                 )
         )

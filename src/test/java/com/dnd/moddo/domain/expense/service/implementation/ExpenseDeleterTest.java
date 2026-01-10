@@ -9,8 +9,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.domain.expense.entity.Expense;
-import com.dnd.moddo.domain.expense.repository.ExpenseRepository;
+import com.dnd.moddo.event.application.impl.ExpenseDeleter;
+import com.dnd.moddo.event.domain.expense.Expense;
+import com.dnd.moddo.event.infrastructure.ExpenseRepository;
 
 @ExtendWith(MockitoExtension.class)
 class ExpenseDeleterTest {

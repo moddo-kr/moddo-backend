@@ -6,7 +6,6 @@ import static org.mockito.Mockito.*;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.dnd.moddo.domain.expense.dto.request.ExpenseImageRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,10 +13,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.domain.expense.dto.request.ExpenseRequest;
-import com.dnd.moddo.domain.expense.entity.Expense;
-import com.dnd.moddo.domain.expense.exception.ExpenseNotFoundException;
-import com.dnd.moddo.domain.expense.repository.ExpenseRepository;
+import com.dnd.moddo.event.application.impl.ExpenseUpdater;
+import com.dnd.moddo.event.domain.expense.Expense;
+import com.dnd.moddo.event.domain.expense.exception.ExpenseNotFoundException;
+import com.dnd.moddo.event.infrastructure.ExpenseRepository;
+import com.dnd.moddo.event.presentation.request.ExpenseImageRequest;
+import com.dnd.moddo.event.presentation.request.ExpenseRequest;
 
 @ExtendWith(MockitoExtension.class)
 class ExpenseUpdaterTest {
