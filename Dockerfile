@@ -1,5 +1,5 @@
 # 실행 환경 (최종 실행 이미지만 남김)
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jdk
 
 WORKDIR /app
 COPY build/libs/*.jar /app/moddo.jar
