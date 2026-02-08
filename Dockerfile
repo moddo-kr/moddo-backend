@@ -3,4 +3,5 @@ FROM eclipse-temurin:17-jdk
 
 WORKDIR /app
 COPY build/libs/*.jar /app/moddo.jar
+COPY build/docs /app/static/docs
 ENTRYPOINT ["java", "-Dspring.profiles.active=prod", "-jar", "moddo.jar"]
