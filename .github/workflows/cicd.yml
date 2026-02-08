@@ -69,8 +69,8 @@ jobs:
           port: 22
           envs: GITHUB_SHA
           script: |
-            sudo docker compose stop app
-            sudo docker compose rm -f app
+            sudo docker-compose stop app
+            sudo docker-compose rm -f app
             sudo docker rmi ${{env.DOCKER_IMAGE_NAME}}:latest
-            sudo docker compose pull app
-            sudo docker compose up -d app
+            sudo docker-compose pull app
+            sudo docker-compose up -d app
