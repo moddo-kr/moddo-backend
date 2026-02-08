@@ -69,7 +69,6 @@ jobs:
           port: 22
           envs: GITHUB_SHA
           script: |
-            cd dnd-12th-7-backend
             sudo docker compose stop app
             sudo docker compose rm -f app
             sudo docker rmi ${{env.DOCKER_IMAGE_NAME}}:latest
