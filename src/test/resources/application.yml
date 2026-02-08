@@ -58,5 +58,4 @@ kakao:
 discord:
   error-name: error-discord-client
   error-webhook-url: test-error
-  stats-name: stats-discord-client
   stats-webhook-url: test-stats
