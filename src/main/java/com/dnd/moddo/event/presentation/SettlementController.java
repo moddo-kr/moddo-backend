@@ -1,5 +1,7 @@
 package com.dnd.moddo.event.presentation;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,10 +15,12 @@ import com.dnd.moddo.auth.infrastructure.security.LoginUser;
 import com.dnd.moddo.auth.presentation.response.LoginUserInfo;
 import com.dnd.moddo.event.application.command.CommandSettlementService;
 import com.dnd.moddo.event.application.query.QuerySettlementService;
+import com.dnd.moddo.event.domain.settlement.type.SettlementStatus;
 import com.dnd.moddo.event.presentation.request.SettlementAccountRequest;
 import com.dnd.moddo.event.presentation.request.SettlementRequest;
 import com.dnd.moddo.event.presentation.response.SettlementDetailResponse;
 import com.dnd.moddo.event.presentation.response.SettlementHeaderResponse;
+import com.dnd.moddo.event.presentation.response.SettlementListResponse;
 import com.dnd.moddo.event.presentation.response.SettlementResponse;
 import com.dnd.moddo.event.presentation.response.SettlementSaveResponse;
 
@@ -80,6 +84,15 @@ public class SettlementController {
 		Long settlementId = querySettlementService.findIdByCodeNoCache(code);
 
 		SettlementHeaderResponse response = querySettlementService.findBySettlementHeader(settlementId);
+		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/list")
+	public ResponseEntity<?> search(
+		@LoginUser LoginUserInfo user,
+		@RequestParam(required = false) SettlementStatus status
+	) {
+		List<SettlementListResponse> response = querySettlementService.search(user.userId(), status);
 		return ResponseEntity.ok(response);
 	}
 }

@@ -45,7 +45,13 @@ class QuerySettlementServiceTest {
 	@BeforeEach
 	void setUp() {
 		settlement = GroupTestFactory.createDefault();
-		member = new Member("김완숙", 1, settlement, false, ExpenseRole.MANAGER);
+		member = Member.builder()
+			.name("김완숙")
+			.profileId(1)
+			.settlement(settlement)
+			.role(ExpenseRole.PARTICIPANT)
+			.user(null)
+			.build();
 
 		setField(settlement, "id", 1L);
 	}

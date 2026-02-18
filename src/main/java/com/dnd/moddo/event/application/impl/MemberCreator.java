@@ -27,8 +27,8 @@ public class MemberCreator {
 		Member member = Member.builder()
 			.name(name)
 			.settlement(settlement)
-			.profileId(null)
 			.profileId(0)
+			.user(user)
 			.role(ExpenseRole.MANAGER)
 			.build();
 

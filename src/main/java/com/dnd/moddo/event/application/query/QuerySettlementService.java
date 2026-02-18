@@ -9,8 +9,10 @@ import com.dnd.moddo.event.application.impl.SettlementReader;
 import com.dnd.moddo.event.application.impl.SettlementValidator;
 import com.dnd.moddo.event.domain.member.Member;
 import com.dnd.moddo.event.domain.settlement.Settlement;
+import com.dnd.moddo.event.domain.settlement.type.SettlementStatus;
 import com.dnd.moddo.event.presentation.response.SettlementDetailResponse;
 import com.dnd.moddo.event.presentation.response.SettlementHeaderResponse;
+import com.dnd.moddo.event.presentation.response.SettlementListResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -38,5 +40,15 @@ public class QuerySettlementService {
 
 	public Long findIdByCodeNoCache(String code) {
 		return settlementReader.findIdByGroupCode(code);
+	}
+
+	public List<SettlementListResponse> search(
+		Long userId,
+		SettlementStatus status
+	) {
+		SettlementStatus effectiveStatus =
+			status == null ? SettlementStatus.ALL : status;
+
+		return settlementReader.findListByUserIdAndStatus(userId, effectiveStatus);
 	}
 }
