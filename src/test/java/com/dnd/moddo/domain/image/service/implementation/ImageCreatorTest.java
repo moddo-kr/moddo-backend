@@ -19,7 +19,8 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.dnd.moddo.common.config.S3Bucket;
-import com.dnd.moddo.domain.image.exception.S3SaveException;
+import com.dnd.moddo.image.application.impl.ImageCreator;
+import com.dnd.moddo.image.domain.exception.S3SaveException;
 
 class ImageCreatorTest {
 

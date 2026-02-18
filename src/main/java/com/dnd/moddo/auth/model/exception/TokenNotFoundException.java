@@ -1,0 +1,11 @@
+package com.dnd.moddo.auth.model.exception;
+
+import org.springframework.http.HttpStatus;
+
+import com.dnd.moddo.common.exception.ModdoException;
+
+public class TokenNotFoundException extends ModdoException {
+	public TokenNotFoundException(String token) {
+		super(HttpStatus.NOT_FOUND, token + "이 존재하지 않습니다.");
+	}
+}

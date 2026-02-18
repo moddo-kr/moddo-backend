@@ -13,18 +13,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import com.dnd.moddo.domain.character.entity.Character;
-import com.dnd.moddo.domain.character.repository.CharacterRepository;
-import com.dnd.moddo.domain.image.dto.CharacterResponse;
-import com.dnd.moddo.domain.image.service.implementation.ImageReader;
-import com.dnd.moddo.domain.user.entity.User;
-import com.dnd.moddo.domain.user.repository.UserRepository;
 import com.dnd.moddo.event.application.impl.SettlementCreator;
 import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.infrastructure.SettlementRepository;
 import com.dnd.moddo.event.presentation.request.SettlementRequest;
+import com.dnd.moddo.image.application.impl.ImageReader;
+import com.dnd.moddo.image.presentation.response.CharacterResponse;
+import com.dnd.moddo.reward.domain.character.Character;
+import com.dnd.moddo.reward.infrastructure.CharacterRepository;
+import com.dnd.moddo.user.domain.User;
+import com.dnd.moddo.user.infrastructure.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
 class SettlementCreatorTest {
@@ -40,32 +39,25 @@ class SettlementCreatorTest {
 	@Mock
 	private ImageReader imageReader;
 
-	@Mock
-	private BCryptPasswordEncoder passwordEncoder;
-
 	@InjectMocks
 	private SettlementCreator settlementCreator;
 
 	private Long userId;
 	private SettlementRequest request;
 	private User mockUser;
-	private String encodedPassword;
 	private Settlement mockSettlement;
 	private CharacterResponse mockCharacterResponse;
 
 	@BeforeEach
 	void setUp() {
 		userId = 1L;
-		request = new SettlementRequest("groupName", "password");
+		request = new SettlementRequest("groupName");
 
 		mockUser = createGuestDefault();
-
-		encodedPassword = "encryptedPassword";
 
 		mockSettlement = Settlement.builder()
 			.writer(userId)
 			.name(request.name())
-			.password(encodedPassword)
 			.createdAt(LocalDateTime.now())
 			.build();
 
@@ -82,7 +74,6 @@ class SettlementCreatorTest {
 	void createSettlementSuccess() {
 		// given
 		when(userRepository.getById(userId)).thenReturn(mockUser);
-		when(passwordEncoder.encode(request.password())).thenReturn(encodedPassword);
 		when(settlementRepository.save(any(Settlement.class))).thenReturn(mockSettlement);
 		when(imageReader.getRandomCharacter()).thenReturn(mockCharacterResponse);
 		when(characterRepository.save(any(Character.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -98,7 +89,6 @@ class SettlementCreatorTest {
 		assertThat(response.getName()).isEqualTo(request.name());
 
 		verify(userRepository, times(1)).getById(userId);
-		verify(passwordEncoder, times(1)).encode(request.password());
 		verify(settlementRepository, times(1)).save(any(Settlement.class));
 		verify(imageReader, times(1)).getRandomCharacter();
 		verify(characterRepository, times(1)).save(any(Character.class));
@@ -110,8 +100,6 @@ class SettlementCreatorTest {
 	void whenGroupCodeIsDuplicatedFiveTimes_thenThrowsException() {
 		// given
 		when(userRepository.getById(userId)).thenReturn(mockUser);
-		when(passwordEncoder.encode(request.password())).thenReturn(encodedPassword);
-
 		when(settlementRepository.existsByCode(anyString())).thenReturn(true);
 
 		// when & then

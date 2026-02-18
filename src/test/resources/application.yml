@@ -56,7 +56,5 @@ kakao:
   logout-request-uri: https://kapi.kakao.com/v1/user/logout
 
 discord:
-  error-name: error-discord-client
-  error-webhook-url: test-error
-  stats-name: stats-discord-client
-  stats-webhook-url: test-stats
+  name: discord-feign-client
+  webhook-url: testtest

@@ -18,7 +18,6 @@ import com.dnd.moddo.event.presentation.request.MemberSaveRequest;
 import com.dnd.moddo.event.presentation.request.PaymentStatusUpdateRequest;
 import com.dnd.moddo.event.presentation.response.MemberResponse;
 import com.dnd.moddo.event.presentation.response.MembersResponse;
-import com.dnd.moddo.global.jwt.service.JwtService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +28,6 @@ import lombok.RequiredArgsConstructor;
 public class MemberController {
 	private final QueryMemberService queryMemberService;
 	private final CommandMemberService commandMemberService;
-	private final JwtService jwtService;
 	private final QuerySettlementService querySettlementService;
 
 	@GetMapping

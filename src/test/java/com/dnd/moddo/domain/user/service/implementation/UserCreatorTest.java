@@ -11,8 +11,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.domain.user.entity.User;
-import com.dnd.moddo.domain.user.repository.UserRepository;
+import com.dnd.moddo.user.application.impl.UserCreator;
+import com.dnd.moddo.user.domain.User;
+import com.dnd.moddo.user.infrastructure.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class UserCreatorTest {

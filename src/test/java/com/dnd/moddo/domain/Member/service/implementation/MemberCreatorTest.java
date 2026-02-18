@@ -12,13 +12,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.domain.user.entity.User;
-import com.dnd.moddo.domain.user.repository.UserRepository;
 import com.dnd.moddo.event.application.impl.MemberCreator;
 import com.dnd.moddo.event.domain.member.ExpenseRole;
 import com.dnd.moddo.event.domain.member.Member;
 import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.infrastructure.MemberRepository;
+import com.dnd.moddo.user.domain.User;
+import com.dnd.moddo.user.infrastructure.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class MemberCreatorTest {

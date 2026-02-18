@@ -13,19 +13,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
+import com.dnd.moddo.auth.presentation.response.LoginUserInfo;
 import com.dnd.moddo.common.logging.ErrorNotifier;
 import com.dnd.moddo.event.presentation.request.SettlementAccountRequest;
-import com.dnd.moddo.event.presentation.request.SettlementPasswordRequest;
 import com.dnd.moddo.event.presentation.request.SettlementRequest;
 import com.dnd.moddo.event.presentation.response.MemberResponse;
 import com.dnd.moddo.event.presentation.response.SettlementDetailResponse;
 import com.dnd.moddo.event.presentation.response.SettlementHeaderResponse;
-import com.dnd.moddo.event.presentation.response.SettlementPasswordResponse;
 import com.dnd.moddo.event.presentation.response.SettlementResponse;
 import com.dnd.moddo.event.presentation.response.SettlementSaveResponse;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 public class SettlementControllerTest extends RestDocsTestSupport {
 
@@ -36,12 +33,16 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 	@DisplayName("모임을 성공적으로 생성한다.")
 	void saveSettlement() throws Exception {
 		// given
-		SettlementRequest request = new SettlementRequest("모또 모임", "1234");
+		SettlementRequest request = new SettlementRequest("모또 모임");
 		SettlementSaveResponse response = new SettlementSaveResponse("groupToken", new MemberResponse(
 			1L, MANAGER, "김모또", "https://moddo-s3.s3.amazonaws.com/profile/MODDO.png", true, LocalDateTime.now()
 		));
 
-		given(jwtService.getUserId(any(HttpServletRequest.class))).willReturn(1L);
+		given(loginUserArgumentResolver.supportsParameter(any()))
+			.willReturn(true);
+
+		given(loginUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+			.willReturn(new LoginUserInfo(1L, "USER"));
 		given(commandSettlementService.createSettlement(any(), eq(1L))).willReturn(response);
 
 		// when & then
@@ -62,7 +63,11 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 			LocalDateTime.now().plusDays(1)
 		);
 
-		given(jwtService.getUserId(any(HttpServletRequest.class))).willReturn(1L);
+		given(loginUserArgumentResolver.supportsParameter(any()))
+			.willReturn(true);
+
+		given(loginUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+			.willReturn(new LoginUserInfo(1L, "USER"));
 		given(querySettlementService.findIdByCode(anyString())).willReturn(100L);
 		given(commandSettlementService.updateAccount(any(), eq(1L), eq(100L))).willReturn(response);
 
@@ -84,7 +89,12 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 				LocalDateTime.now())
 		));
 
-		given(jwtService.getUserId(any(HttpServletRequest.class))).willReturn(1L);
+		given(loginUserArgumentResolver.supportsParameter(any()))
+			.willReturn(true);
+
+		given(loginUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+			.willReturn(new LoginUserInfo(1L, "USER"));
+
 		given(querySettlementService.findIdByCode(anyString())).willReturn(100L);
 		given(querySettlementService.findOne(100L, 1L)).willReturn(response);
 
@@ -92,26 +102,6 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 		mockMvc.perform(get("/api/v1/group")
 				.param("groupToken", "groupToken"))
 			.andExpect(status().isOk());
-	}
-
-	@Test
-	@DisplayName("비밀번호를 성공적으로 검증한다.")
-	void isPasswordMatch() throws Exception {
-		// given
-		SettlementPasswordRequest request = new SettlementPasswordRequest("1234");
-		SettlementPasswordResponse response = SettlementPasswordResponse.from("확인되었습니다.");
-
-		given(jwtService.getUserId(any(HttpServletRequest.class))).willReturn(1L);
-		given(querySettlementService.findIdByCode(anyString())).willReturn(100L);
-		given(commandSettlementService.isPasswordMatch(100L, 1L, request)).willReturn(response);
-
-		// when & then
-		mockMvc.perform(post("/api/v1/group/password")
-				.param("groupToken", "groupToken")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(request)))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.status").value("확인되었습니다."));
 	}
 
 	@Test

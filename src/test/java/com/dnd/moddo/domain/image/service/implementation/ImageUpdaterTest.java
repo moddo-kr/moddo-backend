@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.dnd.moddo.common.config.S3Bucket;
+import com.dnd.moddo.image.application.impl.ImageUpdater;
 
 @ExtendWith(MockitoExtension.class)
 class ImageUpdaterTest {

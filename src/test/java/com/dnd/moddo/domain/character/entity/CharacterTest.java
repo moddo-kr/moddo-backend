@@ -7,8 +7,8 @@ import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import com.dnd.moddo.domain.character.entity.Character;
 import com.dnd.moddo.event.domain.settlement.Settlement;
+import com.dnd.moddo.reward.domain.character.Character;
 
 class CharacterTest {
 
@@ -19,7 +19,6 @@ class CharacterTest {
 		Settlement settlement = Settlement.builder()
 			.writer(1L)
 			.name("Test Group")
-			.password("testPassword")
 			.createdAt(LocalDateTime.now())
 			.build();
 

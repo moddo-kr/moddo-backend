@@ -13,14 +13,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.domain.auth.dto.KakaoLogoutResponse;
-import com.dnd.moddo.domain.auth.dto.KakaoProfile;
-import com.dnd.moddo.domain.auth.dto.KakaoTokenResponse;
-import com.dnd.moddo.domain.user.entity.User;
-import com.dnd.moddo.domain.user.service.CommandUserService;
-import com.dnd.moddo.domain.user.service.QueryUserService;
-import com.dnd.moddo.global.jwt.dto.TokenResponse;
-import com.dnd.moddo.global.jwt.utill.JwtProvider;
+import com.dnd.moddo.auth.application.AuthService;
+import com.dnd.moddo.auth.application.KakaoClient;
+import com.dnd.moddo.auth.infrastructure.security.JwtProvider;
+import com.dnd.moddo.auth.presentation.response.KakaoLogoutResponse;
+import com.dnd.moddo.auth.presentation.response.KakaoProfile;
+import com.dnd.moddo.auth.presentation.response.KakaoTokenResponse;
+import com.dnd.moddo.auth.presentation.response.TokenResponse;
+import com.dnd.moddo.user.application.CommandUserService;
+import com.dnd.moddo.user.application.QueryUserService;
+import com.dnd.moddo.user.domain.User;
 
 @ExtendWith(MockitoExtension.class)
 public class AuthServiceTest {

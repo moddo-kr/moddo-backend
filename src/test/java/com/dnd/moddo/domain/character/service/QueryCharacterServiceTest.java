@@ -12,10 +12,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.domain.character.service.QueryCharacterService;
-import com.dnd.moddo.domain.character.service.implementation.CharacterReader;
-import com.dnd.moddo.domain.image.dto.CharacterResponse;
-import com.dnd.moddo.domain.image.exception.CharacterNotFoundException;
+import com.dnd.moddo.image.domain.exception.CharacterNotFoundException;
+import com.dnd.moddo.image.presentation.response.CharacterResponse;
+import com.dnd.moddo.reward.application.QueryCharacterService;
+import com.dnd.moddo.reward.application.impl.CharacterReader;
 
 @ExtendWith(MockitoExtension.class)
 class QueryCharacterServiceTest {

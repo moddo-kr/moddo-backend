@@ -33,7 +33,7 @@ jobs:
           docker pull ${{ env.DOCKER_IMAGE_NAME }}:latest || true
 
       - name: Run tests (Testcontainers, Spring REST Docs)
-        run: ./gradlew test --no-daemon
+        run: ./gradlew test asciidoctor --no-daemon
 
       - name: Build JAR
         run: ./gradlew bootJar --no-daemon
@@ -69,9 +69,8 @@ jobs:
           port: 22
           envs: GITHUB_SHA
           script: |
-            cd dnd-12th-7-backend
-            sudo docker compose stop app
-            sudo docker compose rm -f app
-            sudo docker rmi ${{env.DOCKER_IMAGE_NAME}}:latest
-            sudo docker compose pull app
-            sudo docker compose up -d app
+            docker compose stop app
+            docker compose rm -f app
+            docker rmi ${{env.DOCKER_IMAGE_NAME}}:latest
+            docker compose pull app
+            docker compose up -d app

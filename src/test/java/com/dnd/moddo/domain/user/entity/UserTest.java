@@ -13,8 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.dnd.moddo.domain.user.exception.UserNotFoundException;
-import com.dnd.moddo.domain.user.repository.UserRepository;
+import com.dnd.moddo.user.domain.User;
+import com.dnd.moddo.user.domain.exception.UserNotFoundException;
+import com.dnd.moddo.user.infrastructure.UserRepository;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest

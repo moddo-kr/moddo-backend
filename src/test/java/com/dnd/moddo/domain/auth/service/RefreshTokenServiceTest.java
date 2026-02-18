@@ -12,13 +12,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.dnd.moddo.domain.auth.exception.TokenInvalidException;
-import com.dnd.moddo.domain.user.entity.User;
-import com.dnd.moddo.domain.user.repository.UserRepository;
-import com.dnd.moddo.global.jwt.dto.RefreshResponse;
-import com.dnd.moddo.global.jwt.properties.JwtConstants;
-import com.dnd.moddo.global.jwt.utill.JwtProvider;
-import com.dnd.moddo.global.jwt.utill.JwtUtil;
+import com.dnd.moddo.auth.application.RefreshTokenService;
+import com.dnd.moddo.auth.infrastructure.security.JwtConstants;
+import com.dnd.moddo.auth.infrastructure.security.JwtProvider;
+import com.dnd.moddo.auth.infrastructure.security.JwtUtil;
+import com.dnd.moddo.auth.model.exception.TokenInvalidException;
+import com.dnd.moddo.auth.presentation.response.RefreshResponse;
+import com.dnd.moddo.user.domain.User;
+import com.dnd.moddo.user.infrastructure.UserRepository;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
