@@ -104,13 +104,11 @@ jacocoTestReport {
     afterEvaluate {
         println "Class directories before filtering: ${classDirectories.files}"
         classDirectories.setFrom(
-                fileTree(dir: it) {
-                    include '**/application/**'
-                    include '**/domain/**'
-
-                    exclude '**/domain/**/exception/**'
-                    exclude '**/domain/**/type/**'
-                }
+                files(
+                        classDirectories.files.collect {
+                            fileTree(dir: it, includes: ['**/application/**', '**/domain/**'], excludes: ['**/domain/**/exception/**', '**/domain/**/type/**'])
+                        }
+                )
         )
     }
 }
