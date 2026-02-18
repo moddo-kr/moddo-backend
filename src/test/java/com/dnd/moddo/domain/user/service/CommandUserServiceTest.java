@@ -12,11 +12,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.domain.user.dto.request.GuestUserSaveRequest;
-import com.dnd.moddo.domain.user.dto.request.UserSaveRequest;
-import com.dnd.moddo.domain.user.entity.User;
-import com.dnd.moddo.domain.user.service.implementation.UserCreator;
-import com.dnd.moddo.domain.user.service.implementation.UserReader;
+import com.dnd.moddo.user.application.CommandUserService;
+import com.dnd.moddo.user.application.impl.UserCreator;
+import com.dnd.moddo.user.application.impl.UserReader;
+import com.dnd.moddo.user.domain.User;
+import com.dnd.moddo.user.presentation.request.GuestUserSaveRequest;
+import com.dnd.moddo.user.presentation.request.UserSaveRequest;
 
 @ExtendWith(MockitoExtension.class)
 public class CommandUserServiceTest {

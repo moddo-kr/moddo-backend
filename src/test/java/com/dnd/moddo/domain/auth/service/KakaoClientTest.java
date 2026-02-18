@@ -18,11 +18,12 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.dnd.moddo.auth.application.KakaoClient;
+import com.dnd.moddo.auth.presentation.response.KakaoLogoutResponse;
+import com.dnd.moddo.auth.presentation.response.KakaoProfile;
+import com.dnd.moddo.auth.presentation.response.KakaoTokenResponse;
 import com.dnd.moddo.common.config.KakaoProperties;
 import com.dnd.moddo.common.exception.ModdoException;
-import com.dnd.moddo.domain.auth.dto.KakaoLogoutResponse;
-import com.dnd.moddo.domain.auth.dto.KakaoProfile;
-import com.dnd.moddo.domain.auth.dto.KakaoTokenResponse;
 
 @ExtendWith(SpringExtension.class)
 @RestClientTest(value = KakaoClient.class)

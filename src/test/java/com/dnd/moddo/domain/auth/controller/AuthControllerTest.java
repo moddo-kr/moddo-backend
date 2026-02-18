@@ -16,10 +16,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+import com.dnd.moddo.auth.presentation.response.KakaoTokenResponse;
+import com.dnd.moddo.auth.presentation.response.LoginUserInfo;
+import com.dnd.moddo.auth.presentation.response.RefreshResponse;
+import com.dnd.moddo.auth.presentation.response.TokenResponse;
 import com.dnd.moddo.common.logging.ErrorNotifier;
-import com.dnd.moddo.domain.auth.dto.KakaoTokenResponse;
-import com.dnd.moddo.global.jwt.dto.RefreshResponse;
-import com.dnd.moddo.global.jwt.dto.TokenResponse;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
 
 import jakarta.servlet.http.Cookie;
@@ -113,7 +114,12 @@ class AuthControllerTest extends RestDocsTestSupport {
 	@DisplayName("액세스 토큰 쿠키를 통해 카카오 로그아웃을 성공적으로 수행한다.")
 	void kakaoLogout() throws Exception {
 		//given
-		given(jwtService.getUserId(anyString())).willReturn(1L);
+		given(loginUserArgumentResolver.supportsParameter(any()))
+			.willReturn(true);
+
+		given(loginUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+			.willReturn(new LoginUserInfo(1L, "USER"));
+		
 		doNothing().when(authService).logout(any());
 
 		//when & then

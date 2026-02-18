@@ -32,8 +32,6 @@ public class Settlement {
 
 	private String name;
 
-	private String password;
-
 	private LocalDateTime createdAt;
 
 	private LocalDateTime expiredAt;
@@ -46,15 +44,16 @@ public class Settlement {
 
 	private LocalDateTime deadline;
 
+	private Long characterId;
+
 	@Column(unique = true)
 	private String code;
 
 	@Builder
-	public Settlement(String name, Long writer, String password, LocalDateTime createdAt,
+	public Settlement(String name, Long writer, LocalDateTime createdAt,
 		String bank, String accountNumber, String code, LocalDateTime deadline) {
 		this.name = name;
 		this.writer = writer;
-		this.password = password;
 		this.createdAt = createdAt;
 		this.expiredAt = LocalDateTime.now().plusMonths(1);
 		this.bank = bank;
@@ -67,6 +66,10 @@ public class Settlement {
 		this.bank = request.bank();
 		this.accountNumber = request.accountNumber();
 		this.deadline = LocalDateTime.now().plusDays(1);
+	}
+
+	public void updateCharacter(Long characterId) {
+		this.characterId = characterId;
 	}
 
 	public boolean isWriter(Long userId) {

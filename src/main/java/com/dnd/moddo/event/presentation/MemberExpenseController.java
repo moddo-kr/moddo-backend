@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dnd.moddo.event.application.query.QueryMemberExpenseService;
 import com.dnd.moddo.event.application.query.QuerySettlementService;
 import com.dnd.moddo.event.presentation.response.MembersExpenseResponse;
-import com.dnd.moddo.global.jwt.service.JwtService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 @RestController
 public class MemberExpenseController {
 	private final QueryMemberExpenseService queryMemberExpenseService;
-	private final JwtService jwtService;
 	private final QuerySettlementService querySettlementService;
 
 	@GetMapping

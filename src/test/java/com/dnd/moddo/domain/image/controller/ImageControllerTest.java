@@ -13,9 +13,9 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 
 import com.dnd.moddo.common.logging.ErrorNotifier;
-import com.dnd.moddo.domain.image.dto.ImageResponse;
-import com.dnd.moddo.domain.image.dto.TempImageResponse;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
+import com.dnd.moddo.image.presentation.response.ImageResponse;
+import com.dnd.moddo.image.presentation.response.TempImageResponse;
 
 public class ImageControllerTest extends RestDocsTestSupport {
 

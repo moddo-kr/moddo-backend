@@ -9,7 +9,6 @@ public class GroupTestFactory {
 		return new Settlement(
 			"group 1",
 			1L,
-			"1234",
 			LocalDateTime.now().plusMinutes(1),
 			"은행",
 			"계좌",
@@ -22,7 +21,6 @@ public class GroupTestFactory {
 		return new Settlement(
 			"group 1",
 			1L,
-			"1234",
 			LocalDateTime.now().plusMinutes(1),
 			"은행",
 			"계좌",

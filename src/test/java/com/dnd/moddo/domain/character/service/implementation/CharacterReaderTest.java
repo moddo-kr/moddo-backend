@@ -14,12 +14,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.domain.character.entity.Character;
-import com.dnd.moddo.domain.character.repository.CharacterRepository;
-import com.dnd.moddo.domain.character.service.implementation.CharacterReader;
-import com.dnd.moddo.domain.image.dto.CharacterResponse;
-import com.dnd.moddo.domain.image.exception.CharacterNotFoundException;
 import com.dnd.moddo.event.domain.settlement.Settlement;
+import com.dnd.moddo.image.domain.exception.CharacterNotFoundException;
+import com.dnd.moddo.image.presentation.response.CharacterResponse;
+import com.dnd.moddo.reward.application.impl.CharacterReader;
+import com.dnd.moddo.reward.domain.character.Character;
+import com.dnd.moddo.reward.infrastructure.CharacterRepository;
 
 @ExtendWith(MockitoExtension.class)
 class CharacterReaderTest {
@@ -39,7 +39,6 @@ class CharacterReaderTest {
 		Settlement mockSettlement = Settlement.builder()
 			.writer(1L)
 			.name("Test Group")
-			.password("testPassword")
 			.build();
 
 		mockCharacter = Character.builder()

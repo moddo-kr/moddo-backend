@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dnd.moddo.auth.infrastructure.security.LoginUser;
+import com.dnd.moddo.auth.presentation.response.LoginUserInfo;
 import com.dnd.moddo.common.support.VerifyManagerPermission;
 import com.dnd.moddo.event.application.command.CommandExpenseService;
 import com.dnd.moddo.event.application.query.QueryExpenseService;
@@ -21,7 +23,6 @@ import com.dnd.moddo.event.presentation.request.ExpensesRequest;
 import com.dnd.moddo.event.presentation.response.ExpenseDetailsResponse;
 import com.dnd.moddo.event.presentation.response.ExpenseResponse;
 import com.dnd.moddo.event.presentation.response.ExpensesResponse;
-import com.dnd.moddo.global.jwt.service.JwtService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -34,7 +35,6 @@ public class ExpenseController {
 
 	private final CommandExpenseService commandExpenseService;
 	private final QueryExpenseService queryExpenseService;
-	private final JwtService jwtService;
 	private final QuerySettlementService querySettlementService;
 
 	@PostMapping
@@ -88,9 +88,9 @@ public class ExpenseController {
 	public void updateImgUrl(HttpServletRequest request,
 		@RequestParam("groupToken") String code,
 		@PathVariable("expenseId") Long expenseId,
-		@RequestBody ExpenseImageRequest expenseImageRequest) {
-		Long userId = jwtService.getUserId(request);
+		@RequestBody ExpenseImageRequest expenseImageRequest,
+		@LoginUser LoginUserInfo loginUser) {
 		Long settlementId = querySettlementService.findIdByCode(code);
-		commandExpenseService.updateImgUrl(userId, settlementId, expenseId, expenseImageRequest);
+		commandExpenseService.updateImgUrl(loginUser.userId(), settlementId, expenseId, expenseImageRequest);
 	}
 }

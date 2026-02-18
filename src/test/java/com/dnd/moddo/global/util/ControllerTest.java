@@ -6,15 +6,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.dnd.moddo.auth.application.AuthService;
+import com.dnd.moddo.auth.application.KakaoClient;
+import com.dnd.moddo.auth.application.RefreshTokenService;
+import com.dnd.moddo.auth.infrastructure.security.JwtAuth;
+import com.dnd.moddo.auth.infrastructure.security.JwtFilter;
+import com.dnd.moddo.auth.infrastructure.security.LoginUserArgumentResolver;
+import com.dnd.moddo.auth.presentation.AuthController;
 import com.dnd.moddo.common.config.CookieProperties;
-import com.dnd.moddo.domain.auth.controller.AuthController;
-import com.dnd.moddo.domain.auth.service.AuthService;
-import com.dnd.moddo.domain.auth.service.KakaoClient;
-import com.dnd.moddo.domain.auth.service.RefreshTokenService;
-import com.dnd.moddo.domain.character.controller.CharacterController;
-import com.dnd.moddo.domain.character.service.QueryCharacterService;
-import com.dnd.moddo.domain.image.controller.ImageController;
-import com.dnd.moddo.domain.image.service.CommandImageService;
 import com.dnd.moddo.event.application.command.CommandExpenseService;
 import com.dnd.moddo.event.application.command.CommandMemberService;
 import com.dnd.moddo.event.application.command.CommandSettlementService;
@@ -26,9 +25,10 @@ import com.dnd.moddo.event.presentation.ExpenseController;
 import com.dnd.moddo.event.presentation.MemberController;
 import com.dnd.moddo.event.presentation.MemberExpenseController;
 import com.dnd.moddo.event.presentation.SettlementController;
-import com.dnd.moddo.global.jwt.auth.JwtAuth;
-import com.dnd.moddo.global.jwt.auth.JwtFilter;
-import com.dnd.moddo.global.jwt.service.JwtService;
+import com.dnd.moddo.image.application.CommandImageService;
+import com.dnd.moddo.image.presentation.ImageController;
+import com.dnd.moddo.reward.application.QueryCharacterService;
+import com.dnd.moddo.reward.presentation.CharacterController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -51,9 +51,6 @@ public abstract class ControllerTest {
 	protected ObjectMapper objectMapper;
 
 	// Service
-	@MockBean
-	protected JwtService jwtService;
-
 	@MockBean
 	protected AuthService authService;
 
@@ -93,6 +90,9 @@ public abstract class ControllerTest {
 	@MockBean
 	protected CookieProperties cookieProperties;
 	// Jwt
+	@MockBean
+	protected LoginUserArgumentResolver loginUserArgumentResolver;
+
 	@MockBean
 	protected JwtAuth jwtAuth;
 

@@ -12,9 +12,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsUtils;
 
-import com.dnd.moddo.global.jwt.auth.JwtAuth;
-import com.dnd.moddo.global.jwt.auth.JwtFilter;
-import com.dnd.moddo.global.jwt.utill.JwtUtil;
+import com.dnd.moddo.auth.infrastructure.security.JwtAuth;
+import com.dnd.moddo.auth.infrastructure.security.JwtFilter;
+import com.dnd.moddo.auth.infrastructure.security.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 

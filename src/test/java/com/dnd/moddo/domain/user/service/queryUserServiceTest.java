@@ -12,7 +12,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.domain.user.service.implementation.UserReader;
+import com.dnd.moddo.user.application.QueryUserService;
+import com.dnd.moddo.user.application.impl.UserReader;
 
 @ExtendWith(MockitoExtension.class)
 public class queryUserServiceTest {

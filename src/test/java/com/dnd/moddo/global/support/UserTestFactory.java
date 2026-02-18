@@ -1,11 +1,11 @@
 package com.dnd.moddo.global.support;
 
-import static com.dnd.moddo.domain.user.entity.type.Authority.*;
+import static com.dnd.moddo.user.domain.Authority.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import com.dnd.moddo.domain.user.entity.User;
+import com.dnd.moddo.user.domain.User;
 
 public class UserTestFactory {
 	public static User createGuestDefault() {
