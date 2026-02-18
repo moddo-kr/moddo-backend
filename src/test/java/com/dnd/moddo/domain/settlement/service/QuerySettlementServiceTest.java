@@ -23,8 +23,10 @@ import com.dnd.moddo.event.domain.member.ExpenseRole;
 import com.dnd.moddo.event.domain.member.Member;
 import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.domain.settlement.exception.GroupNotFoundException;
+import com.dnd.moddo.event.domain.settlement.type.SettlementStatus;
 import com.dnd.moddo.event.presentation.response.SettlementDetailResponse;
 import com.dnd.moddo.event.presentation.response.SettlementHeaderResponse;
+import com.dnd.moddo.event.presentation.response.SettlementListResponse;
 import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)
@@ -193,5 +195,59 @@ class QuerySettlementServiceTest {
 			.hasMessageContaining("code");
 
 		verify(settlementReader, times(1)).findIdByGroupCode(anyString());
+	}
+
+	@Test
+	@DisplayName("status가 null이면 ALL로 조회한다.")
+	void search_WhenStatusIsNull_ShouldUseAll() {
+		// given
+		Long userId = 1L;
+		List<SettlementListResponse> mockList = List.of();
+
+		when(settlementReader.findListByUserIdAndStatus(
+			userId, SettlementStatus.ALL))
+			.thenReturn(mockList);
+
+		// when
+		List<SettlementListResponse> result =
+			querySettlementService.search(userId, null);
+
+		// then
+		assertThat(result).isEmpty();
+
+		verify(settlementReader, times(1))
+			.findListByUserIdAndStatus(userId, SettlementStatus.ALL);
+	}
+
+	@Test
+	@DisplayName("status가 존재하면 해당 status로 조회한다.")
+	void search_WhenStatusExists_ShouldUseGivenStatus() {
+		// given
+		Long userId = 1L;
+		SettlementStatus status = SettlementStatus.IN_PROGRESS;
+
+		List<SettlementListResponse> mockList = List.of(
+			new SettlementListResponse(
+				1L,
+				"groupCode",
+				"모또 모임",
+				5L,
+				3L
+			)
+		);
+
+		when(settlementReader.findListByUserIdAndStatus(userId, status))
+			.thenReturn(mockList);
+
+		// when
+		List<SettlementListResponse> result =
+			querySettlementService.search(userId, status);
+
+		// then
+		assertThat(result).hasSize(1);
+		assertThat(result.get(0).groupId()).isEqualTo(1L);
+
+		verify(settlementReader, times(1))
+			.findListByUserIdAndStatus(userId, status);
 	}
 }

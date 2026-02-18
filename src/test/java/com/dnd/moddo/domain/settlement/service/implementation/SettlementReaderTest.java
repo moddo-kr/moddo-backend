@@ -18,10 +18,13 @@ import com.dnd.moddo.event.application.impl.SettlementReader;
 import com.dnd.moddo.event.domain.member.Member;
 import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.domain.settlement.exception.GroupNotFoundException;
+import com.dnd.moddo.event.domain.settlement.type.SettlementStatus;
 import com.dnd.moddo.event.infrastructure.ExpenseRepository;
 import com.dnd.moddo.event.infrastructure.MemberRepository;
+import com.dnd.moddo.event.infrastructure.SettlementQueryRepository;
 import com.dnd.moddo.event.infrastructure.SettlementRepository;
 import com.dnd.moddo.event.presentation.response.SettlementHeaderResponse;
+import com.dnd.moddo.event.presentation.response.SettlementListResponse;
 
 @ExtendWith(MockitoExtension.class)
 class SettlementReaderTest {
@@ -34,6 +37,9 @@ class SettlementReaderTest {
 
 	@Mock
 	private MemberRepository memberRepository;
+
+	@Mock
+	private SettlementQueryRepository settlementQueryRepository;
 
 	@InjectMocks
 	private SettlementReader settlementReader;
@@ -125,4 +131,44 @@ class SettlementReaderTest {
 
 		verify(settlementRepository, times(1)).getIdByCode(anyString());
 	}
+
+	@Test
+	@DisplayName("사용자와 상태를 통해 정산 리스트를 정상적으로 조회할 수 있다.")
+	void findListByUserAndStatus_Success() {
+		// Given
+		Long userId = 1L;
+		SettlementStatus status = SettlementStatus.IN_PROGRESS;
+
+		List<SettlementListResponse> mockList = List.of(
+			new SettlementListResponse(
+				1L,
+				"groupCode",
+				"모또 모임",
+				5L,
+				3L
+			),
+			new SettlementListResponse(
+				2L,
+				"groupCode2",
+				"두번째 모임",
+				4L,
+				4L
+			)
+		);
+
+		when(settlementQueryRepository.findByUserAndStatus(userId, status))
+			.thenReturn(mockList);
+
+		// When
+		List<SettlementListResponse> result =
+			settlementReader.findListByUserIdAndStatus(userId, status);
+
+		// Then
+		assertThat(result).hasSize(2);
+		assertThat(result.get(0).groupId()).isEqualTo(1L);
+
+		verify(settlementQueryRepository, times(1))
+			.findByUserAndStatus(userId, status);
+	}
+
 }

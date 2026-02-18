@@ -47,6 +47,7 @@ public class SettlementReader {
 		return settlementRepository.getIdByCode(code);
 	}
 
+	@Transactional(readOnly = true)
 	public List<SettlementListResponse> findListByUserIdAndStatus(Long userId, SettlementStatus status) {
 		return settlementQueryRepository.findByUserAndStatus(userId, status);
 

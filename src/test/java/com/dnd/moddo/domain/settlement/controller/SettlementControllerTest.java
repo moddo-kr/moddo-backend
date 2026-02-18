@@ -3,6 +3,8 @@ package com.dnd.moddo.domain.settlement.controller;
 import static com.dnd.moddo.event.domain.member.ExpenseRole.*;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalDateTime;
@@ -15,11 +17,13 @@ import org.springframework.http.MediaType;
 
 import com.dnd.moddo.auth.presentation.response.LoginUserInfo;
 import com.dnd.moddo.common.logging.ErrorNotifier;
+import com.dnd.moddo.event.domain.settlement.type.SettlementStatus;
 import com.dnd.moddo.event.presentation.request.SettlementAccountRequest;
 import com.dnd.moddo.event.presentation.request.SettlementRequest;
 import com.dnd.moddo.event.presentation.response.MemberResponse;
 import com.dnd.moddo.event.presentation.response.SettlementDetailResponse;
 import com.dnd.moddo.event.presentation.response.SettlementHeaderResponse;
+import com.dnd.moddo.event.presentation.response.SettlementListResponse;
 import com.dnd.moddo.event.presentation.response.SettlementResponse;
 import com.dnd.moddo.event.presentation.response.SettlementSaveResponse;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
@@ -120,4 +124,53 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 				.param("groupToken", "groupToken"))
 			.andExpect(status().isOk());
 	}
+
+	@Test
+	@DisplayName("속한 정산 리스트를 성공적으로 조회할 수 있다.")
+	void searchSettlementList() throws Exception {
+		// given
+		List<SettlementListResponse> list = List.of(
+			new SettlementListResponse(
+				1L,
+				"groupCode",
+				"모또 모임",
+				5L,
+				3L
+			)
+		);
+
+		given(loginUserArgumentResolver.supportsParameter(any()))
+			.willReturn(true);
+
+		given(loginUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+			.willReturn(new LoginUserInfo(1L, "USER"));
+
+		given(querySettlementService.search(1L, SettlementStatus.IN_PROGRESS))
+			.willReturn(list);
+
+		// when & then
+		mockMvc.perform(get("/api/v1/group/list")
+				.param("status", "IN_PROGRESS"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$[0].groupId").value(1L))
+			.andExpect(jsonPath("$[0].groupCode").value("groupCode"))
+			.andExpect(jsonPath("$[0].name").value("모또 모임"))
+			.andExpect(jsonPath("$[0].totalMemberCount").value(5L))
+			.andExpect(jsonPath("$[0].completedMemberCount").value(3L))
+			.andDo(restDocs.document(
+				queryParameters(
+					parameterWithName("status")
+						.description("정산 상태 (ALL | IN_PROGRESS | COMPLETED)")
+						.optional()
+				),
+				responseFields(
+					fieldWithPath("[].groupId").description("정산 ID"),
+					fieldWithPath("[].groupCode").description("정산 코드"),
+					fieldWithPath("[].name").description("정산 이름"),
+					fieldWithPath("[].totalMemberCount").description("총 참여자 수"),
+					fieldWithPath("[].completedMemberCount").description("입금 완료 참여자 수")
+				)
+			));
+	}
+
 }
