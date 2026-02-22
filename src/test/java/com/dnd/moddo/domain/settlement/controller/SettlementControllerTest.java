@@ -139,6 +139,7 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 				1L,
 				"groupCode",
 				"모또 모임",
+				10000L,
 				5L,
 				3L,
 				fixedTime,
@@ -167,6 +168,7 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 			.andExpect(jsonPath("$[0].groupId").value(1L))
 			.andExpect(jsonPath("$[0].groupCode").value("groupCode"))
 			.andExpect(jsonPath("$[0].name").value("모또 모임"))
+			.andExpect(jsonPath("$[0].totalAmount").value(10000L))
 			.andExpect(jsonPath("$[0].totalMemberCount").value(5L))
 			.andExpect(jsonPath("$[0].completedMemberCount").value(3L))
 			.andExpect(jsonPath("$[0].createdAt").value(fixedTime.toString()))
@@ -187,6 +189,7 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 					fieldWithPath("[].groupId").description("정산 ID"),
 					fieldWithPath("[].groupCode").description("정산 코드"),
 					fieldWithPath("[].name").description("정산 이름"),
+					fieldWithPath("[].totalAmount").description("총 정산 금"),
 					fieldWithPath("[].totalMemberCount").description("총 참여자 수"),
 					fieldWithPath("[].completedMemberCount").description("입금 완료 참여자 수"),
 					fieldWithPath("[].createdAt").description("정산 생성일시"),

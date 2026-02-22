@@ -256,6 +256,7 @@ class QuerySettlementServiceTest {
 				1L,
 				"groupCode",
 				"모또 모임",
+				30000L,
 				5L,
 				3L,
 				LocalDateTime.now(),

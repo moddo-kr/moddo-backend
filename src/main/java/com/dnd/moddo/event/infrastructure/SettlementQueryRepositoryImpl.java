@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
+import com.dnd.moddo.event.domain.expense.QExpense;
 import com.dnd.moddo.event.domain.member.QMember;
 import com.dnd.moddo.event.domain.settlement.QSettlement;
 import com.dnd.moddo.event.domain.settlement.type.SettlementSortType;
@@ -15,6 +16,8 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -35,6 +38,7 @@ public class SettlementQueryRepositoryImpl
 	) {
 		QSettlement settlement = QSettlement.settlement;
 		QMember member = QMember.member;
+		QExpense expense = QExpense.expense;
 
 		BooleanExpression userCondition =
 			member.user.id.eq(userId);
@@ -61,6 +65,12 @@ public class SettlementQueryRepositoryImpl
 				member.isPaid
 			);
 
+		JPQLQuery<Long> totalAmount =
+			JPAExpressions
+				.select(expense.amount.sum().coalesce(0L))
+				.from(expense)
+				.where(expense.settlement.id.eq(settlement.id));
+
 		OrderSpecifier<?> orderSpecifier =
 			getOrderSpecifier(sortType, settlement, memberCount, completedCount);
 
@@ -70,6 +80,7 @@ public class SettlementQueryRepositoryImpl
 				settlement.id,
 				settlement.code,
 				settlement.name,
+				totalAmount,
 				memberCount,
 				completedCount.coalesce(0L),
 				settlement.createdAt,
