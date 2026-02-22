@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -91,7 +92,7 @@ public class SettlementController {
 	@GetMapping("/list")
 	public ResponseEntity<?> search(
 		@LoginUser LoginUserInfo user,
-		@Valid SearchSettlementListRequest request
+		@Valid @ModelAttribute SearchSettlementListRequest request
 	) {
 		List<SettlementListResponse> response = querySettlementService.search(user.userId(), request);
 		return ResponseEntity.ok(response);

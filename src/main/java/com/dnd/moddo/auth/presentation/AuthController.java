@@ -18,12 +18,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dnd.moddo.auth.application.AuthService;
 import com.dnd.moddo.auth.application.RefreshTokenService;
+import com.dnd.moddo.auth.infrastructure.security.JwtProvider;
 import com.dnd.moddo.auth.infrastructure.security.LoginUser;
+import com.dnd.moddo.auth.presentation.response.AuthCheckResponse;
 import com.dnd.moddo.auth.presentation.response.LoginUserInfo;
 import com.dnd.moddo.auth.presentation.response.RefreshResponse;
 import com.dnd.moddo.auth.presentation.response.TokenResponse;
 import com.dnd.moddo.common.config.CookieProperties;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +42,7 @@ public class AuthController {
 	private final AuthService authService;
 	private final RefreshTokenService refreshTokenService;
 	private final CookieProperties cookieProperties;
+	private final JwtProvider jwtProvider;
 
 	@GetMapping("/user/guest/token")
 	public ResponseEntity<TokenResponse> getGuestToken() {
@@ -79,6 +85,37 @@ public class AuthController {
 		return ResponseEntity.ok()
 			.header(HttpHeaders.SET_COOKIE, cookie)
 			.body(Collections.singletonMap("message", "Logout successful"));
+	}
+
+	@GetMapping("/auth/check")
+	public ResponseEntity<AuthCheckResponse> checkAuth(
+		@CookieValue(value = "accessToken", required = false) String token
+	) {
+		if (token == null) {
+			return ResponseEntity.ok(
+				AuthCheckResponse.fail(AuthCheckResponse.AuthFailReason.NO_TOKEN)
+			);
+		}
+
+		try {
+			Claims claims = jwtProvider.parseClaims(token);
+
+			Long userId = jwtProvider.getUserId(token);
+			String role = jwtProvider.getRole(token);
+
+			return ResponseEntity.ok(
+				AuthCheckResponse.success(userId, role)
+			);
+
+		} catch (ExpiredJwtException e) {
+			return ResponseEntity.ok(
+				AuthCheckResponse.fail(AuthCheckResponse.AuthFailReason.TOKEN_EXPIRED)
+			);
+		} catch (JwtException e) {
+			return ResponseEntity.ok(
+				AuthCheckResponse.fail(AuthCheckResponse.AuthFailReason.INVALID_TOKEN)
+			);
+		}
 	}
 
 	private ResponseCookie createCookie(String name, String key) {

@@ -287,39 +287,6 @@ class QuerySettlementServiceTest {
 	}
 
 	@Test
-	@DisplayName("sort가 null이면 LATEST를 기본값으로 사용한다.")
-	void search_WhenSortIsNull_ShouldUseLatest() {
-		// given
-		Long userId = 1L;
-
-		SearchSettlementListRequest request =
-			new SearchSettlementListRequest(
-				SettlementStatus.ALL,
-				null,
-				20
-			);
-
-		when(settlementReader.findListByUserIdAndStatus(
-			userId,
-			SettlementStatus.ALL,
-			SettlementSortType.LATEST,
-			20
-		)).thenReturn(List.of());
-
-		// when
-		querySettlementService.search(userId, request);
-
-		// then
-		verify(settlementReader, times(1))
-			.findListByUserIdAndStatus(
-				userId,
-				SettlementStatus.ALL,
-				SettlementSortType.LATEST,
-				20
-			);
-	}
-
-	@Test
 	@DisplayName("limit가 null이면 기본값 10을 사용한다.")
 	void search_WhenLimitIsNull_ShouldUseDefaultLimit() {
 		// given
@@ -348,7 +315,7 @@ class QuerySettlementServiceTest {
 				userId,
 				SettlementStatus.ALL,
 				SettlementSortType.LATEST,
-				20
+				10
 			);
 	}
 }

@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -129,13 +130,18 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 	@DisplayName("속한 정산 리스트를 성공적으로 조회할 수 있다.")
 	void searchSettlementList() throws Exception {
 		// given
+		LocalDateTime fixedTime = LocalDateTime.of(
+			2026, 2, 22, 18, 14, 13, 285872000
+		);
 		List<SettlementListResponse> list = List.of(
 			new SettlementListResponse(
 				1L,
 				"groupCode",
 				"모또 모임",
 				5L,
-				3L
+				3L,
+				fixedTime,
+				null
 			)
 		);
 
@@ -162,6 +168,8 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 			.andExpect(jsonPath("$[0].name").value("모또 모임"))
 			.andExpect(jsonPath("$[0].totalMemberCount").value(5L))
 			.andExpect(jsonPath("$[0].completedMemberCount").value(3L))
+			.andExpect(jsonPath("$[0].createdAt").value(fixedTime.toString()))
+			.andExpect(jsonPath("$[0].completedAt").value(Matchers.nullValue()))
 			.andDo(restDocs.document(
 				queryParameters(
 					parameterWithName("status")
@@ -171,7 +179,7 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 						.description("정렬 방식 (LATEST | OLDEST )")
 						.optional(),
 					parameterWithName("limit")
-						.description("조회 개수 제한")
+						.description("조회 개수 제한(min=1, max=100)")
 						.optional()
 				),
 				responseFields(
@@ -179,7 +187,9 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 					fieldWithPath("[].groupCode").description("정산 코드"),
 					fieldWithPath("[].name").description("정산 이름"),
 					fieldWithPath("[].totalMemberCount").description("총 참여자 수"),
-					fieldWithPath("[].completedMemberCount").description("입금 완료 참여자 수")
+					fieldWithPath("[].completedMemberCount").description("입금 완료 참여자 수"),
+					fieldWithPath("[].createdAt").description("정산 생성일시"),
+					fieldWithPath("[].completedAt").description("정산 완료일시 (완료되지 않은 경우 null)")
 				)
 			));
 	}
