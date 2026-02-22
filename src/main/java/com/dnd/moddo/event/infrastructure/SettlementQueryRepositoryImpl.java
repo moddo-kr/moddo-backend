@@ -6,8 +6,10 @@ import org.springframework.stereotype.Repository;
 
 import com.dnd.moddo.event.domain.member.QMember;
 import com.dnd.moddo.event.domain.settlement.QSettlement;
+import com.dnd.moddo.event.domain.settlement.type.SettlementSortType;
 import com.dnd.moddo.event.domain.settlement.type.SettlementStatus;
 import com.dnd.moddo.event.presentation.response.SettlementListResponse;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
@@ -26,16 +28,16 @@ public class SettlementQueryRepositoryImpl
 	@Override
 	public List<SettlementListResponse> findByUserAndStatus(
 		Long userId,
-		SettlementStatus status
+		SettlementStatus status,
+		SettlementSortType sortType,
+		int limit
 	) {
 		QSettlement settlement = QSettlement.settlement;
 		QMember member = QMember.member;
 
-		// 내가 속한 정산 조건
 		BooleanExpression userCondition =
 			member.user.id.eq(userId);
 
-		// 상태 조건
 		BooleanExpression statusCondition = null;
 
 		if (status == SettlementStatus.IN_PROGRESS) {
@@ -48,7 +50,9 @@ public class SettlementQueryRepositoryImpl
 			statusCondition != null
 				? userCondition.and(statusCondition)
 				: userCondition;
-		
+
+		NumberExpression<Long> memberCount = member.id.count();
+
 		NumberExpression<Long> completedCount =
 			Expressions.numberTemplate(
 				Long.class,
@@ -56,14 +60,19 @@ public class SettlementQueryRepositoryImpl
 				member.isPaid
 			);
 
+		OrderSpecifier<?> orderSpecifier =
+			getOrderSpecifier(sortType, settlement, memberCount, completedCount);
+
 		return queryFactory
 			.select(Projections.constructor(
 				SettlementListResponse.class,
 				settlement.id,
 				settlement.code,
 				settlement.name,
-				member.id.count(),
-				completedCount.coalesce(0L)
+				memberCount,
+				completedCount.coalesce(0L),
+				settlement.createdAt,
+				settlement.completedAt
 			))
 			.from(member)
 			.join(member.settlement, settlement)
@@ -73,8 +82,21 @@ public class SettlementQueryRepositoryImpl
 				settlement.code,
 				settlement.name
 			)
-			.orderBy(settlement.createdAt.desc())
+			.orderBy(orderSpecifier)
+			.limit(limit)
 			.fetch();
 	}
 
+	private OrderSpecifier<?> getOrderSpecifier(
+		SettlementSortType sortType,
+		QSettlement settlement,
+		NumberExpression<Long> memberCount,
+		NumberExpression<Long> completedCount
+	) {
+		return switch (sortType) {
+			case OLDEST -> settlement.createdAt.asc();
+			case LATEST -> settlement.createdAt.desc();
+			default -> settlement.createdAt.desc();
+		};
+	}
 }

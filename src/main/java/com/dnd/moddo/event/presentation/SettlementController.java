@@ -15,7 +15,7 @@ import com.dnd.moddo.auth.infrastructure.security.LoginUser;
 import com.dnd.moddo.auth.presentation.response.LoginUserInfo;
 import com.dnd.moddo.event.application.command.CommandSettlementService;
 import com.dnd.moddo.event.application.query.QuerySettlementService;
-import com.dnd.moddo.event.domain.settlement.type.SettlementStatus;
+import com.dnd.moddo.event.presentation.request.SearchSettlementListRequest;
 import com.dnd.moddo.event.presentation.request.SettlementAccountRequest;
 import com.dnd.moddo.event.presentation.request.SettlementRequest;
 import com.dnd.moddo.event.presentation.response.SettlementDetailResponse;
@@ -25,6 +25,7 @@ import com.dnd.moddo.event.presentation.response.SettlementResponse;
 import com.dnd.moddo.event.presentation.response.SettlementSaveResponse;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -90,9 +91,9 @@ public class SettlementController {
 	@GetMapping("/list")
 	public ResponseEntity<?> search(
 		@LoginUser LoginUserInfo user,
-		@RequestParam(required = false) SettlementStatus status
+		@Valid SearchSettlementListRequest request
 	) {
-		List<SettlementListResponse> response = querySettlementService.search(user.userId(), status);
+		List<SettlementListResponse> response = querySettlementService.search(user.userId(), request);
 		return ResponseEntity.ok(response);
 	}
 }

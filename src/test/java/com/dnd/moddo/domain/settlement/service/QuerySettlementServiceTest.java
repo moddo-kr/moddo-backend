@@ -23,7 +23,9 @@ import com.dnd.moddo.event.domain.member.ExpenseRole;
 import com.dnd.moddo.event.domain.member.Member;
 import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.domain.settlement.exception.GroupNotFoundException;
+import com.dnd.moddo.event.domain.settlement.type.SettlementSortType;
 import com.dnd.moddo.event.domain.settlement.type.SettlementStatus;
+import com.dnd.moddo.event.presentation.request.SearchSettlementListRequest;
 import com.dnd.moddo.event.presentation.response.SettlementDetailResponse;
 import com.dnd.moddo.event.presentation.response.SettlementHeaderResponse;
 import com.dnd.moddo.event.presentation.response.SettlementListResponse;
@@ -202,21 +204,37 @@ class QuerySettlementServiceTest {
 	void search_WhenStatusIsNull_ShouldUseAll() {
 		// given
 		Long userId = 1L;
+
+		SearchSettlementListRequest request =
+			new SearchSettlementListRequest(
+				null,
+				SettlementSortType.LATEST,
+				20
+			);
+
 		List<SettlementListResponse> mockList = List.of();
 
 		when(settlementReader.findListByUserIdAndStatus(
-			userId, SettlementStatus.ALL))
-			.thenReturn(mockList);
+			userId,
+			SettlementStatus.ALL,
+			SettlementSortType.LATEST,
+			20
+		)).thenReturn(mockList);
 
 		// when
 		List<SettlementListResponse> result =
-			querySettlementService.search(userId, null);
+			querySettlementService.search(userId, request);
 
 		// then
 		assertThat(result).isEmpty();
 
 		verify(settlementReader, times(1))
-			.findListByUserIdAndStatus(userId, SettlementStatus.ALL);
+			.findListByUserIdAndStatus(
+				userId,
+				SettlementStatus.ALL,
+				SettlementSortType.LATEST,
+				20
+			);
 	}
 
 	@Test
@@ -224,7 +242,13 @@ class QuerySettlementServiceTest {
 	void search_WhenStatusExists_ShouldUseGivenStatus() {
 		// given
 		Long userId = 1L;
-		SettlementStatus status = SettlementStatus.IN_PROGRESS;
+
+		SearchSettlementListRequest request =
+			new SearchSettlementListRequest(
+				SettlementStatus.IN_PROGRESS,
+				SettlementSortType.LATEST,
+				20
+			);
 
 		List<SettlementListResponse> mockList = List.of(
 			new SettlementListResponse(
@@ -232,22 +256,99 @@ class QuerySettlementServiceTest {
 				"groupCode",
 				"모또 모임",
 				5L,
-				3L
+				3L,
+				LocalDateTime.now(),
+				null
 			)
 		);
 
-		when(settlementReader.findListByUserIdAndStatus(userId, status))
-			.thenReturn(mockList);
+		when(settlementReader.findListByUserIdAndStatus(
+			userId,
+			SettlementStatus.IN_PROGRESS,
+			SettlementSortType.LATEST,
+			20
+		)).thenReturn(mockList);
 
 		// when
 		List<SettlementListResponse> result =
-			querySettlementService.search(userId, status);
+			querySettlementService.search(userId, request);
 
 		// then
 		assertThat(result).hasSize(1);
 		assertThat(result.get(0).groupId()).isEqualTo(1L);
 
 		verify(settlementReader, times(1))
-			.findListByUserIdAndStatus(userId, status);
+			.findListByUserIdAndStatus(
+				userId,
+				SettlementStatus.IN_PROGRESS,
+				SettlementSortType.LATEST,
+				20
+			);
+	}
+
+	@Test
+	@DisplayName("sort가 null이면 LATEST를 기본값으로 사용한다.")
+	void search_WhenSortIsNull_ShouldUseLatest() {
+		// given
+		Long userId = 1L;
+
+		SearchSettlementListRequest request =
+			new SearchSettlementListRequest(
+				SettlementStatus.ALL,
+				null,
+				20
+			);
+
+		when(settlementReader.findListByUserIdAndStatus(
+			userId,
+			SettlementStatus.ALL,
+			SettlementSortType.LATEST,
+			20
+		)).thenReturn(List.of());
+
+		// when
+		querySettlementService.search(userId, request);
+
+		// then
+		verify(settlementReader, times(1))
+			.findListByUserIdAndStatus(
+				userId,
+				SettlementStatus.ALL,
+				SettlementSortType.LATEST,
+				20
+			);
+	}
+
+	@Test
+	@DisplayName("limit가 null이면 기본값 10을 사용한다.")
+	void search_WhenLimitIsNull_ShouldUseDefaultLimit() {
+		// given
+		Long userId = 1L;
+
+		SearchSettlementListRequest request =
+			new SearchSettlementListRequest(
+				SettlementStatus.ALL,
+				SettlementSortType.LATEST,
+				null
+			);
+
+		when(settlementReader.findListByUserIdAndStatus(
+			userId,
+			SettlementStatus.ALL,
+			SettlementSortType.LATEST,
+			10
+		)).thenReturn(List.of());
+
+		// when
+		querySettlementService.search(userId, request);
+
+		// then
+		verify(settlementReader, times(1))
+			.findListByUserIdAndStatus(
+				userId,
+				SettlementStatus.ALL,
+				SettlementSortType.LATEST,
+				20
+			);
 	}
 }

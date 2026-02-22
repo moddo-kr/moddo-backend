@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.moddo.event.domain.member.Member;
 import com.dnd.moddo.event.domain.settlement.Settlement;
+import com.dnd.moddo.event.domain.settlement.type.SettlementSortType;
 import com.dnd.moddo.event.domain.settlement.type.SettlementStatus;
 import com.dnd.moddo.event.infrastructure.ExpenseRepository;
 import com.dnd.moddo.event.infrastructure.MemberRepository;
@@ -48,8 +49,9 @@ public class SettlementReader {
 	}
 
 	@Transactional(readOnly = true)
-	public List<SettlementListResponse> findListByUserIdAndStatus(Long userId, SettlementStatus status) {
-		return settlementQueryRepository.findByUserAndStatus(userId, status);
+	public List<SettlementListResponse> findListByUserIdAndStatus(Long userId, SettlementStatus status,
+		SettlementSortType sort, int limit) {
+		return settlementQueryRepository.findByUserAndStatus(userId, status, sort, limit);
 
 	}
 }

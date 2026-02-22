@@ -17,7 +17,7 @@ import org.springframework.http.MediaType;
 
 import com.dnd.moddo.auth.presentation.response.LoginUserInfo;
 import com.dnd.moddo.common.logging.ErrorNotifier;
-import com.dnd.moddo.event.domain.settlement.type.SettlementStatus;
+import com.dnd.moddo.event.presentation.request.SearchSettlementListRequest;
 import com.dnd.moddo.event.presentation.request.SettlementAccountRequest;
 import com.dnd.moddo.event.presentation.request.SettlementRequest;
 import com.dnd.moddo.event.presentation.response.MemberResponse;
@@ -145,12 +145,17 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 		given(loginUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
 			.willReturn(new LoginUserInfo(1L, "USER"));
 
-		given(querySettlementService.search(1L, SettlementStatus.IN_PROGRESS))
-			.willReturn(list);
+		given(querySettlementService.search(
+			eq(1L),
+			any(SearchSettlementListRequest.class)
+		)).willReturn(list);
 
 		// when & then
 		mockMvc.perform(get("/api/v1/group/list")
-				.param("status", "IN_PROGRESS"))
+				.param("status", "IN_PROGRESS")
+				.param("sort", "LATEST")
+				.param("limit", "20")
+			)
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$[0].groupId").value(1L))
 			.andExpect(jsonPath("$[0].groupCode").value("groupCode"))
@@ -161,6 +166,12 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 				queryParameters(
 					parameterWithName("status")
 						.description("정산 상태 (ALL | IN_PROGRESS | COMPLETED)")
+						.optional(),
+					parameterWithName("sort")
+						.description("정렬 방식 (LATEST | OLDEST )")
+						.optional(),
+					parameterWithName("limit")
+						.description("조회 개수 제한")
 						.optional()
 				),
 				responseFields(

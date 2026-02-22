@@ -10,6 +10,7 @@ import com.dnd.moddo.event.application.impl.SettlementValidator;
 import com.dnd.moddo.event.domain.member.Member;
 import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.domain.settlement.type.SettlementStatus;
+import com.dnd.moddo.event.presentation.request.SearchSettlementListRequest;
 import com.dnd.moddo.event.presentation.response.SettlementDetailResponse;
 import com.dnd.moddo.event.presentation.response.SettlementHeaderResponse;
 import com.dnd.moddo.event.presentation.response.SettlementListResponse;
@@ -44,11 +45,13 @@ public class QuerySettlementService {
 
 	public List<SettlementListResponse> search(
 		Long userId,
-		SettlementStatus status
+		SearchSettlementListRequest request
 	) {
 		SettlementStatus effectiveStatus =
-			status == null ? SettlementStatus.ALL : status;
+			request.status() == null ? SettlementStatus.ALL : request.status();
 
-		return settlementReader.findListByUserIdAndStatus(userId, effectiveStatus);
+		int limit = request.limit() == null ? 10 : request.limit();
+
+		return settlementReader.findListByUserIdAndStatus(userId, effectiveStatus, request.sort(), limit);
 	}
 }
