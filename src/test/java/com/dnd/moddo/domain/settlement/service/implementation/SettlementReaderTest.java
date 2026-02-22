@@ -153,7 +153,7 @@ class SettlementReaderTest {
 				5L,
 				3L,
 				LocalDateTime.now(),
-				LocalDateTime.now()
+				null
 			),
 			new SettlementListResponse(
 				2L,
@@ -163,7 +163,7 @@ class SettlementReaderTest {
 				4L,
 				4L,
 				LocalDateTime.now(),
-				LocalDateTime.now()
+				null
 			)
 		);
 
@@ -210,7 +210,7 @@ class SettlementReaderTest {
 				"두번째 모임",
 				"groupCode2",
 				LocalDateTime.now(),
-				LocalDateTime.now()
+				null
 			)
 		);
 

@@ -146,20 +146,20 @@ user가 속한 정산의 공유 링크 리스트를 조회할 수 있다.
 
 === Example
 
-include::{snippets}/settlement-controller-test/get-share-link-list_-success/curl-request.adoc[]
+include::{snippets}/settlement-controller-test/get-share-link-list-success/curl-request.adoc[]
 
 === HTTP
 
 ==== 요청
 
-include::{snippets}/settlement-controller-test/get-share-link-list_-success/http-request.adoc[]
+include::{snippets}/settlement-controller-test/get-share-link-list-success/http-request.adoc[]
 
 ==== 응답
 
-include::{snippets}/settlement-controller-test/get-share-link-list_-success/http-response.adoc[]
+include::{snippets}/settlement-controller-test/get-share-link-list-success/http-response.adoc[]
 
 === Body
 
 ==== 응답
 
-include::{snippets}/settlement-controller-test/get-share-link-list_-success/response-body.adoc[]
+include::{snippets}/settlement-controller-test/get-share-link-list-success/response-body.adoc[]

@@ -103,31 +103,31 @@ include::{snippets}/auth-controller-test/kakao-logout/response-body.adoc[]
 
 == 토큰 상태 확인
 
-쿠키에 담긴 토큰의 유효성을 확인합니다
+쿠키에 담긴 토큰의 유효성을 확인합니다.
 
 === Example
 
-include::{snippets}/auth-controller-test/check-auth_-success/http-request.adoc[]
+include::{snippets}/auth-controller-test/check-auth-success/http-request.adoc[]
 
 === HTTP
 
 ==== 요청
 
-include::{snippets}/auth-controller-test/check-auth_-success/curl-request.adoc[]
+include::{snippets}/auth-controller-test/check-auth-success/curl-request.adoc[]
 
 ==== 응답
 
-include::{snippets}/auth-controller-test/check-auth_-success/http-response.adoc[]
+include::{snippets}/auth-controller-test/check-auth-success/http-response.adoc[]
 
 === Body
 
 ==== 응답 (valid)
 
-include::{snippets}/auth-controller-test/check-auth_-success/response-body.adoc[]
+include::{snippets}/auth-controller-test/check-auth-success/response-body.adoc[]
 
 ==== 응답 (invalid)
 
-include::{snippets}/auth-controller-test/check-auth_-expired/response-body.adoc[]
+include::{snippets}/auth-controller-test/check-auth-expired/response-body.adoc[]
 
-include::{snippets}/auth-controller-test/check-auth_-invalid-token/response-body.adoc[]
+include::{snippets}/auth-controller-test/check-auth-invalid-token/response-body.adoc[]
 

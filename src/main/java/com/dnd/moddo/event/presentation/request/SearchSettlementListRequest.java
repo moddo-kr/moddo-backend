@@ -15,6 +15,7 @@ public record SearchSettlementListRequest(
 	@NotNull(message = "정렬 방식은 필수입니다.")
 	SettlementSortType sort,
 
+	@NotNull(message = "limit은 필수입니다.")
 	@Min(value = 1, message = "limit은 1 이상이어야 합니다.")
 	@Max(value = 100, message = "limit은 최대 100까지 가능합니다.")
 	Integer limit

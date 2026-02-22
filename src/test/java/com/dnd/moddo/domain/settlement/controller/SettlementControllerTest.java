@@ -200,7 +200,7 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 
 	@Test
 	@DisplayName("공유용 정산 리스트를 정상적으로 조회할 수 있다.")
-	void getShareLinkList_Success() throws Exception {
+	void getShareLinkListSuccess() throws Exception {
 		// given
 		Long userId = 1L;
 
@@ -236,7 +236,7 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 			.andExpect(jsonPath("$[0].settlementId").value(1L))
 			.andExpect(jsonPath("$[0].name").value("모또 모임"))
 			.andExpect(jsonPath("$[0].groupCode").value("groupCode"))
-			.andExpect(jsonPath("$[0].completedAt").isEmpty())
+			.andExpect(jsonPath("$[0].completedAt").value(Matchers.nullValue()))
 			.andDo(restDocs.document(
 				responseFields(
 					fieldWithPath("[].settlementId").description("정산 ID"),
