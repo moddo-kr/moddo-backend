@@ -11,6 +11,7 @@ import com.dnd.moddo.auth.application.KakaoClient;
 import com.dnd.moddo.auth.application.RefreshTokenService;
 import com.dnd.moddo.auth.infrastructure.security.JwtAuth;
 import com.dnd.moddo.auth.infrastructure.security.JwtFilter;
+import com.dnd.moddo.auth.infrastructure.security.JwtProvider;
 import com.dnd.moddo.auth.infrastructure.security.LoginUserArgumentResolver;
 import com.dnd.moddo.auth.presentation.AuthController;
 import com.dnd.moddo.common.config.CookieProperties;
@@ -98,6 +99,9 @@ public abstract class ControllerTest {
 
 	@MockBean
 	protected JwtFilter jwtFilter;
+
+	@MockBean
+	protected JwtProvider jwtProvider;
 
 	protected String toJson(Object object) throws JsonProcessingException {
 		return objectMapper.writeValueAsString(object);

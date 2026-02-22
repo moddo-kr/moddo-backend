@@ -23,8 +23,13 @@ import com.dnd.moddo.event.domain.member.ExpenseRole;
 import com.dnd.moddo.event.domain.member.Member;
 import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.domain.settlement.exception.GroupNotFoundException;
+import com.dnd.moddo.event.domain.settlement.type.SettlementSortType;
+import com.dnd.moddo.event.domain.settlement.type.SettlementStatus;
+import com.dnd.moddo.event.presentation.request.SearchSettlementListRequest;
 import com.dnd.moddo.event.presentation.response.SettlementDetailResponse;
 import com.dnd.moddo.event.presentation.response.SettlementHeaderResponse;
+import com.dnd.moddo.event.presentation.response.SettlementListResponse;
+import com.dnd.moddo.event.presentation.response.SettlementShareResponse;
 import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,7 +50,13 @@ class QuerySettlementServiceTest {
 	@BeforeEach
 	void setUp() {
 		settlement = GroupTestFactory.createDefault();
-		member = new Member("김완숙", 1, settlement, false, ExpenseRole.MANAGER);
+		member = Member.builder()
+			.name("김완숙")
+			.profileId(1)
+			.settlement(settlement)
+			.role(ExpenseRole.PARTICIPANT)
+			.user(null)
+			.build();
 
 		setField(settlement, "id", 1L);
 	}
@@ -187,5 +198,164 @@ class QuerySettlementServiceTest {
 			.hasMessageContaining("code");
 
 		verify(settlementReader, times(1)).findIdByGroupCode(anyString());
+	}
+
+	@Test
+	@DisplayName("status가 null이면 ALL로 조회한다.")
+	void search_WhenStatusIsNull_ShouldUseAll() {
+		// given
+		Long userId = 1L;
+
+		SearchSettlementListRequest request =
+			new SearchSettlementListRequest(
+				null,
+				SettlementSortType.LATEST,
+				20
+			);
+
+		List<SettlementListResponse> mockList = List.of();
+
+		when(settlementReader.findListByUserIdAndStatus(
+			userId,
+			SettlementStatus.ALL,
+			SettlementSortType.LATEST,
+			20
+		)).thenReturn(mockList);
+
+		// when
+		List<SettlementListResponse> result =
+			querySettlementService.search(userId, request);
+
+		// then
+		assertThat(result).isEmpty();
+
+		verify(settlementReader, times(1))
+			.findListByUserIdAndStatus(
+				userId,
+				SettlementStatus.ALL,
+				SettlementSortType.LATEST,
+				20
+			);
+	}
+
+	@Test
+	@DisplayName("status가 존재하면 해당 status로 조회한다.")
+	void search_WhenStatusExists_ShouldUseGivenStatus() {
+		// given
+		Long userId = 1L;
+
+		SearchSettlementListRequest request =
+			new SearchSettlementListRequest(
+				SettlementStatus.IN_PROGRESS,
+				SettlementSortType.LATEST,
+				20
+			);
+
+		List<SettlementListResponse> mockList = List.of(
+			new SettlementListResponse(
+				1L,
+				"groupCode",
+				"모또 모임",
+				5L,
+				3L,
+				LocalDateTime.now(),
+				null
+			)
+		);
+
+		when(settlementReader.findListByUserIdAndStatus(
+			userId,
+			SettlementStatus.IN_PROGRESS,
+			SettlementSortType.LATEST,
+			20
+		)).thenReturn(mockList);
+
+		// when
+		List<SettlementListResponse> result =
+			querySettlementService.search(userId, request);
+
+		// then
+		assertThat(result).hasSize(1);
+		assertThat(result.get(0).groupId()).isEqualTo(1L);
+
+		verify(settlementReader, times(1))
+			.findListByUserIdAndStatus(
+				userId,
+				SettlementStatus.IN_PROGRESS,
+				SettlementSortType.LATEST,
+				20
+			);
+	}
+
+	@Test
+	@DisplayName("limit가 null이면 기본값 10을 사용한다.")
+	void search_WhenLimitIsNull_ShouldUseDefaultLimit() {
+		// given
+		Long userId = 1L;
+
+		SearchSettlementListRequest request =
+			new SearchSettlementListRequest(
+				SettlementStatus.ALL,
+				SettlementSortType.LATEST,
+				null
+			);
+
+		when(settlementReader.findListByUserIdAndStatus(
+			userId,
+			SettlementStatus.ALL,
+			SettlementSortType.LATEST,
+			10
+		)).thenReturn(List.of());
+
+		// when
+		querySettlementService.search(userId, request);
+
+		// then
+		verify(settlementReader, times(1))
+			.findListByUserIdAndStatus(
+				userId,
+				SettlementStatus.ALL,
+				SettlementSortType.LATEST,
+				10
+			);
+	}
+
+	@Test
+	@DisplayName("사용자 ID로 공유용 정산 리스트를 정상적으로 조회할 수 있다.")
+	void findSettlementShareList_Success() {
+		// given
+		Long userId = 1L;
+
+		List<SettlementShareResponse> mockList = List.of(
+			new SettlementShareResponse(
+				1L,
+				"모또 모임",
+				"groupCode",
+				LocalDateTime.now(),
+				null
+			),
+			new SettlementShareResponse(
+				2L,
+				"두번째 모임",
+				"groupCode2",
+				LocalDateTime.now(),
+				LocalDateTime.now()
+			)
+		);
+
+		when(settlementReader.findShareListByUserId(userId))
+			.thenReturn(mockList);
+
+		// when
+		List<SettlementShareResponse> result =
+			querySettlementService.findSettlementShareList(userId);
+
+		// then
+		assertThat(result).hasSize(2);
+		assertThat(result.get(0).settlementId()).isEqualTo(1L);
+		assertThat(result.get(0).name()).isEqualTo("모또 모임");
+
+		verify(settlementReader, times(1))
+			.findShareListByUserId(userId);
 	}
 }
