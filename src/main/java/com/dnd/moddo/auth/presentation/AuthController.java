@@ -1,5 +1,7 @@
 package com.dnd.moddo.auth.presentation;
 
+import static com.dnd.moddo.auth.infrastructure.security.JwtConstants.*;
+
 import java.io.IOException;
 import java.util.Collections;
 
@@ -100,8 +102,8 @@ public class AuthController {
 		try {
 			Claims claims = jwtProvider.parseClaims(token);
 
-			Long userId = jwtProvider.getUserId(token);
-			String role = jwtProvider.getRole(token);
+			Long userId = claims.get(AUTH_ID.getMessage(), Long.class);
+			String role = claims.get(ROLE.getMessage(), String.class);
 
 			return ResponseEntity.ok(
 				AuthCheckResponse.success(userId, role)

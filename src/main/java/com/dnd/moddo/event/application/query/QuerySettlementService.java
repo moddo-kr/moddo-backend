@@ -9,6 +9,7 @@ import com.dnd.moddo.event.application.impl.SettlementReader;
 import com.dnd.moddo.event.application.impl.SettlementValidator;
 import com.dnd.moddo.event.domain.member.Member;
 import com.dnd.moddo.event.domain.settlement.Settlement;
+import com.dnd.moddo.event.domain.settlement.type.SettlementSortType;
 import com.dnd.moddo.event.domain.settlement.type.SettlementStatus;
 import com.dnd.moddo.event.presentation.request.SearchSettlementListRequest;
 import com.dnd.moddo.event.presentation.response.SettlementDetailResponse;
@@ -51,9 +52,12 @@ public class QuerySettlementService {
 		SettlementStatus effectiveStatus =
 			request.status() == null ? SettlementStatus.ALL : request.status();
 
+		SettlementSortType effectiveSort =
+			request.sort() == null ? SettlementSortType.LATEST : request.sort();
+
 		int limit = request.limit() == null ? 10 : request.limit();
 
-		return settlementReader.findListByUserIdAndStatus(userId, effectiveStatus, request.sort(), limit);
+		return settlementReader.findListByUserIdAndStatus(userId, effectiveStatus, effectiveSort, limit);
 	}
 
 	public List<SettlementShareResponse> findSettlementShareList(Long userId) {
