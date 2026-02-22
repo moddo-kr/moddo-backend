@@ -9,6 +9,7 @@ import com.dnd.moddo.event.domain.settlement.QSettlement;
 import com.dnd.moddo.event.domain.settlement.type.SettlementSortType;
 import com.dnd.moddo.event.domain.settlement.type.SettlementStatus;
 import com.dnd.moddo.event.presentation.response.SettlementListResponse;
+import com.dnd.moddo.event.presentation.response.SettlementShareResponse;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -84,6 +85,27 @@ public class SettlementQueryRepositoryImpl
 			)
 			.orderBy(orderSpecifier)
 			.limit(limit)
+			.fetch();
+	}
+
+	@Override
+	public List<SettlementShareResponse> findBySettlementList(Long userId) {
+		QSettlement settlement = QSettlement.settlement;
+		QMember member = QMember.member;
+
+		return queryFactory
+			.select(Projections.constructor(
+				SettlementShareResponse.class,
+				settlement.id,
+				settlement.name,
+				settlement.code,
+				settlement.createdAt,
+				settlement.completedAt
+			))
+			.from(member)
+			.join(member.settlement, settlement)
+			.where(member.user.id.eq(userId))
+			.orderBy(settlement.createdAt.desc())
 			.fetch();
 	}
 

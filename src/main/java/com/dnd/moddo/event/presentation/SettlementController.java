@@ -24,6 +24,7 @@ import com.dnd.moddo.event.presentation.response.SettlementHeaderResponse;
 import com.dnd.moddo.event.presentation.response.SettlementListResponse;
 import com.dnd.moddo.event.presentation.response.SettlementResponse;
 import com.dnd.moddo.event.presentation.response.SettlementSaveResponse;
+import com.dnd.moddo.event.presentation.response.SettlementShareResponse;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -95,6 +96,14 @@ public class SettlementController {
 		@Valid @ModelAttribute SearchSettlementListRequest request
 	) {
 		List<SettlementListResponse> response = querySettlementService.search(user.userId(), request);
+		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/share")
+	public ResponseEntity<?> getShareLinkList(
+		@LoginUser LoginUserInfo user
+	) {
+		List<SettlementShareResponse> response = querySettlementService.findSettlementShareList(user.userId());
 		return ResponseEntity.ok(response);
 	}
 }

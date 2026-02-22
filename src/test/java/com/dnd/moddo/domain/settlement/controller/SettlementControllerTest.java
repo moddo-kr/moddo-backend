@@ -27,6 +27,7 @@ import com.dnd.moddo.event.presentation.response.SettlementHeaderResponse;
 import com.dnd.moddo.event.presentation.response.SettlementListResponse;
 import com.dnd.moddo.event.presentation.response.SettlementResponse;
 import com.dnd.moddo.event.presentation.response.SettlementSaveResponse;
+import com.dnd.moddo.event.presentation.response.SettlementShareResponse;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
 
 public class SettlementControllerTest extends RestDocsTestSupport {
@@ -190,6 +191,56 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 					fieldWithPath("[].completedMemberCount").description("입금 완료 참여자 수"),
 					fieldWithPath("[].createdAt").description("정산 생성일시"),
 					fieldWithPath("[].completedAt").description("정산 완료일시 (완료되지 않은 경우 null)")
+				)
+			));
+	}
+
+	@Test
+	@DisplayName("공유용 정산 리스트를 정상적으로 조회할 수 있다.")
+	void getShareLinkList_Success() throws Exception {
+		// given
+		Long userId = 1L;
+
+		List<SettlementShareResponse> mockList = List.of(
+			new SettlementShareResponse(
+				1L,
+				"모또 모임",
+				"groupCode",
+				LocalDateTime.of(2026, 1, 1, 12, 0),
+				null
+			),
+			new SettlementShareResponse(
+				2L,
+				"두번째 모임",
+				"groupCode2",
+				LocalDateTime.of(2026, 1, 2, 12, 0),
+				LocalDateTime.of(2026, 1, 3, 12, 0)
+			)
+		);
+
+		given(loginUserArgumentResolver.supportsParameter(any()))
+			.willReturn(true);
+
+		given(loginUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+			.willReturn(new LoginUserInfo(userId, "USER"));
+
+		given(querySettlementService.findSettlementShareList(userId))
+			.willReturn(mockList);
+
+		// when & then
+		mockMvc.perform(get("/api/v1/group/share"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$[0].settlementId").value(1L))
+			.andExpect(jsonPath("$[0].name").value("모또 모임"))
+			.andExpect(jsonPath("$[0].groupCode").value("groupCode"))
+			.andExpect(jsonPath("$[0].completedAt").isEmpty())
+			.andDo(restDocs.document(
+				responseFields(
+					fieldWithPath("[].settlementId").description("정산 ID"),
+					fieldWithPath("[].name").description("정산 이름"),
+					fieldWithPath("[].groupCode").description("공유 코드"),
+					fieldWithPath("[].createdAt").description("생성 일시"),
+					fieldWithPath("[].completedAt").description("완료 일시 (완료되지 않았으면 null)").optional()
 				)
 			));
 	}

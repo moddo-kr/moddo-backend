@@ -140,4 +140,26 @@ include::{snippets}/settlement-controller-test/search-settlement-list/http-respo
 
 include::{snippets}/settlement-controller-test/search-settlement-list/response-body.adoc[]
 
+== 공유 링크 리스트 조회
 
+user가 속한 정산의 공유 링크 리스트를 조회할 수 있다.
+
+=== Example
+
+include::{snippets}/settlement-controller-test/get-share-link-list_-success/curl-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/settlement-controller-test/get-share-link-list_-success/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/settlement-controller-test/get-share-link-list_-success/http-response.adoc[]
+
+=== Body
+
+==== 응답
+
+include::{snippets}/settlement-controller-test/get-share-link-list_-success/response-body.adoc[]

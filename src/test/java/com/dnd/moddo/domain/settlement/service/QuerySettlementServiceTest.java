@@ -29,6 +29,7 @@ import com.dnd.moddo.event.presentation.request.SearchSettlementListRequest;
 import com.dnd.moddo.event.presentation.response.SettlementDetailResponse;
 import com.dnd.moddo.event.presentation.response.SettlementHeaderResponse;
 import com.dnd.moddo.event.presentation.response.SettlementListResponse;
+import com.dnd.moddo.event.presentation.response.SettlementShareResponse;
 import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)
@@ -317,5 +318,44 @@ class QuerySettlementServiceTest {
 				SettlementSortType.LATEST,
 				10
 			);
+	}
+
+	@Test
+	@DisplayName("사용자 ID로 공유용 정산 리스트를 정상적으로 조회할 수 있다.")
+	void findSettlementShareList_Success() {
+		// given
+		Long userId = 1L;
+
+		List<SettlementShareResponse> mockList = List.of(
+			new SettlementShareResponse(
+				1L,
+				"모또 모임",
+				"groupCode",
+				LocalDateTime.now(),
+				null
+			),
+			new SettlementShareResponse(
+				2L,
+				"두번째 모임",
+				"groupCode2",
+				LocalDateTime.now(),
+				LocalDateTime.now()
+			)
+		);
+
+		when(settlementReader.findShareListByUserId(userId))
+			.thenReturn(mockList);
+
+		// when
+		List<SettlementShareResponse> result =
+			querySettlementService.findSettlementShareList(userId);
+
+		// then
+		assertThat(result).hasSize(2);
+		assertThat(result.get(0).settlementId()).isEqualTo(1L);
+		assertThat(result.get(0).name()).isEqualTo("모또 모임");
+
+		verify(settlementReader, times(1))
+			.findShareListByUserId(userId);
 	}
 }

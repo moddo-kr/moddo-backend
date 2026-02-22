@@ -15,6 +15,7 @@ import com.dnd.moddo.event.infrastructure.SettlementQueryRepository;
 import com.dnd.moddo.event.infrastructure.SettlementRepository;
 import com.dnd.moddo.event.presentation.response.SettlementHeaderResponse;
 import com.dnd.moddo.event.presentation.response.SettlementListResponse;
+import com.dnd.moddo.event.presentation.response.SettlementShareResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -53,5 +54,10 @@ public class SettlementReader {
 		SettlementSortType sort, int limit) {
 		return settlementQueryRepository.findByUserAndStatus(userId, status, sort, limit);
 
+	}
+
+	@Transactional(readOnly = true)
+	public List<SettlementShareResponse> findShareListByUserId(Long userId) {
+		return settlementQueryRepository.findBySettlementList(userId);
 	}
 }

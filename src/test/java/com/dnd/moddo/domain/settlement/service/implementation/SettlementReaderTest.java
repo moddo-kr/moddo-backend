@@ -27,6 +27,7 @@ import com.dnd.moddo.event.infrastructure.SettlementQueryRepository;
 import com.dnd.moddo.event.infrastructure.SettlementRepository;
 import com.dnd.moddo.event.presentation.response.SettlementHeaderResponse;
 import com.dnd.moddo.event.presentation.response.SettlementListResponse;
+import com.dnd.moddo.event.presentation.response.SettlementShareResponse;
 
 @ExtendWith(MockitoExtension.class)
 class SettlementReaderTest {
@@ -188,4 +189,42 @@ class SettlementReaderTest {
 			.findByUserAndStatus(userId, status, sortType, limit);
 	}
 
+	@Test
+	@DisplayName("사용자 ID로 공유용 정산 리스트를 정상적으로 조회할 수 있다.")
+	void findShareListByUserId_Success() {
+		// Given
+		Long userId = 1L;
+
+		List<SettlementShareResponse> mockList = List.of(
+			new SettlementShareResponse(
+				1L,
+				"모또 모임",
+				"groupCode",
+				LocalDateTime.now(),
+				null
+			),
+			new SettlementShareResponse(
+				2L,
+				"두번째 모임",
+				"groupCode2",
+				LocalDateTime.now(),
+				LocalDateTime.now()
+			)
+		);
+
+		when(settlementQueryRepository.findBySettlementList(userId))
+			.thenReturn(mockList);
+
+		// When
+		List<SettlementShareResponse> result =
+			settlementReader.findShareListByUserId(userId);
+
+		// Then
+		assertThat(result).hasSize(2);
+		assertThat(result.get(0).settlementId()).isEqualTo(1L);
+		assertThat(result.get(0).name()).isEqualTo("모또 모임");
+
+		verify(settlementQueryRepository, times(1))
+			.findBySettlementList(userId);
+	}
 }

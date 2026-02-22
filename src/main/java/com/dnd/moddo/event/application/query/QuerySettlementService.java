@@ -14,6 +14,7 @@ import com.dnd.moddo.event.presentation.request.SearchSettlementListRequest;
 import com.dnd.moddo.event.presentation.response.SettlementDetailResponse;
 import com.dnd.moddo.event.presentation.response.SettlementHeaderResponse;
 import com.dnd.moddo.event.presentation.response.SettlementListResponse;
+import com.dnd.moddo.event.presentation.response.SettlementShareResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -53,5 +54,9 @@ public class QuerySettlementService {
 		int limit = request.limit() == null ? 10 : request.limit();
 
 		return settlementReader.findListByUserIdAndStatus(userId, effectiveStatus, request.sort(), limit);
+	}
+
+	public List<SettlementShareResponse> findSettlementShareList(Long userId) {
+		return settlementReader.findShareListByUserId(userId);
 	}
 }
