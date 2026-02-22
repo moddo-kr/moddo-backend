@@ -70,12 +70,9 @@ public class GlobalExceptionHandler {
 		MethodArgumentNotValidException e
 	) {
 
-		String message = e.getBindingResult()
-			.getFieldErrors()
-			.stream()
-			.findFirst()
-			.map(error -> error.getField() + " : " + error.getDefaultMessage())
-			.orElse("잘못된 요청입니다.");
+		LoggingUtils.warn(e);
+
+		String message = e.getMessage();
 
 		return ResponseEntity.badRequest()
 			.body(new ErrorResponse(400, message));

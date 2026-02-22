@@ -6,6 +6,7 @@ public record SettlementListResponse(
 	Long groupId,
 	String groupCode,
 	String name,
+	Long totalAmount,
 	Long totalMemberCount,
 	Long completedMemberCount,
 	LocalDateTime createdAt,

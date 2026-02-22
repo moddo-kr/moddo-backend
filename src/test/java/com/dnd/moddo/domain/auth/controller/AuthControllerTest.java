@@ -1,5 +1,6 @@
 package com.dnd.moddo.domain.auth.controller;
 
+import static com.dnd.moddo.auth.infrastructure.security.JwtConstants.*;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.restdocs.cookies.CookieDocumentation.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
@@ -141,14 +142,14 @@ class AuthControllerTest extends RestDocsTestSupport {
 
 	@Test
 	@DisplayName("토큰이 유효하면 인증 성공 응답을 반환한다.")
-	void checkAuth_Success() throws Exception {
+	void checkAuthSuccess() throws Exception {
 		// given
 		String token = "valid-token";
 
 		Claims claims = mock(Claims.class);
 		given(jwtProvider.parseClaims(token)).willReturn(claims);
-		given(jwtProvider.getUserId(token)).willReturn(1L);
-		given(jwtProvider.getRole(token)).willReturn("USER");
+		given(claims.get(AUTH_ID.getMessage(), Long.class)).willReturn(1L);
+		given(claims.get(ROLE.getMessage(), String.class)).willReturn("USER");
 
 		// when & then
 		mockMvc.perform(get("/api/v1/auth/check")
@@ -163,15 +164,14 @@ class AuthControllerTest extends RestDocsTestSupport {
 					fieldWithPath("authenticated").description("인증 여부"),
 					fieldWithPath("user").description("사용자 정보").optional(),
 					fieldWithPath("user.id").description("사용자 ID").optional(),
-					fieldWithPath("user.role").description("사용자 권한").optional(),
-					fieldWithPath("reason").description("실패 사유 (인증 실패 시)").optional()
+					fieldWithPath("user.role").description("사용자 권한").optional()
 				)
 			));
 	}
 
 	@Test
 	@DisplayName("토큰이 없으면 NO_TOKEN 응답을 반환한다.")
-	void checkAuth_NoToken() throws Exception {
+	void checkAuthNoToken() throws Exception {
 
 		mockMvc.perform(get("/api/v1/auth/check"))
 			.andExpect(status().isOk())
@@ -180,7 +180,6 @@ class AuthControllerTest extends RestDocsTestSupport {
 			.andDo(restDocs.document(
 				responseFields(
 					fieldWithPath("authenticated").description("인증 여부"),
-					fieldWithPath("user").description("사용자 정보").optional(),
 					fieldWithPath("reason").description("실패 사유 (NO_TOKEN)")
 				)
 			));
@@ -188,7 +187,7 @@ class AuthControllerTest extends RestDocsTestSupport {
 
 	@Test
 	@DisplayName("토큰이 만료되면 TOKEN_EXPIRED 응답을 반환한다.")
-	void checkAuth_Expired() throws Exception {
+	void checkAuthExpired() throws Exception {
 		// given
 		String token = "expired-token";
 
@@ -203,7 +202,6 @@ class AuthControllerTest extends RestDocsTestSupport {
 			.andDo(restDocs.document(
 				responseFields(
 					fieldWithPath("authenticated").description("인증 여부"),
-					fieldWithPath("user").description("사용자 정보").optional(),
 					fieldWithPath("reason").description("실패 사유 (TOKEN_EXPIRED)")
 				)
 			));
@@ -211,7 +209,7 @@ class AuthControllerTest extends RestDocsTestSupport {
 
 	@Test
 	@DisplayName("토큰이 유효하지 않으면 INVALID_TOKEN 응답을 반환한다.")
-	void checkAuth_InvalidToken() throws Exception {
+	void checkAuthInvalidToken() throws Exception {
 		// given
 		String token = "invalid-token";
 
@@ -226,7 +224,6 @@ class AuthControllerTest extends RestDocsTestSupport {
 			.andDo(restDocs.document(
 				responseFields(
 					fieldWithPath("authenticated").description("인증 여부"),
-					fieldWithPath("user").description("사용자 정보").optional(),
 					fieldWithPath("reason").description("실패 사유 (INVALID_TOKEN)")
 				)
 			));
