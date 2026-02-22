@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.any;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -18,10 +19,15 @@ import com.dnd.moddo.event.application.impl.SettlementReader;
 import com.dnd.moddo.event.domain.member.Member;
 import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.domain.settlement.exception.GroupNotFoundException;
+import com.dnd.moddo.event.domain.settlement.type.SettlementSortType;
+import com.dnd.moddo.event.domain.settlement.type.SettlementStatus;
 import com.dnd.moddo.event.infrastructure.ExpenseRepository;
 import com.dnd.moddo.event.infrastructure.MemberRepository;
+import com.dnd.moddo.event.infrastructure.SettlementQueryRepository;
 import com.dnd.moddo.event.infrastructure.SettlementRepository;
 import com.dnd.moddo.event.presentation.response.SettlementHeaderResponse;
+import com.dnd.moddo.event.presentation.response.SettlementListResponse;
+import com.dnd.moddo.event.presentation.response.SettlementShareResponse;
 
 @ExtendWith(MockitoExtension.class)
 class SettlementReaderTest {
@@ -34,6 +40,9 @@ class SettlementReaderTest {
 
 	@Mock
 	private MemberRepository memberRepository;
+
+	@Mock
+	private SettlementQueryRepository settlementQueryRepository;
 
 	@InjectMocks
 	private SettlementReader settlementReader;
@@ -124,5 +133,98 @@ class SettlementReaderTest {
 			.hasMessageContaining("code");
 
 		verify(settlementRepository, times(1)).getIdByCode(anyString());
+	}
+
+	@Test
+	@DisplayName("사용자와 상태를 통해 정산 리스트를 정상적으로 조회할 수 있다.")
+	void findListByUserAndStatus_Success() {
+		// Given
+		Long userId = 1L;
+		SettlementStatus status = SettlementStatus.IN_PROGRESS;
+		SettlementSortType sortType = SettlementSortType.LATEST;
+		int limit = 20;
+
+		List<SettlementListResponse> mockList = List.of(
+			new SettlementListResponse(
+				1L,
+				"groupCode",
+				"모또 모임",
+				5L,
+				3L,
+				LocalDateTime.now(),
+				LocalDateTime.now()
+			),
+			new SettlementListResponse(
+				2L,
+				"groupCode2",
+				"두번째 모임",
+				4L,
+				4L,
+				LocalDateTime.now(),
+				LocalDateTime.now()
+			)
+		);
+
+		when(settlementQueryRepository.findByUserAndStatus(
+			userId,
+			status,
+			sortType,
+			limit
+		)).thenReturn(mockList);
+
+		// When
+		List<SettlementListResponse> result =
+			settlementReader.findListByUserIdAndStatus(
+				userId,
+				status,
+				sortType,
+				limit
+			);
+
+		// Then
+		assertThat(result).hasSize(2);
+		assertThat(result.get(0).groupId()).isEqualTo(1L);
+
+		verify(settlementQueryRepository, times(1))
+			.findByUserAndStatus(userId, status, sortType, limit);
+	}
+
+	@Test
+	@DisplayName("사용자 ID로 공유용 정산 리스트를 정상적으로 조회할 수 있다.")
+	void findShareListByUserId_Success() {
+		// Given
+		Long userId = 1L;
+
+		List<SettlementShareResponse> mockList = List.of(
+			new SettlementShareResponse(
+				1L,
+				"모또 모임",
+				"groupCode",
+				LocalDateTime.now(),
+				null
+			),
+			new SettlementShareResponse(
+				2L,
+				"두번째 모임",
+				"groupCode2",
+				LocalDateTime.now(),
+				LocalDateTime.now()
+			)
+		);
+
+		when(settlementQueryRepository.findBySettlementList(userId))
+			.thenReturn(mockList);
+
+		// When
+		List<SettlementShareResponse> result =
+			settlementReader.findShareListByUserId(userId);
+
+		// Then
+		assertThat(result).hasSize(2);
+		assertThat(result.get(0).settlementId()).isEqualTo(1L);
+		assertThat(result.get(0).name()).isEqualTo("모또 모임");
+
+		verify(settlementQueryRepository, times(1))
+			.findBySettlementList(userId);
 	}
 }

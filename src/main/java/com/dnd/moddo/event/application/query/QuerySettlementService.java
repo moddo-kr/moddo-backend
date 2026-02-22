@@ -9,8 +9,12 @@ import com.dnd.moddo.event.application.impl.SettlementReader;
 import com.dnd.moddo.event.application.impl.SettlementValidator;
 import com.dnd.moddo.event.domain.member.Member;
 import com.dnd.moddo.event.domain.settlement.Settlement;
+import com.dnd.moddo.event.domain.settlement.type.SettlementStatus;
+import com.dnd.moddo.event.presentation.request.SearchSettlementListRequest;
 import com.dnd.moddo.event.presentation.response.SettlementDetailResponse;
 import com.dnd.moddo.event.presentation.response.SettlementHeaderResponse;
+import com.dnd.moddo.event.presentation.response.SettlementListResponse;
+import com.dnd.moddo.event.presentation.response.SettlementShareResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -38,5 +42,21 @@ public class QuerySettlementService {
 
 	public Long findIdByCodeNoCache(String code) {
 		return settlementReader.findIdByGroupCode(code);
+	}
+
+	public List<SettlementListResponse> search(
+		Long userId,
+		SearchSettlementListRequest request
+	) {
+		SettlementStatus effectiveStatus =
+			request.status() == null ? SettlementStatus.ALL : request.status();
+
+		int limit = request.limit() == null ? 10 : request.limit();
+
+		return settlementReader.findListByUserIdAndStatus(userId, effectiveStatus, request.sort(), limit);
+	}
+
+	public List<SettlementShareResponse> findSettlementShareList(Long userId) {
+		return settlementReader.findShareListByUserId(userId);
 	}
 }

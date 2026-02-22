@@ -106,6 +106,7 @@ public class CommandMemberServiceTest {
 			.isPaid(true)
 			.profileId(1)
 			.role(ExpenseRole.PARTICIPANT)
+			.isPaid(true)
 			.build();
 
 		PaymentStatusUpdateRequest request =
@@ -128,7 +129,7 @@ public class CommandMemberServiceTest {
 
 		verify(memberUpdater).updatePaymentStatus(any(), eq(request));
 		verify(queryMemberService).findAllBySettlementId(any());
-		
+
 		verify(mockSettlement).complete();
 	}
 

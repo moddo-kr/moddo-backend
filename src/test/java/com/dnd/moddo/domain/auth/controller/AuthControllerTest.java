@@ -23,6 +23,9 @@ import com.dnd.moddo.auth.presentation.response.TokenResponse;
 import com.dnd.moddo.common.logging.ErrorNotifier;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;
 
 class AuthControllerTest extends RestDocsTestSupport {
@@ -119,7 +122,7 @@ class AuthControllerTest extends RestDocsTestSupport {
 
 		given(loginUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
 			.willReturn(new LoginUserInfo(1L, "USER"));
-		
+
 		doNothing().when(authService).logout(any());
 
 		//when & then
@@ -132,6 +135,99 @@ class AuthControllerTest extends RestDocsTestSupport {
 				),
 				responseFields(
 					fieldWithPath("message").type(JsonFieldType.STRING).description("로그아웃 성공 메시지")
+				)
+			));
+	}
+
+	@Test
+	@DisplayName("토큰이 유효하면 인증 성공 응답을 반환한다.")
+	void checkAuth_Success() throws Exception {
+		// given
+		String token = "valid-token";
+
+		Claims claims = mock(Claims.class);
+		given(jwtProvider.parseClaims(token)).willReturn(claims);
+		given(jwtProvider.getUserId(token)).willReturn(1L);
+		given(jwtProvider.getRole(token)).willReturn("USER");
+
+		// when & then
+		mockMvc.perform(get("/api/v1/auth/check")
+				.cookie(new Cookie("accessToken", token)))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.authenticated").value(true))
+			.andExpect(jsonPath("$.user.id").value(1L))
+			.andExpect(jsonPath("$.user.role").value("USER"))
+			.andExpect(jsonPath("$.reason").doesNotExist())
+			.andDo(restDocs.document(
+				responseFields(
+					fieldWithPath("authenticated").description("인증 여부"),
+					fieldWithPath("user").description("사용자 정보").optional(),
+					fieldWithPath("user.id").description("사용자 ID").optional(),
+					fieldWithPath("user.role").description("사용자 권한").optional(),
+					fieldWithPath("reason").description("실패 사유 (인증 실패 시)").optional()
+				)
+			));
+	}
+
+	@Test
+	@DisplayName("토큰이 없으면 NO_TOKEN 응답을 반환한다.")
+	void checkAuth_NoToken() throws Exception {
+
+		mockMvc.perform(get("/api/v1/auth/check"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.authenticated").value(false))
+			.andExpect(jsonPath("$.reason").value("NO_TOKEN"))
+			.andDo(restDocs.document(
+				responseFields(
+					fieldWithPath("authenticated").description("인증 여부"),
+					fieldWithPath("user").description("사용자 정보").optional(),
+					fieldWithPath("reason").description("실패 사유 (NO_TOKEN)")
+				)
+			));
+	}
+
+	@Test
+	@DisplayName("토큰이 만료되면 TOKEN_EXPIRED 응답을 반환한다.")
+	void checkAuth_Expired() throws Exception {
+		// given
+		String token = "expired-token";
+
+		given(jwtProvider.parseClaims(token))
+			.willThrow(new ExpiredJwtException(null, null, "expired"));
+
+		mockMvc.perform(get("/api/v1/auth/check")
+				.cookie(new Cookie("accessToken", token)))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.authenticated").value(false))
+			.andExpect(jsonPath("$.reason").value("TOKEN_EXPIRED"))
+			.andDo(restDocs.document(
+				responseFields(
+					fieldWithPath("authenticated").description("인증 여부"),
+					fieldWithPath("user").description("사용자 정보").optional(),
+					fieldWithPath("reason").description("실패 사유 (TOKEN_EXPIRED)")
+				)
+			));
+	}
+
+	@Test
+	@DisplayName("토큰이 유효하지 않으면 INVALID_TOKEN 응답을 반환한다.")
+	void checkAuth_InvalidToken() throws Exception {
+		// given
+		String token = "invalid-token";
+
+		given(jwtProvider.parseClaims(token))
+			.willThrow(new JwtException("invalid"));
+
+		mockMvc.perform(get("/api/v1/auth/check")
+				.cookie(new Cookie("accessToken", token)))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.authenticated").value(false))
+			.andExpect(jsonPath("$.reason").value("INVALID_TOKEN"))
+			.andDo(restDocs.document(
+				responseFields(
+					fieldWithPath("authenticated").description("인증 여부"),
+					fieldWithPath("user").description("사용자 정보").optional(),
+					fieldWithPath("reason").description("실패 사유 (INVALID_TOKEN)")
 				)
 			));
 	}

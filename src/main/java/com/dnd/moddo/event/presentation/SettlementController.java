@@ -1,7 +1,10 @@
 package com.dnd.moddo.event.presentation;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,14 +16,18 @@ import com.dnd.moddo.auth.infrastructure.security.LoginUser;
 import com.dnd.moddo.auth.presentation.response.LoginUserInfo;
 import com.dnd.moddo.event.application.command.CommandSettlementService;
 import com.dnd.moddo.event.application.query.QuerySettlementService;
+import com.dnd.moddo.event.presentation.request.SearchSettlementListRequest;
 import com.dnd.moddo.event.presentation.request.SettlementAccountRequest;
 import com.dnd.moddo.event.presentation.request.SettlementRequest;
 import com.dnd.moddo.event.presentation.response.SettlementDetailResponse;
 import com.dnd.moddo.event.presentation.response.SettlementHeaderResponse;
+import com.dnd.moddo.event.presentation.response.SettlementListResponse;
 import com.dnd.moddo.event.presentation.response.SettlementResponse;
 import com.dnd.moddo.event.presentation.response.SettlementSaveResponse;
+import com.dnd.moddo.event.presentation.response.SettlementShareResponse;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -80,6 +87,23 @@ public class SettlementController {
 		Long settlementId = querySettlementService.findIdByCodeNoCache(code);
 
 		SettlementHeaderResponse response = querySettlementService.findBySettlementHeader(settlementId);
+		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/list")
+	public ResponseEntity<?> search(
+		@LoginUser LoginUserInfo user,
+		@Valid @ModelAttribute SearchSettlementListRequest request
+	) {
+		List<SettlementListResponse> response = querySettlementService.search(user.userId(), request);
+		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/share")
+	public ResponseEntity<?> getShareLinkList(
+		@LoginUser LoginUserInfo user
+	) {
+		List<SettlementShareResponse> response = querySettlementService.findSettlementShareList(user.userId());
 		return ResponseEntity.ok(response);
 	}
 }

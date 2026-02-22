@@ -3,6 +3,7 @@ package com.dnd.moddo.event.domain.member;
 import java.time.LocalDateTime;
 
 import com.dnd.moddo.event.domain.settlement.Settlement;
+import com.dnd.moddo.user.domain.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,7 +24,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "appointment_members")
+@Table(name = "members")
 @Entity
 public class Member {
 
@@ -41,6 +42,10 @@ public class Member {
 	@JoinColumn(name = "settlement_id", nullable = false)
 	private Settlement settlement;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", nullable = true)
+	private User user;
+
 	@Column(name = "is_paid", nullable = false)
 	private boolean isPaid;
 
@@ -55,12 +60,21 @@ public class Member {
 	private Long version = 0L;
 
 	@Builder
-	public Member(String name, Integer profileId, Settlement settlement, boolean isPaid, ExpenseRole role) {
+	public Member(String name, Integer profileId, Settlement settlement, boolean isPaid, User user, ExpenseRole role) {
 		this.name = name;
 		this.profileId = profileId;
 		this.settlement = settlement;
-		this.isPaid = isPaid;
 		this.role = role;
+		this.user = user;
+		this.isPaid = isPaid;
+	}
+
+	public void assignUser(User user) {
+		if (this.user != null) {
+			throw new IllegalStateException("이미 사용자와 연결된 멤버입니다.");
+		}
+		this.user = user;
+		this.name = user.getName(); // 동기화
 	}
 
 	public boolean isManager() {
