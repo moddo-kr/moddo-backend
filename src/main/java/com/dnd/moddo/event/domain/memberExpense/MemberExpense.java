@@ -29,7 +29,7 @@ public class MemberExpense {
 	private Long expenseId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "appointment_member_id")
+	@JoinColumn(name = "member_id")
 	private Member member;
 
 	private Long amount;

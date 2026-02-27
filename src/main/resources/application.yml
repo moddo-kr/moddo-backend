@@ -14,7 +14,10 @@ spring:
         jdbc:
           time_zone: Asia/Seoul
     show-sql: true
-
+  data:
+    redis:
+      timeout: 300ms
+      connect-timeout: 300ms
 server:
   address: 0.0.0.0
   port: 8080
