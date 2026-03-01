@@ -5,11 +5,11 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dnd.moddo.auth.infrastructure.security.LoginUser;
@@ -32,7 +32,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/group")
+@RequestMapping("/api/v1/groups")
 public class SettlementController {
 	private final CommandSettlementService commandSettlementService;
 	private final QuerySettlementService querySettlementService;
@@ -47,10 +47,10 @@ public class SettlementController {
 		return ResponseEntity.ok(response);
 	}
 
-	@PutMapping("/account")
+	@PutMapping("/{code}/account")
 	public ResponseEntity<SettlementResponse> updateAccount(
 		HttpServletRequest request,
-		@RequestParam("groupToken") String code,
+		@PathVariable("code") String code,
 		@RequestBody SettlementAccountRequest settlementAccountRequest,
 		@LoginUser LoginUserInfo loginUser
 	) {
@@ -62,36 +62,27 @@ public class SettlementController {
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping
+	@GetMapping("/{code}")
 	public ResponseEntity<SettlementDetailResponse> getSettlement(
 		HttpServletRequest request,
-		@RequestParam("groupToken") String code,
+		@PathVariable("code") String code,
 		@LoginUser LoginUserInfo loginUser) {
 		Long settlementId = querySettlementService.findIdByCode(code);
 		SettlementDetailResponse response = querySettlementService.findOne(settlementId, loginUser.userId());
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping("/header")
+	@GetMapping("{code}/header")
 	public ResponseEntity<SettlementHeaderResponse> getHeader(
-		@RequestParam("groupToken") String code) {
+		@PathVariable("code") String code) {
 		Long settlementId = querySettlementService.findIdByCode(code);
 
 		SettlementHeaderResponse response = querySettlementService.findBySettlementHeader(settlementId);
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping("/header/no-cache")
-	public ResponseEntity<SettlementHeaderResponse> getHeaderNoCache(
-		@RequestParam("groupToken") String code) {
-		Long settlementId = querySettlementService.findIdByCodeNoCache(code);
-
-		SettlementHeaderResponse response = querySettlementService.findBySettlementHeader(settlementId);
-		return ResponseEntity.ok(response);
-	}
-
-	@GetMapping("/list")
-	public ResponseEntity<?> search(
+	@GetMapping
+	public ResponseEntity<?> getSettlementListBySearch(
 		@LoginUser LoginUserInfo user,
 		@Valid @ModelAttribute SearchSettlementListRequest request
 	) {
@@ -99,11 +90,11 @@ public class SettlementController {
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping("/share")
-	public ResponseEntity<?> getShareLinkList(
+	@GetMapping("/list")
+	public ResponseEntity<?> getSettlementList(
 		@LoginUser LoginUserInfo user
 	) {
-		List<SettlementShareResponse> response = querySettlementService.findSettlementShareList(user.userId());
+		List<SettlementShareResponse> response = querySettlementService.findSettlementList(user.userId());
 		return ResponseEntity.ok(response);
 	}
 }

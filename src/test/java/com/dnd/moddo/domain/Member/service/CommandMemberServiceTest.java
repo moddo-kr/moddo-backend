@@ -85,7 +85,7 @@ public class CommandMemberServiceTest {
 			expectedMember);
 
 		//when
-		MemberResponse response = commandMemberService.addAppointmentMember(groupId, request);
+		MemberResponse response = commandMemberService.addMember(groupId, request);
 
 		//then
 		assertThat(response).isNotNull();

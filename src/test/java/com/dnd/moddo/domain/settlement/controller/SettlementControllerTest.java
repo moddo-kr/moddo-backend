@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 
 import com.dnd.moddo.auth.presentation.response.LoginUserInfo;
 import com.dnd.moddo.common.logging.ErrorNotifier;
+import com.dnd.moddo.event.domain.member.ExpenseRole;
 import com.dnd.moddo.event.presentation.request.SearchSettlementListRequest;
 import com.dnd.moddo.event.presentation.request.SettlementAccountRequest;
 import com.dnd.moddo.event.presentation.request.SettlementRequest;
@@ -41,7 +42,7 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 		// given
 		SettlementRequest request = new SettlementRequest("모또 모임");
 		SettlementSaveResponse response = new SettlementSaveResponse("groupToken", new MemberResponse(
-			1L, MANAGER, "김모또", "https://moddo-s3.s3.amazonaws.com/profile/MODDO.png", true, LocalDateTime.now()
+			1L, MANAGER, "김모또", "https://moddo-s3.s3.amazonaws.com/profile/MODDO.png", 1L, true, LocalDateTime.now()
 		));
 
 		given(loginUserArgumentResolver.supportsParameter(any()))
@@ -52,7 +53,7 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 		given(commandSettlementService.createSettlement(any(), eq(1L))).willReturn(response);
 
 		// when & then
-		mockMvc.perform(post("/api/v1/group")
+		mockMvc.perform(post("/api/v1/groups")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isOk())
@@ -78,8 +79,7 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 		given(commandSettlementService.updateAccount(any(), eq(1L), eq(100L))).willReturn(response);
 
 		// when & then
-		mockMvc.perform(put("/api/v1/group/account")
-				.param("groupToken", "groupToken")
+		mockMvc.perform(put("/api/v1/groups/{code}/account", "code")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(accountRequest)))
 			.andExpect(status().isOk());
@@ -91,6 +91,7 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 		// given
 		SettlementDetailResponse response = new SettlementDetailResponse(1L, "모또 모임", List.of(
 			new MemberResponse(1L, MANAGER, "김모또", "https://moddo-s3.s3.amazonaws.com/profile/MODDO.png",
+				1L,
 				true,
 				LocalDateTime.now())
 		));
@@ -105,8 +106,7 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 		given(querySettlementService.findOne(100L, 1L)).willReturn(response);
 
 		// when & then
-		mockMvc.perform(get("/api/v1/group")
-				.param("groupToken", "groupToken"))
+		mockMvc.perform(get("/api/v1/groups/{code}", "code"))
 			.andExpect(status().isOk());
 	}
 
@@ -122,8 +122,7 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 		given(querySettlementService.findBySettlementHeader(100L)).willReturn(response);
 
 		// when & then
-		mockMvc.perform(get("/api/v1/group/header")
-				.param("groupToken", "groupToken"))
+		mockMvc.perform(get("/api/v1/groups/{code}/header", "code"))
 			.andExpect(status().isOk());
 	}
 
@@ -159,7 +158,7 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 		)).willReturn(list);
 
 		// when & then
-		mockMvc.perform(get("/api/v1/group/list")
+		mockMvc.perform(get("/api/v1/groups")
 				.param("status", "IN_PROGRESS")
 				.param("sort", "LATEST")
 				.param("limit", "20")
@@ -204,20 +203,34 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 		// given
 		Long userId = 1L;
 
+		List<MemberResponse> members = List.of(
+			new MemberResponse(
+				1L,
+				ExpenseRole.PARTICIPANT,
+				"김반숙",
+				"https://moddo-s3.s3.amazonaws.com/profile/1.png",
+				1L,
+				false,
+				null
+			)
+		);
+
 		List<SettlementShareResponse> mockList = List.of(
 			new SettlementShareResponse(
 				1L,
 				"모또 모임",
 				"groupCode",
 				LocalDateTime.of(2026, 1, 1, 12, 0),
-				null
+				null,
+				members
 			),
 			new SettlementShareResponse(
 				2L,
 				"두번째 모임",
 				"groupCode2",
 				LocalDateTime.of(2026, 1, 2, 12, 0),
-				LocalDateTime.of(2026, 1, 3, 12, 0)
+				LocalDateTime.of(2026, 1, 3, 12, 0),
+				List.of()
 			)
 		);
 
@@ -227,23 +240,34 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 		given(loginUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
 			.willReturn(new LoginUserInfo(userId, "USER"));
 
-		given(querySettlementService.findSettlementShareList(userId))
+		given(querySettlementService.findSettlementList(userId))
 			.willReturn(mockList);
 
 		// when & then
-		mockMvc.perform(get("/api/v1/group/share"))
+		mockMvc.perform(get("/api/v1/groups/list"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$[0].settlementId").value(1L))
 			.andExpect(jsonPath("$[0].name").value("모또 모임"))
 			.andExpect(jsonPath("$[0].groupCode").value("groupCode"))
-			.andExpect(jsonPath("$[0].completedAt").value(Matchers.nullValue()))
+			.andExpect(jsonPath("$[0].createdAt")
+				.value("2026-01-01T12:00:00"))
+			.andExpect(jsonPath("$[0].completedAt").doesNotExist())
+			.andExpect(jsonPath("$[0].members").isArray())
 			.andDo(restDocs.document(
 				responseFields(
 					fieldWithPath("[].settlementId").description("정산 ID"),
 					fieldWithPath("[].name").description("정산 이름"),
 					fieldWithPath("[].groupCode").description("공유 코드"),
 					fieldWithPath("[].createdAt").description("생성 일시"),
-					fieldWithPath("[].completedAt").description("완료 일시 (완료되지 않았으면 null)").optional()
+					fieldWithPath("[].completedAt").description("완료 일시 (완료되지 않았으면 null)").optional(),
+					fieldWithPath("[].members").description("모임원 목록"),
+					fieldWithPath("[].members[].id").description("모임원 ID"),
+					fieldWithPath("[].members[].role").description("모임원 역할"),
+					fieldWithPath("[].members[].name").description("모임원 이름"),
+					fieldWithPath("[].members[].profile").description("프로필 이미지 URL"),
+					fieldWithPath("[].members[].userId").description("사용자 ID"),
+					fieldWithPath("[].members[].isPaid").description("정산 완료 여부")
+						.optional()
 				)
 			));
 	}

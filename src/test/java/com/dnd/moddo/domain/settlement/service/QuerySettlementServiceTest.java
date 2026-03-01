@@ -333,30 +333,32 @@ class QuerySettlementServiceTest {
 				"모또 모임",
 				"groupCode",
 				LocalDateTime.now(),
-				null
+				null,
+				List.of()
 			),
 			new SettlementShareResponse(
 				2L,
 				"두번째 모임",
 				"groupCode2",
 				LocalDateTime.now(),
-				LocalDateTime.now()
+				LocalDateTime.now(),
+				List.of()
 			)
 		);
 
-		when(settlementReader.findShareListByUserId(userId))
+		when(settlementReader.findSettlementListByUserId(userId))
 			.thenReturn(mockList);
 
 		// when
 		List<SettlementShareResponse> result =
-			querySettlementService.findSettlementShareList(userId);
+			querySettlementService.findSettlementList(userId);
 
 		// then
 		assertThat(result).hasSize(2);
-		assertThat(result.get(0).settlementId()).isEqualTo(1L);
-		assertThat(result.get(0).name()).isEqualTo("모또 모임");
+		assertThat(result.get(0).getSettlementId()).isEqualTo(1L);
+		assertThat(result.get(0).getName()).isEqualTo("모또 모임");
 
 		verify(settlementReader, times(1))
-			.findShareListByUserId(userId);
+			.findSettlementListByUserId(userId);
 	}
 }

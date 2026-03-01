@@ -30,7 +30,7 @@ public class CommandMemberService {
 		return MemberResponse.of(member);
 	}
 
-	public MemberResponse addAppointmentMember(Long settlementId, MemberSaveRequest request) {
+	public MemberResponse addMember(Long settlementId, MemberSaveRequest request) {
 		Member member = memberUpdater.addToSettlement(settlementId, request);
 		return MemberResponse.of(member);
 	}

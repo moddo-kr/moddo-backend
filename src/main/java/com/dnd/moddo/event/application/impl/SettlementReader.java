@@ -1,6 +1,7 @@
 package com.dnd.moddo.event.application.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,9 +11,11 @@ import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.domain.settlement.type.SettlementSortType;
 import com.dnd.moddo.event.domain.settlement.type.SettlementStatus;
 import com.dnd.moddo.event.infrastructure.ExpenseRepository;
+import com.dnd.moddo.event.infrastructure.MemberQueryRepository;
 import com.dnd.moddo.event.infrastructure.MemberRepository;
 import com.dnd.moddo.event.infrastructure.SettlementQueryRepository;
 import com.dnd.moddo.event.infrastructure.SettlementRepository;
+import com.dnd.moddo.event.presentation.response.MemberResponse;
 import com.dnd.moddo.event.presentation.response.SettlementHeaderResponse;
 import com.dnd.moddo.event.presentation.response.SettlementListResponse;
 import com.dnd.moddo.event.presentation.response.SettlementShareResponse;
@@ -26,6 +29,7 @@ public class SettlementReader {
 	private final MemberRepository memberRepository;
 	private final ExpenseRepository expenseRepository;
 	private final SettlementQueryRepository settlementQueryRepository;
+	private final MemberQueryRepository memberQueryRepository;
 
 	public Settlement read(Long settlementId) {
 		return settlementRepository.getById(settlementId);
@@ -57,7 +61,27 @@ public class SettlementReader {
 	}
 
 	@Transactional(readOnly = true)
-	public List<SettlementShareResponse> findShareListByUserId(Long userId) {
-		return settlementQueryRepository.findBySettlementList(userId);
+	public List<SettlementShareResponse> findSettlementListByUserId(Long userId) {
+
+		List<SettlementShareResponse> settlements =
+			settlementQueryRepository.findBySettlementList(userId);
+
+		List<Long> ids = settlements.stream()
+			.map(SettlementShareResponse::getSettlementId)
+			.toList();
+
+		Map<Long, List<MemberResponse>> memberMap =
+			memberQueryRepository.findMembersByIds(ids);
+
+		return settlements.stream()
+			.map(s -> new SettlementShareResponse(
+				s.getSettlementId(),
+				s.getName(),
+				s.getGroupCode(),
+				s.getCreatedAt(),
+				s.getCompletedAt(),
+				memberMap.getOrDefault(s.getSettlementId(), List.of())
+			))
+			.toList();
 	}
 }

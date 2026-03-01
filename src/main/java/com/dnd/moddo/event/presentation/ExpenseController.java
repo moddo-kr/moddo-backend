@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dnd.moddo.auth.infrastructure.security.LoginUser;
@@ -24,13 +23,12 @@ import com.dnd.moddo.event.presentation.response.ExpenseDetailsResponse;
 import com.dnd.moddo.event.presentation.response.ExpenseResponse;
 import com.dnd.moddo.event.presentation.response.ExpensesResponse;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/expenses")
 @RestController
+@RequestMapping("/api/v1/groups/{code}/expenses")
 public class ExpenseController {
 
 	private final CommandExpenseService commandExpenseService;
@@ -39,58 +37,82 @@ public class ExpenseController {
 
 	@PostMapping
 	public ResponseEntity<ExpensesResponse> saveExpenses(
-		@RequestParam("groupToken") String code,
-		@Valid @RequestBody ExpensesRequest request) {
+		@PathVariable String code,
+		@Valid @RequestBody ExpensesRequest request
+	) {
 		Long settlementId = querySettlementService.findIdByCode(code);
-		ExpensesResponse response = commandExpenseService.createExpenses(settlementId, request);
+		ExpensesResponse response =
+			commandExpenseService.createExpenses(settlementId, request);
 		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping
-	public ResponseEntity<ExpensesResponse> getAllBySettlementId(@RequestParam("groupToken") String code) {
+	public ResponseEntity<ExpensesResponse> getAll(
+		@PathVariable String code
+	) {
 		Long settlementId = querySettlementService.findIdByCode(code);
-		ExpensesResponse response = queryExpenseService.findAllBySettlementId(settlementId);
+		ExpensesResponse response =
+			queryExpenseService.findAllBySettlementId(settlementId);
 		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping("/{expenseId}")
-	public ResponseEntity<ExpenseResponse> getByExpenseId(@PathVariable("expenseId") Long expenseId) {
-		ExpenseResponse response = queryExpenseService.findOneByExpenseId(expenseId);
+	public ResponseEntity<ExpenseResponse> getOne(
+		@PathVariable String code,
+		@PathVariable Long expenseId
+	) {
+		ExpenseResponse response =
+			queryExpenseService.findOneByExpenseId(expenseId);
 		return ResponseEntity.ok(response);
-
 	}
 
 	@GetMapping("/details")
-	public ResponseEntity<ExpenseDetailsResponse> getExpenseDetailsBySettlementId(
-		@RequestParam("groupToken") String code) {
+	public ResponseEntity<ExpenseDetailsResponse> getDetails(
+		@PathVariable String code
+	) {
 		Long settlementId = querySettlementService.findIdByCode(code);
-		ExpenseDetailsResponse response = queryExpenseService.findAllExpenseDetailsBySettlementId(settlementId);
+
+		ExpenseDetailsResponse response =
+			queryExpenseService.findAllExpenseDetailsBySettlementId(settlementId);
+
 		return ResponseEntity.ok(response);
 	}
 
 	@VerifyManagerPermission
 	@PutMapping("/{expenseId}")
-	public ResponseEntity<ExpenseResponse> updateByExpenseId(@PathVariable("expenseId") Long expenseId,
-		@RequestBody ExpenseRequest request) {
-		ExpenseResponse response = commandExpenseService.update(expenseId, request);
+	public ResponseEntity<ExpenseResponse> update(
+		@PathVariable String code,
+		@PathVariable Long expenseId,
+		@RequestBody ExpenseRequest request
+	) {
+		ExpenseResponse response =
+			commandExpenseService.update(expenseId, request);
 		return ResponseEntity.ok(response);
-
 	}
 
 	@VerifyManagerPermission
 	@DeleteMapping("/{expenseId}")
-	public ResponseEntity<Void> deleteByExpenseId(@PathVariable("expenseId") Long expenseId) {
+	public ResponseEntity<Void> delete(
+		@PathVariable String code,
+		@PathVariable Long expenseId
+	) {
 		commandExpenseService.delete(expenseId);
 		return ResponseEntity.noContent().build();
 	}
 
-	@PutMapping("/img/{expenseId}")
-	public void updateImgUrl(HttpServletRequest request,
-		@RequestParam("groupToken") String code,
-		@PathVariable("expenseId") Long expenseId,
-		@RequestBody ExpenseImageRequest expenseImageRequest,
-		@LoginUser LoginUserInfo loginUser) {
+	@PutMapping("/{expenseId}/img")
+	public void updateImgUrl(
+		@PathVariable String code,
+		@PathVariable Long expenseId,
+		@RequestBody ExpenseImageRequest request,
+		@LoginUser LoginUserInfo loginUser
+	) {
 		Long settlementId = querySettlementService.findIdByCode(code);
-		commandExpenseService.updateImgUrl(loginUser.userId(), settlementId, expenseId, expenseImageRequest);
+		commandExpenseService.updateImgUrl(
+			loginUser.userId(),
+			settlementId,
+			expenseId,
+			request
+		);
 	}
 }

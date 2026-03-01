@@ -72,7 +72,7 @@ class CommandSettlementServiceTest {
 	void createSettlement() {
 		// Given
 		MemberResponse memberResponse = new MemberResponse(1L, ExpenseRole.MANAGER,
-			"김모또", null, true,
+			"김모또", null, 1L, true,
 			LocalDateTime.now());
 
 		when(settlementCreator.createSettlement(any(SettlementRequest.class), anyLong())).thenReturn(settlement);
