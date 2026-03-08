@@ -15,11 +15,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
-import com.dnd.moddo.common.logging.ErrorNotifier;
 import com.dnd.moddo.event.domain.expense.exception.ExpenseNotFoundException;
 import com.dnd.moddo.event.domain.member.exception.MemberNotFoundException;
 import com.dnd.moddo.event.presentation.request.ExpenseImageRequest;
@@ -34,9 +32,6 @@ import com.dnd.moddo.event.presentation.response.MemberExpenseResponse;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
 
 public class ExpenseControllerTest extends RestDocsTestSupport {
-
-	@MockBean
-	ErrorNotifier errorNotifier;
 
 	private final String code = "code";
 	private final Long groupId = 1L;

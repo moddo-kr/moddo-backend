@@ -8,19 +8,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
 import com.dnd.moddo.auth.infrastructure.security.exception.MissingTokenException;
 import com.dnd.moddo.auth.model.exception.TokenInvalidException;
-import com.dnd.moddo.common.logging.ErrorNotifier;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
 import com.dnd.moddo.image.presentation.response.CharacterResponse;
 
 public class CharacterControllerTest extends RestDocsTestSupport {
-
-	@MockBean
-	ErrorNotifier errorNotifier;
 
 	@Test
 	@DisplayName("캐릭터 정보를 정상적으로 조회한다.")
