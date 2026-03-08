@@ -15,6 +15,7 @@ import com.dnd.moddo.auth.infrastructure.security.JwtProvider;
 import com.dnd.moddo.auth.infrastructure.security.LoginUserArgumentResolver;
 import com.dnd.moddo.auth.presentation.AuthController;
 import com.dnd.moddo.common.config.CookieProperties;
+import com.dnd.moddo.common.logging.ErrorNotifier;
 import com.dnd.moddo.event.application.command.CommandExpenseService;
 import com.dnd.moddo.event.application.command.CommandMemberService;
 import com.dnd.moddo.event.application.command.CommandSettlementService;
@@ -29,7 +30,9 @@ import com.dnd.moddo.event.presentation.SettlementController;
 import com.dnd.moddo.image.application.CommandImageService;
 import com.dnd.moddo.image.presentation.ImageController;
 import com.dnd.moddo.reward.application.QueryCharacterService;
+import com.dnd.moddo.reward.application.QueryCollectionService;
 import com.dnd.moddo.reward.presentation.CharacterController;
+import com.dnd.moddo.user.application.QueryUserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -41,7 +44,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 	SettlementController.class,
 	MemberController.class,
 	ImageController.class,
-	MemberExpenseController.class
+	MemberExpenseController.class,
+	com.dnd.moddo.user.presentation.UserController.class,
+	com.dnd.moddo.reward.presentation.CollectionController.class
 })
 public abstract class ControllerTest {
 
@@ -50,6 +55,9 @@ public abstract class ControllerTest {
 
 	@Autowired
 	protected ObjectMapper objectMapper;
+
+	@MockBean
+	protected ErrorNotifier errorNotifier;
 
 	// Service
 	@MockBean
@@ -87,6 +95,12 @@ public abstract class ControllerTest {
 
 	@MockBean
 	protected QueryMemberExpenseService queryMemberExpenseService;
+
+	@MockBean
+	protected QueryUserService queryUserService;
+
+	@MockBean
+	protected QueryCollectionService queryCollectionService;
 
 	@MockBean
 	protected CookieProperties cookieProperties;

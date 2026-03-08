@@ -30,8 +30,11 @@ public class QueryExpenseService {
 		);
 	}
 
-	public ExpenseResponse findOneByExpenseId(Long expenseId) {
+	public ExpenseResponse findOneByExpenseId(Long expenseId, Long settlementId) {
 		Expense expense = expenseReader.findByExpenseId(expenseId);
+
+		expense.validateSettlement(settlementId);
+
 		return ExpenseResponse.of(expense);
 	}
 

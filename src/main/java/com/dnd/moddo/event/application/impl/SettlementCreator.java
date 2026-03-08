@@ -11,7 +11,6 @@ import com.dnd.moddo.event.infrastructure.SettlementRepository;
 import com.dnd.moddo.event.presentation.request.SettlementRequest;
 import com.dnd.moddo.image.application.impl.ImageReader;
 import com.dnd.moddo.image.presentation.response.CharacterResponse;
-import com.dnd.moddo.reward.domain.character.Character;
 import com.dnd.moddo.reward.infrastructure.CharacterRepository;
 import com.dnd.moddo.user.domain.User;
 import com.dnd.moddo.user.infrastructure.UserRepository;
@@ -37,19 +36,9 @@ public class SettlementCreator {
 			.code(generateUniqueGroupCode())
 			.build();
 
-		settlement = settlementRepository.save(settlement);
-
 		CharacterResponse characterResponse = imageReader.getRandomCharacter();
-
-		Character character = Character.builder()
-			.settlement(settlement)
-			.name(characterResponse.name())
-			.rarity(characterResponse.rarity())
-			.imageUrl(characterResponse.imageUrl())
-			.imageBigUrl(characterResponse.imageBigUrl())
-			.build();
-
-		characterRepository.save(character);
+		settlement.updateCharacter(characterResponse.id());
+		settlement = settlementRepository.save(settlement);
 
 		return settlement;
 	}

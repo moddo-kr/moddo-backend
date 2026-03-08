@@ -54,6 +54,7 @@ kakao:
   token-request-uri: https://kauth.kakao.com/oauth/token
   profile-request-uri: https://kapi.kakao.com/v2/user/me
   logout-request-uri: https://kapi.kakao.com/v1/user/logout
+  unlink-request-uri: https://kapi.kakao.com/v1/user/unlink
 
 discord:
   name: discord-feign-client

@@ -15,11 +15,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
-import com.dnd.moddo.common.logging.ErrorNotifier;
 import com.dnd.moddo.event.domain.expense.exception.ExpenseNotFoundException;
 import com.dnd.moddo.event.domain.member.exception.MemberNotFoundException;
 import com.dnd.moddo.event.presentation.request.ExpenseImageRequest;
@@ -35,10 +33,7 @@ import com.dnd.moddo.global.util.RestDocsTestSupport;
 
 public class ExpenseControllerTest extends RestDocsTestSupport {
 
-	@MockBean
-	ErrorNotifier errorNotifier;
-
-	private final String groupToken = "groupToken";
+	private final String code = "code";
 	private final Long groupId = 1L;
 	private final Long expenseId = 1L;
 
@@ -76,11 +71,10 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 			)
 		));
 
-		when(querySettlementService.findIdByCode(groupToken)).thenReturn(groupId);
+		when(querySettlementService.findIdByCode(code)).thenReturn(groupId);
 		when(commandExpenseService.createExpenses(eq(groupId), any())).thenReturn(response);
 
-		mockMvc.perform(post("/api/v1/expenses")
-				.param("groupToken", groupToken)
+		mockMvc.perform(post("/api/v1/groups/{code}/expenses", code)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isOk())
@@ -137,19 +131,18 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 
 		ExpensesResponse response = new ExpensesResponse(expenseResponses);
 
-		when(querySettlementService.findIdByCode(groupToken)).thenReturn(groupId);
+		when(querySettlementService.findIdByCode(code)).thenReturn(groupId);
 		when(queryExpenseService.findAllBySettlementId(groupId)).thenReturn(response);
 
 		// when & then
-		mockMvc.perform(get("/api/v1/expenses")
-				.param("groupToken", groupToken))
+		mockMvc.perform(get("/api/v1/groups/{code}/expenses", code))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.expenses.length()").value(4))
 			.andExpect(jsonPath("$.expenses[0].id").value(1))
 			.andExpect(jsonPath("$.expenses[0].memberExpenses[0].name").value("김모또"))
 			.andDo(document("get-expenses",
-				queryParameters(
-					parameterWithName("groupToken").description("조회할 그룹 토큰")
+				pathParameters(
+					parameterWithName("code").description("조회할 그룹 코드")
 				),
 				responseFields(
 					fieldWithPath("expenses").type(JsonFieldType.ARRAY).description("지출 내역 목록"),
@@ -180,11 +173,11 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 				12000L))
 		);
 
-		when(queryExpenseService.findOneByExpenseId(expenseId)).thenReturn(response);
+		when(querySettlementService.findIdByCode(code)).thenReturn(groupId);
+		when(queryExpenseService.findOneByExpenseId(expenseId, groupId)).thenReturn(response);
 
 		// when & then
-		mockMvc.perform(get("/api/v1/expenses/{expenseId}", expenseId)
-				.param("groupToken", groupToken))
+		mockMvc.perform(get("/api/v1/groups/{code}/expenses/{expenseId}", code, expenseId))
 			.andExpect(status().isOk());
 	}
 
@@ -200,12 +193,11 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 		);
 		ExpenseDetailsResponse response = new ExpenseDetailsResponse(expenseDetail);
 
-		given(querySettlementService.findIdByCode(groupToken)).willReturn(groupId);
+		given(querySettlementService.findIdByCode(code)).willReturn(groupId);
 		given(queryExpenseService.findAllExpenseDetailsBySettlementId(groupId)).willReturn(response);
 
 		// when & then
-		mockMvc.perform(get("/api/v1/expenses/details")
-				.param("groupToken", groupToken))
+		mockMvc.perform(get("/api/v1/groups/{code}/expenses/details", code))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.expenses", hasSize(4)))
 			.andExpect(jsonPath("$.expenses[0].id").value(1))
@@ -241,11 +233,11 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 			)
 		);
 
-		given(commandExpenseService.update(eq(expenseId), any())).willReturn(response);
+		given(querySettlementService.findIdByCode(code)).willReturn(groupId);
+		given(commandExpenseService.update(anyLong(), eq(expenseId), eq(groupId), any())).willReturn(response);
 
 		// when & then
-		mockMvc.perform(put("/api/v1/expenses/{expenseId}", expenseId)
-				.param("groupToken", groupToken)
+		mockMvc.perform(put("/api/v1/groups/{code}/expenses/{expenseId}", code, expenseId)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isOk());
@@ -254,10 +246,10 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 	@Test
 	@DisplayName("지출 내역을 정상적으로 삭제한다.")
 	void deleteExpenseSuccess() throws Exception {
-		doNothing().when(commandExpenseService).delete(expenseId);
+		given(querySettlementService.findIdByCode(code)).willReturn(groupId);
+		doNothing().when(commandExpenseService).delete(anyLong(), eq(expenseId), eq(groupId));
 
-		mockMvc.perform(delete("/api/v1/expenses/{expenseId}", expenseId)
-				.param("groupToken", groupToken))
+		mockMvc.perform(delete("/api/v1/groups/{code}/expenses/{expenseId}", code, expenseId))
 			.andExpect(status().isNoContent());
 	}
 
@@ -269,8 +261,7 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 			"https://image2.com"
 		));
 
-		mockMvc.perform(put("/api/v1/expenses/img/{expenseId}", expenseId)
-				.param("groupToken", groupToken)
+		mockMvc.perform(put("/api/v1/groups/{code}/expenses/{expenseId}/img", code, expenseId)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isOk());
@@ -282,12 +273,11 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 		ExpensesRequest request = new ExpensesRequest(
 			List.of(new ExpenseRequest(100000L, "지출", LocalDate.now(), List.of())));
 
-		when(querySettlementService.findIdByCode(groupToken)).thenReturn(groupId);
+		when(querySettlementService.findIdByCode(code)).thenReturn(groupId);
 		when(commandExpenseService.createExpenses(eq(groupId), any()))
 			.thenThrow(new MemberNotFoundException(1L));
 
-		mockMvc.perform(post("/api/v1/expenses")
-				.param("groupToken", groupToken)
+		mockMvc.perform(post("/api/v1/groups/{code}/expenses", code)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isNotFound());
@@ -296,10 +286,11 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 	@Test
 	@DisplayName("지출 내역을 찾을 수 없으면 예외를 반환한다.")
 	void getByExpenseIdFail_whenExpenseNotFound() throws Exception {
-		when(queryExpenseService.findOneByExpenseId(expenseId))
+		given(querySettlementService.findIdByCode(code)).willReturn(groupId);
+		when(queryExpenseService.findOneByExpenseId(expenseId, groupId))
 			.thenThrow(new ExpenseNotFoundException(expenseId));
 
-		mockMvc.perform(get("/api/v1/expenses/{expenseId}", expenseId))
+		mockMvc.perform(get("/api/v1/groups/{code}/expenses/{expenseId}", code, expenseId))
 			.andExpect(status().isNotFound());
 	}
 }

@@ -174,7 +174,7 @@ public class KakaoClientTest {
 
 	@DisplayName("카카오 로그아웃 API 호출 시 서버 오류가 발생하면 예외를 던진다")
 	@Test
-	void henCallKakaoLogout_withServerError_thenThrowException() {
+	void whenCallKakaoLogout_withServerError_thenThrowException() {
 		//given
 		mockServer.expect(requestTo(kakaoProperties.logoutRequestUri()))
 			.andExpect(method(HttpMethod.POST))
@@ -185,5 +185,32 @@ public class KakaoClientTest {
 
 		assertThatThrownBy(() -> kakaoClient.logout(123456L))
 			.hasMessageContaining("카카오 콜백 처리 실패");
+	}
+
+	@DisplayName("카카오 연결 끊기 API 호출 시 정상 응답을 반환한다")
+	@Test
+	void whenCallKakaoUnlink_thenReturnValidResponse() {
+		//given
+		Long kakaoId = 123456L;
+		String expectResponse = """
+			{
+			  "id": 123456
+			}
+			""";
+
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add("target_id_type", "user_id");
+		params.add("target_id", "123456");
+
+		mockServer.expect(requestTo(kakaoProperties.unlinkRequestUri()))
+			.andExpect(method(HttpMethod.POST))
+			.andExpect(header("Authorization", "KakaoAK " + kakaoProperties.adminKey()))
+			.andExpect(header("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8"))
+			.andExpect(content().formData(params))
+			.andRespond(withSuccess(expectResponse, MediaType.APPLICATION_JSON));
+		//when
+		KakaoLogoutResponse response = kakaoClient.unlink(123456L);
+		//then
+		assertThat(response.id()).isEqualTo(kakaoId);
 	}
 }

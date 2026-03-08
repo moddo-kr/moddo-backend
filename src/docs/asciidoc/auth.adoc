@@ -101,6 +101,30 @@ include::{snippets}/auth-controller-test/kakao-logout/http-response.adoc[]
 
 include::{snippets}/auth-controller-test/kakao-logout/response-body.adoc[]
 
+== 카카오 탈퇴
+
+카카오 소셜로그인 사용자의 서비스 탈퇴 처리합니다.
+
+=== Example
+
+include::{snippets}/auth-controller-test/kakao-unlink/curl-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/auth-controller-test/kakao-unlink/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/auth-controller-test/kakao-unlink/http-response.adoc[]
+
+=== Body
+
+==== 응답
+
+include::{snippets}/auth-controller-test/kakao-unlink/response-body.adoc[]
+
 == 토큰 상태 확인
 
 쿠키에 담긴 토큰의 유효성을 확인합니다.

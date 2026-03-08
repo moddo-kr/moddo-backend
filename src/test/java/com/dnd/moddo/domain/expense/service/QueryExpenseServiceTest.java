@@ -85,34 +85,43 @@ class QueryExpenseServiceTest {
 	@Test
 	void findOneByExpenseIdSuccess() {
 		//given
-		Long groupId = mockSettlement.getId(), expenseId = 1L;
-		Expense mockExpense = new Expense(mockSettlement, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
+		Long groupId = 1L;
+		Long expenseId = 10L;
+
+		Settlement mockSettlement = new Settlement(groupId, 1L, "정산", null, null, null, null, null, null, 1L, "code");
+
+		Expense mockExpense = mock(Expense.class);
+		// when(mockExpense.getSettlement()).thenReturn(mockSettlement); // removed unnecessary stubbing
+		when(mockExpense.getAmount()).thenReturn(20000L);
+		when(mockExpense.getContent()).thenReturn("투썸플레이스");
 
 		when(expenseReader.findByExpenseId(eq(expenseId))).thenReturn(mockExpense);
 
 		//when
-		ExpenseResponse response = queryExpenseService.findOneByExpenseId(expenseId);
+		ExpenseResponse response = queryExpenseService.findOneByExpenseId(expenseId, groupId);
 
 		//then
 		assertThat(response).isNotNull();
 		assertThat(response.amount()).isEqualTo(20000L);
 		assertThat(response.content()).isEqualTo("투썸플레이스");
 
+		verify(mockExpense, times(1)).validateSettlement(groupId);
 		verify(expenseReader, times(1)).findByExpenseId(eq(expenseId));
 
 	}
 
-	@DisplayName("지출내역이 존재하지 않으면 해당 지출내역을 조회할 수 있다.")
+	@DisplayName("지출내역이 존재하지 않으면 예외가 발생한다.")
 	@Test
 	void findOneByExpenseIdNotFound() {
 		//given
 		Long expenseId = 1L;
+		Long groupId = 1L;
 
 		when(expenseReader.findByExpenseId(eq(expenseId))).thenThrow(new ExpenseNotFoundException(expenseId));
 
 		//when & then
 		assertThatThrownBy(() -> {
-			queryExpenseService.findOneByExpenseId(expenseId);
+			queryExpenseService.findOneByExpenseId(expenseId, groupId);
 		}).hasMessage("해당 지출내역을 찾을 수 없습니다. (Expense ID: " + expenseId + ")");
 	}
 

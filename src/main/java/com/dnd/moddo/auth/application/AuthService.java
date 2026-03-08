@@ -74,4 +74,18 @@ public class AuthService {
 		});
 	}
 
+	@Transactional
+	public void unlink(Long userId) {
+		queryUserService.findKakaoIdById(userId).ifPresent(kakaoId -> {
+			KakaoLogoutResponse logoutResponse = kakaoClient.unlink(kakaoId);
+
+			if (!kakaoId.equals(logoutResponse.id())) {
+				throw new ModdoException(HttpStatus.INTERNAL_SERVER_ERROR, "카카오 연결해제 실패: id 불일치");
+			}
+
+			commandUserService.deleteUser(userId);
+			log.info("[USER_UNLINK] 카카오 연결해제 및 회원 탈퇴 성공: userId={}, kakaoId={}", userId, kakaoId);
+		});
+	}
+
 }

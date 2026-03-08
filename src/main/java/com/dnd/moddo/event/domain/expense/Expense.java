@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.dnd.moddo.common.converter.StringListConverter;
+import com.dnd.moddo.event.domain.expense.exception.ExpenseNotSettlementException;
 import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -65,5 +66,11 @@ public class Expense {
 
 	public void updateImgUrl(List<String> images) {
 		this.images = images;
+	}
+
+	public void validateSettlement(Long settlementId) {
+		if (!this.settlement.getId().equals(settlementId)) {
+			throw new ExpenseNotSettlementException();
+		}
 	}
 }

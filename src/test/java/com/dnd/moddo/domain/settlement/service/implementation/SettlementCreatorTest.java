@@ -20,7 +20,6 @@ import com.dnd.moddo.event.infrastructure.SettlementRepository;
 import com.dnd.moddo.event.presentation.request.SettlementRequest;
 import com.dnd.moddo.image.application.impl.ImageReader;
 import com.dnd.moddo.image.presentation.response.CharacterResponse;
-import com.dnd.moddo.reward.domain.character.Character;
 import com.dnd.moddo.reward.infrastructure.CharacterRepository;
 import com.dnd.moddo.user.domain.User;
 import com.dnd.moddo.user.infrastructure.UserRepository;
@@ -62,8 +61,9 @@ class SettlementCreatorTest {
 			.build();
 
 		mockCharacterResponse = new CharacterResponse(
+			1L,
 			"러키 모또",
-			"1",
+			1,
 			"https://moddo-s3.s3.amazonaws.com/character/lucky-1.png",
 			"https://moddo-s3.s3.amazonaws.com/character/lucky-1-big.png"
 		);
@@ -76,8 +76,6 @@ class SettlementCreatorTest {
 		when(userRepository.getById(userId)).thenReturn(mockUser);
 		when(settlementRepository.save(any(Settlement.class))).thenReturn(mockSettlement);
 		when(imageReader.getRandomCharacter()).thenReturn(mockCharacterResponse);
-		when(characterRepository.save(any(Character.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
 		when(settlementRepository.existsByCode(anyString()))
 			.thenReturn(false);
 
@@ -91,7 +89,6 @@ class SettlementCreatorTest {
 		verify(userRepository, times(1)).getById(userId);
 		verify(settlementRepository, times(1)).save(any(Settlement.class));
 		verify(imageReader, times(1)).getRandomCharacter();
-		verify(characterRepository, times(1)).save(any(Character.class));
 		verify(settlementRepository, times(1)).existsByCode(anyString());
 	}
 
