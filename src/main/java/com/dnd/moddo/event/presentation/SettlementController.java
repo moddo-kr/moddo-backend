@@ -72,7 +72,7 @@ public class SettlementController {
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping("{code}/header")
+	@GetMapping("/{code}/header")
 	public ResponseEntity<SettlementHeaderResponse> getHeader(
 		@PathVariable("code") String code) {
 		Long settlementId = querySettlementService.findIdByCode(code);
