@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.moddo.user.domain.User;
 import com.dnd.moddo.user.infrastructure.UserRepository;
+import com.dnd.moddo.user.presentation.response.UserResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,5 +23,10 @@ public class UserReader {
 
 	public Optional<Long> findKakaoIdById(Long userId) {
 		return userRepository.findKakaoIdById(userId);
+	}
+
+	public UserResponse findById(Long userId) {
+		User user = userRepository.getById(userId);
+		return UserResponse.of(user);
 	}
 }
