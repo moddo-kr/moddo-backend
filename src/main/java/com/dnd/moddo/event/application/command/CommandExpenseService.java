@@ -48,8 +48,15 @@ public class CommandExpenseService {
 		return ExpenseResponse.of(expense, memberExpenseResponses);
 	}
 
-	public ExpenseResponse update(Long expenseId, ExpenseRequest request) {
-		Expense expense = expenseUpdater.update(expenseId, request);
+	public ExpenseResponse update(Long userId, Long expenseId, Long settlementId, ExpenseRequest request) {
+		Expense expense = expenseReader.findByExpenseId(expenseId);
+
+		expense.validateSettlement(settlementId);
+
+		Settlement settlement = settlementReader.read(settlementId);
+		settlementValidator.checkSettlementAuthor(settlement, userId);
+
+		expense = expenseUpdater.update(expenseId, request);
 		List<MemberExpenseResponse> memberExpenseResponses = commandMemberExpenseService.update(expenseId,
 			request.memberExpenses());
 		return ExpenseResponse.of(expense, memberExpenseResponses);
@@ -62,9 +69,14 @@ public class CommandExpenseService {
 		expenseUpdater.updateImgUrl(expenseId, request);
 	}
 
-	public void delete(Long expenseId) {
+	public void delete(Long userId, Long expenseId, Long settlementId) {
 		Expense expense = expenseReader.findByExpenseId(expenseId);
-		//TODO 삭제하는 사람이 정산자인지 확인 로직 필요
+
+		expense.validateSettlement(settlementId);
+
+		Settlement settlement = settlementReader.read(settlementId);
+		settlementValidator.checkSettlementAuthor(settlement, userId);
+
 		commandMemberExpenseService.deleteAllByExpenseId(expenseId);
 		expenseDeleter.delete(expense);
 	}

@@ -33,7 +33,7 @@ class CharacterTest {
 		// then
 		assertThat(character).isNotNull();
 		assertThat(character.getName()).isEqualTo("러키 모또");
-		assertThat(character.getRarity()).isEqualTo(1L);
+		assertThat(character.getRarity()).isEqualTo(1);
 		assertThat(character.getImageUrl()).isEqualTo("https://moddo-s3.s3.amazonaws.com/character/lucky-1.png");
 		assertThat(character.getImageBigUrl()).isEqualTo("https://moddo-s3.s3.amazonaws.com/character/lucky-1-big.png");
 	}

@@ -86,8 +86,6 @@ public class AuthService {
 			commandUserService.deleteUser(userId);
 			log.info("[USER_UNLINK] 카카오 연결해제 및 회원 탈퇴 성공: userId={}, kakaoId={}", userId, kakaoId);
 		});
-
-		commandUserService.deleteUser(userId);
 	}
 
 }

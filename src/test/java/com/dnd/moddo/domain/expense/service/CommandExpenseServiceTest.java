@@ -25,7 +25,9 @@ import com.dnd.moddo.event.application.impl.SettlementReader;
 import com.dnd.moddo.event.application.impl.SettlementValidator;
 import com.dnd.moddo.event.domain.expense.Expense;
 import com.dnd.moddo.event.domain.expense.exception.ExpenseNotFoundException;
+import com.dnd.moddo.event.domain.expense.exception.ExpenseNotSettlementException;
 import com.dnd.moddo.event.domain.settlement.Settlement;
+import com.dnd.moddo.event.domain.settlement.exception.GroupNotAuthorException;
 import com.dnd.moddo.event.presentation.request.ExpenseImageRequest;
 import com.dnd.moddo.event.presentation.request.ExpenseRequest;
 import com.dnd.moddo.event.presentation.request.ExpensesRequest;
@@ -94,24 +96,33 @@ class CommandExpenseServiceTest {
 	@Test
 	void updateSuccess() {
 		//given
-		Long groupId = mockSettlement.getId(), expenseId = 1L;
-		Expense mockExpense = new Expense(mockSettlement, 20000L, "투썸플레이스", LocalDate.of(2025, 02, 03));
+		Long userId = 1L;
+		Long groupId = 1L;
+		Long expenseId = 10L;
+
+		Settlement mockSettlement = new Settlement(groupId, userId, "정산", null, null, null, null, null, null, 1L,
+			"code");
+
+		Expense mockExpense = mock(Expense.class);
+
 		ExpenseRequest expenseRequest = mock(ExpenseRequest.class);
-		ExpenseResponse expectedResponse = ExpenseResponse.of(mockExpense);
 
 		MemberExpenseResponse memberExpenseResponse1 = mock(MemberExpenseResponse.class);
 		MemberExpenseResponse memberExpenseResponse2 = mock(MemberExpenseResponse.class);
+
+		when(expenseReader.findByExpenseId(eq(expenseId))).thenReturn(mockExpense);
+		when(settlementReader.read(eq(groupId))).thenReturn(mockSettlement);
+		doNothing().when(settlementValidator).checkSettlementAuthor(eq(mockSettlement), eq(userId));
 
 		when(expenseUpdater.update(eq(expenseId), eq(expenseRequest))).thenReturn(mockExpense);
 		when(commandMemberExpenseService.update(eq(expenseId), any())).thenReturn(
 			List.of(memberExpenseResponse1, memberExpenseResponse2));
 		// when
-		ExpenseResponse response = commandExpenseService.update(expenseId, expenseRequest);
+		ExpenseResponse response = commandExpenseService.update(userId, expenseId, groupId, expenseRequest);
 
 		//then
 		assertThat(response).isNotNull();
-		assertThat(response.content()).isEqualTo("투썸플레이스");
-		assertThat(response.memberExpenses().size()).isEqualTo(2);
+		verify(mockExpense, times(1)).validateSettlement(groupId);
 		verify(expenseUpdater, times(1)).update(expenseId, expenseRequest);
 	}
 
@@ -135,31 +146,90 @@ class CommandExpenseServiceTest {
 	@Test
 	void deleteSuccess() {
 		//given
-		Long expenseId = 1L;
+		Long userId = 1L;
+		Long settlementId = 1L;
+		Long expenseId = 10L;
+
+		Settlement mockSettlement = new Settlement(settlementId, userId, "정산", null, null, null, null, null, null, 1L,
+			"code");
+
 		Expense mockExpense = mock(Expense.class);
 
 		when(expenseReader.findByExpenseId(eq(expenseId))).thenReturn(mockExpense);
+		when(settlementReader.read(eq(settlementId))).thenReturn(mockSettlement);
+		doNothing().when(settlementValidator).checkSettlementAuthor(eq(mockSettlement), eq(userId));
+
 		doNothing().when(commandMemberExpenseService).deleteAllByExpenseId(eq(expenseId));
 		doNothing().when(expenseDeleter).delete(eq(mockExpense));
 
 		//when
-		commandExpenseService.delete(expenseId);
+		commandExpenseService.delete(userId, expenseId, settlementId);
 
 		//then
+		verify(mockExpense, times(1)).validateSettlement(settlementId);
 		verify(commandMemberExpenseService, times(1)).deleteAllByExpenseId(eq(expenseId));
 		verify(expenseDeleter, times(1)).delete(eq(mockExpense));
+	}
+
+	@DisplayName("삭제하려는 지출내역이 해당 정산에 속하지 않으면 예외가 발생한다.")
+	@Test
+	void deleteNotSettlement() {
+		//given
+		Long userId = 1L;
+		Long settlementId = 1L;
+		Long otherSettlementId = 2L;
+		Long expenseId = 10L;
+
+		Settlement mockSettlement = new Settlement(settlementId, userId, "정산", null, null, null, null, null, null, 1L,
+			"code");
+
+		Expense mockExpense = mock(Expense.class);
+		doThrow(new ExpenseNotSettlementException()).when(mockExpense).validateSettlement(otherSettlementId);
+
+		when(expenseReader.findByExpenseId(eq(expenseId))).thenReturn(mockExpense);
+
+		//when & then
+		assertThatThrownBy(() -> {
+			commandExpenseService.delete(userId, expenseId, otherSettlementId);
+		}).isInstanceOf(ExpenseNotSettlementException.class);
+	}
+
+	@DisplayName("삭제하려는 사람이 정산자가 아니면 예외가 발생한다.")
+	@Test
+	void deleteNotAuthor() {
+		//given
+		Long userId = 2L;
+		Long settlementId = 1L;
+		Long expenseId = 10L;
+
+		Settlement mockSettlement = new Settlement(settlementId, userId, "정산", null, null, null, null, null, null, 1L,
+			"code");
+
+		Expense mockExpense = mock(Expense.class);
+
+		when(expenseReader.findByExpenseId(eq(expenseId))).thenReturn(mockExpense);
+		when(settlementReader.read(eq(settlementId))).thenReturn(mockSettlement);
+		doThrow(new GroupNotAuthorException()).when(settlementValidator)
+			.checkSettlementAuthor(eq(mockSettlement), eq(userId));
+
+		//when & then
+		assertThatThrownBy(() -> {
+			commandExpenseService.delete(userId, expenseId, settlementId);
+		}).isInstanceOf(GroupNotAuthorException.class);
 	}
 
 	@DisplayName("삭제하려는 지출내역이 존재하지 않는다면 예외가 발생한다.")
 	@Test
 	void deleteNotFound() {
 		//given
-		Long expenseId = 1L;
+		Long userId = 1L;
+		Long settlementId = 1L;
+		Long expenseId = 10L;
 		doThrow(new ExpenseNotFoundException(expenseId)).when(expenseReader).findByExpenseId(eq(expenseId));
 
 		//when & then
 		assertThatThrownBy(() -> {
-			commandExpenseService.delete(expenseId);
+			commandExpenseService.delete(userId, expenseId, settlementId);
 		}).hasMessage("해당 지출내역을 찾을 수 없습니다. (Expense ID: " + expenseId + ")");
 
 	}

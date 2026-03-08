@@ -206,6 +206,7 @@ public class KakaoClientTest {
 			.andExpect(method(HttpMethod.POST))
 			.andExpect(header("Authorization", "KakaoAK " + kakaoProperties.adminKey()))
 			.andExpect(header("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8"))
+			.andExpect(content().formData(params))
 			.andRespond(withSuccess(expectResponse, MediaType.APPLICATION_JSON));
 		//when
 		KakaoLogoutResponse response = kakaoClient.unlink(123456L);

@@ -122,7 +122,7 @@ class AuthControllerTest extends RestDocsTestSupport {
 		doNothing().when(authService).logout(any());
 
 		//when & then
-		mockMvc.perform(get("/api/v1/logout")
+		mockMvc.perform(post("/api/v1/logout")
 				.cookie(new Cookie("accessToken", "access-token")))
 			.andExpect(status().isOk())
 			.andDo(document("logout",
@@ -237,7 +237,7 @@ class AuthControllerTest extends RestDocsTestSupport {
 		doNothing().when(authService).unlink(any());
 
 		//when & then
-		mockMvc.perform(get("/api/v1/unlink")
+		mockMvc.perform(delete("/api/v1/unlink")
 				.cookie(new Cookie("accessToken", "access-token")))
 			.andExpect(status().isOk())
 			.andDo(document("unlink",

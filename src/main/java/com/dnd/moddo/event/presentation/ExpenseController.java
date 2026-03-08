@@ -61,8 +61,9 @@ public class ExpenseController {
 		@PathVariable String code,
 		@PathVariable Long expenseId
 	) {
+		Long settlementId = querySettlementService.findIdByCode(code);
 		ExpenseResponse response =
-			queryExpenseService.findOneByExpenseId(expenseId);
+			queryExpenseService.findOneByExpenseId(expenseId, settlementId);
 		return ResponseEntity.ok(response);
 	}
 
@@ -83,10 +84,12 @@ public class ExpenseController {
 	public ResponseEntity<ExpenseResponse> update(
 		@PathVariable String code,
 		@PathVariable Long expenseId,
-		@RequestBody ExpenseRequest request
+		@RequestBody ExpenseRequest request,
+		@LoginUser LoginUserInfo loginUser
 	) {
+		Long settlementId = querySettlementService.findIdByCode(code);
 		ExpenseResponse response =
-			commandExpenseService.update(expenseId, request);
+			commandExpenseService.update(loginUser.userId(), expenseId, settlementId, request);
 		return ResponseEntity.ok(response);
 	}
 
@@ -94,9 +97,11 @@ public class ExpenseController {
 	@DeleteMapping("/{expenseId}")
 	public ResponseEntity<Void> delete(
 		@PathVariable String code,
-		@PathVariable Long expenseId
+		@PathVariable Long expenseId,
+		@LoginUser LoginUserInfo loginUser
 	) {
-		commandExpenseService.delete(expenseId);
+		Long settlementId = querySettlementService.findIdByCode(code);
+		commandExpenseService.delete(loginUser.userId(), expenseId, settlementId);
 		return ResponseEntity.noContent().build();
 	}
 

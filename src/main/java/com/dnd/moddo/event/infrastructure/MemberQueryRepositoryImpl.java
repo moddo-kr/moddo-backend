@@ -47,7 +47,7 @@ public class MemberQueryRepositoryImpl implements MemberQueryRepository {
 
 		return results.stream()
 			.collect(Collectors.groupingBy(
-				MemberFlatProjection::getMemberId,
+				MemberFlatProjection::getSettlementId,
 				Collectors.mapping(
 					p -> new MemberResponse(
 						p.getMemberId(),

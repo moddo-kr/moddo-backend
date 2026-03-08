@@ -173,7 +173,8 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 				12000L))
 		);
 
-		when(queryExpenseService.findOneByExpenseId(expenseId)).thenReturn(response);
+		when(querySettlementService.findIdByCode(code)).thenReturn(groupId);
+		when(queryExpenseService.findOneByExpenseId(expenseId, groupId)).thenReturn(response);
 
 		// when & then
 		mockMvc.perform(get("/api/v1/groups/{code}/expenses/{expenseId}", code, expenseId))
@@ -232,7 +233,8 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 			)
 		);
 
-		given(commandExpenseService.update(eq(expenseId), any())).willReturn(response);
+		given(querySettlementService.findIdByCode(code)).willReturn(groupId);
+		given(commandExpenseService.update(anyLong(), eq(expenseId), eq(groupId), any())).willReturn(response);
 
 		// when & then
 		mockMvc.perform(put("/api/v1/groups/{code}/expenses/{expenseId}", code, expenseId)
@@ -244,7 +246,8 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 	@Test
 	@DisplayName("지출 내역을 정상적으로 삭제한다.")
 	void deleteExpenseSuccess() throws Exception {
-		doNothing().when(commandExpenseService).delete(expenseId);
+		given(querySettlementService.findIdByCode(code)).willReturn(groupId);
+		doNothing().when(commandExpenseService).delete(anyLong(), eq(expenseId), eq(groupId));
 
 		mockMvc.perform(delete("/api/v1/groups/{code}/expenses/{expenseId}", code, expenseId))
 			.andExpect(status().isNoContent());
@@ -283,10 +286,11 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 	@Test
 	@DisplayName("지출 내역을 찾을 수 없으면 예외를 반환한다.")
 	void getByExpenseIdFail_whenExpenseNotFound() throws Exception {
-		when(queryExpenseService.findOneByExpenseId(expenseId))
+		given(querySettlementService.findIdByCode(code)).willReturn(groupId);
+		when(queryExpenseService.findOneByExpenseId(expenseId, groupId))
 			.thenThrow(new ExpenseNotFoundException(expenseId));
 
-		mockMvc.perform(get("/api/v1/expenses/{expenseId}", expenseId))
+		mockMvc.perform(get("/api/v1/groups/{code}/expenses/{expenseId}", code, expenseId))
 			.andExpect(status().isNotFound());
 	}
 }
