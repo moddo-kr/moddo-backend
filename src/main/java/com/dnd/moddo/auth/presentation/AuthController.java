@@ -11,7 +11,9 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -79,7 +81,7 @@ public class AuthController {
 			.build();
 	}
 
-	@GetMapping("/logout")
+	@PostMapping("/logout")
 	public ResponseEntity<?> kakaoLogout(@CookieValue(value = "accessToken") String token,
 		@LoginUser LoginUserInfo loginUser) {
 		String cookie = expireCookie("accessToken").toString();
@@ -87,6 +89,16 @@ public class AuthController {
 		return ResponseEntity.ok()
 			.header(HttpHeaders.SET_COOKIE, cookie)
 			.body(Collections.singletonMap("message", "Logout successful"));
+	}
+
+	@DeleteMapping("/unlink")
+	public ResponseEntity<?> kakaoUnlink(@CookieValue(value = "accessToken") String token,
+		@LoginUser LoginUserInfo loginUser) {
+		String cookie = expireCookie("accessToken").toString();
+		authService.unlink(loginUser.userId());
+		return ResponseEntity.ok()
+			.header(HttpHeaders.SET_COOKIE, cookie)
+			.body(Collections.singletonMap("message", "Unlink successful"));
 	}
 
 	@GetMapping("/auth/check")

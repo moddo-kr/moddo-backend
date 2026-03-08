@@ -60,7 +60,7 @@ public class QuerySettlementService {
 		return settlementReader.findListByUserIdAndStatus(userId, effectiveStatus, effectiveSort, limit);
 	}
 
-	public List<SettlementShareResponse> findSettlementShareList(Long userId) {
-		return settlementReader.findShareListByUserId(userId);
+	public List<SettlementShareResponse> findSettlementList(Long userId) {
+		return settlementReader.findSettlementListByUserId(userId);
 	}
 }

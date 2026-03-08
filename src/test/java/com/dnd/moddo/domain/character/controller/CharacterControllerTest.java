@@ -8,19 +8,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
 import com.dnd.moddo.auth.infrastructure.security.exception.MissingTokenException;
 import com.dnd.moddo.auth.model.exception.TokenInvalidException;
-import com.dnd.moddo.common.logging.ErrorNotifier;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
 import com.dnd.moddo.image.presentation.response.CharacterResponse;
 
 public class CharacterControllerTest extends RestDocsTestSupport {
-
-	@MockBean
-	ErrorNotifier errorNotifier;
 
 	@Test
 	@DisplayName("캐릭터 정보를 정상적으로 조회한다.")
@@ -30,7 +25,7 @@ public class CharacterControllerTest extends RestDocsTestSupport {
 		Long groupId = 1L;
 
 		CharacterResponse mockResponse = new CharacterResponse(
-			"천사 모또", "2", "https://moddo-s3.s3.amazonaws.com/character/천사 모또-2.png",
+			1L, "천사 모또", 2, "https://moddo-s3.s3.amazonaws.com/character/천사 모또-2.png",
 			"https://moddo-s3.s3.amazonaws.com/character/천사 모또-2-big.png"
 		);
 
@@ -39,11 +34,11 @@ public class CharacterControllerTest extends RestDocsTestSupport {
 
 		// when & then
 		mockMvc.perform(get("/api/v1/character")
-				.param("groupToken", groupToken)
+				.param("code", groupToken)
 				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.name").value("천사 모또"))
-			.andExpect(jsonPath("$.rarity").value("2"))
+			.andExpect(jsonPath("$.rarity").value(2))
 			.andExpect(jsonPath("$.imageUrl").value("https://moddo-s3.s3.amazonaws.com/character/천사 모또-2.png"))
 			.andExpect(jsonPath("$.imageBigUrl").value("https://moddo-s3.s3.amazonaws.com/character/천사 모또-2-big.png"))
 			.andDo(print());
@@ -61,7 +56,7 @@ public class CharacterControllerTest extends RestDocsTestSupport {
 
 		// when & then
 		mockMvc.perform(get("/api/v1/character")
-				.param("groupToken", groupToken)
+				.param("code", groupToken)
 				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isUnauthorized());
 
@@ -78,7 +73,7 @@ public class CharacterControllerTest extends RestDocsTestSupport {
 
 		// then
 		mockMvc.perform(get("/api/v1/character")
-				.param("groupToken", groupToken)
+				.param("code", groupToken)
 				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isUnauthorized());
 

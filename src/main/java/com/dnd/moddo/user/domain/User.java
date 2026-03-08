@@ -2,6 +2,10 @@ package com.dnd.moddo.user.domain;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -20,6 +24,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "users")
+@SQLDelete(sql = "UPDATE users SET deleted = true, deleted_at = now() WHERE id = ?")
+@SQLRestriction("deleted = false")
 public class User {
 
 	@Id
@@ -40,6 +46,11 @@ public class User {
 
 	private LocalDateTime expiredAt;
 
+	@Column(nullable = false)
+	private boolean deleted = false;
+
+	private LocalDateTime deletedAt;
+
 	@Enumerated(EnumType.STRING)
 	private Authority authority;
 
@@ -54,5 +65,11 @@ public class User {
 		this.createdAt = createdAt;
 		this.expiredAt = expiredAt;
 		this.authority = authority;
+		this.deleted = false;
+	}
+
+	public void delete() {
+		this.deleted = true;
+		this.deletedAt = LocalDateTime.now();
 	}
 }

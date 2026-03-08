@@ -5,6 +5,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,6 +50,39 @@ public class UserTest {
 	public void getByEmailNotFound() {
 		// When & Then
 		assertThrows(UserNotFoundException.class, () -> userRepository.getByEmail("exception@guest.com"));
+	}
+
+	@DisplayName("사용자를 삭제하면 Soft Delete가 적용되어 조회되지 않는다.")
+	@Test
+	public void softDeleteUser() {
+		// Given
+		User user = createGuestWithNameAndEmail("삭제회원", "deleted@guest.com");
+		userRepository.save(user);
+		Long userId = user.getId();
+
+		// When
+		userRepository.delete(user);
+		userRepository.flush();
+
+		// Then
+		assertThrows(UserNotFoundException.class, () -> userRepository.getById(userId));
+
+		Optional<User> foundUser = userRepository.findById(userId);
+		assertThat(foundUser.isPresent()).isFalse();
+	}
+
+	@DisplayName("사용자 엔티티의 delete() 메서드를 호출하면 deleted 상태가 변경된다.")
+	@Test
+	public void userDeleteMethod() {
+		// Given
+		User user = createGuestWithNameAndEmail("탈퇴회원", "withdrawal@guest.com");
+
+		// When
+		user.delete();
+
+		// Then
+		assertThat(user.isDeleted()).isTrue();
+		assertThat(user.getDeletedAt()).isNotNull();
 	}
 
 }

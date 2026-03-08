@@ -7,6 +7,7 @@ import static org.mockito.Mockito.any;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,15 +17,18 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.dnd.moddo.event.application.impl.SettlementReader;
+import com.dnd.moddo.event.domain.member.ExpenseRole;
 import com.dnd.moddo.event.domain.member.Member;
 import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.domain.settlement.exception.GroupNotFoundException;
 import com.dnd.moddo.event.domain.settlement.type.SettlementSortType;
 import com.dnd.moddo.event.domain.settlement.type.SettlementStatus;
 import com.dnd.moddo.event.infrastructure.ExpenseRepository;
+import com.dnd.moddo.event.infrastructure.MemberQueryRepository;
 import com.dnd.moddo.event.infrastructure.MemberRepository;
 import com.dnd.moddo.event.infrastructure.SettlementQueryRepository;
 import com.dnd.moddo.event.infrastructure.SettlementRepository;
+import com.dnd.moddo.event.presentation.response.MemberResponse;
 import com.dnd.moddo.event.presentation.response.SettlementHeaderResponse;
 import com.dnd.moddo.event.presentation.response.SettlementListResponse;
 import com.dnd.moddo.event.presentation.response.SettlementShareResponse;
@@ -40,6 +44,9 @@ class SettlementReaderTest {
 
 	@Mock
 	private MemberRepository memberRepository;
+
+	@Mock
+	private MemberQueryRepository memberQueryRepository;
 
 	@Mock
 	private SettlementQueryRepository settlementQueryRepository;
@@ -197,36 +204,65 @@ class SettlementReaderTest {
 		// Given
 		Long userId = 1L;
 
-		List<SettlementShareResponse> mockList = List.of(
+		List<SettlementShareResponse> mockSettlements = List.of(
 			new SettlementShareResponse(
 				1L,
 				"모또 모임",
 				"groupCode",
 				LocalDateTime.now(),
-				null
+				null,
+				List.of()
 			),
 			new SettlementShareResponse(
 				2L,
 				"두번째 모임",
 				"groupCode2",
 				LocalDateTime.now(),
-				null
+				null,
+				List.of()
 			)
 		);
 
 		when(settlementQueryRepository.findBySettlementList(userId))
-			.thenReturn(mockList);
+			.thenReturn(mockSettlements);
+
+		Map<Long, List<MemberResponse>> memberMap = Map.of(
+			1L, List.of(
+				new MemberResponse(
+					10L,
+					ExpenseRole.PARTICIPANT,
+					"김반숙",
+					"profile.png",
+					1L,
+					false,
+					null
+				)
+			),
+			2L, List.of()
+		);
+
+		when(memberQueryRepository.findMembersByIds(List.of(1L, 2L)))
+			.thenReturn(memberMap);
 
 		// When
 		List<SettlementShareResponse> result =
-			settlementReader.findShareListByUserId(userId);
+			settlementReader.findSettlementListByUserId(userId);
 
 		// Then
 		assertThat(result).hasSize(2);
-		assertThat(result.get(0).settlementId()).isEqualTo(1L);
-		assertThat(result.get(0).name()).isEqualTo("모또 모임");
+
+		assertThat(result.get(0).getSettlementId()).isEqualTo(1L);
+		assertThat(result.get(0).getName()).isEqualTo("모또 모임");
+		assertThat(result.get(0).getMembers()).hasSize(1);
+		assertThat(result.get(0).getMembers().get(0).name())
+			.isEqualTo("김반숙");
+
+		assertThat(result.get(1).getMembers()).isEmpty();
 
 		verify(settlementQueryRepository, times(1))
 			.findBySettlementList(userId);
+
+		verify(memberQueryRepository, times(1))
+			.findMembersByIds(List.of(1L, 2L));
 	}
 }

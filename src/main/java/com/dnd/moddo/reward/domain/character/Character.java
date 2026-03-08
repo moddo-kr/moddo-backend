@@ -1,14 +1,9 @@
 package com.dnd.moddo.reward.domain.character;
 
-import com.dnd.moddo.event.domain.settlement.Settlement;
-
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -25,18 +20,13 @@ public class Character {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "group_id", nullable = false)
-	private Settlement settlement;
-
 	private String name;
-	private String rarity;
+	private int rarity;
 	private String imageUrl;
 	private String imageBigUrl;
 
 	@Builder
-	public Character(Settlement settlement, String name, String rarity, String imageUrl, String imageBigUrl) {
-		this.settlement = settlement;
+	public Character(String name, int rarity, String imageUrl, String imageBigUrl) {
 		this.name = name;
 		this.rarity = rarity;
 		this.imageUrl = imageUrl;

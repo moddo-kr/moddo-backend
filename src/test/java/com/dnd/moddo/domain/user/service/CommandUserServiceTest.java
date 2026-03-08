@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.dnd.moddo.user.application.CommandUserService;
 import com.dnd.moddo.user.application.impl.UserCreator;
+import com.dnd.moddo.user.application.impl.UserDeleter;
 import com.dnd.moddo.user.application.impl.UserReader;
 import com.dnd.moddo.user.domain.User;
 import com.dnd.moddo.user.presentation.request.GuestUserSaveRequest;
@@ -25,6 +26,8 @@ public class CommandUserServiceTest {
 	private UserCreator userCreator;
 	@Mock
 	private UserReader userReader;
+	@Mock
+	private UserDeleter userDeleter;
 	@InjectMocks
 	private CommandUserService commandUserService;
 
@@ -87,5 +90,19 @@ public class CommandUserServiceTest {
 		assertThat(result.getEmail()).isEqualTo("email");
 		assertThat(result.getName()).isEqualTo("Kakao");
 		assertThat(result.getKakaoId()).isEqualTo(123456L);
+	}
+
+	@DisplayName("유저를 삭제할 수 있다.")
+	@Test
+	void deleteUser() {
+		//given
+		Long userId = 1L;
+		doNothing().when(userDeleter).deleteUser(userId);
+
+		//when
+		commandUserService.deleteUser(userId);
+
+		//then
+		verify(userDeleter, times(1)).deleteUser(userId);
 	}
 }

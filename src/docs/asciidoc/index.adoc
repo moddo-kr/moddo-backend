@@ -10,6 +10,8 @@
 
 include::auth.adoc[]
 
+include::user.adoc[]
+
 include::character.adoc[]
 
 include::expense.adoc[]

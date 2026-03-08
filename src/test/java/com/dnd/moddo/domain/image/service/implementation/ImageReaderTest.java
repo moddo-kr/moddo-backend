@@ -3,6 +3,7 @@ package com.dnd.moddo.domain.image.service.implementation;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -10,50 +11,54 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.dnd.moddo.common.config.S3Bucket;
 import com.dnd.moddo.image.application.impl.ImageReader;
-import com.dnd.moddo.image.domain.type.Characters;
+import com.dnd.moddo.image.domain.exception.CharacterNotFoundException;
 import com.dnd.moddo.image.presentation.response.CharacterResponse;
+import com.dnd.moddo.reward.domain.character.Character;
+import com.dnd.moddo.reward.infrastructure.CharacterRepository;
 
 @ExtendWith(MockitoExtension.class)
 class ImageReaderTest {
 
 	@Mock
 	private S3Bucket s3Bucket;
+	@Mock
+	private CharacterRepository characterRepository;
 
 	@InjectMocks
 	private ImageReader imageReader;
 
-	@DisplayName("Character가 존재할 경우, 랜덤 캐릭터 정보와 이미지 URL을 반환하고," +
-		"Character가 존재하지 않으면 CharacterNotFoundException 예외를 발생시킨다.")
+	@DisplayName("랜덤 캐릭터를 성공적으로 조회한다.")
 	@Test
-	void getRandomCharacter() {
+	void getRandomCharacterSuccess() {
 		// given
-		Characters characters = Characters.LUCKY;
-		List<Characters> characterList = List.of(characters);
+		Character character = mock(Character.class);
+		when(character.getName()).thenReturn("모또");
+		when(character.getRarity()).thenReturn(1);
 
-		try (MockedStatic<Characters> mockedCharacter = mockStatic(Characters.class)) {
-			// when
-			mockedCharacter.when(() -> Characters.getByRarity(1)).thenReturn(characterList);
+		when(characterRepository.findByRarity(anyInt())).thenReturn(List.of(character));
+		when(s3Bucket.getS3Url()).thenReturn("https://s3.baseUrl.com/");
 
-			String imageUrl = "https://mock-s3-url.com/images/1/" + characters.getName() + ".png";
-			String imageBigUrl = "https://mock-s3-url.com/images/big/1/" + characters.getName() + ".png";
-			CharacterResponse response = new CharacterResponse(
-				characters.getName(),
-				"1",
-				imageUrl,
-				imageBigUrl
-			);
+		// when
+		CharacterResponse response = imageReader.getRandomCharacter();
 
-			// then
-			assertThat(response).isNotNull();
-			assertThat(response.name()).isEqualTo(characters.getName());
-			assertThat(response.rarity()).isEqualTo("1");
-			assertThat(response.imageUrl()).isEqualTo(imageUrl);
-			assertThat(response.imageBigUrl()).isEqualTo(imageBigUrl);
-		}
+		// then
+		assertThat(response).isNotNull();
+		assertThat(response.name()).isEqualTo("모또");
+		verify(characterRepository, times(1)).findByRarity(anyInt());
+	}
+
+	@DisplayName("해당 희귀도의 캐릭터가 존재하지 않으면 예외가 발생한다.")
+	@Test
+	void getRandomCharacterFail_whenCharacterNotFound() {
+		// given
+		when(characterRepository.findByRarity(anyInt())).thenReturn(Collections.emptyList());
+
+		// when & then
+		assertThatThrownBy(() -> imageReader.getRandomCharacter())
+			.isInstanceOf(CharacterNotFoundException.class);
 	}
 }

@@ -1,0 +1,29 @@
+= 사용자 (User)
+:toc: left
+:toclevels: 2
+
+== 사용자 정보 조회
+
+=== Example
+
+include::{snippets}/user-controller-test/get-user/curl-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/user-controller-test/get-user/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/user-controller-test/get-user/http-response.adoc[]
+
+=== Body
+
+==== 요청
+
+include::{snippets}/user-controller-test/get-user/request-body.adoc[]
+
+==== 응답
+
+include::{snippets}/user-controller-test/get-user/response-body.adoc[]
