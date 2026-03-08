@@ -13,11 +13,9 @@ import java.util.List;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
 import com.dnd.moddo.auth.presentation.response.LoginUserInfo;
-import com.dnd.moddo.common.logging.ErrorNotifier;
 import com.dnd.moddo.event.domain.member.ExpenseRole;
 import com.dnd.moddo.event.presentation.request.SearchSettlementListRequest;
 import com.dnd.moddo.event.presentation.request.SettlementAccountRequest;
@@ -32,9 +30,6 @@ import com.dnd.moddo.event.presentation.response.SettlementShareResponse;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
 
 public class SettlementControllerTest extends RestDocsTestSupport {
-
-	@MockBean
-	ErrorNotifier errorNotifier;
 
 	@Test
 	@DisplayName("모임을 성공적으로 생성한다.")

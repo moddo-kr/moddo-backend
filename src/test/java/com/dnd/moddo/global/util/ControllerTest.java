@@ -41,7 +41,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 	SettlementController.class,
 	MemberController.class,
 	ImageController.class,
-	MemberExpenseController.class
+	MemberExpenseController.class,
+	com.dnd.moddo.user.presentation.UserController.class,
+	com.dnd.moddo.reward.presentation.CollectionController.class
 })
 public abstract class ControllerTest {
 
@@ -50,6 +52,9 @@ public abstract class ControllerTest {
 
 	@Autowired
 	protected ObjectMapper objectMapper;
+
+	@MockBean
+	protected com.dnd.moddo.common.logging.ErrorNotifier errorNotifier;
 
 	// Service
 	@MockBean
@@ -87,6 +92,12 @@ public abstract class ControllerTest {
 
 	@MockBean
 	protected QueryMemberExpenseService queryMemberExpenseService;
+
+	@MockBean
+	protected com.dnd.moddo.user.application.QueryUserService queryUserService;
+
+	@MockBean
+	protected com.dnd.moddo.reward.application.QueryCollectionService queryCollectionService;
 
 	@MockBean
 	protected CookieProperties cookieProperties;

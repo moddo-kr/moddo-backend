@@ -39,4 +39,39 @@ public class UserReaderTest {
 		assertThat(result.get().getKakaoId()).isEqualTo(kakaoId);
 		verify(userRepository, times(1)).findByKakaoId(kakaoId);
 	}
+
+	@DisplayName("userId로 kakaoId를 조회하면 해당 kakaoId를 반환한다")
+	@Test
+	void whenFindKakaoIdById_thenReturnKakaoId() {
+		//given
+		Long userId = 1L;
+		Long kakaoId = 12345L;
+		when(userRepository.findKakaoIdById(userId)).thenReturn(Optional.of(kakaoId));
+
+		//when
+		Optional<Long> result = userReader.findKakaoIdById(userId);
+
+		//then
+		assertThat(result).isPresent();
+		assertThat(result.get()).isEqualTo(kakaoId);
+		verify(userRepository, times(1)).findKakaoIdById(userId);
+	}
+
+	@DisplayName("userId로 User를 조회하면 UserResponse를 반환한다")
+	@Test
+	void whenFindById_thenReturnUserResponse() {
+		//given
+		Long userId = 1L;
+		User user = createWithEmail("test@example.com");
+		when(userRepository.getById(userId)).thenReturn(user);
+
+		//when
+		com.dnd.moddo.user.presentation.response.UserResponse result = userReader.findById(userId);
+
+		//then
+		assertThat(result.name()).isEqualTo(user.getName());
+		assertThat(result.email()).isEqualTo(user.getEmail());
+		assertThat(result.profile()).isEqualTo(user.getProfile());
+		verify(userRepository, times(1)).getById(userId);
+	}
 }
