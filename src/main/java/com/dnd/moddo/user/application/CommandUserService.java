@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.moddo.user.application.impl.UserCreator;
+import com.dnd.moddo.user.application.impl.UserDeleter;
 import com.dnd.moddo.user.application.impl.UserReader;
 import com.dnd.moddo.user.domain.User;
 import com.dnd.moddo.user.presentation.request.GuestUserSaveRequest;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 public class CommandUserService {
 	private final UserCreator userCreator;
 	private final UserReader userReader;
+	private final UserDeleter userDeleter;
 
 	@Transactional
 	public User createGuestUser(GuestUserSaveRequest request) {
@@ -31,5 +33,10 @@ public class CommandUserService {
 	public User getOrCreateUser(UserSaveRequest request) {
 		return userReader.findByKakaoId(request.kakaoId())
 			.orElseGet(() -> createKakaoUser(request));
+	}
+
+	@Transactional
+	public void deleteUser(Long userId) {
+		userDeleter.deleteUser(userId);
 	}
 }

@@ -16,7 +16,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 	Optional<User> findByKakaoId(Long kakaoId);
 
-	@Query("SELECT u.kakaoId FROM User u WHERE u.id = :userId")
+	@Query("SELECT u.kakaoId FROM User u WHERE u.id = :userId AND u.deleted = false")
 	Optional<Long> findKakaoIdById(Long userId);
 
 	default User getByEmail(String email) {

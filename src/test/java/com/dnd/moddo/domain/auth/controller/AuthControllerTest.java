@@ -14,14 +14,12 @@ import java.time.ZonedDateTime;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.restdocs.payload.JsonFieldType;
 
 import com.dnd.moddo.auth.presentation.response.KakaoTokenResponse;
 import com.dnd.moddo.auth.presentation.response.LoginUserInfo;
 import com.dnd.moddo.auth.presentation.response.RefreshResponse;
 import com.dnd.moddo.auth.presentation.response.TokenResponse;
-import com.dnd.moddo.common.logging.ErrorNotifier;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
 
 import io.jsonwebtoken.Claims;
@@ -30,9 +28,6 @@ import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;
 
 class AuthControllerTest extends RestDocsTestSupport {
-
-	@MockBean
-	ErrorNotifier errorNotifier;
 
 	@Test
 	@DisplayName("게스트 토큰을 성공적으로 발급한다.")
@@ -225,6 +220,32 @@ class AuthControllerTest extends RestDocsTestSupport {
 				responseFields(
 					fieldWithPath("authenticated").description("인증 여부"),
 					fieldWithPath("reason").description("실패 사유 (INVALID_TOKEN)")
+				)
+			));
+	}
+
+	@Test
+	@DisplayName("액세스 토큰 쿠키를 통해 카카오 연결 해제를 성공적으로 수행한다.")
+	void kakaoUnlink() throws Exception {
+		//given
+		given(loginUserArgumentResolver.supportsParameter(any()))
+			.willReturn(true);
+
+		given(loginUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+			.willReturn(new LoginUserInfo(1L, "USER"));
+
+		doNothing().when(authService).unlink(any());
+
+		//when & then
+		mockMvc.perform(get("/api/v1/unlink")
+				.cookie(new Cookie("accessToken", "access-token")))
+			.andExpect(status().isOk())
+			.andDo(document("unlink",
+				requestCookies(
+					cookieWithName("accessToken").description("액세스 토큰")
+				),
+				responseFields(
+					fieldWithPath("message").type(JsonFieldType.STRING).description("연결 해제 성공 메시지")
 				)
 			));
 	}

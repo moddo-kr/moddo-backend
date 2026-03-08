@@ -89,6 +89,16 @@ public class AuthController {
 			.body(Collections.singletonMap("message", "Logout successful"));
 	}
 
+	@GetMapping("/unlink")
+	public ResponseEntity<?> kakaoUnlink(@CookieValue(value = "accessToken") String token,
+		@LoginUser LoginUserInfo loginUser) {
+		String cookie = expireCookie("accessToken").toString();
+		authService.unlink(loginUser.userId());
+		return ResponseEntity.ok()
+			.header(HttpHeaders.SET_COOKIE, cookie)
+			.body(Collections.singletonMap("message", "Unlink successful"));
+	}
+
 	@GetMapping("/auth/check")
 	public ResponseEntity<AuthCheckResponse> checkAuth(
 		@CookieValue(value = "accessToken", required = false) String token
