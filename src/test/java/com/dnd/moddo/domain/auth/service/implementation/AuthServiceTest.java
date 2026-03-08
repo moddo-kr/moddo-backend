@@ -166,8 +166,7 @@ public class AuthServiceTest {
 		// then
 		verify(queryUserService).findKakaoIdById(userId);
 		verify(kakaoClient).unlink(kakaoId);
-		verify(commandUserService, times(2)).deleteUser(
-			userId); // unlink() 내부에 findKakaoIdById 블록 안과 밖에서 총 두번 호출되고 있음 (현재 코드상)
+		verify(commandUserService).deleteUser(userId);
 	}
 
 	@DisplayName("카카오 연결 해제 시 ID가 일치하지 않으면 예외가 발생한다")

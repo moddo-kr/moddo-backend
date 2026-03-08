@@ -91,7 +91,7 @@ class QueryExpenseServiceTest {
 		Settlement mockSettlement = new Settlement(groupId, 1L, "정산", null, null, null, null, null, null, 1L, "code");
 
 		Expense mockExpense = mock(Expense.class);
-		when(mockExpense.getSettlement()).thenReturn(mockSettlement);
+		// when(mockExpense.getSettlement()).thenReturn(mockSettlement); // removed unnecessary stubbing
 		when(mockExpense.getAmount()).thenReturn(20000L);
 		when(mockExpense.getContent()).thenReturn("투썸플레이스");
 
