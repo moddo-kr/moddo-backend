@@ -20,12 +20,16 @@ import com.dnd.moddo.image.presentation.response.CharacterResponse;
 import com.dnd.moddo.reward.application.impl.CharacterReader;
 import com.dnd.moddo.reward.domain.character.Character;
 import com.dnd.moddo.reward.infrastructure.CharacterRepository;
+import com.dnd.moddo.reward.infrastructure.RewardQueryRepository;
 
 @ExtendWith(MockitoExtension.class)
 class CharacterReaderTest {
 
 	@Mock
 	private CharacterRepository characterRepository;
+
+	@Mock
+	private RewardQueryRepository rewardQueryRepository;
 
 	@InjectMocks
 	private CharacterReader characterReader;
@@ -42,9 +46,8 @@ class CharacterReaderTest {
 			.build();
 
 		mockCharacter = Character.builder()
-			.settlement(mockSettlement)
 			.name("러키 모또")
-			.rarity("1")
+			.rarity(1)
 			.imageUrl("https://moddo-s3.s3.amazonaws.com/character/lucky-1.png")
 			.imageBigUrl("https://moddo-s3.s3.amazonaws.com/character/lucky-1-big.png")
 			.build();
@@ -54,7 +57,7 @@ class CharacterReaderTest {
 	@Test
 	void getCharacterByGroupIdSuccess() {
 		// given
-		when(characterRepository.findBySettlementId(groupId)).thenReturn(Optional.of(mockCharacter));
+		when(rewardQueryRepository.findBySettlementId(groupId)).thenReturn(Optional.of(mockCharacter));
 
 		// when
 		CharacterResponse response = characterReader.getCharacterByGroupId(groupId);
@@ -66,18 +69,18 @@ class CharacterReaderTest {
 		assertThat(response.imageUrl()).isEqualTo(mockCharacter.getImageUrl());
 		assertThat(response.imageBigUrl()).isEqualTo(mockCharacter.getImageBigUrl());
 
-		verify(characterRepository, times(1)).findBySettlementId(groupId);
+		verify(rewardQueryRepository, times(1)).findBySettlementId(groupId);
 	}
 
 	@DisplayName("존재하지 않는 groupId로 캐릭터를 조회하면 예외가 발생한다.")
 	@Test
 	void getCharacterByGroupIdNotFound() {
 		// given
-		when(characterRepository.findBySettlementId(groupId)).thenReturn(Optional.empty());
+		when(rewardQueryRepository.findBySettlementId(groupId)).thenReturn(Optional.empty());
 
 		// when & then
 		assertThrows(CharacterNotFoundException.class, () -> characterReader.getCharacterByGroupId(groupId));
 
-		verify(characterRepository, times(1)).findBySettlementId(groupId);
+		verify(rewardQueryRepository, times(1)).findBySettlementId(groupId);
 	}
 }

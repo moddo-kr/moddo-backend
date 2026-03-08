@@ -22,7 +22,7 @@ public class CharacterController {
 
 	@GetMapping()
 	public ResponseEntity<CharacterResponse> getCharacter(
-		@RequestParam("groupToken") String code
+		@RequestParam("code") String code
 	) {
 		Long groupId = querySettlementService.findIdByCode(code);
 

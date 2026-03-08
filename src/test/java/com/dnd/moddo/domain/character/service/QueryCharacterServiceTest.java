@@ -33,8 +33,9 @@ class QueryCharacterServiceTest {
 	void setUp() {
 		groupId = 1L;
 		mockCharacterResponse = new CharacterResponse(
+			1L,
 			"러키 모또",
-			"1",
+			1,
 			"https://moddo-s3.s3.amazonaws.com/character/lucky-1.png",
 			"https://moddo-s3.s3.amazonaws.com/character/lucky-1-big.png"
 		);

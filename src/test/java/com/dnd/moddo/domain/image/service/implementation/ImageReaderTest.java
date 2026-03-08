@@ -42,8 +42,9 @@ class ImageReaderTest {
 			String imageUrl = "https://mock-s3-url.com/images/1/" + characters.getName() + ".png";
 			String imageBigUrl = "https://mock-s3-url.com/images/big/1/" + characters.getName() + ".png";
 			CharacterResponse response = new CharacterResponse(
+				1L,
 				characters.getName(),
-				"1",
+				1,
 				imageUrl,
 				imageBigUrl
 			);
@@ -51,7 +52,7 @@ class ImageReaderTest {
 			// then
 			assertThat(response).isNotNull();
 			assertThat(response.name()).isEqualTo(characters.getName());
-			assertThat(response.rarity()).isEqualTo("1");
+			assertThat(response.rarity()).isEqualTo(1);
 			assertThat(response.imageUrl()).isEqualTo(imageUrl);
 			assertThat(response.imageBigUrl()).isEqualTo(imageBigUrl);
 		}
