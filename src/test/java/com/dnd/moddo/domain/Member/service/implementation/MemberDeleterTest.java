@@ -71,7 +71,7 @@ class MemberDeleterTest {
 		//when & then
 		assertThatThrownBy(() -> {
 			memberDeleter.delete(appointmentMember);
-		}).hasMessage("해당 참여자를 찾을 수 없습니다. (AppointmentMember ID: " + appointmentMember + ")");
+		}).hasMessage("해당 참여자를 찾을 수 없습니다.");
 	}
 
 	@DisplayName("유효한 참여자 id로 삭제를 요청하면 성공적으로 삭제된다.")

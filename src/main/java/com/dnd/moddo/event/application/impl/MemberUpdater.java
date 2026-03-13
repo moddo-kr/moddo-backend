@@ -16,7 +16,6 @@ import com.dnd.moddo.event.domain.member.exception.MemberNotAssignedException;
 import com.dnd.moddo.event.domain.member.exception.MemberSelectionNotAllowedException;
 import com.dnd.moddo.event.domain.member.exception.MemberSelectionUnauthorizedException;
 import com.dnd.moddo.event.domain.member.exception.PaymentConcurrencyException;
-import com.dnd.moddo.event.domain.member.exception.UserAlreadyAssignedException;
 import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.infrastructure.MemberRepository;
 import com.dnd.moddo.event.presentation.request.MemberSaveRequest;
@@ -61,10 +60,15 @@ public class MemberUpdater {
 
 	@Transactional(isolation = Isolation.READ_COMMITTED)
 	public Member updatePaymentStatus(Long appointmentMemberId, PaymentStatusUpdateRequest request) {
+		return updatePaymentStatus(appointmentMemberId, request.isPaid());
+	}
+
+	@Transactional(isolation = Isolation.READ_COMMITTED)
+	public Member updatePaymentStatus(Long appointmentMemberId, boolean isPaid) {
 		try {
 			Member member = memberRepository.getById(appointmentMemberId);
-			if (member.isPaid() != request.isPaid()) {
-				member.updatePaymentStatus(request.isPaid());
+			if (member.isPaid() != isPaid) {
+				member.updatePaymentStatus(isPaid);
 				memberRepository.save(member);
 			}
 			return member;
@@ -75,20 +79,29 @@ public class MemberUpdater {
 
 	@Transactional
 	public Member assignMember(Long settlementId, Long memberId, Long userId) {
-		Member member = memberRepository.getById(memberId);
-		validateMemberBelongsToSettlement(member, settlementId);
-		validateSelectable(member);
+		Member targetMember = memberRepository.getById(memberId);
+		validateMemberBelongsToSettlement(targetMember, settlementId);
+		validateSelectable(targetMember);
 
-		if (memberRepository.existsBySettlementIdAndUserId(settlementId, userId)) {
-			throw new UserAlreadyAssignedException(userId);
+		if (targetMember.isAssigned()) {
+			if (targetMember.isAssignedTo(userId)) {
+				return targetMember;
+			}
+			throw new MemberAlreadyAssignedException();
 		}
-		if (member.isAssigned()) {
-			throw new MemberAlreadyAssignedException(memberId);
-		}
+
+		memberRepository.findBySettlementIdAndUserId(settlementId, userId)
+			.ifPresent(member -> {
+				if (member.isManager()) {
+					throw new MemberSelectionNotAllowedException(member.getId());
+				}
+				member.unassignUser(userId);
+			});
 
 		User user = userRepository.getById(userId);
-		member.assignUser(user);
-		return memberRepository.save(member);
+		targetMember.assignUser(user);
+
+		return memberRepository.save(targetMember);
 	}
 
 	@Transactional

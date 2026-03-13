@@ -22,6 +22,8 @@ include::settlement.adoc[]
 
 include::member.adoc[]
 
+include::payment.adoc[]
+
 include::image.adoc[]
 
 include::memberExpenses.adoc[]

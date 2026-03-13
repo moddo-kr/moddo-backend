@@ -44,5 +44,8 @@ public class MemberExpense {
 	public void updateAmount(Long amount) {
 		this.amount = amount;
 	}
-}
 
+	public Long getMemberId() {
+		return member.getId();
+	}
+}

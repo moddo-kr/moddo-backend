@@ -4,6 +4,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -131,7 +132,7 @@ public class MemberReaderTest {
 		//when & then
 		assertThatThrownBy(() -> {
 			memberReader.findByAppointmentMemberId(appointmentMember);
-		}).hasMessage("해당 참여자를 찾을 수 없습니다. (AppointmentMember ID: " + appointmentMember + ")");
+		}).hasMessage("해당 참여자를 찾을 수 없습니다.");
 	}
 
 	@DisplayName("정산 ID로 참여자 ID 목록을 조회할 수 있다.")
@@ -146,6 +147,39 @@ public class MemberReaderTest {
 
 		assertThat(result).isEqualTo(memberIds);
 		verify(memberRepository).findMemberIdsBySettlementId(groupId);
+	}
+
+	@DisplayName("정산 ID와 사용자 ID로 참여자를 조회할 수 있다.")
+	@Test
+	void findBySettlementIdAndUserIdSuccess() {
+		Long settlementId = 1L;
+		Long userId = 2L;
+		Member expectedMember = Member.builder()
+			.name("김반숙")
+			.settlement(mockSettlement)
+			.role(ExpenseRole.PARTICIPANT)
+			.isPaid(false)
+			.build();
+
+		when(memberRepository.findBySettlementIdAndUserId(settlementId, userId)).thenReturn(
+			Optional.of(expectedMember));
+
+		Member result = memberReader.findBySettlementIdAndUserId(settlementId, userId);
+
+		assertThat(result).isEqualTo(expectedMember);
+		verify(memberRepository).findBySettlementIdAndUserId(settlementId, userId);
+	}
+
+	@DisplayName("정산 ID와 사용자 ID로 참여자를 찾지 못하면 예외가 발생한다.")
+	@Test
+	void findBySettlementIdAndUserIdFail() {
+		Long settlementId = 1L;
+		Long userId = 2L;
+
+		when(memberRepository.findBySettlementIdAndUserId(settlementId, userId)).thenReturn(Optional.empty());
+
+		assertThatThrownBy(() -> memberReader.findBySettlementIdAndUserId(settlementId, userId))
+			.isInstanceOf(MemberNotFoundException.class);
 	}
 
 }

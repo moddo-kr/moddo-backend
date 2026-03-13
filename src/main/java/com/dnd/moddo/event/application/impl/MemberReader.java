@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.moddo.event.domain.member.Member;
+import com.dnd.moddo.event.domain.member.exception.MemberNotFoundException;
 import com.dnd.moddo.event.domain.member.type.MemberSortType;
 import com.dnd.moddo.event.infrastructure.MemberQueryRepository;
 import com.dnd.moddo.event.infrastructure.MemberRepository;
@@ -33,6 +34,11 @@ public class MemberReader {
 
 	public List<Long> findIdsBySettlementId(Long settlementId) {
 		return memberRepository.findMemberIdsBySettlementId(settlementId);
+	}
+
+	public Member findBySettlementIdAndUserId(Long settlementId, Long userId) {
+		return memberRepository.findBySettlementIdAndUserId(settlementId, userId)
+			.orElseThrow(() -> new MemberNotFoundException(userId));
 	}
 
 }
