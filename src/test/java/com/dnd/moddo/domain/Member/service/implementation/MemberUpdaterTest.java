@@ -275,6 +275,7 @@ class MemberUpdaterTest {
 		when(member.isInSettlement(settlementId)).thenReturn(true);
 		when(member.isManager()).thenReturn(false);
 		when(member.isAssigned()).thenReturn(false);
+		when(assignedMember.isManager()).thenReturn(false);
 		when(memberRepository.findBySettlementIdAndUserId(settlementId, userId))
 			.thenReturn(Optional.of(assignedMember));
 		when(userRepository.getById(userId)).thenReturn(user);
@@ -287,6 +288,32 @@ class MemberUpdaterTest {
 		verify(member).assignUser(user);
 		verify(memberRepository).findBySettlementIdAndUserId(settlementId, userId);
 		verify(memberRepository).save(member);
+	}
+
+	@DisplayName("기존 선택이 총무라면 자동 해제하지 않고 예외가 발생한다.")
+	@Test
+	void assignMemberFailWhenExistingSelectionIsManager() {
+		Long settlementId = 1L;
+		Long memberId = 2L;
+		Long userId = 3L;
+		Member member = mock(Member.class);
+		Member assignedMember = mock(Member.class);
+
+		when(memberRepository.getById(memberId)).thenReturn(member);
+		when(member.isInSettlement(settlementId)).thenReturn(true);
+		when(member.isManager()).thenReturn(false);
+		when(member.isAssigned()).thenReturn(false);
+		when(assignedMember.isManager()).thenReturn(true);
+		when(assignedMember.getId()).thenReturn(1L);
+		when(memberRepository.findBySettlementIdAndUserId(settlementId, userId))
+			.thenReturn(Optional.of(assignedMember));
+
+		assertThatThrownBy(() -> memberUpdater.assignMember(settlementId, memberId, userId))
+			.isInstanceOf(MemberSelectionNotAllowedException.class);
+
+		verify(assignedMember, never()).unassignUser(anyLong());
+		verify(member, never()).assignUser(any());
+		verify(memberRepository, never()).save(any());
 	}
 
 	@DisplayName("이미 본인이 선택한 참여자를 다시 선택하면 그대로 반환한다.")

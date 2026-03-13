@@ -91,7 +91,12 @@ public class MemberUpdater {
 		}
 
 		memberRepository.findBySettlementIdAndUserId(settlementId, userId)
-			.ifPresent(member -> member.unassignUser(userId));
+			.ifPresent(member -> {
+				if (member.isManager()) {
+					throw new MemberSelectionNotAllowedException(member.getId());
+				}
+				member.unassignUser(userId);
+			});
 
 		User user = userRepository.getById(userId);
 		targetMember.assignUser(user);
