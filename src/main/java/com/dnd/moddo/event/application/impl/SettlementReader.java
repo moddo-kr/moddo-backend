@@ -7,12 +7,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.moddo.event.domain.member.Member;
+import com.dnd.moddo.event.domain.member.type.MemberSortType;
 import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.domain.settlement.type.SettlementSortType;
 import com.dnd.moddo.event.domain.settlement.type.SettlementStatus;
 import com.dnd.moddo.event.infrastructure.ExpenseRepository;
 import com.dnd.moddo.event.infrastructure.MemberQueryRepository;
-import com.dnd.moddo.event.infrastructure.MemberRepository;
 import com.dnd.moddo.event.infrastructure.SettlementQueryRepository;
 import com.dnd.moddo.event.infrastructure.SettlementRepository;
 import com.dnd.moddo.event.presentation.response.MemberResponse;
@@ -26,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SettlementReader {
 	private final SettlementRepository settlementRepository;
-	private final MemberRepository memberRepository;
 	private final ExpenseRepository expenseRepository;
 	private final SettlementQueryRepository settlementQueryRepository;
 	private final MemberQueryRepository memberQueryRepository;
@@ -36,7 +35,7 @@ public class SettlementReader {
 	}
 
 	public List<Member> findBySettlement(Long settlementId) {
-		return memberRepository.findBySettlementId(settlementId);
+		return memberQueryRepository.findAllBySettlementId(settlementId, MemberSortType.CREATED);
 	}
 
 	public SettlementHeaderResponse findByHeader(Long settlementId) {

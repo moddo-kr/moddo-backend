@@ -49,6 +49,8 @@ include::{snippets}/settlement-controller-test/update-account/curl-request.adoc[
 
 include::{snippets}/settlement-controller-test/update-account/http-request.adoc[]
 
+include::{snippets}/settlement-controller-test/update-account/path-parameters.adoc[]
+
 ==== 응답
 
 include::{snippets}/settlement-controller-test/update-account/http-response.adoc[]
@@ -77,6 +79,8 @@ include::{snippets}/settlement-controller-test/get-settlement/curl-request.adoc[
 
 include::{snippets}/settlement-controller-test/get-settlement/http-request.adoc[]
 
+include::{snippets}/settlement-controller-test/get-settlement/path-parameters.adoc[]
+
 ==== 응답
 
 include::{snippets}/settlement-controller-test/get-settlement/http-response.adoc[]
@@ -100,6 +104,8 @@ include::{snippets}/settlement-controller-test/get-header/curl-request.adoc[]
 ==== 요청
 
 include::{snippets}/settlement-controller-test/get-header/http-request.adoc[]
+
+include::{snippets}/settlement-controller-test/get-header/path-parameters.adoc[]
 
 ==== 응답
 

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dnd.moddo.auth.infrastructure.security.LoginUser;
@@ -16,6 +17,7 @@ import com.dnd.moddo.common.support.VerifyManagerPermission;
 import com.dnd.moddo.event.application.command.CommandMemberService;
 import com.dnd.moddo.event.application.query.QueryMemberService;
 import com.dnd.moddo.event.application.query.QuerySettlementService;
+import com.dnd.moddo.event.domain.member.type.MemberSortType;
 import com.dnd.moddo.event.presentation.request.MemberSaveRequest;
 import com.dnd.moddo.event.presentation.request.MemberSelectionRequest;
 import com.dnd.moddo.event.presentation.request.PaymentStatusUpdateRequest;
@@ -36,10 +38,11 @@ public class MemberController {
 
 	@GetMapping
 	public ResponseEntity<MembersResponse> getMembers(
-		@PathVariable String code
+		@PathVariable String code,
+		@RequestParam(defaultValue = "CREATED") String sortType
 	) {
 		Long settlementId = querySettlementService.findIdByCode(code);
-		MembersResponse response = queryMemberService.findAll(settlementId);
+		MembersResponse response = queryMemberService.findAll(settlementId, MemberSortType.from(sortType));
 		return ResponseEntity.ok(response);
 	}
 

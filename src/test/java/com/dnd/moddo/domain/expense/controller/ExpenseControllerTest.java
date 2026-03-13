@@ -79,6 +79,9 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isOk())
 			.andDo(document("create-expense",
+				pathParameters(
+					parameterWithName("code").description("정산 코드")
+				),
 				requestFields(
 					fieldWithPath("expenses").type(JsonFieldType.ARRAY).description("지출 항목 목록"),
 					fieldWithPath("expenses[].amount").type(JsonFieldType.NUMBER).description("지출 금액"),
@@ -178,7 +181,13 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 
 		// when & then
 		mockMvc.perform(get("/api/v1/groups/{code}/expenses/{expenseId}", code, expenseId))
-			.andExpect(status().isOk());
+			.andExpect(status().isOk())
+			.andDo(document("get-by-expense-id-success",
+				pathParameters(
+					parameterWithName("code").description("정산 코드"),
+					parameterWithName("expenseId").description("지출 ID")
+				)
+			));
 	}
 
 	@Test
@@ -203,7 +212,12 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 			.andExpect(jsonPath("$.expenses[0].id").value(1))
 			.andExpect(jsonPath("$.expenses[0].content").value("하이디라오"))
 			.andExpect(jsonPath("$.expenses[0].totalAmount").value(100000))
-			.andExpect(jsonPath("$.expenses[0].groupMembers[0]").value("김모또(총무)"));
+			.andExpect(jsonPath("$.expenses[0].groupMembers[0]").value("김모또(총무)"))
+			.andDo(document("get-expense-details-success",
+				pathParameters(
+					parameterWithName("code").description("정산 코드")
+				)
+			));
 	}
 
 	@Test
@@ -240,7 +254,13 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 		mockMvc.perform(put("/api/v1/groups/{code}/expenses/{expenseId}", code, expenseId)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
-			.andExpect(status().isOk());
+			.andExpect(status().isOk())
+			.andDo(document("update-expense-success",
+				pathParameters(
+					parameterWithName("code").description("정산 코드"),
+					parameterWithName("expenseId").description("수정할 지출 ID")
+				)
+			));
 	}
 
 	@Test
@@ -250,7 +270,13 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 		doNothing().when(commandExpenseService).delete(anyLong(), eq(expenseId), eq(groupId));
 
 		mockMvc.perform(delete("/api/v1/groups/{code}/expenses/{expenseId}", code, expenseId))
-			.andExpect(status().isNoContent());
+			.andExpect(status().isNoContent())
+			.andDo(document("delete-expense-success",
+				pathParameters(
+					parameterWithName("code").description("정산 코드"),
+					parameterWithName("expenseId").description("삭제할 지출 ID")
+				)
+			));
 	}
 
 	@Test
@@ -264,7 +290,13 @@ public class ExpenseControllerTest extends RestDocsTestSupport {
 		mockMvc.perform(put("/api/v1/groups/{code}/expenses/{expenseId}/img", code, expenseId)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
-			.andExpect(status().isOk());
+			.andExpect(status().isOk())
+			.andDo(document("update-img-url-success",
+				pathParameters(
+					parameterWithName("code").description("정산 코드"),
+					parameterWithName("expenseId").description("이미지를 수정할 지출 ID")
+				)
+			));
 	}
 
 	@Test

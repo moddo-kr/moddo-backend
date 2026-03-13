@@ -4,12 +4,10 @@ import java.time.LocalDateTime;
 
 import com.dnd.moddo.event.domain.member.ExpenseRole;
 import com.dnd.moddo.event.domain.member.Member;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.Builder;
 
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public record MemberResponse(
 	Long id,
 	ExpenseRole role,

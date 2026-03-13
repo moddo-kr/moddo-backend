@@ -16,6 +16,8 @@ include::{snippets}/expense-controller-test/save-expenses-success/curl-request.a
 
 include::{snippets}/expense-controller-test/save-expenses-success/http-request.adoc[]
 
+include::{snippets}/expense-controller-test/create-expense/path-parameters.adoc[]
+
 ==== 응답
 
 include::{snippets}/expense-controller-test/save-expenses-success/http-response.adoc[]
@@ -75,6 +77,8 @@ include::{snippets}/expense-controller-test/get-by-expense-id-success/curl-reque
 
 include::{snippets}/expense-controller-test/get-by-expense-id-success/http-request.adoc[]
 
+include::{snippets}/expense-controller-test/get-by-expense-id-success/path-parameters.adoc[]
+
 ==== 응답
 
 include::{snippets}/expense-controller-test/get-by-expense-id-success/http-response.adoc[]
@@ -106,6 +110,8 @@ include::{snippets}/expense-controller-test/get-expense-details-success/curl-req
 
 include::{snippets}/expense-controller-test/get-expense-details-success/http-request.adoc[]
 
+include::{snippets}/expense-controller-test/get-expense-details-success/path-parameters.adoc[]
+
 ==== 응답
 
 include::{snippets}/expense-controller-test/get-expense-details-success/http-response.adoc[]
@@ -132,6 +138,8 @@ include::{snippets}/expense-controller-test/update-expense-success/httpie-reques
 ==== 요청
 
 include::{snippets}/expense-controller-test/update-expense-success/http-request.adoc[]
+
+include::{snippets}/expense-controller-test/update-expense-success/path-parameters.adoc[]
 
 ==== 응답
 
@@ -165,6 +173,8 @@ include::{snippets}/expense-controller-test/delete-expense-success/curl-request.
 
 include::{snippets}/expense-controller-test/delete-expense-success/http-request.adoc[]
 
+include::{snippets}/expense-controller-test/delete-expense-success/path-parameters.adoc[]
+
 ==== 응답
 
 include::{snippets}/expense-controller-test/delete-expense-success/http-response.adoc[]
@@ -182,6 +192,8 @@ include::{snippets}/expense-controller-test/update-img-url-success/curl-request.
 ==== 요청
 
 include::{snippets}/expense-controller-test/update-img-url-success/http-request.adoc[]
+
+include::{snippets}/expense-controller-test/update-img-url-success/path-parameters.adoc[]
 
 ==== 응답
 

@@ -17,6 +17,7 @@ import com.dnd.moddo.event.application.impl.MemberReader;
 import com.dnd.moddo.event.application.query.QueryMemberService;
 import com.dnd.moddo.event.domain.member.ExpenseRole;
 import com.dnd.moddo.event.domain.member.Member;
+import com.dnd.moddo.event.domain.member.type.MemberSortType;
 import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.presentation.response.MembersResponse;
 import com.dnd.moddo.global.support.GroupTestFactory;
@@ -58,15 +59,15 @@ public class QueryMemberServiceTest {
 		//given
 		Long groupId = mockSettlement.getId();
 
-		when(memberReader.findAllBySettlementId(eq(groupId))).thenReturn(mockMembers);
+		when(memberReader.findAllBySettlementId(eq(groupId), eq(MemberSortType.CREATED))).thenReturn(mockMembers);
 
 		//when
-		MembersResponse response = queryMemberService.findAll(groupId);
+		MembersResponse response = queryMemberService.findAll(groupId, MemberSortType.CREATED);
 
 		//then
 		assertThat(response).isNotNull();
 		assertThat(response.members().size()).isEqualTo(2);
 		assertThat(response.members().get(0).name()).isEqualTo("김모또");
-		verify(memberReader, times(1)).findAllBySettlementId(eq(groupId));
+		verify(memberReader, times(1)).findAllBySettlementId(eq(groupId), eq(MemberSortType.CREATED));
 	}
 }
