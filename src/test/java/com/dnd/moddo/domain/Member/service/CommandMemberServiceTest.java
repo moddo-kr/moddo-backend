@@ -3,6 +3,7 @@ package com.dnd.moddo.domain.Member.service;
 import static org.assertj.core.api.BDDAssertions.*;
 import static org.mockito.Mockito.*;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.dnd.moddo.event.application.command.CommandMemberService;
 import com.dnd.moddo.event.application.impl.MemberCreator;
+import com.dnd.moddo.event.application.impl.MemberDeleter;
 import com.dnd.moddo.event.application.impl.MemberUpdater;
 import com.dnd.moddo.event.application.query.QueryMemberService;
 import com.dnd.moddo.event.domain.member.ExpenseRole;
@@ -24,6 +26,8 @@ import com.dnd.moddo.event.presentation.request.MemberSaveRequest;
 import com.dnd.moddo.event.presentation.request.PaymentStatusUpdateRequest;
 import com.dnd.moddo.event.presentation.response.MemberResponse;
 import com.dnd.moddo.global.support.GroupTestFactory;
+import com.dnd.moddo.global.support.UserTestFactory;
+import com.dnd.moddo.user.domain.User;
 
 @ExtendWith(MockitoExtension.class)
 public class CommandMemberServiceTest {
@@ -31,6 +35,8 @@ public class CommandMemberServiceTest {
 	private MemberCreator memberCreator;
 	@Mock
 	private MemberUpdater memberUpdater;
+	@Mock
+	private MemberDeleter memberDeleter;
 	@Mock
 	private QueryMemberService queryMemberService;
 	@InjectMocks
@@ -131,6 +137,65 @@ public class CommandMemberServiceTest {
 		verify(queryMemberService).findAllBySettlementId(any());
 
 		verify(mockSettlement).complete();
+	}
+
+	@DisplayName("로그인 사용자가 참여자를 선택할 수 있다.")
+	@Test
+	void assignMemberSuccess() {
+		Long settlementId = 1L;
+		Long memberId = 2L;
+		Long userId = 3L;
+
+		User user = UserTestFactory.createWithEmail("assign@test.com");
+		setId(user, userId);
+		Member member = Member.builder()
+			.name("김반숙")
+			.settlement(mockSettlement)
+			.profileId(1)
+			.role(ExpenseRole.PARTICIPANT)
+			.user(user)
+			.build();
+
+		when(memberUpdater.assignMember(settlementId, memberId, userId)).thenReturn(member);
+
+		MemberResponse response = commandMemberService.assignMember(settlementId, memberId, userId);
+
+		assertThat(response.name()).isEqualTo("김반숙");
+		assertThat(response.userId()).isEqualTo(member.getUserId());
+		verify(memberUpdater).assignMember(settlementId, memberId, userId);
+	}
+
+	@DisplayName("로그인 사용자가 자신이 선택한 참여자를 해제할 수 있다.")
+	@Test
+	void unassignMemberSuccess() {
+		Long settlementId = 1L;
+		Long memberId = 2L;
+		Long userId = 3L;
+
+		Member member = Member.builder()
+			.name("김반숙")
+			.settlement(mockSettlement)
+			.profileId(1)
+			.role(ExpenseRole.PARTICIPANT)
+			.build();
+
+		when(memberUpdater.unassignMember(settlementId, memberId, userId)).thenReturn(member);
+
+		MemberResponse response = commandMemberService.unassignMember(settlementId, memberId, userId);
+
+		assertThat(response.name()).isEqualTo("김반숙");
+		assertThat(response.userId()).isNull();
+		verify(memberUpdater).unassignMember(settlementId, memberId, userId);
+	}
+
+	private void setId(User user, Long id) {
+		try {
+			Field idField = User.class.getDeclaredField("id");
+			idField.setAccessible(true);
+			idField.set(user, id);
+		} catch (ReflectiveOperationException exception) {
+			throw new RuntimeException(exception);
+		}
 	}
 
 }

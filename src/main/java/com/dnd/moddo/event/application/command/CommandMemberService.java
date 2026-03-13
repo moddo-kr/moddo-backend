@@ -51,6 +51,16 @@ public class CommandMemberService {
 		return MemberResponse.of(member);
 	}
 
+	public MemberResponse assignMember(Long settlementId, Long memberId, Long userId) {
+		Member member = memberUpdater.assignMember(settlementId, memberId, userId);
+		return MemberResponse.of(member);
+	}
+
+	public MemberResponse unassignMember(Long settlementId, Long memberId, Long userId) {
+		Member member = memberUpdater.unassignMember(settlementId, memberId, userId);
+		return MemberResponse.of(member);
+	}
+
 	public void delete(Long appointmentMemberId) {
 		memberDeleter.delete(appointmentMemberId);
 	}

@@ -10,11 +10,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.moddo.event.domain.member.ExpenseRole;
 import com.dnd.moddo.event.domain.member.Member;
+import com.dnd.moddo.event.domain.member.exception.InvalidMemberException;
+import com.dnd.moddo.event.domain.member.exception.MemberAlreadyAssignedException;
+import com.dnd.moddo.event.domain.member.exception.MemberNotAssignedException;
+import com.dnd.moddo.event.domain.member.exception.MemberSelectionNotAllowedException;
+import com.dnd.moddo.event.domain.member.exception.MemberSelectionUnauthorizedException;
 import com.dnd.moddo.event.domain.member.exception.PaymentConcurrencyException;
+import com.dnd.moddo.event.domain.member.exception.UserAlreadyAssignedException;
 import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.infrastructure.MemberRepository;
 import com.dnd.moddo.event.presentation.request.MemberSaveRequest;
 import com.dnd.moddo.event.presentation.request.PaymentStatusUpdateRequest;
+import com.dnd.moddo.user.domain.User;
+import com.dnd.moddo.user.infrastructure.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,6 +33,7 @@ public class MemberUpdater {
 	private final MemberReader memberReader;
 	private final MemberValidator memberValidator;
 	private final SettlementReader settlementReader;
+	private final UserRepository userRepository;
 
 	@Transactional
 	public Member addToSettlement(Long settlementId, MemberSaveRequest request) {
@@ -64,6 +73,40 @@ public class MemberUpdater {
 		}
 	}
 
+	@Transactional
+	public Member assignMember(Long settlementId, Long memberId, Long userId) {
+		Member member = memberRepository.getById(memberId);
+		validateMemberBelongsToSettlement(member, settlementId);
+		validateSelectable(member);
+
+		if (memberRepository.existsBySettlementIdAndUserId(settlementId, userId)) {
+			throw new UserAlreadyAssignedException(userId);
+		}
+		if (member.isAssigned()) {
+			throw new MemberAlreadyAssignedException(memberId);
+		}
+
+		User user = userRepository.getById(userId);
+		member.assignUser(user);
+		return memberRepository.save(member);
+	}
+
+	@Transactional
+	public Member unassignMember(Long settlementId, Long memberId, Long userId) {
+		Member member = memberRepository.getById(memberId);
+		validateMemberBelongsToSettlement(member, settlementId);
+		validateSelectable(member);
+		if (!member.isAssigned()) {
+			throw new MemberNotAssignedException(memberId);
+		}
+		if (!member.isAssignedTo(userId)) {
+			throw new MemberSelectionUnauthorizedException(memberId);
+		}
+
+		member.unassignUser(userId);
+		return memberRepository.save(member);
+	}
+
 	private Integer findAvailableProfileId(List<Integer> usedProfiles) {
 		for (int i = 1; i <= 8; i++) {
 			if (!usedProfiles.contains(i)) {
@@ -73,7 +116,16 @@ public class MemberUpdater {
 
 		return (usedProfiles.size() % 8) + 1;
 	}
+
+	private void validateMemberBelongsToSettlement(Member member, Long settlementId) {
+		if (!member.isInSettlement(settlementId)) {
+			throw new InvalidMemberException(member.getId());
+		}
+	}
+
+	private void validateSelectable(Member member) {
+		if (member.isManager()) {
+			throw new MemberSelectionNotAllowedException(member.getId());
+		}
+	}
 }
-
-
-

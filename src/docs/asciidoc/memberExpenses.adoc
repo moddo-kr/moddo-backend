@@ -4,9 +4,9 @@
 
 == 모임원별 상세 지출 내역 조회
 
-받을 정산 내역의 참여자별 정산 내역 조회 기능입니다.
+받을 정산 금액 기준으로 참여자별 상세 지출 내역을 조회할 수 있습니다.
 
-- 입금순, 이름순으로 정렬되어 조회됩니다.
+- 입금 순, 이름 순으로 정렬되어 조회됩니다.
 
 === Example
 
@@ -27,5 +27,4 @@ include::{snippets}/member-expense-controller-test/get-member-expenses-details-s
 ==== 응답
 
 include::{snippets}/member-expense-controller-test/get-member-expenses-details-success/response-body.adoc[]
-
 

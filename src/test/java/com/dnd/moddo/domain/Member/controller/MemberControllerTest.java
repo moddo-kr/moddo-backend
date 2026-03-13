@@ -13,7 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import com.dnd.moddo.auth.presentation.response.LoginUserInfo;
 import com.dnd.moddo.event.presentation.request.MemberSaveRequest;
+import com.dnd.moddo.event.presentation.request.MemberSelectionRequest;
 import com.dnd.moddo.event.presentation.request.PaymentStatusUpdateRequest;
 import com.dnd.moddo.event.presentation.response.MemberResponse;
 import com.dnd.moddo.event.presentation.response.MembersResponse;
@@ -104,6 +106,62 @@ public class MemberControllerTest extends RestDocsTestSupport {
 
 		// when & then
 		verify(commandMemberService).delete(groupMemberId);
+	}
+
+	@Test
+	@DisplayName("로그인 사용자가 참여자를 성공적으로 선택한다.")
+	void assignMember() throws Exception {
+		String code = "code";
+		Long groupId = 1L;
+		Long memberId = 2L;
+		Long userId = 3L;
+
+		MemberSelectionRequest request = new MemberSelectionRequest(memberId);
+		MemberResponse response = new MemberResponse(
+			memberId, PARTICIPANT, "김반숙",
+			"https://moddo-s3.s3.amazonaws.com/profile/1.png", userId, false, null
+		);
+
+		when(loginUserArgumentResolver.supportsParameter(any())).thenReturn(true);
+		when(loginUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+			.thenReturn(new LoginUserInfo(userId, "USER"));
+		when(querySettlementService.findIdByCode(code)).thenReturn(groupId);
+		when(commandMemberService.assignMember(groupId, memberId, userId)).thenReturn(response);
+
+		mockMvc.perform(post("/api/v1/groups/{code}/members/assign", code)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request)))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.id").value(memberId))
+			.andExpect(jsonPath("$.userId").value(userId));
+	}
+
+	@Test
+	@DisplayName("로그인 사용자가 참여자 선택을 성공적으로 해제한다.")
+	void unassignMember() throws Exception {
+		String code = "code";
+		Long groupId = 1L;
+		Long memberId = 2L;
+		Long userId = 3L;
+
+		MemberSelectionRequest request = new MemberSelectionRequest(memberId);
+		MemberResponse response = new MemberResponse(
+			memberId, PARTICIPANT, "김반숙",
+			"https://moddo-s3.s3.amazonaws.com/profile/1.png", null, false, null
+		);
+
+		when(loginUserArgumentResolver.supportsParameter(any())).thenReturn(true);
+		when(loginUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+			.thenReturn(new LoginUserInfo(userId, "USER"));
+		when(querySettlementService.findIdByCode(code)).thenReturn(groupId);
+		when(commandMemberService.unassignMember(groupId, memberId, userId)).thenReturn(response);
+
+		mockMvc.perform(post("/api/v1/groups/{code}/members/unassign", code)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request)))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.id").value(memberId))
+			.andExpect(jsonPath("$.userId").doesNotExist());
 	}
 
 }

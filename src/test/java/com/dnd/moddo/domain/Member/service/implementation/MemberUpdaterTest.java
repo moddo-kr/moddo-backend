@@ -26,6 +26,9 @@ import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.infrastructure.MemberRepository;
 import com.dnd.moddo.event.presentation.request.MemberSaveRequest;
 import com.dnd.moddo.event.presentation.request.PaymentStatusUpdateRequest;
+import com.dnd.moddo.global.support.UserTestFactory;
+import com.dnd.moddo.user.domain.User;
+import com.dnd.moddo.user.infrastructure.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
 class MemberUpdaterTest {
@@ -39,6 +42,8 @@ class MemberUpdaterTest {
 	private SettlementReader settlementReader;
 	@Mock
 	private S3Bucket s3Bucket;
+	@Mock
+	private UserRepository userRepository;
 	@InjectMocks
 	private MemberUpdater memberUpdater;
 
@@ -176,5 +181,53 @@ class MemberUpdaterTest {
 		assertThat(result.getProfileId()).isEqualTo(1);
 
 		verify(memberRepository, times(1)).save(any());
+	}
+
+	@DisplayName("로그인 사용자가 선택되지 않은 참여자를 선택할 수 있다.")
+	@Test
+	void assignMemberSuccess() {
+		Long settlementId = 1L;
+		Long memberId = 2L;
+		Long userId = 3L;
+
+		User user = UserTestFactory.createWithEmail("assign@test.com");
+		Member member = mock(Member.class);
+
+		when(memberRepository.getById(memberId)).thenReturn(member);
+		when(member.isInSettlement(settlementId)).thenReturn(true);
+		when(member.isManager()).thenReturn(false);
+		when(member.isAssigned()).thenReturn(false);
+		when(memberRepository.existsBySettlementIdAndUserId(settlementId, userId)).thenReturn(false);
+		when(userRepository.getById(userId)).thenReturn(user);
+		when(memberRepository.save(member)).thenReturn(member);
+
+		Member result = memberUpdater.assignMember(settlementId, memberId, userId);
+
+		assertThat(result).isEqualTo(member);
+		verify(member).assignUser(user);
+		verify(memberRepository).save(member);
+	}
+
+	@DisplayName("로그인 사용자가 본인이 선택한 참여자를 해제할 수 있다.")
+	@Test
+	void unassignMemberSuccess() {
+		Long settlementId = 1L;
+		Long memberId = 2L;
+		Long userId = 3L;
+
+		Member member = mock(Member.class);
+
+		when(memberRepository.getById(memberId)).thenReturn(member);
+		when(member.isInSettlement(settlementId)).thenReturn(true);
+		when(member.isManager()).thenReturn(false);
+		when(member.isAssigned()).thenReturn(true);
+		when(member.isAssignedTo(userId)).thenReturn(true);
+		when(memberRepository.save(member)).thenReturn(member);
+
+		Member result = memberUpdater.unassignMember(settlementId, memberId, userId);
+
+		assertThat(result).isEqualTo(member);
+		verify(member).unassignUser(userId);
+		verify(memberRepository).save(member);
 	}
 }

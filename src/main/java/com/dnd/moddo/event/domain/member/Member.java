@@ -1,6 +1,7 @@
 package com.dnd.moddo.event.domain.member;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.user.domain.User;
@@ -70,20 +71,49 @@ public class Member {
 	}
 
 	public void assignUser(User user) {
+		Objects.requireNonNull(user, "연결할 사용자는 필수입니다.");
 		if (this.user != null) {
 			throw new IllegalStateException("이미 사용자와 연결된 멤버입니다.");
 		}
 		this.user = user;
-		this.name = user.getName(); // 동기화
+	}
+
+	public void unassignUser(Long userId) {
+		if (this.user == null) {
+			throw new IllegalStateException("연결된 사용자가 없는 멤버입니다.");
+		}
+		if (!isAssignedTo(userId)) {
+			throw new IllegalStateException("본인이 선택한 참여자만 해제할 수 있습니다.");
+		}
+		this.user = null;
 	}
 
 	public boolean isManager() {
 		return ExpenseRole.MANAGER.equals(role);
 	}
 
+	public boolean isAssigned() {
+		return user != null;
+	}
+
+	public boolean isAssignedTo(Long userId) {
+		return getUserId() != null && getUserId().equals(userId);
+	}
+
+	public boolean isInSettlement(Long settlementId) {
+		return settlement.getId().equals(settlementId);
+	}
+
+	public Long getUserId() {
+		if (user == null) {
+			return null;
+		}
+		return user.getId();
+	}
+
 	public void updatePaymentStatus(Boolean isPaid) {
 		this.isPaid = isPaid;
-		this.paidAt = Boolean.TRUE.equals(isPaid) ? LocalDateTime.now() : null;
+		this.paidAt = isPaid ? LocalDateTime.now() : null;
 	}
 
 	public Long getSettlementId() {

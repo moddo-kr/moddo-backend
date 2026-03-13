@@ -25,7 +25,7 @@ public record MemberResponse(
 			.id(member.getId())
 			.name(member.getName())
 			.role(member.getRole())
-			.userId(member.getId())
+			.userId(member.getUserId())
 			.isPaid(member.isPaid())
 			.paidAt(member.getPaidAt())
 			.profile(member.getProfileUrl())
