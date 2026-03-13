@@ -70,4 +70,30 @@ public class QueryMemberServiceTest {
 		assertThat(response.members().get(0).name()).isEqualTo("김모또");
 		verify(memberReader, times(1)).findAllBySettlementId(eq(groupId), eq(MemberSortType.CREATED));
 	}
+
+	@DisplayName("정렬 기준을 받아 모임원을 조회할 수 있다.")
+	@Test
+	void findAllWithSortType() {
+		Long groupId = mockSettlement.getId();
+
+		when(memberReader.findAllBySettlementId(eq(groupId), eq(MemberSortType.NAME))).thenReturn(mockMembers);
+
+		MembersResponse response = queryMemberService.findAll(groupId, MemberSortType.NAME);
+
+		assertThat(response.members()).hasSize(2);
+		verify(memberReader).findAllBySettlementId(groupId, MemberSortType.NAME);
+	}
+
+	@DisplayName("모임 ID로 원본 Member 목록을 조회할 수 있다.")
+	@Test
+	void findAllBySettlementId() {
+		Long groupId = mockSettlement.getId();
+
+		when(memberReader.findAllBySettlementId(eq(groupId))).thenReturn(mockMembers);
+
+		List<Member> result = queryMemberService.findAllBySettlementId(groupId);
+
+		assertThat(result).isEqualTo(mockMembers);
+		verify(memberReader).findAllBySettlementId(groupId);
+	}
 }
