@@ -23,7 +23,7 @@ public class MemberExpenseControllerTest extends RestDocsTestSupport {
 	@DisplayName("모임원별 상세 지출 내역을 성공적으로 조회한다.")
 	void getMemberExpensesDetailsSuccess() throws Exception {
 		// given
-		String code = "mockedGroupToken";
+		String code = "mockedCode";
 		Long groupId = 1L;
 
 		MembersExpenseResponse membersExpenseResponse = new MembersExpenseResponse(

@@ -16,6 +16,8 @@ include::{snippets}/expense-controller-test/save-expenses-success/curl-request.a
 
 include::{snippets}/expense-controller-test/save-expenses-success/http-request.adoc[]
 
+include::{snippets}/expense-controller-test/create-expense/path-parameters.adoc[]
+
 ==== 응답
 
 include::{snippets}/expense-controller-test/save-expenses-success/http-response.adoc[]
@@ -38,9 +40,8 @@ include::{snippets}/expense-controller-test/save-expenses-fail_when-member-not-f
 
 모임의 전체 지출 내역을 조회할 수 있습니다.
 
-- 조회시 날짜를 기준으로 오름차순으로 조회됩니다.
-
-- 참여자의 지출 내역까지 함께 조회됩니다.
+- 날짜 기준 오름차순으로 조회됩니다.
+- 참여자별 지출 내역도 함께 조회됩니다.
 
 === Example
 
@@ -62,8 +63,6 @@ include::{snippets}/expense-controller-test/get-all-by-settlement-id-success/htt
 
 include::{snippets}/expense-controller-test/get-all-by-settlement-id-success/response-body.adoc[]
 
-==== 응답 -
-
 == 단일 지출 내역 조회
 
 지출 내역 하나를 조회할 수 있습니다.
@@ -78,6 +77,8 @@ include::{snippets}/expense-controller-test/get-by-expense-id-success/curl-reque
 
 include::{snippets}/expense-controller-test/get-by-expense-id-success/http-request.adoc[]
 
+include::{snippets}/expense-controller-test/get-by-expense-id-success/path-parameters.adoc[]
+
 ==== 응답
 
 include::{snippets}/expense-controller-test/get-by-expense-id-success/http-response.adoc[]
@@ -88,17 +89,16 @@ include::{snippets}/expense-controller-test/get-by-expense-id-success/http-respo
 
 include::{snippets}/expense-controller-test/get-by-expense-id-success/response-body.adoc[]
 
-==== 응답 - 찾을 수 없는 지출내역
+==== 응답 - 찾을 수 없는 지출 내역
 
 include::{snippets}/expense-controller-test/get-by-expense-id-fail_when-expense-not-found/response-body.adoc[]
 
 == 지출 상세 내역 조회
 
-정산 내역의 전체 정산 내역을 조회합니다.
+정산의 전체 지출 상세 내역을 조회할 수 있습니다.
 
-- 조회시 날짜를 기준으로 오름차순으로 정렬됩니다.
-
-- 참여자의 이름을 List값으로 가져옵니다.
+- 날짜 기준 오름차순으로 정렬됩니다.
+- 참여자 이름은 목록 형태로 제공됩니다.
 
 === Example
 
@@ -109,6 +109,8 @@ include::{snippets}/expense-controller-test/get-expense-details-success/curl-req
 ==== 요청
 
 include::{snippets}/expense-controller-test/get-expense-details-success/http-request.adoc[]
+
+include::{snippets}/expense-controller-test/get-expense-details-success/path-parameters.adoc[]
 
 ==== 응답
 
@@ -124,7 +126,7 @@ include::{snippets}/expense-controller-test/get-expense-details-success/response
 
 지출 내역을 수정할 수 있습니다.
 
-- id = expenseId
+- 경로의 `expenseId`를 기준으로 수정합니다.
 
 === Example
 
@@ -136,6 +138,8 @@ include::{snippets}/expense-controller-test/update-expense-success/httpie-reques
 ==== 요청
 
 include::{snippets}/expense-controller-test/update-expense-success/http-request.adoc[]
+
+include::{snippets}/expense-controller-test/update-expense-success/path-parameters.adoc[]
 
 ==== 응답
 
@@ -151,13 +155,13 @@ include::{snippets}/expense-controller-test/update-expense-success/request-body.
 
 include::{snippets}/expense-controller-test/update-expense-success/response-body.adoc[]
 
-==== 응답 - 찾을 수 없는 지출내역
+==== 응답 - 찾을 수 없는 지출 내역
 
 include::{snippets}/expense-controller-test/get-by-expense-id-fail_when-expense-not-found/response-body.adoc[]
 
 == 지출 내역 삭제
 
-지출 내역을 삭제합니다.
+지출 내역을 삭제할 수 있습니다.
 
 === Example
 
@@ -169,13 +173,15 @@ include::{snippets}/expense-controller-test/delete-expense-success/curl-request.
 
 include::{snippets}/expense-controller-test/delete-expense-success/http-request.adoc[]
 
+include::{snippets}/expense-controller-test/delete-expense-success/path-parameters.adoc[]
+
 ==== 응답
 
 include::{snippets}/expense-controller-test/delete-expense-success/http-response.adoc[]
 
 == 지출 이미지 URL 수정
 
-지출 내역별 이미지 URL을 업데이트할 수 있습니다.
+지출 내역별 이미지 URL을 수정할 수 있습니다.
 
 === Example
 
@@ -186,6 +192,8 @@ include::{snippets}/expense-controller-test/update-img-url-success/curl-request.
 ==== 요청
 
 include::{snippets}/expense-controller-test/update-img-url-success/http-request.adoc[]
+
+include::{snippets}/expense-controller-test/update-img-url-success/path-parameters.adoc[]
 
 ==== 응답
 

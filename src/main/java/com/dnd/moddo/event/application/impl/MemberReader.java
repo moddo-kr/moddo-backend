@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.moddo.event.domain.member.Member;
+import com.dnd.moddo.event.domain.member.type.MemberSortType;
+import com.dnd.moddo.event.infrastructure.MemberQueryRepository;
 import com.dnd.moddo.event.infrastructure.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -15,9 +17,14 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 public class MemberReader {
 	private final MemberRepository memberRepository;
+	private final MemberQueryRepository memberQueryRepository;
 
 	public List<Member> findAllBySettlementId(Long settlementId) {
-		return memberRepository.findBySettlementId(settlementId);
+		return findAllBySettlementId(settlementId, MemberSortType.CREATED);
+	}
+
+	public List<Member> findAllBySettlementId(Long settlementId, MemberSortType sortType) {
+		return memberQueryRepository.findAllBySettlementId(settlementId, sortType);
 	}
 
 	public Member findByAppointmentMemberId(Long appointmentMemberId) {
@@ -25,7 +32,7 @@ public class MemberReader {
 	}
 
 	public List<Long> findIdsBySettlementId(Long settlementId) {
-		return memberRepository.findAppointmentMemberIdsBySettlementId(settlementId);
+		return memberRepository.findMemberIdsBySettlementId(settlementId);
 	}
 
 }

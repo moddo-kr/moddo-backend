@@ -21,7 +21,7 @@ public class CharacterControllerTest extends RestDocsTestSupport {
 	@DisplayName("캐릭터 정보를 정상적으로 조회한다.")
 	void getCharacterSuccess() throws Exception {
 		// given
-		String groupToken = "groupToken";
+		String code = "groupCode";
 		Long groupId = 1L;
 
 		CharacterResponse mockResponse = new CharacterResponse(
@@ -29,12 +29,12 @@ public class CharacterControllerTest extends RestDocsTestSupport {
 			"https://moddo-s3.s3.amazonaws.com/character/천사 모또-2-big.png"
 		);
 
-		Mockito.when(querySettlementService.findIdByCode(groupToken)).thenReturn(groupId);
+		Mockito.when(querySettlementService.findIdByCode(code)).thenReturn(groupId);
 		Mockito.when(queryCharacterService.findCharacterByGroupId(eq(groupId))).thenReturn(mockResponse);
 
 		// when & then
 		mockMvc.perform(get("/api/v1/character")
-				.param("code", groupToken)
+				.param("code", code)
 				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.name").value("천사 모또"))
@@ -43,41 +43,41 @@ public class CharacterControllerTest extends RestDocsTestSupport {
 			.andExpect(jsonPath("$.imageBigUrl").value("https://moddo-s3.s3.amazonaws.com/character/천사 모또-2-big.png"))
 			.andDo(print());
 
-		verify(querySettlementService).findIdByCode(groupToken);
+		verify(querySettlementService).findIdByCode(code);
 		verify(queryCharacterService).findCharacterByGroupId(groupId);
 	}
 
 	@Test
-	@DisplayName("유효하지 않은 groupToken일 경우 에러가 발생한다.")
+	@DisplayName("유효하지 않은 code일 경우 에러가 발생한다.")
 	void getCharacterInvalidToken() throws Exception {
 		// given
-		String groupToken = "invalid.groupToken";
-		when(querySettlementService.findIdByCode(groupToken)).thenThrow(new TokenInvalidException());
+		String code = "invalid.code";
+		when(querySettlementService.findIdByCode(code)).thenThrow(new TokenInvalidException());
 
 		// when & then
 		mockMvc.perform(get("/api/v1/character")
-				.param("code", groupToken)
+				.param("code", code)
 				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isUnauthorized());
 
-		verify(querySettlementService).findIdByCode(groupToken);
+		verify(querySettlementService).findIdByCode(code);
 		verify(queryCharacterService, never()).findCharacterByGroupId(any());
 	}
 
 	@Test
-	@DisplayName("groupToken이 비어있는 경우 에러가 발생한다.")
+	@DisplayName("code가 비어 있는 경우 에러가 발생한다.")
 	void getCharacterMissingToken() throws Exception {
 		// when
-		String groupToken = "";
-		when(querySettlementService.findIdByCode(groupToken)).thenThrow(new MissingTokenException());
+		String code = "";
+		when(querySettlementService.findIdByCode(code)).thenThrow(new MissingTokenException());
 
 		// then
 		mockMvc.perform(get("/api/v1/character")
-				.param("code", groupToken)
+				.param("code", code)
 				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isUnauthorized());
 
-		verify(querySettlementService).findIdByCode(groupToken);
+		verify(querySettlementService).findIdByCode(code);
 		verify(queryCharacterService, never()).findCharacterByGroupId(any());
 	}
 }

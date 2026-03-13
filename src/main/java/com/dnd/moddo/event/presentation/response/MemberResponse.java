@@ -4,12 +4,10 @@ import java.time.LocalDateTime;
 
 import com.dnd.moddo.event.domain.member.ExpenseRole;
 import com.dnd.moddo.event.domain.member.Member;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.Builder;
 
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public record MemberResponse(
 	Long id,
 	ExpenseRole role,
@@ -25,7 +23,7 @@ public record MemberResponse(
 			.id(member.getId())
 			.name(member.getName())
 			.role(member.getRole())
-			.userId(member.getId())
+			.userId(member.getUserId())
 			.isPaid(member.isPaid())
 			.paidAt(member.getPaidAt())
 			.profile(member.getProfileUrl())
