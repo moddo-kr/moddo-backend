@@ -1,6 +1,7 @@
 package com.dnd.moddo.event.infrastructure;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,6 +22,14 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 			  and gm.user.id = :userId
 		""")
 	boolean existsBySettlementIdAndUserId(@Param("settlementId") Long settlementId, @Param("userId") Long userId);
+
+	@Query("""
+			select gm
+			from Member gm
+			where gm.settlement.id = :settlementId
+			  and gm.user.id = :userId
+		""")
+	Optional<Member> findBySettlementIdAndUserId(@Param("settlementId") Long settlementId, @Param("userId") Long userId);
 
 	default Member getById(Long id) {
 		return findById(id)

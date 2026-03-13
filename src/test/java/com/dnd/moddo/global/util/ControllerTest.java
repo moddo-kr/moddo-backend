@@ -18,6 +18,7 @@ import com.dnd.moddo.common.config.CookieProperties;
 import com.dnd.moddo.common.logging.ErrorNotifier;
 import com.dnd.moddo.event.application.command.CommandExpenseService;
 import com.dnd.moddo.event.application.command.CommandMemberService;
+import com.dnd.moddo.event.application.command.CommandPaymentRequest;
 import com.dnd.moddo.event.application.command.CommandSettlementService;
 import com.dnd.moddo.event.application.query.QueryExpenseService;
 import com.dnd.moddo.event.application.query.QueryMemberExpenseService;
@@ -26,6 +27,7 @@ import com.dnd.moddo.event.application.query.QuerySettlementService;
 import com.dnd.moddo.event.presentation.ExpenseController;
 import com.dnd.moddo.event.presentation.MemberController;
 import com.dnd.moddo.event.presentation.MemberExpenseController;
+import com.dnd.moddo.event.presentation.PaymentRequestController;
 import com.dnd.moddo.event.presentation.SettlementController;
 import com.dnd.moddo.image.application.CommandImageService;
 import com.dnd.moddo.image.presentation.ImageController;
@@ -43,6 +45,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 	ExpenseController.class,
 	SettlementController.class,
 	MemberController.class,
+	PaymentRequestController.class,
 	ImageController.class,
 	MemberExpenseController.class,
 	com.dnd.moddo.user.presentation.UserController.class,
@@ -89,6 +92,9 @@ public abstract class ControllerTest {
 
 	@MockBean
 	protected CommandMemberService commandMemberService;
+
+	@MockBean
+	protected CommandPaymentRequest commandPaymentRequest;
 
 	@MockBean
 	protected CommandImageService commandImageService;

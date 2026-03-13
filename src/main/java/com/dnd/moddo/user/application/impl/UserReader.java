@@ -25,8 +25,11 @@ public class UserReader {
 		return userRepository.findKakaoIdById(userId);
 	}
 
+	public User read(Long userId) {
+		return userRepository.getById(userId);
+	}
+
 	public UserResponse findById(Long userId) {
-		User user = userRepository.getById(userId);
-		return UserResponse.of(user);
+		return UserResponse.of(read(userId));
 	}
 }

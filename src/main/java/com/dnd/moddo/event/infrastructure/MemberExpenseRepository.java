@@ -17,4 +17,7 @@ public interface MemberExpenseRepository extends JpaRepository<MemberExpense, Lo
 
 	@Query("select me from MemberExpense me where me.member.id in :memberIds")
 	List<MemberExpense> findAllByAppointmentMemberIds(@Param("memberIds") List<Long> memberIds);
+
+	@Query("select me from MemberExpense me where me.member.id = :memberId")
+	List<MemberExpense> findByMemberId(@Param("memberId") Long memberId);
 }

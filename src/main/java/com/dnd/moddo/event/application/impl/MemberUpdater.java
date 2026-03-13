@@ -61,10 +61,15 @@ public class MemberUpdater {
 
 	@Transactional(isolation = Isolation.READ_COMMITTED)
 	public Member updatePaymentStatus(Long appointmentMemberId, PaymentStatusUpdateRequest request) {
+		return updatePaymentStatus(appointmentMemberId, request.isPaid());
+	}
+
+	@Transactional(isolation = Isolation.READ_COMMITTED)
+	public Member updatePaymentStatus(Long appointmentMemberId, boolean isPaid) {
 		try {
 			Member member = memberRepository.getById(appointmentMemberId);
-			if (member.isPaid() != request.isPaid()) {
-				member.updatePaymentStatus(request.isPaid());
+			if (member.isPaid() != isPaid) {
+				member.updatePaymentStatus(isPaid);
 				memberRepository.save(member);
 			}
 			return member;

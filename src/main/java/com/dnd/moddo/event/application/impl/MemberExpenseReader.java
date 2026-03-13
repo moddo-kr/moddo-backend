@@ -20,11 +20,15 @@ public class MemberExpenseReader {
 		return memberExpenseRepository.findByExpenseId(expenseId);
 	}
 
-	public List<MemberExpense> findAllByAppointMemberIds(List<Long> appointMemberIds) {
-		return memberExpenseRepository.findAllByAppointmentMemberIds(appointMemberIds);
+	public List<MemberExpense> findAllByAppointMemberIds(List<Long> memberIds) {
+		return memberExpenseRepository.findAllByAppointmentMemberIds(memberIds);
 	}
 
 	public List<MemberExpense> findAllByExpenseIds(List<Long> expenseIds) {
 		return memberExpenseRepository.findAllByExpenseIds(expenseIds);
+	}
+
+	public List<MemberExpense> getMemberExpenseByMemberId(Long memberId) {
+		return memberExpenseRepository.findByMemberId(memberId);
 	}
 }
