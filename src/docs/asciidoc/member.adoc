@@ -1,16 +1,47 @@
-= 모임원 (AppointmentMember)
+= 모임원 (Member)
 :toc: left
 :toclevels: 2
 
+== 모임원 조회
+
+정산에 속한 전체 모임원을 조회할 수 있습니다.
+
+- `userId`는 해당 모임원에 연결된 사용자 ID입니다.
+- 아직 로그인 사용자가 선택하지 않은 참여자는 `userId`가 `null`로 내려갑니다.
+- `sortType`으로 정렬 기준을 지정할 수 있으며 기본값은 `CREATED`입니다.
+
+=== Example
+
+include::{snippets}/member-controller-test/get-appointment-members/curl-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/member-controller-test/get-appointment-members/http-request.adoc[]
+
+include::{snippets}/member-controller-test/get-appointment-members/path-parameters.adoc[]
+
+include::{snippets}/member-controller-test/get-appointment-members/query-parameters.adoc[]
+
+==== 응답
+
+include::{snippets}/member-controller-test/get-appointment-members/http-response.adoc[]
+
+=== Body
+
+==== 응답
+
+include::{snippets}/member-controller-test/get-appointment-members/response-body.adoc[]
+
 == 모임원 추가
 
-기존 모임 참여자에 새로운 모임 참여자를 추가할 수 있습니다.
+기존 정산에 새로운 모임원을 추가할 수 있습니다.
 
-Enum
+역할(Enum)
 
-- MANAGER: 총무
-
-- PARTICIPANT: 참여자
+- `MANAGER`: 총무
+- `PARTICIPANT`: 참여자
 
 === Example
 
@@ -21,6 +52,8 @@ include::{snippets}/member-controller-test/save-appointment-member/curl-request.
 ==== 요청
 
 include::{snippets}/member-controller-test/save-appointment-member/http-request.adoc[]
+
+include::{snippets}/member-controller-test/save-appointment-member/path-parameters.adoc[]
 
 ==== 응답
 
@@ -36,6 +69,71 @@ include::{snippets}/member-controller-test/save-appointment-member/request-body.
 
 include::{snippets}/member-controller-test/save-appointment-member/response-body.adoc[]
 
+== 참여자 선택
+
+로그인 사용자가 아직 선택되지 않은 참여자를 선택할 수 있습니다.
+
+- 요청 body에 선택할 `memberId`를 전달합니다.
+- 한 사용자는 같은 정산에서 하나의 참여자만 선택할 수 있습니다.
+
+=== Example
+
+include::{snippets}/member-controller-test/assign-member/curl-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/member-controller-test/assign-member/http-request.adoc[]
+
+include::{snippets}/member-controller-test/assign-member/path-parameters.adoc[]
+
+==== 응답
+
+include::{snippets}/member-controller-test/assign-member/http-response.adoc[]
+
+=== Body
+
+==== 요청
+
+include::{snippets}/member-controller-test/assign-member/request-body.adoc[]
+
+==== 응답
+
+include::{snippets}/member-controller-test/assign-member/response-body.adoc[]
+
+== 참여자 선택 해제
+
+로그인 사용자가 본인이 선택한 참여자를 해제할 수 있습니다.
+
+- 요청 body에 해제할 `memberId`를 전달합니다.
+
+=== Example
+
+include::{snippets}/member-controller-test/unassign-member/curl-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/member-controller-test/unassign-member/http-request.adoc[]
+
+include::{snippets}/member-controller-test/unassign-member/path-parameters.adoc[]
+
+==== 응답
+
+include::{snippets}/member-controller-test/unassign-member/http-response.adoc[]
+
+=== Body
+
+==== 요청
+
+include::{snippets}/member-controller-test/unassign-member/request-body.adoc[]
+
+==== 응답
+
+include::{snippets}/member-controller-test/unassign-member/response-body.adoc[]
+
 == 결제 상태 변경
 
 모임원의 결제 상태를 변경할 수 있습니다.
@@ -49,6 +147,8 @@ include::{snippets}/member-controller-test/update-payment-status/curl-request.ad
 ==== 요청
 
 include::{snippets}/member-controller-test/update-payment-status/http-request.adoc[]
+
+include::{snippets}/member-controller-test/update-payment-status/path-parameters.adoc[]
 
 ==== 응답
 
@@ -66,9 +166,9 @@ include::{snippets}/member-controller-test/update-payment-status/response-body.a
 
 == 모임원 삭제
 
-참여자Id를 통해 참여자를 삭제할 수 있습니다.
+참여자 ID로 모임원을 삭제할 수 있습니다.
 
-- 단, 총무 참여자의 경우 삭제할 수 없습니다.
+- 총무(`MANAGER`)는 삭제할 수 없습니다.
 
 === Example
 
@@ -79,6 +179,8 @@ include::{snippets}/member-controller-test/delete-appointment-member/curl-reques
 ==== 요청
 
 include::{snippets}/member-controller-test/delete-appointment-member/http-request.adoc[]
+
+include::{snippets}/member-controller-test/delete-appointment-member/path-parameters.adoc[]
 
 ==== 응답
 

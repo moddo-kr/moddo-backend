@@ -8,13 +8,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dnd.moddo.auth.infrastructure.security.LoginUser;
+import com.dnd.moddo.auth.presentation.response.LoginUserInfo;
 import com.dnd.moddo.common.support.VerifyManagerPermission;
 import com.dnd.moddo.event.application.command.CommandMemberService;
 import com.dnd.moddo.event.application.query.QueryMemberService;
 import com.dnd.moddo.event.application.query.QuerySettlementService;
+import com.dnd.moddo.event.domain.member.type.MemberSortType;
 import com.dnd.moddo.event.presentation.request.MemberSaveRequest;
+import com.dnd.moddo.event.presentation.request.MemberSelectionRequest;
 import com.dnd.moddo.event.presentation.request.PaymentStatusUpdateRequest;
 import com.dnd.moddo.event.presentation.response.MemberResponse;
 import com.dnd.moddo.event.presentation.response.MembersResponse;
@@ -33,10 +38,11 @@ public class MemberController {
 
 	@GetMapping
 	public ResponseEntity<MembersResponse> getMembers(
-		@PathVariable String code
+		@PathVariable String code,
+		@RequestParam(defaultValue = "CREATED") String sortType
 	) {
 		Long settlementId = querySettlementService.findIdByCode(code);
-		MembersResponse response = queryMemberService.findAll(settlementId);
+		MembersResponse response = queryMemberService.findAll(settlementId, MemberSortType.from(sortType));
 		return ResponseEntity.ok(response);
 	}
 
@@ -60,6 +66,28 @@ public class MemberController {
 	) {
 		MemberResponse response =
 			commandMemberService.updatePaymentStatus(memberId, request);
+		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping("/assign")
+	public ResponseEntity<MemberResponse> assignMember(
+		@PathVariable String code,
+		@Valid @RequestBody MemberSelectionRequest request,
+		@LoginUser LoginUserInfo loginUser
+	) {
+		Long settlementId = querySettlementService.findIdByCode(code);
+		MemberResponse response = commandMemberService.assignMember(settlementId, request.memberId(), loginUser.userId());
+		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping("/unassign")
+	public ResponseEntity<MemberResponse> unassignMember(
+		@PathVariable String code,
+		@Valid @RequestBody MemberSelectionRequest request,
+		@LoginUser LoginUserInfo loginUser
+	) {
+		Long settlementId = querySettlementService.findIdByCode(code);
+		MemberResponse response = commandMemberService.unassignMember(settlementId, request.memberId(), loginUser.userId());
 		return ResponseEntity.ok(response);
 	}
 

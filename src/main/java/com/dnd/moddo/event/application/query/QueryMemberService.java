@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.dnd.moddo.event.application.impl.MemberReader;
 import com.dnd.moddo.event.domain.member.Member;
+import com.dnd.moddo.event.domain.member.type.MemberSortType;
 import com.dnd.moddo.event.presentation.response.MembersResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -15,8 +16,8 @@ import lombok.RequiredArgsConstructor;
 public class QueryMemberService {
 	private final MemberReader memberReader;
 
-	public MembersResponse findAll(Long settlementId) {
-		List<Member> members = memberReader.findAllBySettlementId(settlementId);
+	public MembersResponse findAll(Long settlementId, MemberSortType sortType) {
+		List<Member> members = memberReader.findAllBySettlementId(settlementId, sortType);
 		return MembersResponse.of(members);
 	}
 

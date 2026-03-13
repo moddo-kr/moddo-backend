@@ -29,9 +29,9 @@ public class GroupPermissionAspect {
 	public void checkPermission(JoinPoint joinPoint, VerifyManagerPermission verifyManagerPermission) {
 
 		Long userId = extractUserId();
-		String groupToken = extractGroupToken(joinPoint.getArgs());
+		String code = extractCode(joinPoint.getArgs());
 
-		Long settlementId = querySettlementService.findIdByCode(groupToken);
+		Long settlementId = querySettlementService.findIdByCode(code);
 
 		if (!isAuthorized(userId, settlementId)) {
 			throw new UserPermissionException();
@@ -50,13 +50,13 @@ public class GroupPermissionAspect {
 		return authDetails.getUserId();
 	}
 
-	private String extractGroupToken(Object[] args) {
+	private String extractCode(Object[] args) {
 		for (Object arg : args) {
 			if (arg instanceof String token) {
 				return token;
 			}
 		}
-		throw new IllegalArgumentException("groupToken parameter not found");
+		throw new IllegalArgumentException("code parameter not found");
 	}
 
 	private boolean isAuthorized(Long userId, Long settlementId) {

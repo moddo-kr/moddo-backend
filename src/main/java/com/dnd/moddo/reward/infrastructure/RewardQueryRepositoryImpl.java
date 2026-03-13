@@ -12,6 +12,8 @@ import com.dnd.moddo.reward.domain.character.QCollection;
 import com.dnd.moddo.reward.presentation.response.CollectionListResponse;
 import com.dnd.moddo.reward.presentation.response.CollectionResponse;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.AllArgsConstructor;
@@ -36,8 +38,14 @@ public class RewardQueryRepositoryImpl implements RewardQueryRepository {
 						character.name,
 						character.rarity,
 						collection.acquiredAt,
-						character.imageUrl,
-						character.imageBigUrl
+						new CaseBuilder()
+							.when(collection.acquiredAt.isNull())
+							.then(Expressions.nullExpression(String.class))
+							.otherwise(character.imageUrl),
+						new CaseBuilder()
+							.when(collection.acquiredAt.isNull())
+							.then(Expressions.nullExpression(String.class))
+							.otherwise(character.imageBigUrl)
 					)
 				)
 				.from(character)

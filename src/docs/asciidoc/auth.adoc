@@ -6,7 +6,7 @@
 
 비회원의 토큰을 발급받을 수 있습니다.
 
-- 비회원의 토큰 만료일: 토큰 생성일로부터 1달
+- 비회원 토큰의 만료일은 발급일로부터 1개월입니다.
 
 === Example
 
@@ -30,7 +30,7 @@ include::{snippets}/auth-controller-test/get-guest-token/response-body.adoc[]
 
 == 액세스 토큰 재발급
 
-refreshToken을 사용해 accessToken을 재발급 받을 수 있습니다.
+`refreshToken`을 사용해 `accessToken`을 재발급받을 수 있습니다.
 
 === Example
 
@@ -54,8 +54,8 @@ include::{snippets}/auth-controller-test/reissue-access-token/response-body.adoc
 
 == 카카오톡 소셜 로그인
 
-사용자가 카카오 소셜 로그인을 완료하면, 인가 코드를 통해 카카오 Access Token을 발급받고, 이를 이용해 카카오 사용자 정보를 조회합니다.
-조회된 사용자 정보로 서비스의 Access Token을 생성한 후, 해당 토큰은 쿠키를 통해 클라이언트에 전달됩니다.
+사용자가 카카오 소셜 로그인을 완료하면 인가 코드를 통해 카카오 `Access Token`을 발급받습니다.
+발급된 토큰으로 카카오 사용자 정보를 조회한 뒤, 서비스의 `Access Token`을 생성해 쿠키로 전달합니다.
 
 === Example
 
@@ -79,7 +79,7 @@ include::{snippets}/auth-controller-test/kakao-login-callback/response-body.adoc
 
 == 로그아웃
 
-서비스와 카카오 로그아웃을 처리합니다.
+서비스 로그아웃과 카카오 로그아웃을 처리할 수 있습니다.
 
 === Example
 
@@ -103,7 +103,7 @@ include::{snippets}/auth-controller-test/kakao-logout/response-body.adoc[]
 
 == 카카오 탈퇴
 
-카카오 소셜로그인 사용자의 서비스 탈퇴 처리합니다.
+카카오 소셜 로그인 사용자의 서비스 탈퇴를 처리할 수 있습니다.
 
 === Example
 
@@ -154,4 +154,3 @@ include::{snippets}/auth-controller-test/check-auth-success/response-body.adoc[]
 include::{snippets}/auth-controller-test/check-auth-expired/response-body.adoc[]
 
 include::{snippets}/auth-controller-test/check-auth-invalid-token/response-body.adoc[]
-

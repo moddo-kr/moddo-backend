@@ -7,9 +7,13 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 
 import com.dnd.moddo.event.domain.member.ExpenseRole;
+import com.dnd.moddo.event.domain.member.Member;
 import com.dnd.moddo.event.domain.member.QMember;
+import com.dnd.moddo.event.domain.member.type.MemberSortType;
 import com.dnd.moddo.event.presentation.response.MemberResponse;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.Getter;
@@ -20,6 +24,17 @@ import lombok.RequiredArgsConstructor;
 public class MemberQueryRepositoryImpl implements MemberQueryRepository {
 
 	private final JPAQueryFactory queryFactory;
+
+	@Override
+	public List<Member> findAllBySettlementId(Long settlementId, MemberSortType sortType) {
+		QMember member = QMember.member;
+
+		return queryFactory
+			.selectFrom(member)
+			.where(member.settlement.id.eq(settlementId))
+			.orderBy(getOrderSpecifiers(member, sortType))
+			.fetch();
+	}
 
 	@Override
 	public Map<Long, List<MemberResponse>> findMembersByIds(List<Long> settlementIds) {
@@ -58,6 +73,30 @@ public class MemberQueryRepositoryImpl implements MemberQueryRepository {
 					Collectors.toList()
 				)
 			));
+	}
+
+	private OrderSpecifier<?>[] getOrderSpecifiers(QMember member, MemberSortType sortType) {
+		OrderSpecifier<Integer> managerFirst = new CaseBuilder()
+			.when(member.role.eq(ExpenseRole.MANAGER)).then(0)
+			.otherwise(1)
+			.asc();
+
+		return switch (sortType) {
+			case NAME -> new OrderSpecifier[] {
+				managerFirst,
+				member.name.asc(),
+				member.id.asc()
+			};
+			case PAID_AT -> new OrderSpecifier[] {
+				managerFirst,
+				member.paidAt.asc().nullsLast(),
+				member.id.asc()
+			};
+			case CREATED -> new OrderSpecifier[] {
+				managerFirst,
+				member.id.asc()
+			};
+		};
 	}
 
 	/**

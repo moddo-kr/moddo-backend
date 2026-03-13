@@ -14,6 +14,8 @@ include::user.adoc[]
 
 include::character.adoc[]
 
+include::collection.adoc[]
+
 include::expense.adoc[]
 
 include::settlement.adoc[]

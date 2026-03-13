@@ -36,7 +36,7 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 	void saveSettlement() throws Exception {
 		// given
 		SettlementRequest request = new SettlementRequest("모또 모임");
-		SettlementSaveResponse response = new SettlementSaveResponse("groupToken", new MemberResponse(
+		SettlementSaveResponse response = new SettlementSaveResponse("code", new MemberResponse(
 			1L, MANAGER, "김모또", "https://moddo-s3.s3.amazonaws.com/profile/MODDO.png", 1L, true, LocalDateTime.now()
 		));
 
@@ -52,7 +52,7 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.groupToken").value("groupToken"));
+			.andExpect(jsonPath("$.groupToken").value("code"));
 	}
 
 	@Test
@@ -77,7 +77,12 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 		mockMvc.perform(put("/api/v1/groups/{code}/account", "code")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(accountRequest)))
-			.andExpect(status().isOk());
+			.andExpect(status().isOk())
+			.andDo(restDocs.document(
+				pathParameters(
+					parameterWithName("code").description("정산 코드")
+				)
+			));
 	}
 
 	@Test
@@ -102,7 +107,12 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 
 		// when & then
 		mockMvc.perform(get("/api/v1/groups/{code}", "code"))
-			.andExpect(status().isOk());
+			.andExpect(status().isOk())
+			.andDo(restDocs.document(
+				pathParameters(
+					parameterWithName("code").description("정산 코드")
+				)
+			));
 	}
 
 	@Test
@@ -113,12 +123,17 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 			LocalDateTime.now().plusDays(1), "우리은행",
 			"1111-1111");
 
-		given(querySettlementService.findIdByCode("groupToken")).willReturn(100L);
+		given(querySettlementService.findIdByCode("code")).willReturn(100L);
 		given(querySettlementService.findBySettlementHeader(100L)).willReturn(response);
 
 		// when & then
 		mockMvc.perform(get("/api/v1/groups/{code}/header", "code"))
-			.andExpect(status().isOk());
+			.andExpect(status().isOk())
+			.andDo(restDocs.document(
+				pathParameters(
+					parameterWithName("code").description("정산 코드")
+				)
+			));
 	}
 
 	@Test
@@ -261,6 +276,7 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 					fieldWithPath("[].members[].name").description("모임원 이름"),
 					fieldWithPath("[].members[].profile").description("프로필 이미지 URL"),
 					fieldWithPath("[].members[].userId").description("사용자 ID"),
+					fieldWithPath("[].members[].paidAt").description("정산 완료 시각").optional(),
 					fieldWithPath("[].members[].isPaid").description("정산 완료 여부")
 						.optional()
 				)

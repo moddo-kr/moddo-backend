@@ -19,13 +19,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.dnd.moddo.event.application.impl.SettlementReader;
 import com.dnd.moddo.event.domain.member.ExpenseRole;
 import com.dnd.moddo.event.domain.member.Member;
+import com.dnd.moddo.event.domain.member.type.MemberSortType;
 import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.domain.settlement.exception.GroupNotFoundException;
 import com.dnd.moddo.event.domain.settlement.type.SettlementSortType;
 import com.dnd.moddo.event.domain.settlement.type.SettlementStatus;
 import com.dnd.moddo.event.infrastructure.ExpenseRepository;
 import com.dnd.moddo.event.infrastructure.MemberQueryRepository;
-import com.dnd.moddo.event.infrastructure.MemberRepository;
 import com.dnd.moddo.event.infrastructure.SettlementQueryRepository;
 import com.dnd.moddo.event.infrastructure.SettlementRepository;
 import com.dnd.moddo.event.presentation.response.MemberResponse;
@@ -41,9 +41,6 @@ class SettlementReaderTest {
 
 	@Mock
 	private ExpenseRepository expenseRepository;
-
-	@Mock
-	private MemberRepository memberRepository;
 
 	@Mock
 	private MemberQueryRepository memberQueryRepository;
@@ -79,14 +76,14 @@ class SettlementReaderTest {
 		when(mockSettlement.getId()).thenReturn(1L);
 		List<Member> mockMembers = List.of(mock(Member.class), mock(Member.class));
 
-		when(memberRepository.findBySettlementId(anyLong())).thenReturn(mockMembers);
+		when(memberQueryRepository.findAllBySettlementId(anyLong(), eq(MemberSortType.CREATED))).thenReturn(mockMembers);
 
 		// When
 		List<Member> result = settlementReader.findBySettlement(mockSettlement.getId());
 
 		// Then
 		assertThat(result).hasSize(2);
-		verify(memberRepository, times(1)).findBySettlementId(mockSettlement.getId());
+		verify(memberQueryRepository, times(1)).findAllBySettlementId(mockSettlement.getId(), MemberSortType.CREATED);
 	}
 
 	@Test

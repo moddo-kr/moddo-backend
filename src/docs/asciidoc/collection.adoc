@@ -1,0 +1,27 @@
+= 도감 (Collection)
+:toc: left
+:toclevels: 2
+
+== 도감 조회
+
+로그인한 사용자의 캐릭터 수집 현황을 조회할 수 있습니다.
+
+=== Example
+
+include::{snippets}/collection-controller-test/get-my-collections/curl-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/collection-controller-test/get-my-collections/http-request.adoc[]
+
+==== 응답
+
+include::{snippets}/collection-controller-test/get-my-collections/http-response.adoc[]
+
+=== Body
+
+==== 응답
+
+include::{snippets}/collection-controller-test/get-my-collections/response-body.adoc[]
