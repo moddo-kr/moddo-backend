@@ -51,6 +51,7 @@ public class PaymentRequestReader {
 					paymentRequest.getId(),
 					memberId,
 					member.getName(),
+					member.getProfileUrl(),
 					amountByMemberId.getOrDefault(memberId, 0L)
 				);
 			})

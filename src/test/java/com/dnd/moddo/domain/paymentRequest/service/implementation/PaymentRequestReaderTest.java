@@ -19,6 +19,7 @@ import com.dnd.moddo.event.domain.member.ExpenseRole;
 import com.dnd.moddo.event.domain.member.Member;
 import com.dnd.moddo.event.domain.memberExpense.MemberExpense;
 import com.dnd.moddo.event.domain.paymentRequest.PaymentRequest;
+import com.dnd.moddo.event.domain.paymentRequest.PaymentRequestStatus;
 import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.infrastructure.PaymentRequestRepository;
 import com.dnd.moddo.event.presentation.response.PaymentRequestItemResponse;
@@ -68,6 +69,8 @@ class PaymentRequestReaderTest {
 		setField(paymentRequest2, "id", 2L);
 		setField(paymentRequest1, "requestedAt", LocalDateTime.of(2026, 3, 13, 21, 0));
 		setField(paymentRequest2, "requestedAt", LocalDateTime.of(2026, 3, 13, 22, 0));
+		setField(paymentRequest1, "status", PaymentRequestStatus.PENDING);
+		setField(paymentRequest2, "status", PaymentRequestStatus.PENDING);
 		setField(member1, "id", 11L);
 		setField(member2, "id", 12L);
 
@@ -88,10 +91,12 @@ class PaymentRequestReaderTest {
 
 		assertThat(first.paymentRequestId()).isEqualTo(2L);
 		assertThat(first.name()).isEqualTo("김모또");
+		assertThat(first.profileUrl()).isEqualTo("https://moddo-s3.s3.amazonaws.com/profile/2.png");
 		assertThat(first.totalAmount()).isEqualTo(7000L);
 
 		assertThat(second.paymentRequestId()).isEqualTo(1L);
 		assertThat(second.name()).isEqualTo("김반숙");
+		assertThat(second.profileUrl()).isEqualTo("https://moddo-s3.s3.amazonaws.com/profile/1.png");
 		assertThat(second.totalAmount()).isEqualTo(5000L);
 	}
 

@@ -42,6 +42,7 @@ public class PaymentRequestControllerTest extends RestDocsTestSupport {
 					1L,
 					2L,
 					"김반숙",
+					"https://moddo-s3.s3.amazonaws.com/profile/1.png",
 					12000L
 				)
 			)
@@ -63,6 +64,7 @@ public class PaymentRequestControllerTest extends RestDocsTestSupport {
 						.description("입금 확인 요청 ID"),
 					fieldWithPath("paymentRequests[].memberId").type(JsonFieldType.NUMBER).description("요청 참여자 ID"),
 					fieldWithPath("paymentRequests[].name").type(JsonFieldType.STRING).description("요청 참여자 이름"),
+					fieldWithPath("paymentRequests[].profileUrl").type(JsonFieldType.STRING).description("요청 참여자 프로필 URL"),
 					fieldWithPath("paymentRequests[].totalAmount").type(JsonFieldType.NUMBER).description("요청 금액")
 				)
 			));

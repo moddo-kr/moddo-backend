@@ -7,6 +7,7 @@ public record PaymentRequestItemResponse(
 	Long paymentRequestId,
 	Long memberId,
 	String name,
+	String profileUrl,
 	Long totalAmount
 ) {
 }

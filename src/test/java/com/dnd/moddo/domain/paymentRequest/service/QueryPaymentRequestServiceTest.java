@@ -31,7 +31,14 @@ class QueryPaymentRequestServiceTest {
 	@DisplayName("대상 유저 기준으로 입금 확인 요청 목록을 조회할 수 있다.")
 	void findByTargetUserId() {
 		PaymentRequestsResponse expected = new PaymentRequestsResponse(
-			List.of(new PaymentRequestItemResponse(LocalDateTime.now(), 1L, 2L, "김반숙", 10000L))
+			List.of(new PaymentRequestItemResponse(
+				LocalDateTime.now(),
+				1L,
+				2L,
+				"김반숙",
+				"https://moddo-s3.s3.amazonaws.com/profile/1.png",
+				10000L
+			))
 		);
 		when(paymentRequestReader.findByTargetUserId(1L)).thenReturn(expected);
 
