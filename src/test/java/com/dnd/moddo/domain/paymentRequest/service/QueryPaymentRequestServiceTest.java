@@ -36,7 +36,7 @@ class QueryPaymentRequestServiceTest {
 				1L,
 				2L,
 				"김반숙",
-				"https://moddo-s3.s3.amazonaws.com/profile/1.png",
+				"profile-1.png",
 				10000L
 			))
 		);

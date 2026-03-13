@@ -38,7 +38,7 @@ public class PaymentRequestReader {
 		Map<Long, Long> amountByMemberId = memberExpenseReader.findAllByMemberIds(memberIds).stream()
 			.collect(Collectors.groupingBy(
 				MemberExpense::getMemberId,
-				Collectors.summingLong(MemberExpense::getAmount)
+				Collectors.summingLong(me -> me.getAmount() != null ? me.getAmount() : 0L)
 			));
 
 		List<PaymentRequestItemResponse> responses = paymentRequests.stream()

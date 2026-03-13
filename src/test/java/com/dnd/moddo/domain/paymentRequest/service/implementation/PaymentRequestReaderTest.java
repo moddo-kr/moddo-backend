@@ -91,12 +91,12 @@ class PaymentRequestReaderTest {
 
 		assertThat(first.paymentRequestId()).isEqualTo(2L);
 		assertThat(first.name()).isEqualTo("김모또");
-		assertThat(first.profileUrl()).isEqualTo("https://moddo-s3.s3.amazonaws.com/profile/2.png");
+		assertThat(first.profileUrl()).isEqualTo(member2.getProfileUrl());
 		assertThat(first.totalAmount()).isEqualTo(7000L);
 
 		assertThat(second.paymentRequestId()).isEqualTo(1L);
 		assertThat(second.name()).isEqualTo("김반숙");
-		assertThat(second.profileUrl()).isEqualTo("https://moddo-s3.s3.amazonaws.com/profile/1.png");
+		assertThat(second.profileUrl()).isEqualTo(member1.getProfileUrl());
 		assertThat(second.totalAmount()).isEqualTo(5000L);
 	}
 

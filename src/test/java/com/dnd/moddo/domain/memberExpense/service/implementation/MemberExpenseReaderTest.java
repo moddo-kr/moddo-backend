@@ -135,4 +135,55 @@ class MemberExpenseReaderTest {
 
 		verify(memberExpenseRepository, times(1)).findAllByExpenseIds(eq(expenseIds));
 	}
+
+	@DisplayName("참여자 ID로 참여자별 지출내역을 조회할 수 있다.")
+	@Test
+	void findAllByMemberIdSuccess() {
+		Long memberId = 1L;
+		List<MemberExpense> expected = List.of(
+			new MemberExpense(1L, mockMember, 1000L),
+			new MemberExpense(2L, mockMember, 2000L)
+		);
+
+		when(memberExpenseRepository.findByMemberId(memberId)).thenReturn(expected);
+
+		List<MemberExpense> result = memberExpenseReader.findAllByMemberId(memberId);
+
+		assertThat(result).isEqualTo(expected);
+		verify(memberExpenseRepository).findByMemberId(memberId);
+	}
+
+	@DisplayName("참여자 ID 목록이 비어있으면 빈 리스트를 반환한다.")
+	@Test
+	void findAllByMemberIdsWhenEmpty() {
+		List<MemberExpense> result = memberExpenseReader.findAllByMemberIds(List.of());
+
+		assertThat(result).isEmpty();
+		verify(memberExpenseRepository, never()).findAllByMemberIds(any());
+	}
+
+	@DisplayName("참여자 ID 목록이 null이면 빈 리스트를 반환한다.")
+	@Test
+	void findAllByMemberIdsWhenNull() {
+		List<MemberExpense> result = memberExpenseReader.findAllByMemberIds(null);
+
+		assertThat(result).isEmpty();
+		verify(memberExpenseRepository, never()).findAllByMemberIds(any());
+	}
+
+	@DisplayName("참여자 ID 목록으로 참여자별 지출내역을 조회할 수 있다.")
+	@Test
+	void findAllByMemberIdsSuccess() {
+		List<Long> memberIds = List.of(1L, 2L);
+		List<MemberExpense> expected = List.of(
+			new MemberExpense(1L, mockMember, 1000L)
+		);
+
+		when(memberExpenseRepository.findAllByMemberIds(memberIds)).thenReturn(expected);
+
+		List<MemberExpense> result = memberExpenseReader.findAllByMemberIds(memberIds);
+
+		assertThat(result).isEqualTo(expected);
+		verify(memberExpenseRepository).findAllByMemberIds(memberIds);
+	}
 }

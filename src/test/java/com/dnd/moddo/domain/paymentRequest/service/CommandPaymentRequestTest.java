@@ -33,7 +33,7 @@ class CommandPaymentRequestTest {
 	@DisplayName("입금 확인 요청을 생성할 수 있다.")
 	void createPaymentRequest() {
 		PaymentRequest paymentRequest = mock(PaymentRequest.class);
-		stubPaymentRequest(paymentRequest);
+		stubPaymentRequest(paymentRequest, PaymentRequestStatus.PENDING);
 		when(paymentRequestCreator.createPaymentRequest(1L, 2L)).thenReturn(paymentRequest);
 
 		PaymentRequestResponse response = commandPaymentRequest.createPaymentRequest(1L, 2L);
@@ -46,33 +46,33 @@ class CommandPaymentRequestTest {
 	@DisplayName("입금 확인 요청을 승인할 수 있다.")
 	void approvePaymentRequest() {
 		PaymentRequest paymentRequest = mock(PaymentRequest.class);
-		stubPaymentRequest(paymentRequest);
+		stubPaymentRequest(paymentRequest, PaymentRequestStatus.APPROVED);
 		when(paymentRequestUpdater.approvePaymentRequest(1L, 2L)).thenReturn(paymentRequest);
 
 		PaymentRequestResponse response = commandPaymentRequest.approvePaymentRequest(1L, 2L);
 
 		assertThat(response.id()).isEqualTo(1L);
-		assertThat(response.status()).isEqualTo(PaymentRequestStatus.PENDING);
+		assertThat(response.status()).isEqualTo(PaymentRequestStatus.APPROVED);
 	}
 
 	@Test
 	@DisplayName("입금 확인 요청을 거절할 수 있다.")
 	void rejectPaymentRequest() {
 		PaymentRequest paymentRequest = mock(PaymentRequest.class);
-		stubPaymentRequest(paymentRequest);
+		stubPaymentRequest(paymentRequest, PaymentRequestStatus.REJECTED);
 		when(paymentRequestUpdater.rejectPaymentRequest(1L, 2L)).thenReturn(paymentRequest);
 
 		PaymentRequestResponse response = commandPaymentRequest.rejectPaymentRequest(1L, 2L);
 
 		assertThat(response.id()).isEqualTo(1L);
-		assertThat(response.status()).isEqualTo(PaymentRequestStatus.PENDING);
+		assertThat(response.status()).isEqualTo(PaymentRequestStatus.REJECTED);
 	}
 
-	private void stubPaymentRequest(PaymentRequest paymentRequest) {
+	private void stubPaymentRequest(PaymentRequest paymentRequest, PaymentRequestStatus status) {
 		when(paymentRequest.getId()).thenReturn(1L);
 		when(paymentRequest.getSettlementId()).thenReturn(2L);
 		when(paymentRequest.getRequestMemberId()).thenReturn(3L);
 		when(paymentRequest.getTargetUserId()).thenReturn(4L);
-		when(paymentRequest.getStatus()).thenReturn(PaymentRequestStatus.PENDING);
+		when(paymentRequest.getStatus()).thenReturn(status);
 	}
 }

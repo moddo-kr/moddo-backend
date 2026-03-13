@@ -32,15 +32,15 @@ public class PaymentRequest {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "settlement_id")
+	@JoinColumn(name = "settlement_id", nullable = false)
 	private Settlement settlement;
 
 	@ManyToOne
-	@JoinColumn(name = "request_member_id")
+	@JoinColumn(name = "request_member_id", nullable = false)
 	private Member requestMember;
 
 	@ManyToOne
-	@JoinColumn(name = "target_user_id")
+	@JoinColumn(name = "target_user_id", nullable = false)
 	private User targetUser;
 
 	private LocalDateTime requestedAt;
@@ -59,12 +59,20 @@ public class PaymentRequest {
 		this.status = PaymentRequestStatus.PENDING;
 	}
 
+	private void assertPending() {
+		if (this.status != PaymentRequestStatus.PENDING) {
+			throw new IllegalStateException("이미 처리된 입금 요청입니다.");
+		}
+	}
+
 	public void approve() {
+		assertPending();
 		this.status = PaymentRequestStatus.APPROVED;
 		this.processedAt = LocalDateTime.now();
 	}
 
 	public void reject() {
+		assertPending();
 		this.status = PaymentRequestStatus.REJECTED;
 		this.processedAt = LocalDateTime.now();
 	}

@@ -3,6 +3,7 @@ package com.dnd.moddo.domain.Member.service.implementation;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Optional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,6 @@ import com.dnd.moddo.event.domain.member.exception.MemberNotAssignedException;
 import com.dnd.moddo.event.domain.member.exception.MemberSelectionNotAllowedException;
 import com.dnd.moddo.event.domain.member.exception.MemberSelectionUnauthorizedException;
 import com.dnd.moddo.event.domain.member.exception.PaymentConcurrencyException;
-import com.dnd.moddo.event.domain.member.exception.UserAlreadyAssignedException;
 import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.infrastructure.MemberRepository;
 import com.dnd.moddo.event.presentation.request.MemberSaveRequest;
@@ -216,7 +216,7 @@ class MemberUpdaterTest {
 		when(member.isInSettlement(settlementId)).thenReturn(true);
 		when(member.isManager()).thenReturn(false);
 		when(member.isAssigned()).thenReturn(false);
-		when(memberRepository.existsBySettlementIdAndUserId(settlementId, userId)).thenReturn(false);
+		when(memberRepository.findBySettlementIdAndUserId(settlementId, userId)).thenReturn(Optional.empty());
 		when(userRepository.getById(userId)).thenReturn(user);
 		when(memberRepository.save(member)).thenReturn(member);
 
@@ -224,6 +224,7 @@ class MemberUpdaterTest {
 
 		assertThat(result).isEqualTo(member);
 		verify(member).assignUser(user);
+		verify(memberRepository).findBySettlementIdAndUserId(settlementId, userId);
 		verify(memberRepository).save(member);
 	}
 
@@ -243,7 +244,7 @@ class MemberUpdaterTest {
 			.isInstanceOf(InvalidMemberException.class);
 	}
 
-	@DisplayName("정산 담당는 선택할 수 없다.")
+	@DisplayName("총무는 선택할 수 없다.")
 	@Test
 	void assignMemberFailWhenManager() {
 		Long settlementId = 1L;
@@ -260,26 +261,37 @@ class MemberUpdaterTest {
 			.isInstanceOf(MemberSelectionNotAllowedException.class);
 	}
 
-	@DisplayName("이미 같은 정산의 다른 참여자를 선택한 사용자는 예외가 발생한다.")
+	@DisplayName("기존에 선택한 참여자가 있으면 자동으로 해제하고 새 참여자로 교체한다.")
 	@Test
-	void assignMemberFailWhenUserAlreadyAssigned() {
+	void assignMemberReplaceExistingSelection() {
 		Long settlementId = 1L;
 		Long memberId = 2L;
 		Long userId = 3L;
+		User user = UserTestFactory.createWithEmail("assign@test.com");
 		Member member = mock(Member.class);
+		Member assignedMember = mock(Member.class);
 
 		when(memberRepository.getById(memberId)).thenReturn(member);
 		when(member.isInSettlement(settlementId)).thenReturn(true);
 		when(member.isManager()).thenReturn(false);
-		when(memberRepository.existsBySettlementIdAndUserId(settlementId, userId)).thenReturn(true);
+		when(member.isAssigned()).thenReturn(false);
+		when(memberRepository.findBySettlementIdAndUserId(settlementId, userId))
+			.thenReturn(Optional.of(assignedMember));
+		when(userRepository.getById(userId)).thenReturn(user);
+		when(memberRepository.save(member)).thenReturn(member);
 
-		assertThatThrownBy(() -> memberUpdater.assignMember(settlementId, memberId, userId))
-			.isInstanceOf(UserAlreadyAssignedException.class);
+		Member result = memberUpdater.assignMember(settlementId, memberId, userId);
+
+		assertThat(result).isEqualTo(member);
+		verify(assignedMember).unassignUser(userId);
+		verify(member).assignUser(user);
+		verify(memberRepository).findBySettlementIdAndUserId(settlementId, userId);
+		verify(memberRepository).save(member);
 	}
 
-	@DisplayName("이미 선택된 참여자를 다시 선택하면 예외가 발생한다.")
+	@DisplayName("이미 본인이 선택한 참여자를 다시 선택하면 그대로 반환한다.")
 	@Test
-	void assignMemberFailWhenMemberAlreadyAssigned() {
+	void assignMemberWhenAlreadyAssignedToMe() {
 		Long settlementId = 1L;
 		Long memberId = 2L;
 		Long userId = 3L;
@@ -289,10 +301,35 @@ class MemberUpdaterTest {
 		when(member.isInSettlement(settlementId)).thenReturn(true);
 		when(member.isManager()).thenReturn(false);
 		when(member.isAssigned()).thenReturn(true);
-		when(memberRepository.existsBySettlementIdAndUserId(settlementId, userId)).thenReturn(false);
+		when(member.isAssignedTo(userId)).thenReturn(true);
+
+		Member result = memberUpdater.assignMember(settlementId, memberId, userId);
+
+		assertThat(result).isEqualTo(member);
+		verify(memberRepository, never()).findBySettlementIdAndUserId(anyLong(), anyLong());
+		verify(memberRepository, never()).save(any());
+		verify(member, never()).assignUser(any());
+	}
+
+	@DisplayName("이미 다른 사용자가 선택한 참여자를 선택하면 예외가 발생한다.")
+	@Test
+	void assignMemberFailWhenMemberAlreadyAssignedToAnotherUser() {
+		Long settlementId = 1L;
+		Long memberId = 2L;
+		Long userId = 3L;
+		Member member = mock(Member.class);
+
+		when(memberRepository.getById(memberId)).thenReturn(member);
+		when(member.isInSettlement(settlementId)).thenReturn(true);
+		when(member.isManager()).thenReturn(false);
+		when(member.isAssigned()).thenReturn(true);
+		when(member.isAssignedTo(userId)).thenReturn(false);
 
 		assertThatThrownBy(() -> memberUpdater.assignMember(settlementId, memberId, userId))
 			.isInstanceOf(MemberAlreadyAssignedException.class);
+
+		verify(memberRepository, never()).findBySettlementIdAndUserId(anyLong(), anyLong());
+		verify(memberRepository, never()).save(any());
 	}
 
 	@DisplayName("로그인 사용자가 본인이 선택한 참여자를 해제할 수 있다.")

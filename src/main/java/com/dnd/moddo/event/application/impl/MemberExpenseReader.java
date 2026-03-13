@@ -33,6 +33,9 @@ public class MemberExpenseReader {
 	}
 
 	public List<MemberExpense> findAllByMemberIds(List<Long> memberIds) {
+		if (memberIds == null || memberIds.isEmpty()) {
+			return List.of();
+		}
 		return memberExpenseRepository.findAllByMemberIds(memberIds);
 	}
 }

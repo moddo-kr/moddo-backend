@@ -42,7 +42,7 @@ public class PaymentRequestControllerTest extends RestDocsTestSupport {
 					1L,
 					2L,
 					"김반숙",
-					"https://moddo-s3.s3.amazonaws.com/profile/1.png",
+					"profile-1.png",
 					12000L
 				)
 			)
@@ -55,6 +55,7 @@ public class PaymentRequestControllerTest extends RestDocsTestSupport {
 			.andExpect(jsonPath("$.paymentRequests").isArray())
 			.andExpect(jsonPath("$.paymentRequests[0].paymentRequestId").value(1L))
 			.andExpect(jsonPath("$.paymentRequests[0].name").value("김반숙"))
+			.andExpect(jsonPath("$.paymentRequests[0].profileUrl").value("profile-1.png"))
 			.andExpect(jsonPath("$.paymentRequests[0].totalAmount").value(12000L))
 			.andDo(restDocs.document(
 				responseFields(
