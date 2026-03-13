@@ -4,6 +4,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,8 +23,6 @@ import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.infrastructure.MemberQueryRepository;
 import com.dnd.moddo.event.infrastructure.MemberRepository;
 import com.dnd.moddo.global.support.GroupTestFactory;
-
-import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 public class MemberReaderTest {
@@ -133,7 +132,7 @@ public class MemberReaderTest {
 		//when & then
 		assertThatThrownBy(() -> {
 			memberReader.findByAppointmentMemberId(appointmentMember);
-		}).hasMessage("해당 참여자를 찾을 수 없습니다. (MEMBER ID: " + appointmentMember + ")");
+		}).hasMessage("해당 참여자를 찾을 수 없습니다.");
 	}
 
 	@DisplayName("정산 ID로 참여자 ID 목록을 조회할 수 있다.")
@@ -162,7 +161,8 @@ public class MemberReaderTest {
 			.isPaid(false)
 			.build();
 
-		when(memberRepository.findBySettlementIdAndUserId(settlementId, userId)).thenReturn(Optional.of(expectedMember));
+		when(memberRepository.findBySettlementIdAndUserId(settlementId, userId)).thenReturn(
+			Optional.of(expectedMember));
 
 		Member result = memberReader.findBySettlementIdAndUserId(settlementId, userId);
 
