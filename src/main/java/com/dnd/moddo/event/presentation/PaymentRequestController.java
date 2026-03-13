@@ -1,6 +1,7 @@
 package com.dnd.moddo.event.presentation;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,8 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dnd.moddo.auth.infrastructure.security.LoginUser;
 import com.dnd.moddo.auth.presentation.response.LoginUserInfo;
 import com.dnd.moddo.event.application.command.CommandPaymentRequest;
+import com.dnd.moddo.event.application.query.QueryPaymentRequestService;
 import com.dnd.moddo.event.application.query.QuerySettlementService;
 import com.dnd.moddo.event.presentation.response.PaymentRequestResponse;
+import com.dnd.moddo.event.presentation.response.PaymentRequestsResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,7 +23,16 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1")
 public class PaymentRequestController {
 	private final CommandPaymentRequest commandPaymentRequest;
+	private final QueryPaymentRequestService queryPaymentRequestService;
 	private final QuerySettlementService querySettlementService;
+
+	@GetMapping("/payments")
+	public ResponseEntity<PaymentRequestsResponse> getPaymentRequests(
+		@LoginUser LoginUserInfo loginUser
+	) {
+		PaymentRequestsResponse response = queryPaymentRequestService.findByTargetUserId(loginUser.userId());
+		return ResponseEntity.ok(response);
+	}
 
 	@PostMapping("/groups/{code}/payments")
 	public ResponseEntity<PaymentRequestResponse> createPaymentRequest(

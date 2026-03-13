@@ -18,7 +18,9 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 
 import com.dnd.moddo.auth.infrastructure.security.LoginUserArgumentResolver;
 import com.dnd.moddo.auth.presentation.response.LoginUserInfo;
+import com.dnd.moddo.event.domain.paymentRequest.PaymentRequestStatus;
 import com.dnd.moddo.event.presentation.response.PaymentRequestResponse;
+import com.dnd.moddo.event.presentation.response.PaymentRequestsResponse;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
 
 public class PaymentRequestControllerTest extends RestDocsTestSupport {
@@ -31,12 +33,48 @@ public class PaymentRequestControllerTest extends RestDocsTestSupport {
 	}
 
 	@Test
+	@DisplayName("내게 온 입금 확인 요청 목록을 조회한다.")
+	void getPaymentRequests() throws Exception {
+		PaymentRequestsResponse response = new PaymentRequestsResponse(
+			java.util.List.of(
+				new com.dnd.moddo.event.presentation.response.PaymentRequestItemResponse(
+					LocalDateTime.of(2026, 3, 13, 22, 0),
+					1L,
+					2L,
+					"김반숙",
+					12000L
+				)
+			)
+		);
+
+		when(queryPaymentRequestService.findByTargetUserId(1L)).thenReturn(response);
+
+		mockMvc.perform(get("/api/v1/payments"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.paymentRequests").isArray())
+			.andExpect(jsonPath("$.paymentRequests[0].paymentRequestId").value(1L))
+			.andExpect(jsonPath("$.paymentRequests[0].name").value("김반숙"))
+			.andExpect(jsonPath("$.paymentRequests[0].totalAmount").value(12000L))
+			.andDo(restDocs.document(
+				responseFields(
+					fieldWithPath("paymentRequests").type(JsonFieldType.ARRAY).description("입금 확인 요청 목록"),
+					fieldWithPath("paymentRequests[].requestedAt").type(JsonFieldType.STRING).description("요청 시각"),
+					fieldWithPath("paymentRequests[].paymentRequestId").type(JsonFieldType.NUMBER)
+						.description("입금 확인 요청 ID"),
+					fieldWithPath("paymentRequests[].memberId").type(JsonFieldType.NUMBER).description("요청 참여자 ID"),
+					fieldWithPath("paymentRequests[].name").type(JsonFieldType.STRING).description("요청 참여자 이름"),
+					fieldWithPath("paymentRequests[].totalAmount").type(JsonFieldType.NUMBER).description("요청 금액")
+				)
+			));
+	}
+
+	@Test
 	@DisplayName("입금 확인 요청을 생성한다.")
 	void createPaymentRequest() throws Exception {
 		String code = "code";
 		Long settlementId = 1L;
 		PaymentRequestResponse response = new PaymentRequestResponse(
-			1L, settlementId, 2L, 3L, LocalDateTime.of(2026, 3, 13, 22, 0), null, null
+			1L, settlementId, 2L, 3L, LocalDateTime.of(2026, 3, 13, 22, 0), null, PaymentRequestStatus.PENDING
 		);
 
 		when(querySettlementService.findIdByCode(code)).thenReturn(settlementId);
@@ -58,7 +96,7 @@ public class PaymentRequestControllerTest extends RestDocsTestSupport {
 					fieldWithPath("targetUserId").type(JsonFieldType.NUMBER).description("처리 대상 사용자 ID"),
 					fieldWithPath("requestedAt").type(JsonFieldType.STRING).description("요청 시각"),
 					fieldWithPath("processedAt").type(JsonFieldType.NULL).description("처리 시각").optional(),
-					fieldWithPath("status").type(JsonFieldType.NULL).description("요청 상태").optional()
+					fieldWithPath("status").type(JsonFieldType.STRING).description("요청 상태")
 				)
 			));
 	}

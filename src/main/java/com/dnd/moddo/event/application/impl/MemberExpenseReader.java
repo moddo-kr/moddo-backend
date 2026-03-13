@@ -28,7 +28,11 @@ public class MemberExpenseReader {
 		return memberExpenseRepository.findAllByExpenseIds(expenseIds);
 	}
 
-	public List<MemberExpense> getMemberExpenseByMemberId(Long memberId) {
+	public List<MemberExpense> findAllByMemberId(Long memberId) {
 		return memberExpenseRepository.findByMemberId(memberId);
+	}
+
+	public List<MemberExpense> findAllByMemberIds(List<Long> memberIds) {
+		return memberExpenseRepository.findAllByMemberIds(memberIds);
 	}
 }

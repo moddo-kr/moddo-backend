@@ -30,5 +30,6 @@ public interface PaymentRequestRepository extends JpaRepository<PaymentRequest, 
 			.orElseThrow(() -> new PaymentRequestNotFoundException(paymentRequestId));
 	}
 
-	List<PaymentRequest> findByTargetUserId(Long targetUserId);
+	@Query("select pr from PaymentRequest pr where pr.targetUser.id = :targetUserId")
+	List<PaymentRequest> findByTargetUserId(@Param("targetUserId") Long targetUserId);
 }

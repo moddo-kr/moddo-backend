@@ -23,6 +23,7 @@ import com.dnd.moddo.event.application.command.CommandSettlementService;
 import com.dnd.moddo.event.application.query.QueryExpenseService;
 import com.dnd.moddo.event.application.query.QueryMemberExpenseService;
 import com.dnd.moddo.event.application.query.QueryMemberService;
+import com.dnd.moddo.event.application.query.QueryPaymentRequestService;
 import com.dnd.moddo.event.application.query.QuerySettlementService;
 import com.dnd.moddo.event.presentation.ExpenseController;
 import com.dnd.moddo.event.presentation.MemberController;
@@ -95,6 +96,9 @@ public abstract class ControllerTest {
 
 	@MockBean
 	protected CommandPaymentRequest commandPaymentRequest;
+
+	@MockBean
+	protected QueryPaymentRequestService queryPaymentRequestService;
 
 	@MockBean
 	protected CommandImageService commandImageService;
