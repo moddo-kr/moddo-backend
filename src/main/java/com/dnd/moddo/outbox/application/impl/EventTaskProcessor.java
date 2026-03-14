@@ -3,6 +3,7 @@ package com.dnd.moddo.outbox.application.impl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dnd.moddo.common.logging.EventTaskFailureNotifier;
 import com.dnd.moddo.outbox.domain.task.EventTask;
 import com.dnd.moddo.outbox.domain.task.type.EventTaskStatus;
 import com.dnd.moddo.outbox.domain.task.type.EventTaskType;

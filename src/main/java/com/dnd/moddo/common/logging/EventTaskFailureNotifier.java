@@ -1,11 +1,9 @@
-package com.dnd.moddo.outbox.application.impl;
+package com.dnd.moddo.common.logging;
 
 import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.dnd.moddo.common.logging.DiscordMessage;
-import com.dnd.moddo.common.logging.ErrorNotifier;
 import com.dnd.moddo.outbox.domain.task.EventTask;
 
 import lombok.RequiredArgsConstructor;

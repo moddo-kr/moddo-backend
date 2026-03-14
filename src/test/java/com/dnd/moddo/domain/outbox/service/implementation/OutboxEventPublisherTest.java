@@ -2,6 +2,8 @@ package com.dnd.moddo.domain.outbox.service.implementation;
 
 import static org.mockito.Mockito.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,5 +55,38 @@ class OutboxEventPublisherTest {
 
 		verify(outboxEvent).markFailed();
 		verify(outboxEvent, never()).markPublished();
+	}
+
+	@Test
+	@DisplayName("pending 아웃박스 이벤트 목록을 순서대로 publish한다.")
+	void publishPendingEvents() {
+		OutboxEvent first = mock(OutboxEvent.class);
+		OutboxEvent second = mock(OutboxEvent.class);
+		when(first.getId()).thenReturn(1L);
+		when(second.getId()).thenReturn(2L);
+		when(outboxEventRepository.findAllByStatus(OutboxEventStatus.PENDING)).thenReturn(List.of(first, second));
+		when(outboxEventRepository.getById(1L)).thenReturn(first);
+		when(outboxEventRepository.getById(2L)).thenReturn(second);
+		when(first.getStatus()).thenReturn(OutboxEventStatus.PENDING);
+		when(second.getStatus()).thenReturn(OutboxEventStatus.PENDING);
+
+		outboxEventPublisher.publishPendingEvents();
+
+		verify(outboxEventTaskAppender).appendTasks(first);
+		verify(outboxEventTaskAppender).appendTasks(second);
+	}
+
+	@Test
+	@DisplayName("pending 상태가 아니면 publish를 건너뛴다.")
+	void skipWhenOutboxEventAlreadyProcessed() {
+		OutboxEvent outboxEvent = mock(OutboxEvent.class);
+		when(outboxEventRepository.getById(1L)).thenReturn(outboxEvent);
+		when(outboxEvent.getStatus()).thenReturn(OutboxEventStatus.PUBLISHED);
+
+		outboxEventPublisher.publish(1L);
+
+		verifyNoInteractions(outboxEventTaskAppender);
+		verify(outboxEvent, never()).markPublished();
+		verify(outboxEvent, never()).markFailed();
 	}
 }

@@ -9,7 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.outbox.application.impl.EventTaskFailureNotifier;
+import com.dnd.moddo.common.logging.EventTaskFailureNotifier;
 import com.dnd.moddo.outbox.application.impl.EventTaskProcessor;
 import com.dnd.moddo.outbox.domain.event.OutboxEvent;
 import com.dnd.moddo.outbox.domain.task.EventTask;

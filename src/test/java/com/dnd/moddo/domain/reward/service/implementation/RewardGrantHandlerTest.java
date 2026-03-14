@@ -78,6 +78,25 @@ class RewardGrantHandlerTest {
 			.doesNotThrowAnyException();
 	}
 
+	@Test
+	@DisplayName("보상을 지급할 수 있으면 컬렉션을 저장한다.")
+	void saveCollectionWhenGrantAvailable() {
+		Character character = Character.builder()
+			.name("모또")
+			.rarity(1)
+			.imageUrl("image")
+			.imageBigUrl("image-big")
+			.build();
+		setCharacterId(character, 3L);
+
+		when(rewardQueryRepository.findBySettlementId(1L)).thenReturn(Optional.of(character));
+		when(collectionRepository.existsByUserIdAndCharacterId(2L, 3L)).thenReturn(false);
+
+		rewardGrantHandler.handle(1L, 2L);
+
+		verify(collectionRepository).save(any());
+	}
+
 	private void setCharacterId(Character character, Long id) {
 		try {
 			java.lang.reflect.Field idField = Character.class.getDeclaredField("id");
