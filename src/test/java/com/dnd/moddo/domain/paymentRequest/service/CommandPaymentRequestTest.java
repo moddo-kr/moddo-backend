@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.dnd.moddo.event.application.command.CommandPaymentRequest;
 import com.dnd.moddo.event.application.impl.PaymentRequestCreator;
 import com.dnd.moddo.event.application.impl.PaymentRequestUpdater;
+import com.dnd.moddo.event.application.impl.SettlementCompletionProcessor;
 import com.dnd.moddo.event.domain.paymentRequest.PaymentRequest;
 import com.dnd.moddo.event.domain.paymentRequest.PaymentRequestStatus;
 import com.dnd.moddo.event.presentation.response.PaymentRequestResponse;
@@ -25,6 +26,9 @@ class CommandPaymentRequestTest {
 
 	@Mock
 	private PaymentRequestUpdater paymentRequestUpdater;
+
+	@Mock
+	private SettlementCompletionProcessor settlementCompletionProcessor;
 
 	@InjectMocks
 	private CommandPaymentRequest commandPaymentRequest;
@@ -47,13 +51,14 @@ class CommandPaymentRequestTest {
 	void approvePaymentRequest() {
 		PaymentRequest paymentRequest = mock(PaymentRequest.class);
 		stubPaymentRequest(paymentRequest, PaymentRequestStatus.APPROVED);
-		when(paymentRequestUpdater.approvePaymentRequest(1L, 2L)).thenReturn(paymentRequest);
+			when(paymentRequestUpdater.approvePaymentRequest(1L, 2L)).thenReturn(paymentRequest);
 
-		PaymentRequestResponse response = commandPaymentRequest.approvePaymentRequest(1L, 2L);
+			PaymentRequestResponse response = commandPaymentRequest.approvePaymentRequest(1L, 2L);
 
-		assertThat(response.id()).isEqualTo(1L);
-		assertThat(response.status()).isEqualTo(PaymentRequestStatus.APPROVED);
-	}
+			assertThat(response.id()).isEqualTo(1L);
+			assertThat(response.status()).isEqualTo(PaymentRequestStatus.APPROVED);
+			verify(settlementCompletionProcessor).completeIfAllPaid(2L);
+		}
 
 	@Test
 	@DisplayName("입금 확인 요청을 거절할 수 있다.")
