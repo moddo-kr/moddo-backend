@@ -36,18 +36,18 @@ class PaymentRequestUpdaterTest {
 	void approvePaymentRequestSuccess() {
 		Long paymentRequestId = 1L;
 		Long userId = 100L;
-		PaymentRequest paymentRequest = mock(PaymentRequest.class);
+			PaymentRequest paymentRequest = mock(PaymentRequest.class);
 
-		when(paymentRequestRepository.getById(paymentRequestId)).thenReturn(paymentRequest);
-		when(paymentRequest.getRequestMemberId()).thenReturn(10L);
+			when(paymentRequestRepository.getById(paymentRequestId)).thenReturn(paymentRequest);
+			when(paymentRequest.getRequestMemberId()).thenReturn(10L);
 
-		PaymentRequest result = paymentRequestUpdater.approvePaymentRequest(paymentRequestId, userId);
+			PaymentRequest result = paymentRequestUpdater.approvePaymentRequest(paymentRequestId, userId);
 
-		assertThat(result).isEqualTo(paymentRequest);
-		verify(paymentRequestValidator).validateProcessRequest(paymentRequest, userId);
-		verify(memberUpdater).updatePaymentStatus(10L, true);
-		verify(paymentRequest).approve();
-	}
+			assertThat(result).isEqualTo(paymentRequest);
+			verify(paymentRequestValidator).validateProcessRequest(paymentRequest, userId);
+			verify(memberUpdater).updatePaymentStatus(10L, true);
+			verify(paymentRequest).approve();
+		}
 
 	@Test
 	@DisplayName("입금 확인 요청을 거절할 수 있다.")

@@ -2,6 +2,7 @@ package com.dnd.moddo.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -41,7 +42,23 @@ public class SecurityConfig {
 				(sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(request -> request
 				.requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+				.requestMatchers(
+					"/admin/login",
+					"/api/v1/admin/login",
+					"/admin/css/**",
+					"/admin/js/**"
+				).permitAll()
+				.requestMatchers("/admin/**", "/api/v1/admin/**").hasAuthority("ADMIN")
 				.anyRequest().permitAll()
+			)
+			.exceptionHandling(exception -> exception
+				.authenticationEntryPoint((request, response, authException) -> {
+					if (request.getRequestURI().startsWith("/admin/")) {
+						response.sendRedirect("/admin/login");
+						return;
+					}
+					response.sendError(HttpStatus.UNAUTHORIZED.value());
+				})
 			)
 			.addFilterBefore(new JwtFilter(jwtAuth, jwtUtil), UsernamePasswordAuthenticationFilter.class);
 

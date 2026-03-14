@@ -65,10 +65,14 @@ public class RewardQueryRepositoryImpl implements RewardQueryRepository {
 		QCharacter character = QCharacter.character;
 		QSettlement settlement = QSettlement.settlement;
 
-		Character response = queryFactory.selectFrom(character)
-			.leftJoin(settlement).on(settlement.characterId.eq(character.id))
+		Character response = queryFactory
+			.select(character)
+			.from(settlement)
+			.join(character).on(settlement.characterId.eq(character.id))
+			.where(settlement.id.eq(settlementId))
 			.fetchOne();
 
 		return Optional.ofNullable(response);
 	}
+
 }
