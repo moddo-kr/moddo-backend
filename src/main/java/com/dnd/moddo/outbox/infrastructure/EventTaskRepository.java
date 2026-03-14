@@ -15,6 +15,8 @@ public interface EventTaskRepository extends JpaRepository<EventTask, Long> {
 		int attemptCount
 	);
 
+	List<EventTask> findTop10ByStatusOrderByCreatedAtDesc(EventTaskStatus status);
+
 	default EventTask getById(Long id) {
 		return findById(id)
 			.orElseThrow(() -> new EntityNotFoundException("Event task not found: " + id));

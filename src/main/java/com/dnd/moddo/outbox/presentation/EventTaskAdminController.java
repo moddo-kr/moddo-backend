@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dnd.moddo.auth.infrastructure.security.LoginUser;
 import com.dnd.moddo.auth.model.exception.UserPermissionException;
 import com.dnd.moddo.auth.presentation.response.LoginUserInfo;
-import com.dnd.moddo.outbox.application.command.CommandEventTaskService;
+import com.dnd.moddo.outbox.application.CommandEventTaskService;
 import com.dnd.moddo.user.domain.Authority;
 
 import lombok.RequiredArgsConstructor;

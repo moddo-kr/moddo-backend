@@ -13,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.dnd.moddo.event.application.impl.MemberReader;
 import com.dnd.moddo.event.application.impl.SettlementCompletionProcessor;
 import com.dnd.moddo.event.application.impl.SettlementUpdater;
-import com.dnd.moddo.outbox.application.command.CommandOutboxEventService;
+import com.dnd.moddo.outbox.application.CommandOutboxEventService;
 import com.dnd.moddo.outbox.domain.event.type.AggregateType;
 import com.dnd.moddo.outbox.domain.event.type.OutboxEventType;
 

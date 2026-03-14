@@ -1,22 +1,23 @@
-package com.dnd.moddo.outbox.application.impl;
+package com.dnd.moddo.outbox.application;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.moddo.common.logging.EventTaskFailureNotifier;
+import com.dnd.moddo.outbox.application.impl.EventTaskRetryPolicy;
 import com.dnd.moddo.outbox.domain.task.EventTask;
 import com.dnd.moddo.outbox.domain.task.type.EventTaskStatus;
 import com.dnd.moddo.outbox.domain.task.type.EventTaskType;
 import com.dnd.moddo.outbox.infrastructure.EventTaskRepository;
-import com.dnd.moddo.reward.application.impl.RewardGrantHandler;
+import com.dnd.moddo.reward.application.RewardService;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class EventTaskProcessor {
+public class CommandEventTaskService {
 	private final EventTaskRepository eventTaskRepository;
-	private final RewardGrantHandler rewardGrantHandler;
+	private final RewardService rewardService;
 	private final EventTaskFailureNotifier eventTaskFailureNotifier;
 
 	@Transactional
@@ -30,7 +31,7 @@ public class EventTaskProcessor {
 
 		try {
 			if (eventTask.getTaskType() == EventTaskType.REWARD_GRANT) {
-				rewardGrantHandler.handle(eventTask.getOutboxEvent().getAggregateId(), eventTask.getTargetUserId());
+				rewardService.grant(eventTask.getOutboxEvent().getAggregateId(), eventTask.getTargetUserId());
 			}
 
 			eventTask.markCompleted();
@@ -40,5 +41,10 @@ public class EventTaskProcessor {
 				eventTaskFailureNotifier.notifyRetryExhausted(eventTask);
 			}
 		}
+	}
+
+	@Transactional
+	public void retry(Long eventTaskId) {
+		process(eventTaskId);
 	}
 }

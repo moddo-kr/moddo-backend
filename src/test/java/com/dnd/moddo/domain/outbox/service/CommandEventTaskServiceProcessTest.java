@@ -1,4 +1,4 @@
-package com.dnd.moddo.domain.outbox.service.implementation;
+package com.dnd.moddo.domain.outbox.service;
 
 import static org.mockito.Mockito.*;
 
@@ -10,28 +10,28 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.dnd.moddo.common.logging.EventTaskFailureNotifier;
-import com.dnd.moddo.outbox.application.impl.EventTaskProcessor;
+import com.dnd.moddo.outbox.application.CommandEventTaskService;
 import com.dnd.moddo.outbox.domain.event.OutboxEvent;
 import com.dnd.moddo.outbox.domain.task.EventTask;
 import com.dnd.moddo.outbox.domain.task.type.EventTaskStatus;
 import com.dnd.moddo.outbox.domain.task.type.EventTaskType;
 import com.dnd.moddo.outbox.infrastructure.EventTaskRepository;
-import com.dnd.moddo.reward.application.impl.RewardGrantHandler;
+import com.dnd.moddo.reward.application.RewardService;
 
 @ExtendWith(MockitoExtension.class)
-class EventTaskProcessorTest {
+class CommandEventTaskServiceProcessTest {
 
 	@Mock
 	private EventTaskRepository eventTaskRepository;
 
 	@Mock
-	private RewardGrantHandler rewardGrantHandler;
+	private RewardService rewardService;
 
 	@Mock
 	private EventTaskFailureNotifier eventTaskFailureNotifier;
 
 	@InjectMocks
-	private EventTaskProcessor eventTaskProcessor;
+	private CommandEventTaskService commandEventTaskService;
 
 	@Test
 	@DisplayName("완료된 태스크는 다시 처리하지 않는다.")
@@ -40,10 +40,10 @@ class EventTaskProcessorTest {
 		when(eventTaskRepository.getById(1L)).thenReturn(eventTask);
 		when(eventTask.getStatus()).thenReturn(EventTaskStatus.COMPLETED);
 
-		eventTaskProcessor.process(1L);
+		commandEventTaskService.process(1L);
 
 		verify(eventTask, never()).markProcessing();
-		verifyNoInteractions(rewardGrantHandler);
+		verifyNoInteractions(rewardService);
 	}
 
 	@Test
@@ -58,10 +58,10 @@ class EventTaskProcessorTest {
 		when(outboxEvent.getAggregateId()).thenReturn(10L);
 		when(eventTask.getTargetUserId()).thenReturn(20L);
 
-		eventTaskProcessor.process(1L);
+		commandEventTaskService.process(1L);
 
 		verify(eventTask).markProcessing();
-		verify(rewardGrantHandler).handle(10L, 20L);
+		verify(rewardService).grant(10L, 20L);
 		verify(eventTask).markCompleted();
 		verify(eventTask, never()).markFailed(anyString());
 	}
@@ -77,10 +77,10 @@ class EventTaskProcessorTest {
 		when(eventTask.getOutboxEvent()).thenReturn(outboxEvent);
 		when(outboxEvent.getAggregateId()).thenReturn(10L);
 		when(eventTask.getTargetUserId()).thenReturn(20L);
-		doThrow(new RuntimeException("grant failed")).when(rewardGrantHandler).handle(10L, 20L);
+		doThrow(new RuntimeException("grant failed")).when(rewardService).grant(10L, 20L);
 		when(eventTask.getAttemptCount()).thenReturn(5);
 
-		eventTaskProcessor.process(1L);
+		commandEventTaskService.process(1L);
 
 		verify(eventTask).markFailed("grant failed");
 		verify(eventTaskFailureNotifier).notifyRetryExhausted(eventTask);

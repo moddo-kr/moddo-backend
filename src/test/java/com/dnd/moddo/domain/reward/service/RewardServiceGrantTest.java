@@ -1,4 +1,4 @@
-package com.dnd.moddo.domain.reward.service.implementation;
+package com.dnd.moddo.domain.reward.service;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -13,14 +13,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 
-import com.dnd.moddo.reward.application.impl.RewardGrantHandler;
+import com.dnd.moddo.reward.application.RewardService;
 import com.dnd.moddo.reward.domain.character.Character;
 import com.dnd.moddo.reward.domain.character.exception.SettlementCharacterNotFoundException;
 import com.dnd.moddo.reward.infrastructure.CollectionRepository;
 import com.dnd.moddo.reward.infrastructure.RewardQueryRepository;
 
 @ExtendWith(MockitoExtension.class)
-class RewardGrantHandlerTest {
+class RewardServiceGrantTest {
 
 	@Mock
 	private RewardQueryRepository rewardQueryRepository;
@@ -29,14 +29,14 @@ class RewardGrantHandlerTest {
 	private CollectionRepository collectionRepository;
 
 	@InjectMocks
-	private RewardGrantHandler rewardGrantHandler;
+	private RewardService rewardService;
 
 	@Test
 	@DisplayName("정산에 연결된 캐릭터가 없으면 예외가 발생한다.")
 	void throwExceptionWhenSettlementCharacterNotFound() {
 		when(rewardQueryRepository.findBySettlementId(1L)).thenReturn(Optional.empty());
 
-		assertThatThrownBy(() -> rewardGrantHandler.handle(1L, 2L))
+		assertThatThrownBy(() -> rewardService.grant(1L, 2L))
 			.isInstanceOf(SettlementCharacterNotFoundException.class);
 	}
 
@@ -54,7 +54,7 @@ class RewardGrantHandlerTest {
 		when(rewardQueryRepository.findBySettlementId(1L)).thenReturn(Optional.of(character));
 		when(collectionRepository.existsByUserIdAndCharacterId(2L, 3L)).thenReturn(true);
 
-		rewardGrantHandler.handle(1L, 2L);
+		rewardService.grant(1L, 2L);
 
 		verify(collectionRepository, never()).save(any());
 	}
@@ -74,7 +74,7 @@ class RewardGrantHandlerTest {
 		when(collectionRepository.existsByUserIdAndCharacterId(2L, 3L)).thenReturn(false);
 		doThrow(new DataIntegrityViolationException("duplicate")).when(collectionRepository).save(any());
 
-		assertThatCode(() -> rewardGrantHandler.handle(1L, 2L))
+		assertThatCode(() -> rewardService.grant(1L, 2L))
 			.doesNotThrowAnyException();
 	}
 
@@ -92,7 +92,7 @@ class RewardGrantHandlerTest {
 		when(rewardQueryRepository.findBySettlementId(1L)).thenReturn(Optional.of(character));
 		when(collectionRepository.existsByUserIdAndCharacterId(2L, 3L)).thenReturn(false);
 
-		rewardGrantHandler.handle(1L, 2L);
+		rewardService.grant(1L, 2L);
 
 		verify(collectionRepository).save(any());
 	}

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.dnd.moddo.outbox.application.CommandEventTaskService;
 import com.dnd.moddo.outbox.domain.task.EventTask;
 import com.dnd.moddo.outbox.domain.task.type.EventTaskStatus;
 import com.dnd.moddo.outbox.infrastructure.EventTaskRepository;
@@ -15,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EventTaskScheduler {
 	private final EventTaskRepository eventTaskRepository;
-	private final EventTaskProcessor eventTaskProcessor;
+	private final CommandEventTaskService commandEventTaskService;
 
 	@Scheduled(fixedDelay = 5000)
 	public void processPendingTasks() {
@@ -23,7 +24,7 @@ public class EventTaskScheduler {
 			List.of(EventTaskStatus.PENDING, EventTaskStatus.FAILED),
 			EventTaskRetryPolicy.MAX_RETRY_COUNT
 		)) {
-			eventTaskProcessor.process(eventTask.getId());
+			commandEventTaskService.process(eventTask.getId());
 		}
 	}
 }

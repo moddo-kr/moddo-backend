@@ -1,4 +1,4 @@
-package com.dnd.moddo.reward.application.impl;
+package com.dnd.moddo.reward.application;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -14,12 +14,16 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class RewardGrantHandler {
+@Transactional
+public class RewardService {
 	private final RewardQueryRepository rewardQueryRepository;
 	private final CollectionRepository collectionRepository;
 
-	@Transactional
-	public void handle(Long settlementId, Long targetUserId) {
+	public void manualGrant(Long settlementId, Long targetUserId) {
+		grant(settlementId, targetUserId);
+	}
+
+	public void grant(Long settlementId, Long targetUserId) {
 		Character character = rewardQueryRepository.findBySettlementId(settlementId)
 			.orElseThrow(() -> new SettlementCharacterNotFoundException(settlementId));
 

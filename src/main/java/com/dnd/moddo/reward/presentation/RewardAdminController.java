@@ -10,7 +10,7 @@ import com.dnd.moddo.auth.infrastructure.security.LoginUser;
 import com.dnd.moddo.auth.model.exception.UserPermissionException;
 import com.dnd.moddo.auth.presentation.response.LoginUserInfo;
 import com.dnd.moddo.event.application.query.QuerySettlementService;
-import com.dnd.moddo.reward.application.CommandRewardService;
+import com.dnd.moddo.reward.application.RewardService;
 import com.dnd.moddo.user.domain.Authority;
 
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/admin/rewards")
 public class RewardAdminController {
-	private final CommandRewardService commandRewardService;
+	private final RewardService rewardService;
 	private final QuerySettlementService querySettlementService;
 
 	@PostMapping("/groups/{code}/users/{userId}")
@@ -30,7 +30,7 @@ public class RewardAdminController {
 	) {
 		validateAdmin(loginUser);
 		Long settlementId = querySettlementService.findIdByCode(code);
-		commandRewardService.manualGrant(settlementId, userId);
+		rewardService.manualGrant(settlementId, userId);
 		return ResponseEntity.ok().build();
 	}
 

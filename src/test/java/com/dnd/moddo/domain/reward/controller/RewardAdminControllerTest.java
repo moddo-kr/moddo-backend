@@ -14,14 +14,14 @@ import org.springframework.http.ResponseEntity;
 import com.dnd.moddo.auth.model.exception.UserPermissionException;
 import com.dnd.moddo.auth.presentation.response.LoginUserInfo;
 import com.dnd.moddo.event.application.query.QuerySettlementService;
-import com.dnd.moddo.reward.application.CommandRewardService;
+import com.dnd.moddo.reward.application.RewardService;
 import com.dnd.moddo.reward.presentation.RewardAdminController;
 
 @ExtendWith(MockitoExtension.class)
 class RewardAdminControllerTest {
 
 	@Mock
-	private CommandRewardService commandRewardService;
+	private RewardService rewardService;
 
 	@Mock
 	private QuerySettlementService querySettlementService;
@@ -41,7 +41,7 @@ class RewardAdminControllerTest {
 		);
 
 		assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-		verify(commandRewardService).manualGrant(10L, 2L);
+		verify(rewardService).manualGrant(10L, 2L);
 	}
 
 	@Test
@@ -53,6 +53,6 @@ class RewardAdminControllerTest {
 			new LoginUserInfo(1L, "USER")
 		)).isInstanceOf(UserPermissionException.class);
 
-		verify(commandRewardService, never()).manualGrant(anyLong(), anyLong());
+		verify(rewardService, never()).manualGrant(anyLong(), anyLong());
 	}
 }

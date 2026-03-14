@@ -1,4 +1,4 @@
-package com.dnd.moddo.outbox.application.impl;
+package com.dnd.moddo.outbox.application;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class OutboxEventCreator {
+public class CommandOutboxEventService {
 	private final OutboxEventRepository outboxEventRepository;
 	private final ApplicationEventPublisher eventPublisher;
 

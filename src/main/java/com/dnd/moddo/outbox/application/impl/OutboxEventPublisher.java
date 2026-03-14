@@ -6,9 +6,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dnd.moddo.event.application.impl.MemberReader;
+import com.dnd.moddo.event.domain.member.Member;
 import com.dnd.moddo.outbox.domain.event.OutboxEvent;
 import com.dnd.moddo.outbox.domain.event.type.OutboxEventStatus;
-import com.dnd.moddo.outbox.infrastructure.OutboxEventRepository;
+import com.dnd.moddo.outbox.domain.event.type.OutboxEventType;
+import com.dnd.moddo.outbox.domain.task.type.EventTaskType;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,12 +20,13 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class OutboxEventPublisher {
-	private final OutboxEventRepository outboxEventRepository;
-	private final OutboxEventTaskAppender outboxEventTaskAppender;
+	private final OutboxReader outboxReader;
+	private final EventTaskCreator eventTaskCreator;
+	private final MemberReader memberReader;
 
 	@Transactional
 	public void publishPendingEvents() {
-		List<OutboxEvent> pendingEvents = outboxEventRepository.findAllByStatus((OutboxEventStatus.PENDING));
+		List<OutboxEvent> pendingEvents = outboxReader.findAllByStatus(OutboxEventStatus.PENDING);
 
 		for (OutboxEvent outboxEvent : pendingEvents) {
 			publish(outboxEvent.getId());
@@ -31,13 +35,13 @@ public class OutboxEventPublisher {
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void publish(Long outboxEventId) {
-		OutboxEvent outboxEvent = outboxEventRepository.getById(outboxEventId);
+		OutboxEvent outboxEvent = outboxReader.findById(outboxEventId);
 		if (outboxEvent.getStatus() != OutboxEventStatus.PENDING) {
 			return;
 		}
 
 		try {
-			outboxEventTaskAppender.appendTasks(outboxEvent);
+			appendTasks(outboxEvent);
 			outboxEvent.markPublished();
 		} catch (Exception exception) {
 			log.error("Failed to publish outbox event. outboxEventId={}, eventType={}, aggregateId={}",
@@ -46,6 +50,20 @@ public class OutboxEventPublisher {
 				outboxEvent.getAggregateId(),
 				exception);
 			outboxEvent.markFailed();
+		}
+	}
+
+	private void appendTasks(OutboxEvent outboxEvent) {
+		if (outboxEvent.getEventType() == OutboxEventType.SETTLEMENT_COMPLETED) {
+			appendSettlementCompletedTasks(outboxEvent);
+		}
+	}
+
+	private void appendSettlementCompletedTasks(OutboxEvent outboxEvent) {
+		for (Member member : memberReader.findAssignedMembersBySettlementId(outboxEvent.getAggregateId())) {
+			Long targetUserId = member.getUserId();
+			eventTaskCreator.create(outboxEvent, EventTaskType.REWARD_GRANT, targetUserId);
+			eventTaskCreator.create(outboxEvent, EventTaskType.NOTIFICATION_SEND, targetUserId);
 		}
 	}
 }

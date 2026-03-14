@@ -11,8 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.dnd.moddo.outbox.application.CommandEventTaskService;
 import com.dnd.moddo.outbox.application.impl.EventTaskRetryPolicy;
-import com.dnd.moddo.outbox.application.impl.EventTaskProcessor;
 import com.dnd.moddo.outbox.application.impl.EventTaskScheduler;
 import com.dnd.moddo.outbox.domain.task.EventTask;
 import com.dnd.moddo.outbox.domain.task.type.EventTaskStatus;
@@ -25,7 +25,7 @@ class EventTaskSchedulerTest {
 	private EventTaskRepository eventTaskRepository;
 
 	@Mock
-	private EventTaskProcessor eventTaskProcessor;
+	private CommandEventTaskService commandEventTaskService;
 
 	@InjectMocks
 	private EventTaskScheduler eventTaskScheduler;
@@ -44,7 +44,7 @@ class EventTaskSchedulerTest {
 
 		eventTaskScheduler.processPendingTasks();
 
-		verify(eventTaskProcessor).process(1L);
-		verify(eventTaskProcessor).process(2L);
+		verify(commandEventTaskService).process(1L);
+		verify(commandEventTaskService).process(2L);
 	}
 }
