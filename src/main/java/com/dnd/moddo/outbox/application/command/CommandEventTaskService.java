@@ -1,4 +1,6 @@
-package com.dnd.moddo.outbox.application;
+package com.dnd.moddo.outbox.application.command;
+
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,12 +24,17 @@ public class CommandEventTaskService {
 
 	@Transactional
 	public void process(Long eventTaskId) {
-		EventTask eventTask = eventTaskRepository.getById(eventTaskId);
-		if (eventTask.getStatus() == EventTaskStatus.COMPLETED) {
+		int updatedCount = eventTaskRepository.claimProcessing(
+			eventTaskId,
+			EventTaskStatus.PROCESSING,
+			List.of(EventTaskStatus.PENDING, EventTaskStatus.FAILED),
+			EventTaskRetryPolicy.MAX_RETRY_COUNT
+		);
+		if (updatedCount == 0) {
 			return;
 		}
 
-		eventTask.markProcessing();
+		EventTask eventTask = eventTaskRepository.getById(eventTaskId);
 
 		try {
 			if (eventTask.getTaskType() == EventTaskType.REWARD_GRANT) {

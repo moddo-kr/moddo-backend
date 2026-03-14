@@ -3,7 +3,7 @@ package com.dnd.moddo.event.application.impl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dnd.moddo.outbox.application.CommandOutboxEventService;
+import com.dnd.moddo.outbox.application.command.CommandOutboxEventService;
 import com.dnd.moddo.outbox.domain.event.type.AggregateType;
 import com.dnd.moddo.outbox.domain.event.type.OutboxEventType;
 

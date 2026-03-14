@@ -11,7 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.dnd.moddo.outbox.application.CommandEventTaskService;
+import com.dnd.moddo.outbox.application.command.CommandEventTaskService;
 import com.dnd.moddo.outbox.application.impl.EventTaskRetryPolicy;
 import com.dnd.moddo.outbox.application.impl.EventTaskScheduler;
 import com.dnd.moddo.outbox.domain.task.EventTask;

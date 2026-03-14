@@ -2,6 +2,8 @@ package com.dnd.moddo.domain.outbox.service;
 
 import static org.mockito.Mockito.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,7 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.dnd.moddo.common.logging.EventTaskFailureNotifier;
-import com.dnd.moddo.outbox.application.CommandEventTaskService;
+import com.dnd.moddo.outbox.application.command.CommandEventTaskService;
 import com.dnd.moddo.outbox.domain.event.OutboxEvent;
 import com.dnd.moddo.outbox.domain.task.EventTask;
 import com.dnd.moddo.outbox.domain.task.type.EventTaskStatus;
@@ -38,8 +40,13 @@ class CommandEventTaskServiceTest {
 	void retry() {
 		EventTask eventTask = mock(EventTask.class);
 		OutboxEvent outboxEvent = mock(OutboxEvent.class);
+		when(eventTaskRepository.claimProcessing(
+			1L,
+			EventTaskStatus.PROCESSING,
+			List.of(EventTaskStatus.PENDING, EventTaskStatus.FAILED),
+			5
+		)).thenReturn(1);
 		when(eventTaskRepository.getById(1L)).thenReturn(eventTask);
-		when(eventTask.getStatus()).thenReturn(EventTaskStatus.PENDING);
 		when(eventTask.getTaskType()).thenReturn(EventTaskType.REWARD_GRANT);
 		when(eventTask.getOutboxEvent()).thenReturn(outboxEvent);
 		when(outboxEvent.getAggregateId()).thenReturn(10L);

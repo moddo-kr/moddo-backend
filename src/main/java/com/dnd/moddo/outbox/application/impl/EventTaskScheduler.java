@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.dnd.moddo.outbox.application.CommandEventTaskService;
+import com.dnd.moddo.outbox.application.command.CommandEventTaskService;
 import com.dnd.moddo.outbox.domain.task.EventTask;
 import com.dnd.moddo.outbox.domain.task.type.EventTaskStatus;
 import com.dnd.moddo.outbox.infrastructure.EventTaskRepository;

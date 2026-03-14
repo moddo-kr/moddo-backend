@@ -2,6 +2,8 @@ package com.dnd.moddo.domain.outbox.service;
 
 import static org.mockito.Mockito.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,7 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.dnd.moddo.common.logging.EventTaskFailureNotifier;
-import com.dnd.moddo.outbox.application.CommandEventTaskService;
+import com.dnd.moddo.outbox.application.command.CommandEventTaskService;
 import com.dnd.moddo.outbox.domain.event.OutboxEvent;
 import com.dnd.moddo.outbox.domain.task.EventTask;
 import com.dnd.moddo.outbox.domain.task.type.EventTaskStatus;
@@ -34,15 +36,18 @@ class CommandEventTaskServiceProcessTest {
 	private CommandEventTaskService commandEventTaskService;
 
 	@Test
-	@DisplayName("완료된 태스크는 다시 처리하지 않는다.")
-	void skipCompletedTask() {
-		EventTask eventTask = mock(EventTask.class);
-		when(eventTaskRepository.getById(1L)).thenReturn(eventTask);
-		when(eventTask.getStatus()).thenReturn(EventTaskStatus.COMPLETED);
+	@DisplayName("선점에 실패한 태스크는 처리하지 않는다.")
+	void skipWhenClaimProcessingFails() {
+		when(eventTaskRepository.claimProcessing(
+			1L,
+			EventTaskStatus.PROCESSING,
+			List.of(EventTaskStatus.PENDING, EventTaskStatus.FAILED),
+			5
+		)).thenReturn(0);
 
 		commandEventTaskService.process(1L);
 
-		verify(eventTask, never()).markProcessing();
+		verify(eventTaskRepository, never()).getById(anyLong());
 		verifyNoInteractions(rewardService);
 	}
 
@@ -51,8 +56,13 @@ class CommandEventTaskServiceProcessTest {
 	void processRewardGrantTask() {
 		EventTask eventTask = mock(EventTask.class);
 		OutboxEvent outboxEvent = mock(OutboxEvent.class);
+		when(eventTaskRepository.claimProcessing(
+			1L,
+			EventTaskStatus.PROCESSING,
+			List.of(EventTaskStatus.PENDING, EventTaskStatus.FAILED),
+			5
+		)).thenReturn(1);
 		when(eventTaskRepository.getById(1L)).thenReturn(eventTask);
-		when(eventTask.getStatus()).thenReturn(EventTaskStatus.PENDING);
 		when(eventTask.getTaskType()).thenReturn(EventTaskType.REWARD_GRANT);
 		when(eventTask.getOutboxEvent()).thenReturn(outboxEvent);
 		when(outboxEvent.getAggregateId()).thenReturn(10L);
@@ -60,10 +70,40 @@ class CommandEventTaskServiceProcessTest {
 
 		commandEventTaskService.process(1L);
 
-		verify(eventTask).markProcessing();
+		verify(eventTaskRepository).claimProcessing(
+			1L,
+			EventTaskStatus.PROCESSING,
+			List.of(EventTaskStatus.PENDING, EventTaskStatus.FAILED),
+			5
+		);
 		verify(rewardService).grant(10L, 20L);
 		verify(eventTask).markCompleted();
 		verify(eventTask, never()).markFailed(anyString());
+	}
+
+	@Test
+	@DisplayName("실패했지만 최대 재시도 전이면 운영 알림은 보내지 않는다.")
+	void doesNotNotifyWhenRetryNotExhausted() {
+		EventTask eventTask = mock(EventTask.class);
+		OutboxEvent outboxEvent = mock(OutboxEvent.class);
+		when(eventTaskRepository.claimProcessing(
+			1L,
+			EventTaskStatus.PROCESSING,
+			List.of(EventTaskStatus.PENDING, EventTaskStatus.FAILED),
+			5
+		)).thenReturn(1);
+		when(eventTaskRepository.getById(1L)).thenReturn(eventTask);
+		when(eventTask.getTaskType()).thenReturn(EventTaskType.REWARD_GRANT);
+		when(eventTask.getOutboxEvent()).thenReturn(outboxEvent);
+		when(outboxEvent.getAggregateId()).thenReturn(10L);
+		when(eventTask.getTargetUserId()).thenReturn(20L);
+		doThrow(new RuntimeException("grant failed")).when(rewardService).grant(10L, 20L);
+		when(eventTask.getAttemptCount()).thenReturn(3);
+
+		commandEventTaskService.process(1L);
+
+		verify(eventTask).markFailed("grant failed");
+		verify(eventTaskFailureNotifier, never()).notifyRetryExhausted(any());
 	}
 
 	@Test
@@ -71,8 +111,13 @@ class CommandEventTaskServiceProcessTest {
 	void notifyWhenRetryExhausted() {
 		EventTask eventTask = mock(EventTask.class);
 		OutboxEvent outboxEvent = mock(OutboxEvent.class);
+		when(eventTaskRepository.claimProcessing(
+			1L,
+			EventTaskStatus.PROCESSING,
+			List.of(EventTaskStatus.PENDING, EventTaskStatus.FAILED),
+			5
+		)).thenReturn(1);
 		when(eventTaskRepository.getById(1L)).thenReturn(eventTask);
-		when(eventTask.getStatus()).thenReturn(EventTaskStatus.PENDING);
 		when(eventTask.getTaskType()).thenReturn(EventTaskType.REWARD_GRANT);
 		when(eventTask.getOutboxEvent()).thenReturn(outboxEvent);
 		when(outboxEvent.getAggregateId()).thenReturn(10L);

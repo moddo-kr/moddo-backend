@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -61,6 +62,15 @@ public interface SettlementRepository extends JpaRepository<Settlement, Long> {
 		      AND s.createdAt < :limit
 		""")
 	long countOverdue(@Param("limit") LocalDateTime limit);
+
+	@Modifying
+	@Query("""
+			update Settlement s
+			   set s.completedAt = CURRENT_TIMESTAMP
+			 where s.id = :settlementId
+			   and s.completedAt is null
+		""")
+	int markCompletedIfNotCompleted(@Param("settlementId") Long settlementId);
 
 	default Long getIdByCode(String code) {
 		return findIdByCode(code).orElseThrow(() -> new GroupNotFoundException(code));

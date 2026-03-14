@@ -1,4 +1,4 @@
-package com.dnd.moddo.outbox.application;
+package com.dnd.moddo.outbox.application.command;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;

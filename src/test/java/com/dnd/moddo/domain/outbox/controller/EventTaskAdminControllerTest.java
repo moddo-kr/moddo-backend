@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 
 import com.dnd.moddo.auth.model.exception.UserPermissionException;
 import com.dnd.moddo.auth.presentation.response.LoginUserInfo;
-import com.dnd.moddo.outbox.application.CommandEventTaskService;
+import com.dnd.moddo.outbox.application.command.CommandEventTaskService;
 import com.dnd.moddo.outbox.presentation.EventTaskAdminController;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,6 +40,6 @@ class EventTaskAdminControllerTest {
 		assertThatThrownBy(() -> eventTaskAdminController.retry(1L, new LoginUserInfo(1L, "USER")))
 			.isInstanceOf(UserPermissionException.class);
 
-		verify(eventTaskService, never()).retry(anyLong());
+		verify(commandEventTaskService, never()).retry(anyLong());
 	}
 }

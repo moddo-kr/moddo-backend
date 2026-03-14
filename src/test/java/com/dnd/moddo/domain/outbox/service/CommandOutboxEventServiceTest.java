@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
-import com.dnd.moddo.outbox.application.CommandOutboxEventService;
+import com.dnd.moddo.outbox.application.command.CommandOutboxEventService;
 import com.dnd.moddo.outbox.application.event.OutboxEventCreatedEvent;
 import com.dnd.moddo.outbox.domain.event.OutboxEvent;
 import com.dnd.moddo.outbox.domain.event.type.AggregateType;
@@ -33,7 +33,8 @@ class CommandOutboxEventServiceTest {
 	@Test
 	@DisplayName("아웃박스 이벤트를 저장하고 생성 이벤트를 발행한다.")
 	void create() {
-		OutboxEvent outboxEvent = OutboxEvent.pending(OutboxEventType.SETTLEMENT_COMPLETED, AggregateType.SETTLEMENT, 1L);
+		OutboxEvent outboxEvent = OutboxEvent.pending(OutboxEventType.SETTLEMENT_COMPLETED, AggregateType.SETTLEMENT,
+			1L);
 		setOutboxEventId(outboxEvent, 10L);
 		when(outboxEventRepository.save(any(OutboxEvent.class))).thenReturn(outboxEvent);
 

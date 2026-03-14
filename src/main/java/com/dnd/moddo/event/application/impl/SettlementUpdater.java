@@ -22,13 +22,6 @@ public class SettlementUpdater {
 	}
 
 	public boolean complete(Long settlementId) {
-		Settlement settlement = settlementRepository.getById(settlementId);
-
-		if (settlement.getCompletedAt() != null) {
-			return false;
-		}
-
-		settlement.complete();
-		return true;
+		return settlementRepository.markCompletedIfNotCompleted(settlementId) == 1;
 	}
 }
