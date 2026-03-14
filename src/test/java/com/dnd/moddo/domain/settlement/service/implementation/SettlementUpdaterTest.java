@@ -59,28 +59,24 @@ class SettlementUpdaterTest {
 	@Test
 	void completeSuccess() {
 		Long settlementId = 1L;
-		Settlement settlement = mock(Settlement.class);
-		when(settlementRepository.getById(settlementId)).thenReturn(settlement);
-		when(settlement.getCompletedAt()).thenReturn(null);
+		when(settlementRepository.markCompletedIfNotCompleted(settlementId)).thenReturn(1);
 
 		boolean result = settlementUpdater.complete(settlementId);
 
 		assertThat(result).isTrue();
-		verify(settlement).complete();
+		verify(settlementRepository).markCompletedIfNotCompleted(settlementId);
 	}
 
 	@DisplayName("이미 완료된 정산이면 다시 완료 처리하지 않는다.")
 	@Test
 	void completeAlreadyCompletedSettlement() {
 		Long settlementId = 1L;
-		Settlement settlement = mock(Settlement.class);
-		when(settlementRepository.getById(settlementId)).thenReturn(settlement);
-		when(settlement.getCompletedAt()).thenReturn(java.time.LocalDateTime.now());
+		when(settlementRepository.markCompletedIfNotCompleted(settlementId)).thenReturn(0);
 
 		boolean result = settlementUpdater.complete(settlementId);
 
 		assertThat(result).isFalse();
-		verify(settlement, never()).complete();
+		verify(settlementRepository).markCompletedIfNotCompleted(settlementId);
 	}
 
 }
