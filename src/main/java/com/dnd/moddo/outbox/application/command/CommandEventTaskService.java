@@ -39,6 +39,8 @@ public class CommandEventTaskService {
 		try {
 			if (eventTask.getTaskType() == EventTaskType.REWARD_GRANT) {
 				rewardService.grant(eventTask.getOutboxEvent().getAggregateId(), eventTask.getTargetUserId());
+			} else {
+				return;
 			}
 
 			eventTask.markCompleted();
