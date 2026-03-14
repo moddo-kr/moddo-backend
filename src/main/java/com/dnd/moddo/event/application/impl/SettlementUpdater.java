@@ -20,4 +20,15 @@ public class SettlementUpdater {
 		settlement.updateAccount(request);
 		return settlement;
 	}
+
+	public boolean complete(Long settlementId) {
+		Settlement settlement = settlementRepository.getById(settlementId);
+
+		if (settlement.getCompletedAt() != null) {
+			return false;
+		}
+
+		settlement.complete();
+		return true;
+	}
 }

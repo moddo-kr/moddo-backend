@@ -3,6 +3,7 @@ package com.dnd.moddo.event.application.command;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dnd.moddo.event.application.impl.MemberCreator;
 import com.dnd.moddo.event.application.impl.SettlementCreator;
 import com.dnd.moddo.event.application.impl.SettlementReader;
 import com.dnd.moddo.event.application.impl.SettlementUpdater;
@@ -24,11 +25,11 @@ public class CommandSettlementService {
 	private final SettlementUpdater settlementUpdater;
 	private final SettlementValidator settlementValidator;
 	private final SettlementReader settlementReader;
-	private final CommandMemberService commandMemberService;
+	private final MemberCreator memberCreator;
 
 	public SettlementSaveResponse createSettlement(SettlementRequest request, Long userId) {
 		Settlement settlement = settlementCreator.createSettlement(request, userId);
-		MemberResponse manager = commandMemberService.createManager(settlement, userId);
+		MemberResponse manager = MemberResponse.of(memberCreator.createManagerForSettlement(settlement, userId));
 		return new SettlementSaveResponse(settlement.getCode(), manager);
 	}
 
