@@ -36,13 +36,14 @@ public class OutboxEventPublisher {
 			outboxEventPublishExecutor.appendTasks(outboxEventId);
 			outboxEventPublishExecutor.markPublished(outboxEventId);
 		} catch (Exception exception) {
-			OutboxEvent outboxEvent = outboxReader.findById(outboxEventId);
-			log.error("Failed to publish outbox event. outboxEventId={}, eventType={}, aggregateId={}",
-				outboxEvent.getId(),
-				outboxEvent.getEventType(),
-				outboxEvent.getAggregateId(),
-				exception);
-			outboxEventPublishExecutor.markFailed(outboxEventId);
+			log.error("Failed to publish outbox event. outboxEventId={}", outboxEventId, exception);
+			try {
+				outboxEventPublishExecutor.markFailed(outboxEventId);
+			} catch (Exception markFailedException) {
+				log.error("Failed to mark outbox event as FAILED. outboxEventId={}", outboxEventId,
+					markFailedException);
+				throw markFailedException;
+			}
 		}
 	}
 }

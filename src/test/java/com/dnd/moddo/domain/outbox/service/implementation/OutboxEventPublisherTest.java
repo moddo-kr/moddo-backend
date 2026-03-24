@@ -1,5 +1,6 @@
 package com.dnd.moddo.domain.outbox.service.implementation;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -7,7 +8,6 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -17,7 +17,6 @@ import com.dnd.moddo.outbox.application.impl.OutboxEventPublishExecutor;
 import com.dnd.moddo.outbox.application.impl.OutboxEventPublisher;
 import com.dnd.moddo.outbox.domain.event.OutboxEvent;
 import com.dnd.moddo.outbox.domain.event.type.OutboxEventStatus;
-import com.dnd.moddo.outbox.domain.event.type.OutboxEventType;
 
 @ExtendWith(MockitoExtension.class)
 class OutboxEventPublisherTest {
@@ -46,11 +45,7 @@ class OutboxEventPublisherTest {
 	@Test
 	@DisplayName("태스크 추가 중 예외가 발생하면 failed 상태로 변경한다.")
 	void markFailedWhenAppendTaskThrowsException() {
-		OutboxEvent outboxEvent = mock(OutboxEvent.class);
 		when(outboxEventPublishExecutor.claimProcessing(1L)).thenReturn(true);
-		when(outboxReader.findById(1L)).thenReturn(outboxEvent);
-		when(outboxEvent.getEventType()).thenReturn(OutboxEventType.SETTLEMENT_COMPLETED);
-		when(outboxEvent.getAggregateId()).thenReturn(10L);
 		doThrow(new RuntimeException("append failed")).when(outboxEventPublishExecutor).appendTasks(1L);
 
 		outboxEventPublisher.publish(1L);
@@ -85,9 +80,23 @@ class OutboxEventPublisherTest {
 
 		outboxEventPublisher.publish(1L);
 
-		verifyNoInteractions(outboxReader);
 		verify(outboxEventPublishExecutor, never()).appendTasks(1L);
 		verify(outboxEventPublishExecutor, never()).markPublished(1L);
 		verify(outboxEventPublishExecutor, never()).markFailed(1L);
+	}
+
+	@Test
+	@DisplayName("failed 상태 변경에도 실패하면 예외를 다시 던진다.")
+	void throwWhenMarkFailedThrowsException() {
+		when(outboxEventPublishExecutor.claimProcessing(1L)).thenReturn(true);
+		doThrow(new RuntimeException("append failed")).when(outboxEventPublishExecutor).appendTasks(1L);
+		doThrow(new RuntimeException("mark failed")).when(outboxEventPublishExecutor).markFailed(1L);
+
+		assertThatThrownBy(() -> outboxEventPublisher.publish(1L))
+			.isInstanceOf(RuntimeException.class)
+			.hasMessage("mark failed");
+
+		verify(outboxEventPublishExecutor).markFailed(1L);
+		verify(outboxEventPublishExecutor, never()).markPublished(1L);
 	}
 }
