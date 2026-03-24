@@ -1,5 +1,6 @@
 package com.dnd.moddo.domain.outbox.service.implementation;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -17,6 +19,7 @@ import com.dnd.moddo.outbox.application.impl.EventTaskCreator;
 import com.dnd.moddo.outbox.application.impl.OutboxEventPublishExecutor;
 import com.dnd.moddo.outbox.application.impl.OutboxReader;
 import com.dnd.moddo.outbox.domain.event.OutboxEvent;
+import com.dnd.moddo.outbox.domain.task.EventTask;
 import com.dnd.moddo.outbox.domain.event.type.OutboxEventStatus;
 import com.dnd.moddo.outbox.domain.event.type.OutboxEventType;
 import com.dnd.moddo.outbox.domain.task.type.EventTaskType;
@@ -69,10 +72,17 @@ class OutboxEventPublishExecutorTest {
 
 		outboxEventPublishExecutor.appendTasks(1L);
 
-		verify(eventTaskCreator).create(outboxEvent, EventTaskType.REWARD_GRANT, 20L);
-		verify(eventTaskCreator).create(outboxEvent, EventTaskType.NOTIFICATION_SEND, 20L);
-		verify(eventTaskCreator).create(outboxEvent, EventTaskType.REWARD_GRANT, 30L);
-		verify(eventTaskCreator).create(outboxEvent, EventTaskType.NOTIFICATION_SEND, 30L);
+		ArgumentCaptor<List<EventTask>> captor = ArgumentCaptor.forClass(List.class);
+		verify(eventTaskCreator).createAll(captor.capture());
+		assertThat(captor.getValue()).hasSize(4);
+		assertThat(captor.getValue())
+			.extracting(EventTask::getTaskType, EventTask::getTargetUserId)
+			.containsExactly(
+				tuple(EventTaskType.REWARD_GRANT, 20L),
+				tuple(EventTaskType.NOTIFICATION_SEND, 20L),
+				tuple(EventTaskType.REWARD_GRANT, 30L),
+				tuple(EventTaskType.NOTIFICATION_SEND, 30L)
+			);
 	}
 
 	@Test
@@ -86,7 +96,7 @@ class OutboxEventPublishExecutorTest {
 
 		outboxEventPublishExecutor.appendTasks(1L);
 
-		verifyNoInteractions(eventTaskCreator);
+		verify(eventTaskCreator, never()).createAll(anyList());
 	}
 
 	@Test

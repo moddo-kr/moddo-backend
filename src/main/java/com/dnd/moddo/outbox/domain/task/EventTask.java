@@ -92,6 +92,7 @@ public class EventTask {
 
 	public void markDead(String errorMessage) {
 		this.status = EventTaskStatus.DEAD;
+		this.processedAt = LocalDateTime.now();
 		this.lastErrorMessage = errorMessage;
 	}
 }

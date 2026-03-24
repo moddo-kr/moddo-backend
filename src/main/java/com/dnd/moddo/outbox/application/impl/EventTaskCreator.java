@@ -1,5 +1,7 @@
 package com.dnd.moddo.outbox.application.impl;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +19,10 @@ public class EventTaskCreator {
 	private final EventTaskRepository eventTaskRepository;
 
 	public EventTask create(OutboxEvent outboxEvent, EventTaskType taskType, Long targetUserId) {
-		return eventTaskRepository.saveAndFlush(EventTask.pending(outboxEvent, taskType, targetUserId));
+		return eventTaskRepository.save(EventTask.pending(outboxEvent, taskType, targetUserId));
+	}
+
+	public List<EventTask> createAll(List<EventTask> eventTasks) {
+		return eventTaskRepository.saveAll(eventTasks);
 	}
 }

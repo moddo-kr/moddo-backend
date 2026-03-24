@@ -1,7 +1,7 @@
 package com.dnd.moddo.outbox.infrastructure;
 
-import java.util.List;
-
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -13,7 +13,7 @@ import com.dnd.moddo.outbox.domain.event.type.OutboxEventStatus;
 import jakarta.persistence.EntityNotFoundException;
 
 public interface OutboxEventRepository extends JpaRepository<OutboxEvent, Long> {
-	List<OutboxEvent> findAllByStatus(OutboxEventStatus status);
+	Slice<OutboxEvent> findByStatusOrderByIdAsc(OutboxEventStatus status, Pageable pageable);
 
 	@Modifying(clearAutomatically = true, flushAutomatically = true)
 	@Query("""

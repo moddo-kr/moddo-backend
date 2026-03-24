@@ -1,9 +1,8 @@
 package com.dnd.moddo.outbox.application.impl;
 
-import java.util.List;
-
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.moddo.outbox.domain.event.OutboxEvent;
 import com.dnd.moddo.outbox.domain.event.type.OutboxEventStatus;
@@ -15,15 +14,23 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class OutboxEventPublisher {
+	private static final int PENDING_OUTBOX_BATCH_SIZE = 100;
+
 	private final OutboxReader outboxReader;
 	private final OutboxEventPublishExecutor outboxEventPublishExecutor;
 
-	@Transactional
 	public void publishPendingEvents() {
-		List<OutboxEvent> pendingEvents = outboxReader.findAllByStatus(OutboxEventStatus.PENDING);
+		Slice<OutboxEvent> pendingEvents = outboxReader.findByStatus(
+			OutboxEventStatus.PENDING,
+			PageRequest.of(0, PENDING_OUTBOX_BATCH_SIZE)
+		);
 
-		for (OutboxEvent outboxEvent : pendingEvents) {
-			publish(outboxEvent.getId());
+		for (OutboxEvent outboxEvent : pendingEvents.getContent()) {
+			try {
+				publish(outboxEvent.getId());
+			} catch (Exception e) {
+				log.error("Error publishing event to outbox publisher. outboxId={}", outboxEvent.getId(), e);
+			}
 		}
 	}
 

@@ -1,7 +1,7 @@
 package com.dnd.moddo.outbox.application.impl;
 
-import java.util.List;
-
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,8 +17,8 @@ import lombok.RequiredArgsConstructor;
 public class OutboxReader {
 	private final OutboxEventRepository outboxEventRepository;
 
-	public List<OutboxEvent> findAllByStatus(OutboxEventStatus status) {
-		return outboxEventRepository.findAllByStatus(status);
+	public Slice<OutboxEvent> findByStatus(OutboxEventStatus status, Pageable pageable) {
+		return outboxEventRepository.findByStatusOrderByIdAsc(status, pageable);
 	}
 
 	public OutboxEvent findById(Long outboxEventId) {

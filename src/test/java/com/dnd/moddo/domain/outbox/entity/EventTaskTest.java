@@ -78,4 +78,20 @@ class EventTaskTest {
 		assertThat(eventTask.getAttemptCount()).isEqualTo(1);
 		assertThat(eventTask.getLastErrorMessage()).isEqualTo("failed");
 	}
+
+	@Test
+	@DisplayName("dead 처리되면 dead 상태와 처리 시각, 오류 메시지가 기록된다.")
+	void markDead() {
+		EventTask eventTask = EventTask.pending(
+			OutboxEvent.pending(OutboxEventType.SETTLEMENT_COMPLETED, AggregateType.SETTLEMENT, 1L),
+			EventTaskType.REWARD_GRANT,
+			10L
+		);
+
+		eventTask.markDead("dead");
+
+		assertThat(eventTask.getStatus()).isEqualTo(EventTaskStatus.DEAD);
+		assertThat(eventTask.getProcessedAt()).isNotNull();
+		assertThat(eventTask.getLastErrorMessage()).isEqualTo("dead");
+	}
 }

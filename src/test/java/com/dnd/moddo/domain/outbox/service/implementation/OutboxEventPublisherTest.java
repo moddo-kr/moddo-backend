@@ -11,6 +11,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 
 import com.dnd.moddo.outbox.application.impl.OutboxReader;
 import com.dnd.moddo.outbox.application.impl.OutboxEventPublishExecutor;
@@ -59,9 +62,10 @@ class OutboxEventPublisherTest {
 	void publishPendingEvents() {
 		OutboxEvent first = mock(OutboxEvent.class);
 		OutboxEvent second = mock(OutboxEvent.class);
+		Slice<OutboxEvent> pendingEvents = new PageImpl<>(List.of(first, second), PageRequest.of(0, 100), 2);
 		when(first.getId()).thenReturn(1L);
 		when(second.getId()).thenReturn(2L);
-		when(outboxReader.findAllByStatus(OutboxEventStatus.PENDING)).thenReturn(List.of(first, second));
+		when(outboxReader.findByStatus(OutboxEventStatus.PENDING, PageRequest.of(0, 100))).thenReturn(pendingEvents);
 		when(outboxEventPublishExecutor.claimProcessing(1L)).thenReturn(true);
 		when(outboxEventPublishExecutor.claimProcessing(2L)).thenReturn(true);
 
@@ -69,6 +73,28 @@ class OutboxEventPublisherTest {
 
 		verify(outboxEventPublishExecutor).appendTasks(1L);
 		verify(outboxEventPublishExecutor).markPublished(1L);
+		verify(outboxEventPublishExecutor).appendTasks(2L);
+		verify(outboxEventPublishExecutor).markPublished(2L);
+	}
+
+	@Test
+	@DisplayName("배치 발행 중 한 이벤트가 실패해도 다음 pending 이벤트 처리를 계속한다.")
+	void continuePublishingPendingEventsWhenOneEventFails() {
+		OutboxEvent first = mock(OutboxEvent.class);
+		OutboxEvent second = mock(OutboxEvent.class);
+		Slice<OutboxEvent> pendingEvents = new PageImpl<>(List.of(first, second), PageRequest.of(0, 100), 2);
+		when(first.getId()).thenReturn(1L);
+		when(second.getId()).thenReturn(2L);
+		when(outboxReader.findByStatus(OutboxEventStatus.PENDING, PageRequest.of(0, 100))).thenReturn(pendingEvents);
+		when(outboxEventPublishExecutor.claimProcessing(1L)).thenReturn(true);
+		when(outboxEventPublishExecutor.claimProcessing(2L)).thenReturn(true);
+		doThrow(new RuntimeException("append failed")).when(outboxEventPublishExecutor).appendTasks(1L);
+		doThrow(new RuntimeException("mark failed")).when(outboxEventPublishExecutor).markFailed(1L);
+
+		outboxEventPublisher.publishPendingEvents();
+
+		verify(outboxEventPublishExecutor).appendTasks(1L);
+		verify(outboxEventPublishExecutor).markFailed(1L);
 		verify(outboxEventPublishExecutor).appendTasks(2L);
 		verify(outboxEventPublishExecutor).markPublished(2L);
 	}
