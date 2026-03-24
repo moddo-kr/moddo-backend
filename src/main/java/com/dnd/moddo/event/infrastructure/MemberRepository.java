@@ -31,6 +31,14 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 		""")
 	Optional<Member> findBySettlementIdAndUserId(@Param("settlementId") Long settlementId, @Param("userId") Long userId);
 
+	@Query("""
+			select count(gm) > 0
+			from Member gm
+			where gm.settlement.id = :settlementId
+			  and gm.isPaid = false
+		""")
+	boolean existsBySettlementIdAndIsPaidFalse(@Param("settlementId") Long settlementId);
+
 	default Member getById(Long id) {
 		return findById(id)
 			.orElseThrow(() -> new MemberNotFoundException(id));

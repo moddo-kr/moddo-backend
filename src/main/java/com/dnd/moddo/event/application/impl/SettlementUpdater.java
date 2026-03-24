@@ -20,4 +20,8 @@ public class SettlementUpdater {
 		settlement.updateAccount(request);
 		return settlement;
 	}
+
+	public boolean complete(Long settlementId) {
+		return settlementRepository.markCompletedIfNotCompleted(settlementId) == 1;
+	}
 }

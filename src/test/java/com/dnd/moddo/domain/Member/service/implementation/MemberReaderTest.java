@@ -23,6 +23,8 @@ import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.infrastructure.MemberQueryRepository;
 import com.dnd.moddo.event.infrastructure.MemberRepository;
 import com.dnd.moddo.global.support.GroupTestFactory;
+import com.dnd.moddo.global.support.UserTestFactory;
+import com.dnd.moddo.user.domain.User;
 
 @ExtendWith(MockitoExtension.class)
 public class MemberReaderTest {
@@ -180,6 +182,45 @@ public class MemberReaderTest {
 
 		assertThatThrownBy(() -> memberReader.findBySettlementIdAndUserId(settlementId, userId))
 			.isInstanceOf(MemberNotFoundException.class);
+	}
+
+	@DisplayName("정산에 미납 멤버가 있는지 확인할 수 있다.")
+	@Test
+	void existsUnpaidMemberSuccess() {
+		Long settlementId = 1L;
+		when(memberRepository.existsBySettlementIdAndIsPaidFalse(settlementId)).thenReturn(true);
+
+		boolean result = memberReader.existsUnpaidMember(settlementId);
+
+		assertThat(result).isTrue();
+		verify(memberRepository).existsBySettlementIdAndIsPaidFalse(settlementId);
+	}
+
+	@DisplayName("연결된 멤버만 조회할 수 있다.")
+	@Test
+	void findAssignedMembersBySettlementIdSuccess() {
+		Long settlementId = mockSettlement.getId();
+		User assignedUser = UserTestFactory.createWithEmail("assigned@test.com");
+		List<Member> members = List.of(
+			Member.builder()
+				.name("연결된 참여자")
+				.settlement(mockSettlement)
+				.role(ExpenseRole.PARTICIPANT)
+				.user(assignedUser)
+				.build(),
+			Member.builder()
+				.name("미연결 참여자")
+				.settlement(mockSettlement)
+				.role(ExpenseRole.PARTICIPANT)
+				.build()
+		);
+
+		when(memberQueryRepository.findAllBySettlementId(eq(settlementId), eq(MemberSortType.CREATED))).thenReturn(members);
+
+		List<Member> result = memberReader.findAssignedMembersBySettlementId(settlementId);
+
+		assertThat(result.size()).isEqualTo(1);
+		assertThat(result.get(0).getName()).isEqualTo("연결된 참여자");
 	}
 
 }

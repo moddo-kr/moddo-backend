@@ -41,4 +41,14 @@ public class MemberReader {
 			.orElseThrow(() -> new MemberNotFoundException(userId));
 	}
 
+	public boolean existsUnpaidMember(Long settlementId) {
+		return memberRepository.existsBySettlementIdAndIsPaidFalse(settlementId);
+	}
+
+	public List<Member> findAssignedMembersBySettlementId(Long settlementId) {
+		return findAllBySettlementId(settlementId).stream()
+			.filter(Member::isAssigned)
+			.toList();
+	}
+
 }
