@@ -89,4 +89,9 @@ public class EventTask {
 		this.attemptCount++;
 		this.lastErrorMessage = errorMessage;
 	}
+
+	public void markDead(String errorMessage) {
+		this.status = EventTaskStatus.DEAD;
+		this.lastErrorMessage = errorMessage;
+	}
 }

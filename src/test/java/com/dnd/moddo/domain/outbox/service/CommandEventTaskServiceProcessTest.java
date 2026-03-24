@@ -128,6 +128,30 @@ class CommandEventTaskServiceProcessTest {
 		commandEventTaskService.process(1L);
 
 		verify(eventTask).markFailed("grant failed");
+		verify(eventTask).markDead("grant failed");
 		verify(eventTaskFailureNotifier).notifyRetryExhausted(eventTask);
+	}
+
+	@Test
+	@DisplayName("지원하지 않는 태스크 타입은 실패 처리한다.")
+	void failWhenTaskTypeUnsupported() {
+		EventTask eventTask = mock(EventTask.class);
+		when(eventTaskRepository.claimProcessing(
+			1L,
+			EventTaskStatus.PROCESSING,
+			List.of(EventTaskStatus.PENDING, EventTaskStatus.FAILED),
+			5
+		)).thenReturn(1);
+		when(eventTaskRepository.getById(1L)).thenReturn(eventTask);
+		when(eventTask.getTaskType()).thenReturn(EventTaskType.NOTIFICATION_SEND);
+		when(eventTask.getAttemptCount()).thenReturn(1);
+
+		commandEventTaskService.process(1L);
+
+		verifyNoInteractions(rewardService);
+		verify(eventTask).markFailed("Unsupported task type: NOTIFICATION_SEND");
+		verify(eventTask, never()).markCompleted();
+		verify(eventTask, never()).markDead(anyString());
+		verify(eventTaskFailureNotifier, never()).notifyRetryExhausted(any());
 	}
 }

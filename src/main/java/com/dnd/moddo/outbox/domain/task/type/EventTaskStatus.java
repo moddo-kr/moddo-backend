@@ -5,4 +5,5 @@ public enum EventTaskStatus {
 	PROCESSING,
 	COMPLETED,
 	FAILED,
+	DEAD
 }

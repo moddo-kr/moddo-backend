@@ -6,9 +6,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.dnd.moddo.auth.application.AuthDetailsService;
-import com.dnd.moddo.auth.model.AuthDetails;
 import com.dnd.moddo.auth.infrastructure.security.exception.MissingTokenException;
 import com.dnd.moddo.auth.infrastructure.security.exception.TokenInvalidException;
+import com.dnd.moddo.auth.model.AuthDetails;
 import com.dnd.moddo.user.domain.Authority;
 
 import io.jsonwebtoken.Claims;
@@ -29,6 +29,9 @@ public class JwtAuth {
 
 		Long userId = claims.get(JwtConstants.AUTH_ID.message, Long.class);
 		String role = claims.get(JwtConstants.ROLE.message, String.class);
+		if (userId == null || role == null) {
+			throw new TokenInvalidException();
+		}
 
 		if (Authority.ADMIN.name().equals(role)) {
 			UserDetails adminDetails = new AuthDetails(userId, "admin", role);

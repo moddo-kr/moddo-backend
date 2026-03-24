@@ -40,13 +40,14 @@ public class CommandEventTaskService {
 			if (eventTask.getTaskType() == EventTaskType.REWARD_GRANT) {
 				rewardService.grant(eventTask.getOutboxEvent().getAggregateId(), eventTask.getTargetUserId());
 			} else {
-				return;
+				throw new IllegalStateException("Unsupported task type: " + eventTask.getTaskType());
 			}
 
 			eventTask.markCompleted();
 		} catch (Exception exception) {
 			eventTask.markFailed(exception.getMessage());
 			if (eventTask.getAttemptCount() >= EventTaskRetryPolicy.MAX_RETRY_COUNT) {
+				eventTask.markDead(exception.getMessage());
 				eventTaskFailureNotifier.notifyRetryExhausted(eventTask);
 			}
 		}
