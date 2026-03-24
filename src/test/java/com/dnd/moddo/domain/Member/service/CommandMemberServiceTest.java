@@ -18,7 +18,7 @@ import com.dnd.moddo.event.application.command.CommandMemberService;
 import com.dnd.moddo.event.application.impl.MemberCreator;
 import com.dnd.moddo.event.application.impl.MemberDeleter;
 import com.dnd.moddo.event.application.impl.MemberUpdater;
-import com.dnd.moddo.event.application.query.QueryMemberService;
+import com.dnd.moddo.event.application.impl.SettlementCompletionProcessor;
 import com.dnd.moddo.event.domain.member.ExpenseRole;
 import com.dnd.moddo.event.domain.member.Member;
 import com.dnd.moddo.event.domain.settlement.Settlement;
@@ -38,7 +38,7 @@ public class CommandMemberServiceTest {
 	@Mock
 	private MemberDeleter memberDeleter;
 	@Mock
-	private QueryMemberService queryMemberService;
+	private SettlementCompletionProcessor settlementCompletionProcessor;
 	@InjectMocks
 	private CommandMemberService commandMemberService;
 
@@ -104,8 +104,6 @@ public class CommandMemberServiceTest {
 	@Test
 	void whenAllMembersPaid_thenSettlementCompleted() {
 		// given
-		Settlement mockSettlement = mock(Settlement.class);
-
 		Member paidMember = Member.builder()
 			.name("김반숙")
 			.settlement(mockSettlement)
@@ -121,9 +119,6 @@ public class CommandMemberServiceTest {
 		when(memberUpdater.updatePaymentStatus(any(), eq(request)))
 			.thenReturn(paidMember);
 
-		when(queryMemberService.findAllBySettlementId(any()))
-			.thenReturn(List.of(paidMember));
-
 		// when
 		MemberResponse response =
 			commandMemberService.updatePaymentStatus(1L, request);
@@ -134,9 +129,7 @@ public class CommandMemberServiceTest {
 		assertThat(response.isPaid()).isTrue();
 
 		verify(memberUpdater).updatePaymentStatus(any(), eq(request));
-		verify(queryMemberService).findAllBySettlementId(any());
-
-		verify(mockSettlement).complete();
+		verify(settlementCompletionProcessor).completeIfAllPaid(mockSettlement.getId());
 	}
 
 	@DisplayName("로그인 사용자가 참여자를 선택할 수 있다.")

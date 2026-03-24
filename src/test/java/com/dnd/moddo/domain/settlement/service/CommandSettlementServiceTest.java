@@ -15,12 +15,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.dnd.moddo.auth.infrastructure.security.JwtProvider;
-import com.dnd.moddo.event.application.command.CommandMemberService;
 import com.dnd.moddo.event.application.command.CommandSettlementService;
+import com.dnd.moddo.event.application.impl.MemberCreator;
+import com.dnd.moddo.event.application.impl.MemberReader;
 import com.dnd.moddo.event.application.impl.SettlementCreator;
 import com.dnd.moddo.event.application.impl.SettlementReader;
 import com.dnd.moddo.event.application.impl.SettlementUpdater;
 import com.dnd.moddo.event.application.impl.SettlementValidator;
+import com.dnd.moddo.event.domain.member.Member;
 import com.dnd.moddo.event.domain.member.ExpenseRole;
 import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.presentation.request.SettlementAccountRequest;
@@ -46,7 +48,9 @@ class CommandSettlementServiceTest {
 	@Mock
 	private JwtProvider jwtProvider;
 	@Mock
-	private CommandMemberService commandMemberService;
+	private MemberCreator memberCreator;
+	@Mock
+	private MemberReader memberReader;
 	@InjectMocks
 	private CommandSettlementService commandSettlementService;
 
@@ -75,9 +79,15 @@ class CommandSettlementServiceTest {
 			"김모또", null, 1L, true,
 			LocalDateTime.now());
 
-		when(settlementCreator.createSettlement(any(SettlementRequest.class), anyLong())).thenReturn(settlement);
-		when(settlement.getCode()).thenReturn("code");
-		when(commandMemberService.createManager(any(), any())).thenReturn(memberResponse);
+			when(settlementCreator.createSettlement(any(SettlementRequest.class), anyLong())).thenReturn(settlement);
+			when(settlement.getCode()).thenReturn("code");
+			Member manager = Member.builder()
+				.name("김모또")
+				.settlement(settlement)
+				.profileId(0)
+				.role(ExpenseRole.MANAGER)
+				.build();
+			when(memberCreator.createManagerForSettlement(any(), any())).thenReturn(manager);
 
 		// When
 		SettlementSaveResponse response = commandSettlementService.createSettlement(settlementRequest, 1L);
@@ -85,11 +95,11 @@ class CommandSettlementServiceTest {
 		// Then
 		assertThat(response).isNotNull();
 		assertThat(response.groupToken()).isEqualTo("code");
-		assertThat(response.manager().role()).isEqualTo(ExpenseRole.MANAGER);
+			assertThat(response.manager().role()).isEqualTo(ExpenseRole.MANAGER);
 
-		verify(settlementCreator, times(1)).createSettlement(any(SettlementRequest.class), anyLong());
-		verify(commandMemberService, times(1)).createManager(any(), any());
-	}
+			verify(settlementCreator, times(1)).createSettlement(any(SettlementRequest.class), anyLong());
+			verify(memberCreator, times(1)).createManagerForSettlement(any(), any());
+		}
 
 	@Test
 	@DisplayName("그룹의 계좌 정보를 업데이트할 수 있다.")

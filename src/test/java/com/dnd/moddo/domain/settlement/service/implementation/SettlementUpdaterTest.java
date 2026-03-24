@@ -55,4 +55,28 @@ class SettlementUpdaterTest {
 			.isInstanceOf(GroupNotFoundException.class);
 	}
 
+	@DisplayName("정산이 아직 완료되지 않았다면 완료 처리할 수 있다.")
+	@Test
+	void completeSuccess() {
+		Long settlementId = 1L;
+		when(settlementRepository.markCompletedIfNotCompleted(settlementId)).thenReturn(1);
+
+		boolean result = settlementUpdater.complete(settlementId);
+
+		assertThat(result).isTrue();
+		verify(settlementRepository).markCompletedIfNotCompleted(settlementId);
+	}
+
+	@DisplayName("이미 완료된 정산이면 다시 완료 처리하지 않는다.")
+	@Test
+	void completeAlreadyCompletedSettlement() {
+		Long settlementId = 1L;
+		when(settlementRepository.markCompletedIfNotCompleted(settlementId)).thenReturn(0);
+
+		boolean result = settlementUpdater.complete(settlementId);
+
+		assertThat(result).isFalse();
+		verify(settlementRepository).markCompletedIfNotCompleted(settlementId);
+	}
+
 }

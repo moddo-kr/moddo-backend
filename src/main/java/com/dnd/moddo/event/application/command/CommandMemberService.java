@@ -1,13 +1,11 @@
 package com.dnd.moddo.event.application.command;
 
-import java.util.List;
-
 import org.springframework.stereotype.Service;
 
+import com.dnd.moddo.event.application.impl.SettlementCompletionProcessor;
 import com.dnd.moddo.event.application.impl.MemberCreator;
 import com.dnd.moddo.event.application.impl.MemberDeleter;
 import com.dnd.moddo.event.application.impl.MemberUpdater;
-import com.dnd.moddo.event.application.query.QueryMemberService;
 import com.dnd.moddo.event.domain.member.Member;
 import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.presentation.request.MemberSaveRequest;
@@ -22,8 +20,7 @@ public class CommandMemberService {
 	private final MemberCreator memberCreator;
 	private final MemberUpdater memberUpdater;
 	private final MemberDeleter memberDeleter;
-
-	private final QueryMemberService queryMemberService;
+	private final SettlementCompletionProcessor settlementCompletionProcessor;
 
 	public MemberResponse createManager(Settlement settlement, Long userId) {
 		Member member = memberCreator.createManagerForSettlement(settlement, userId);
@@ -38,16 +35,7 @@ public class CommandMemberService {
 	public MemberResponse updatePaymentStatus(Long appointmentMemberId, PaymentStatusUpdateRequest request) {
 		Member member = memberUpdater.updatePaymentStatus(appointmentMemberId,
 			request);
-		List<Member> members = queryMemberService.findAllBySettlementId(
-			member.getSettlementId());
-
-		boolean allPaid = members.stream()
-			.allMatch(Member::isPaid);
-
-		if (allPaid) {
-			member.getSettlement().complete();
-		}
-
+		settlementCompletionProcessor.completeIfAllPaid(member.getSettlementId());
 		return MemberResponse.of(member);
 	}
 

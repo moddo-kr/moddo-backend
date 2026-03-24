@@ -10,6 +10,8 @@ import com.dnd.moddo.reward.domain.character.Character;
 public interface CharacterRepository extends JpaRepository<Character, Long> {
 	List<Character> findByRarity(int rarity);
 
+	List<Character> findAllByOrderByRarityDescIdDesc();
+
 	default Character getById(Long characterId) {
 		return findById(characterId).orElseThrow(() -> new CharacterNotFoundException());
 	}
