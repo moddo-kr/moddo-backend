@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 
+import com.dnd.moddo.common.cache.CacheEvictor;
 import com.dnd.moddo.reward.application.RewardService;
 import com.dnd.moddo.reward.domain.character.Character;
 import com.dnd.moddo.reward.domain.character.exception.SettlementCharacterNotFoundException;
@@ -28,6 +29,8 @@ class RewardServiceGrantTest {
 	@Mock
 	private CollectionRepository collectionRepository;
 
+	@Mock
+	private CacheEvictor cacheEvictor;
 	@InjectMocks
 	private RewardService rewardService;
 
@@ -91,7 +94,7 @@ class RewardServiceGrantTest {
 
 		when(rewardQueryRepository.findBySettlementId(1L)).thenReturn(Optional.of(character));
 		when(collectionRepository.existsByUserIdAndCharacterId(2L, 3L)).thenReturn(false);
-
+		doNothing().when(cacheEvictor).evictCollections(2L);
 		rewardService.grant(1L, 2L);
 
 		verify(collectionRepository).save(any());

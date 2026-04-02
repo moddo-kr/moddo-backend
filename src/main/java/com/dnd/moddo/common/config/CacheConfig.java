@@ -3,22 +3,22 @@ package com.dnd.moddo.common.config;
 import java.time.Duration;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
-import org.springframework.cache.interceptor.CacheErrorHandler;
-import org.springframework.cache.support.CompositeCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.redis.cache.RedisCacheConfiguration;
-import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,7 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 @Profile("!test")
 @Slf4j
-public class CacheConfig implements CachingConfigurer { // CachingConfigurer 인터페이스 구현
+public class CacheConfig {
+	private static final long LOCAL_CACHE_MAXIMUM_SIZE = 1_000L;
+	private static final Duration LOCAL_CACHE_TTL = Duration.ofMinutes(5);
 
 	@Value("${spring.data.redis.host}")
 	private String host;
@@ -50,48 +52,28 @@ public class CacheConfig implements CachingConfigurer { // CachingConfigurer 인
 	}
 
 	@Bean
-	@Primary
-	public CacheManager cacheManager(RedisConnectionFactory factory) {
-		// 1. Redis 캐시 설정
-		RedisCacheManager redisCacheManager = RedisCacheManager.builder(factory)
-			.cacheDefaults(RedisCacheConfiguration.defaultCacheConfig()
-				.entryTtl(Duration.ofMinutes(10)))
-			.build();
+	public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+		ObjectMapper objectMapper = new ObjectMapper()
+			.registerModule(new JavaTimeModule())
+			.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+		GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectMapper);
 
-		// 2. Redis 실패 시 바라볼 로컬 캐시 (Fallback)
-		ConcurrentMapCacheManager localCacheManager = new ConcurrentMapCacheManager("group", "user", "settlements");
-
-		// 3. 복합 캐시 매니저: 순서대로 캐시 시도
-		CompositeCacheManager compositeCacheManager = new CompositeCacheManager(redisCacheManager, localCacheManager);
-		compositeCacheManager.setFallbackToNoOpCache(true);
-		return compositeCacheManager;
+		RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+		redisTemplate.setConnectionFactory(redisConnectionFactory);
+		redisTemplate.setKeySerializer(new StringRedisSerializer());
+		redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+		redisTemplate.setValueSerializer(serializer);
+		redisTemplate.setHashValueSerializer(serializer);
+		redisTemplate.afterPropertiesSet();
+		return redisTemplate;
 	}
 
-	/**
-	 * 실행 중 Redis 사망 시 예외를 가로채서 처리
-	 */
-	@Override
-	public CacheErrorHandler errorHandler() {
-		return new CacheErrorHandler() {
-			@Override
-			public void handleCacheGetError(RuntimeException exception, Cache cache, Object key) {
-				log.error("Redis 연결 실패(GET) - 캐시 없이 진행: {}", exception.getMessage());
-			}
-
-			@Override
-			public void handleCachePutError(RuntimeException exception, Cache cache, Object key, Object value) {
-				log.error("Redis 연결 실패(PUT) - 캐시 없이 진행: {}", exception.getMessage());
-			}
-
-			@Override
-			public void handleCacheEvictError(RuntimeException exception, Cache cache, Object key) {
-				log.error("Redis 연결 실패(EVICT) - 캐시 없이 진행: {}", exception.getMessage());
-			}
-
-			@Override
-			public void handleCacheClearError(RuntimeException exception, Cache cache) {
-				log.error("Redis 연결 실패(CLEAR) - 캐시 없이 진행: {}", exception.getMessage());
-			}
-		};
+	@Bean
+	public Cache<String, Object> localCache() {
+		log.info("Initializing local fallback cache. ttl={}, maximumSize={}", LOCAL_CACHE_TTL, LOCAL_CACHE_MAXIMUM_SIZE);
+		return Caffeine.newBuilder()
+			.expireAfterWrite(LOCAL_CACHE_TTL)
+			.maximumSize(LOCAL_CACHE_MAXIMUM_SIZE)
+			.build();
 	}
 }

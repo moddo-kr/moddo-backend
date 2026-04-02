@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.dnd.moddo.common.cache.CacheExecutor;
 import com.dnd.moddo.event.application.impl.MemberReader;
 import com.dnd.moddo.event.application.query.QueryMemberService;
 import com.dnd.moddo.event.domain.member.ExpenseRole;
@@ -27,6 +28,8 @@ public class QueryMemberServiceTest {
 
 	@Mock
 	private MemberReader memberReader;
+	@Mock
+	private CacheExecutor cacheExecutor;
 	@InjectMocks
 	private QueryMemberService queryMemberService;
 
@@ -59,7 +62,7 @@ public class QueryMemberServiceTest {
 		//given
 		Long groupId = mockSettlement.getId();
 
-		when(memberReader.findAllBySettlementId(eq(groupId), eq(MemberSortType.CREATED))).thenReturn(mockMembers);
+		when(cacheExecutor.execute(anyString(), any(), any())).thenReturn(mockMembers);
 
 		//when
 		MembersResponse response = queryMemberService.findAll(groupId, MemberSortType.CREATED);
@@ -68,7 +71,7 @@ public class QueryMemberServiceTest {
 		assertThat(response).isNotNull();
 		assertThat(response.members().size()).isEqualTo(2);
 		assertThat(response.members().get(0).name()).isEqualTo("김모또");
-		verify(memberReader, times(1)).findAllBySettlementId(eq(groupId), eq(MemberSortType.CREATED));
+		verify(cacheExecutor, times(1)).execute(anyString(), any(), any());
 	}
 
 	@DisplayName("정렬 기준을 받아 모임원을 조회할 수 있다.")
@@ -76,12 +79,12 @@ public class QueryMemberServiceTest {
 	void findAllWithSortType() {
 		Long groupId = mockSettlement.getId();
 
-		when(memberReader.findAllBySettlementId(eq(groupId), eq(MemberSortType.NAME))).thenReturn(mockMembers);
+		when(cacheExecutor.execute(anyString(), any(), any())).thenReturn(mockMembers);
 
 		MembersResponse response = queryMemberService.findAll(groupId, MemberSortType.NAME);
 
 		assertThat(response.members()).hasSize(2);
-		verify(memberReader).findAllBySettlementId(groupId, MemberSortType.NAME);
+		verify(cacheExecutor).execute(anyString(), any(), any());
 	}
 
 	@DisplayName("모임 ID로 원본 Member 목록을 조회할 수 있다.")

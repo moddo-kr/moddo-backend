@@ -49,6 +49,7 @@ dependencies {
 
     // redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'com.github.ben-manes.caffeine:caffeine'
 
     implementation 'com.amazonaws:aws-java-sdk-s3:1.12.638'
     //jwt
