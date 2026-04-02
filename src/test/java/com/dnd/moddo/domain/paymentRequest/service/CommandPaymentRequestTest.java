@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.dnd.moddo.common.cache.CacheEvictor;
 import com.dnd.moddo.event.application.command.CommandPaymentRequest;
 import com.dnd.moddo.event.application.impl.PaymentRequestCreator;
 import com.dnd.moddo.event.application.impl.PaymentRequestUpdater;
@@ -29,6 +30,8 @@ class CommandPaymentRequestTest {
 
 	@Mock
 	private SettlementCompletionProcessor settlementCompletionProcessor;
+	@Mock
+	private CacheEvictor cacheEvictor;
 
 	@InjectMocks
 	private CommandPaymentRequest commandPaymentRequest;
@@ -58,6 +61,8 @@ class CommandPaymentRequestTest {
 			assertThat(response.id()).isEqualTo(1L);
 			assertThat(response.status()).isEqualTo(PaymentRequestStatus.APPROVED);
 			verify(settlementCompletionProcessor).completeIfAllPaid(2L);
+			verify(cacheEvictor).evictMembers(2L);
+			verify(cacheEvictor).evictSettlementListsBySettlement(2L);
 		}
 
 	@Test

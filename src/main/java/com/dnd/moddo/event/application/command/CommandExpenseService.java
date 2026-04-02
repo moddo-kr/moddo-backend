@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.dnd.moddo.common.cache.CacheEvictor;
 import com.dnd.moddo.event.application.impl.ExpenseCreator;
 import com.dnd.moddo.event.application.impl.ExpenseDeleter;
 import com.dnd.moddo.event.application.impl.ExpenseReader;
@@ -24,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class CommandExpenseService {
+	private final CacheEvictor cacheEvictor;
 	private final ExpenseReader expenseReader;
 	private final ExpenseCreator expenseCreator;
 	private final ExpenseUpdater expenseUpdater;
@@ -37,6 +39,7 @@ public class CommandExpenseService {
 			.stream()
 			.map(e -> createExpense(groupId, e))
 			.toList();
+		cacheEvictor.evictSettlementHeader(groupId);
 		return new ExpensesResponse(expenses);
 	}
 
@@ -59,6 +62,7 @@ public class CommandExpenseService {
 		expense = expenseUpdater.update(expenseId, request);
 		List<MemberExpenseResponse> memberExpenseResponses = commandMemberExpenseService.update(expenseId,
 			request.memberExpenses());
+		cacheEvictor.evictSettlementHeader(settlementId);
 		return ExpenseResponse.of(expense, memberExpenseResponses);
 
 	}
@@ -79,5 +83,6 @@ public class CommandExpenseService {
 
 		commandMemberExpenseService.deleteAllByExpenseId(expenseId);
 		expenseDeleter.delete(expense);
+		cacheEvictor.evictSettlementHeader(settlementId);
 	}
 }

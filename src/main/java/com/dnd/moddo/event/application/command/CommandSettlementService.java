@@ -3,6 +3,7 @@ package com.dnd.moddo.event.application.command;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dnd.moddo.common.cache.CacheEvictor;
 import com.dnd.moddo.event.application.impl.MemberCreator;
 import com.dnd.moddo.event.application.impl.SettlementCreator;
 import com.dnd.moddo.event.application.impl.SettlementReader;
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional
 public class CommandSettlementService {
+	private final CacheEvictor cacheEvictor;
 	private final SettlementCreator settlementCreator;
 	private final SettlementUpdater settlementUpdater;
 	private final SettlementValidator settlementValidator;
@@ -30,6 +32,7 @@ public class CommandSettlementService {
 	public SettlementSaveResponse createSettlement(SettlementRequest request, Long userId) {
 		Settlement settlement = settlementCreator.createSettlement(request, userId);
 		MemberResponse manager = MemberResponse.of(memberCreator.createManagerForSettlement(settlement, userId));
+		cacheEvictor.evictSettlementList(userId);
 		return new SettlementSaveResponse(settlement.getCode(), manager);
 	}
 
@@ -37,6 +40,7 @@ public class CommandSettlementService {
 		Settlement settlement = settlementReader.read(settlementId);
 		settlementValidator.checkSettlementAuthor(settlement, userId);
 		settlement = settlementUpdater.updateAccount(request, settlement.getId());
+		cacheEvictor.evictSettlementHeader(settlementId);
 		return SettlementResponse.of(settlement);
 	}
 }

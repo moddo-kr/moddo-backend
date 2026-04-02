@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.dnd.moddo.common.cache.CacheExecutor;
 import com.dnd.moddo.reward.application.QueryCollectionService;
 import com.dnd.moddo.reward.application.impl.CollectionReader;
 import com.dnd.moddo.reward.presentation.response.CollectionListResponse;
@@ -23,6 +24,8 @@ public class QueryCollectionServiceTest {
 
 	@Mock
 	private CollectionReader collectionReader;
+	@Mock
+	private CacheExecutor cacheExecutor;
 
 	@InjectMocks
 	private QueryCollectionService queryCollectionService;
@@ -35,13 +38,13 @@ public class QueryCollectionServiceTest {
 		CollectionListResponse expectedResponse = new CollectionListResponse(List.of(
 			new CollectionResponse(1L, "모또", 1, LocalDateTime.now(), "imageUrl", "imageBigUrl")
 		));
-		when(collectionReader.findCollectionListByUserId(userId)).thenReturn(expectedResponse);
+		when(cacheExecutor.execute(anyString(), any(), any())).thenReturn(expectedResponse);
 
 		// when
 		CollectionListResponse result = queryCollectionService.findCollectionListByUserId(userId);
 
 		// then
 		assertThat(result).isEqualTo(expectedResponse);
-		verify(collectionReader, times(1)).findCollectionListByUserId(userId);
+		verify(cacheExecutor, times(1)).execute(anyString(), any(), any());
 	}
 }

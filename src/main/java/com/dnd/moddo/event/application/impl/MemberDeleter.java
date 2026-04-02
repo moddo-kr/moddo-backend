@@ -16,11 +16,12 @@ public class MemberDeleter {
 	private final MemberRepository memberRepository;
 	private final MemberReader memberReader;
 
-	public void delete(Long appointmentMemberId) {
+	public Member delete(Long appointmentMemberId) {
 		Member member = memberReader.findByAppointmentMemberId(appointmentMemberId);
 		if (member.isManager()) {
 			throw new ManagerCannotDeleteException(appointmentMemberId);
 		}
 		memberRepository.delete(member);
+		return member;
 	}
 }

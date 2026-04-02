@@ -4,6 +4,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dnd.moddo.common.cache.CacheEvictor;
 import com.dnd.moddo.reward.domain.character.Character;
 import com.dnd.moddo.reward.domain.character.Collection;
 import com.dnd.moddo.reward.domain.character.exception.SettlementCharacterNotFoundException;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional
 public class RewardService {
+	private final CacheEvictor cacheEvictor;
 	private final RewardQueryRepository rewardQueryRepository;
 	private final CollectionRepository collectionRepository;
 
@@ -33,6 +35,7 @@ public class RewardService {
 
 		try {
 			collectionRepository.save(Collection.acquire(targetUserId, character.getId()));
+			cacheEvictor.evictCollections(targetUserId);
 		} catch (DataIntegrityViolationException exception) {
 			// Concurrent/manual duplicate grants are treated as idempotent success.
 		}

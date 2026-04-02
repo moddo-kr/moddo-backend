@@ -16,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.dnd.moddo.common.cache.CacheExecutor;
 import com.dnd.moddo.event.application.impl.SettlementReader;
 import com.dnd.moddo.event.application.impl.SettlementValidator;
 import com.dnd.moddo.event.application.query.QuerySettlementService;
@@ -43,6 +44,9 @@ class QuerySettlementServiceTest {
 
 	@Mock
 	private SettlementValidator settlementValidator;
+
+	@Mock
+	private CacheExecutor cacheExecutor;
 
 	private Settlement settlement;
 	private Member member;
@@ -120,7 +124,7 @@ class QuerySettlementServiceTest {
 		// Given
 		SettlementHeaderResponse expectedResponse = new SettlementHeaderResponse(settlement.getName(), 1000L,
 			LocalDateTime.now().plusDays(1), settlement.getBank(), settlement.getAccountNumber());
-		when(settlementReader.findByHeader(settlement.getId())).thenReturn(expectedResponse);
+		when(cacheExecutor.execute(anyString(), any(), any())).thenReturn(expectedResponse);
 
 		// When
 		SettlementHeaderResponse response = querySettlementService.findBySettlementHeader(settlement.getId());
@@ -131,47 +135,46 @@ class QuerySettlementServiceTest {
 		assertThat(response.bank()).isEqualTo(settlement.getBank());
 		assertThat(response.accountNumber()).isEqualTo(settlement.getAccountNumber());
 
-		verify(settlementReader, times(1)).findByHeader(settlement.getId());
+		verify(cacheExecutor, times(1)).execute(anyString(), any(), any());
 	}
 
 	@Test
 	@DisplayName("그룹 헤더를 찾을 수 없을 경우 예외가 발생한다.")
 	void FindBySettlementHeader_Failure_WhenHeaderNotFound() {
 		// Given
-		when(settlementReader.findByHeader(anyLong())).thenThrow(new RuntimeException("Header not found"));
+		when(cacheExecutor.execute(anyString(), any(), any())).thenThrow(new RuntimeException("Header not found"));
 
 		// When & Then
 		assertThatThrownBy(() -> querySettlementService.findBySettlementHeader(1L))
 			.isInstanceOf(RuntimeException.class)
 			.hasMessageContaining("Header not found");
 
-		verify(settlementReader, times(1)).findByHeader(1L);
+		verify(cacheExecutor, times(1)).execute(anyString(), any(), any());
 	}
 
 	@DisplayName("group code가 유효할 때 group Id를 찾을 수 있다.")
 	@Test
 	void FindByGroupId_Success() {
 		//given
-		Long expected = 1L;
-		when(settlementReader.findIdByGroupCode(anyString())).thenReturn(expected);
+		when(cacheExecutor.execute(anyString(), any(), any())).thenReturn(1);
 		//when
 		Long result = querySettlementService.findIdByCode("code");
 		//then
-		assertThat(result).isEqualTo(expected);
-		verify(settlementReader, times(1)).findIdByGroupCode(anyString());
+		assertThat(result).isEqualTo(1L);
+		verify(cacheExecutor, times(1)).execute(anyString(), any(), any());
 	}
 
 	@DisplayName("group code가 존재하지 않을때 예외가 발생한다..")
 	@Test
 	void FindByGroupId_ThrowException_WhenCodeNotFound() {
 		//given
-		when(settlementReader.findIdByGroupCode(anyString())).thenThrow(new GroupNotFoundException("code"));
+		when(cacheExecutor.execute(anyString(), any(), any())).thenThrow(new GroupNotFoundException("code"));
 		//when & then
 		assertThatThrownBy(() -> querySettlementService.findIdByCode("code"))
 			.isInstanceOf(RuntimeException.class)
 			.hasMessageContaining("code");
 
-		verify(settlementReader, times(1)).findIdByGroupCode(anyString());
+		verify(cacheExecutor, times(1)).execute(anyString(), any(), any());
 	}
 
 	@DisplayName("group code가 유효할 때 group Id를 찾을 수 있다.")
@@ -236,6 +239,24 @@ class QuerySettlementServiceTest {
 				SettlementSortType.LATEST,
 				20
 			);
+	}
+
+	@Test
+	@DisplayName("유저별 정산 리스트를 캐시를 통해 조회한다.")
+	void findSettlementList_UsesCacheExecutor() {
+		List<SettlementShareResponse> expectedResponse = List.of(
+			SettlementShareResponse.builder()
+				.settlementId(1L)
+				.name("모또 모임")
+				.groupCode("code")
+				.build()
+		);
+		when(cacheExecutor.execute(anyString(), any(), any())).thenReturn(expectedResponse);
+
+		List<SettlementShareResponse> result = querySettlementService.findSettlementList(1L);
+
+		assertThat(result).isEqualTo(expectedResponse);
+		verify(cacheExecutor).execute(anyString(), any(), any());
 	}
 
 	@Test
@@ -346,7 +367,7 @@ class QuerySettlementServiceTest {
 			)
 		);
 
-		when(settlementReader.findSettlementListByUserId(userId))
+		when(cacheExecutor.execute(anyString(), any(), any()))
 			.thenReturn(mockList);
 
 		// when
@@ -358,7 +379,6 @@ class QuerySettlementServiceTest {
 		assertThat(result.get(0).getSettlementId()).isEqualTo(1L);
 		assertThat(result.get(0).getName()).isEqualTo("모또 모임");
 
-		verify(settlementReader, times(1))
-			.findSettlementListByUserId(userId);
+		verify(cacheExecutor, times(1)).execute(anyString(), any(), any());
 	}
 }
