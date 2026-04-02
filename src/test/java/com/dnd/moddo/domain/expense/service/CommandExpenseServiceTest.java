@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.dnd.moddo.common.cache.CacheEvictor;
 import com.dnd.moddo.event.application.command.CommandExpenseService;
 import com.dnd.moddo.event.application.command.CommandMemberExpenseService;
 import com.dnd.moddo.event.application.impl.ExpenseCreator;
@@ -53,6 +54,8 @@ class CommandExpenseServiceTest {
 	private SettlementValidator settlementValidator;
 	@Mock
 	private CommandMemberExpenseService commandMemberExpenseService;
+	@Mock
+	private CacheEvictor cacheEvictor;
 	@InjectMocks
 	private CommandExpenseService commandExpenseService;
 
@@ -81,7 +84,7 @@ class CommandExpenseServiceTest {
 		when(expenseCreator.create(eq(groupId), any(ExpenseRequest.class)))
 			.thenReturn(expense1)
 			.thenReturn(expense2);
-
+		doNothing().when(cacheEvictor).evictSettlementHeader(groupId);
 		// When
 		ExpensesResponse response = commandExpenseService.createExpenses(groupId, request);
 
@@ -117,6 +120,7 @@ class CommandExpenseServiceTest {
 		when(expenseUpdater.update(eq(expenseId), eq(expenseRequest))).thenReturn(mockExpense);
 		when(commandMemberExpenseService.update(eq(expenseId), any())).thenReturn(
 			List.of(memberExpenseResponse1, memberExpenseResponse2));
+		doNothing().when(cacheEvictor).evictSettlementHeader(groupId);
 		// when
 		ExpenseResponse response = commandExpenseService.update(userId, expenseId, groupId, expenseRequest);
 
@@ -161,7 +165,7 @@ class CommandExpenseServiceTest {
 
 		doNothing().when(commandMemberExpenseService).deleteAllByExpenseId(eq(expenseId));
 		doNothing().when(expenseDeleter).delete(eq(mockExpense));
-
+		doNothing().when(cacheEvictor).evictSettlementHeader(eq(settlementId));
 		//when
 		commandExpenseService.delete(userId, expenseId, settlementId);
 
