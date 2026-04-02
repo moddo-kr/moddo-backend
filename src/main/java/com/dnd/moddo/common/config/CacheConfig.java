@@ -7,7 +7,6 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
@@ -30,7 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 public class CacheConfig {
 	private static final long LOCAL_CACHE_MAXIMUM_SIZE = 1_000L;
 	private static final Duration LOCAL_CACHE_TTL = Duration.ofMinutes(5);
-	private static final Duration REDIS_CACHE_TTL = Duration.ofMinutes(10);
 
 	@Value("${spring.data.redis.host}")
 	private String host;
@@ -51,12 +49,6 @@ public class CacheConfig {
 		factory.afterPropertiesSet();
 		factory.setValidateConnection(false);
 		return factory;
-	}
-
-	@Bean
-	public RedisCacheConfiguration redisCacheConfiguration() {
-		return RedisCacheConfiguration.defaultCacheConfig()
-			.entryTtl(REDIS_CACHE_TTL);
 	}
 
 	@Bean

@@ -93,6 +93,7 @@ class CommandExpenseServiceTest {
 		assertThat(response.expenses()).hasSize(2);
 		assertThat(response.expenses().get(0).content()).isEqualTo("투썸플레이스");
 		assertThat(response.expenses().get(0).date()).isEqualTo("2025-02-03");
+		verify(cacheEvictor, times(1)).evictSettlementHeader(groupId);
 	}
 
 	@DisplayName("지출내역이 존재할 때 기존의 지출내역을 수정할 수 있다.")
@@ -128,6 +129,7 @@ class CommandExpenseServiceTest {
 		assertThat(response).isNotNull();
 		verify(mockExpense, times(1)).validateSettlement(groupId);
 		verify(expenseUpdater, times(1)).update(expenseId, expenseRequest);
+		verify(cacheEvictor, times(1)).evictSettlementHeader(groupId);
 	}
 
 	@DisplayName("업데이트하려는 지출 내역을 찾을 수 없을때 예외를 발생시킨다.")
@@ -173,6 +175,7 @@ class CommandExpenseServiceTest {
 		verify(mockExpense, times(1)).validateSettlement(settlementId);
 		verify(commandMemberExpenseService, times(1)).deleteAllByExpenseId(eq(expenseId));
 		verify(expenseDeleter, times(1)).delete(eq(mockExpense));
+		verify(cacheEvictor, times(1)).evictSettlementHeader(settlementId);
 	}
 
 	@DisplayName("삭제하려는 지출내역이 해당 정산에 속하지 않으면 예외가 발생한다.")
