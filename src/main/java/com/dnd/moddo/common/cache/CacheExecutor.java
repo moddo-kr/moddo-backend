@@ -1,10 +1,13 @@
 package com.dnd.moddo.common.cache;
 
 import java.time.Duration;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Component;
 
 import com.github.benmanes.caffeine.cache.Cache;
@@ -70,8 +73,19 @@ public class CacheExecutor {
 		localCache.asMap().keySet().removeIf(key -> key.startsWith(prefix));
 
 		try {
-			Set<String> keys = redisTemplate.keys(prefix + "*");
-			if (keys != null && !keys.isEmpty()) {
+			ScanOptions options = ScanOptions.scanOptions()
+				.match(prefix + "*")
+				.count(100)
+				.build();
+			Set<String> keys = new HashSet<>();
+
+			try (Cursor<String> cursor = redisTemplate.scan(options)) {
+				while (cursor.hasNext()) {
+					keys.add(cursor.next());
+				}
+			}
+
+			if (!keys.isEmpty()) {
 				redisTemplate.delete(keys);
 			}
 		} catch (Exception exception) {

@@ -47,4 +47,31 @@ public class QueryCollectionServiceTest {
 		assertThat(result).isEqualTo(expectedResponse);
 		verify(cacheExecutor, times(1)).execute(anyString(), any(), any());
 	}
+
+	@Test
+	@DisplayName("컬렉션이 없어도 빈 목록을 정상적으로 반환한다.")
+	void findCollectionListByUserId_WhenEmpty() {
+		Long userId = 1L;
+		CollectionListResponse emptyResponse = new CollectionListResponse(List.of());
+		when(cacheExecutor.execute(anyString(), any(), any())).thenReturn(emptyResponse);
+
+		CollectionListResponse result = queryCollectionService.findCollectionListByUserId(userId);
+
+		assertThat(result.collections()).isEmpty();
+		verify(cacheExecutor).execute(anyString(), any(), any());
+	}
+
+	@Test
+	@DisplayName("캐시 조회 중 예외가 발생하면 그대로 전파한다.")
+	void findCollectionListByUserId_WhenCacheExecutorFails() {
+		Long userId = 1L;
+		when(cacheExecutor.execute(anyString(), any(), any()))
+			.thenThrow(new RuntimeException("cache failure"));
+
+		assertThatThrownBy(() -> queryCollectionService.findCollectionListByUserId(userId))
+			.isInstanceOf(RuntimeException.class)
+			.hasMessageContaining("cache failure");
+
+		verify(cacheExecutor).execute(anyString(), any(), any());
+	}
 }
