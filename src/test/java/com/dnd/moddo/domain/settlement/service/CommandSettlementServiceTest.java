@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.dnd.moddo.auth.infrastructure.security.JwtProvider;
+import com.dnd.moddo.common.cache.CacheEvictor;
 import com.dnd.moddo.event.application.command.CommandSettlementService;
 import com.dnd.moddo.event.application.impl.MemberCreator;
 import com.dnd.moddo.event.application.impl.MemberReader;
@@ -51,6 +52,8 @@ class CommandSettlementServiceTest {
 	private MemberCreator memberCreator;
 	@Mock
 	private MemberReader memberReader;
+	@Mock
+	private CacheEvictor cacheEvictor;
 	@InjectMocks
 	private CommandSettlementService commandSettlementService;
 
@@ -99,6 +102,7 @@ class CommandSettlementServiceTest {
 
 			verify(settlementCreator, times(1)).createSettlement(any(SettlementRequest.class), anyLong());
 			verify(memberCreator, times(1)).createManagerForSettlement(any(), any());
+			verify(cacheEvictor).evictSettlementList(1L);
 		}
 
 	@Test
@@ -119,6 +123,7 @@ class CommandSettlementServiceTest {
 		verify(settlementReader, times(1)).read(anyLong());
 		verify(settlementValidator, times(1)).checkSettlementAuthor(any(Settlement.class), anyLong());
 		verify(settlementUpdater, times(1)).updateAccount(any(SettlementAccountRequest.class), anyLong());
+		verify(cacheEvictor).evictSettlementHeader(settlement.getId());
 	}
 
 }

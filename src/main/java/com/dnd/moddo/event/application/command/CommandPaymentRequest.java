@@ -2,6 +2,7 @@ package com.dnd.moddo.event.application.command;
 
 import org.springframework.stereotype.Service;
 
+import com.dnd.moddo.common.cache.CacheEvictor;
 import com.dnd.moddo.event.application.impl.SettlementCompletionProcessor;
 import com.dnd.moddo.event.application.impl.PaymentRequestCreator;
 import com.dnd.moddo.event.application.impl.PaymentRequestUpdater;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class CommandPaymentRequest {
+	private final CacheEvictor cacheEvictor;
 	private final PaymentRequestCreator paymentRequestCreator;
 	private final PaymentRequestUpdater paymentRequestUpdater;
 	private final SettlementCompletionProcessor settlementCompletionProcessor;
@@ -25,6 +27,8 @@ public class CommandPaymentRequest {
 	public PaymentRequestResponse approvePaymentRequest(Long paymentRequestId, Long userId) {
 		PaymentRequest paymentRequest = paymentRequestUpdater.approvePaymentRequest(paymentRequestId, userId);
 		settlementCompletionProcessor.completeIfAllPaid(paymentRequest.getSettlementId());
+		cacheEvictor.evictMembers(paymentRequest.getSettlementId());
+		cacheEvictor.evictSettlementListsBySettlement(paymentRequest.getSettlementId());
 		return PaymentRequestResponse.of(paymentRequest);
 	}
 

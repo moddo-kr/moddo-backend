@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.dnd.moddo.common.cache.CacheEvictor;
 import com.dnd.moddo.event.application.command.CommandMemberService;
 import com.dnd.moddo.event.application.impl.MemberCreator;
 import com.dnd.moddo.event.application.impl.MemberDeleter;
@@ -39,6 +40,8 @@ public class CommandMemberServiceTest {
 	private MemberDeleter memberDeleter;
 	@Mock
 	private SettlementCompletionProcessor settlementCompletionProcessor;
+	@Mock
+	private CacheEvictor cacheEvictor;
 	@InjectMocks
 	private CommandMemberService commandMemberService;
 
@@ -47,6 +50,7 @@ public class CommandMemberServiceTest {
 	@BeforeEach
 	void setUp() {
 		mockSettlement = GroupTestFactory.createDefault();
+		setField(mockSettlement, 1L);
 	}
 
 	@DisplayName("모든 정보가 유효할때 총무 생성에 성공한다.")
@@ -98,6 +102,8 @@ public class CommandMemberServiceTest {
 		assertThat(response.name()).isEqualTo("김반숙");
 		verify(memberUpdater, times(1)).addToSettlement(eq(groupId),
 			any(MemberSaveRequest.class));
+		verify(cacheEvictor).evictMembers(groupId);
+		verify(cacheEvictor).evictSettlementListsBySettlement(groupId);
 	}
 
 	@DisplayName("모든 참여자가 입금 완료되면 정산이 완료된다")
@@ -130,6 +136,8 @@ public class CommandMemberServiceTest {
 
 		verify(memberUpdater).updatePaymentStatus(any(), eq(request));
 		verify(settlementCompletionProcessor).completeIfAllPaid(mockSettlement.getId());
+		verify(cacheEvictor).evictMembers(mockSettlement.getId());
+		verify(cacheEvictor).evictSettlementListsBySettlement(mockSettlement.getId());
 	}
 
 	@DisplayName("로그인 사용자가 참여자를 선택할 수 있다.")
@@ -156,6 +164,8 @@ public class CommandMemberServiceTest {
 		assertThat(response.name()).isEqualTo("김반숙");
 		assertThat(response.userId()).isEqualTo(member.getUserId());
 		verify(memberUpdater).assignMember(settlementId, memberId, userId);
+		verify(cacheEvictor).evictMembers(settlementId);
+		verify(cacheEvictor).evictSettlementListsBySettlement(settlementId, userId);
 	}
 
 	@DisplayName("로그인 사용자가 자신이 선택한 참여자를 해제할 수 있다.")
@@ -179,6 +189,31 @@ public class CommandMemberServiceTest {
 		assertThat(response.name()).isEqualTo("김반숙");
 		assertThat(response.userId()).isNull();
 		verify(memberUpdater).unassignMember(settlementId, memberId, userId);
+		verify(cacheEvictor).evictMembers(settlementId);
+		verify(cacheEvictor).evictSettlementListsBySettlement(settlementId, userId);
+	}
+
+	@DisplayName("참여자를 삭제하면 관련 캐시를 비운다.")
+	@Test
+	void deleteMemberEvictsCaches() {
+		Long settlementId = 1L;
+		Long userId = 3L;
+		Member deletedMember = Member.builder()
+			.name("김반숙")
+			.settlement(mockSettlement)
+			.profileId(1)
+			.role(ExpenseRole.PARTICIPANT)
+			.user(UserTestFactory.createWithEmail("delete@test.com"))
+			.build();
+		setId(deletedMember.getUser(), userId);
+
+		when(memberDeleter.delete(2L)).thenReturn(deletedMember);
+
+		commandMemberService.delete(2L);
+
+		verify(memberDeleter).delete(2L);
+		verify(cacheEvictor).evictMembers(settlementId);
+		verify(cacheEvictor).evictSettlementListsBySettlement(settlementId, userId);
 	}
 
 	private void setId(User user, Long id) {
@@ -186,6 +221,16 @@ public class CommandMemberServiceTest {
 			Field idField = User.class.getDeclaredField("id");
 			idField.setAccessible(true);
 			idField.set(user, id);
+		} catch (ReflectiveOperationException exception) {
+			throw new RuntimeException(exception);
+		}
+	}
+
+	private void setField(Settlement settlement, Long id) {
+		try {
+			Field idField = Settlement.class.getDeclaredField("id");
+			idField.setAccessible(true);
+			idField.set(settlement, id);
 		} catch (ReflectiveOperationException exception) {
 			throw new RuntimeException(exception);
 		}

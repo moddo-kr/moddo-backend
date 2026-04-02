@@ -1,10 +1,12 @@
 package com.dnd.moddo.event.application.query;
 
+import java.time.Duration;
 import java.util.List;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import com.dnd.moddo.common.cache.CacheExecutor;
+import com.dnd.moddo.common.cache.CacheKeys;
 import com.dnd.moddo.event.application.impl.SettlementReader;
 import com.dnd.moddo.event.application.impl.SettlementValidator;
 import com.dnd.moddo.event.domain.member.Member;
@@ -22,8 +24,13 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class QuerySettlementService {
+	private static final Duration SETTLEMENT_ID_CACHE_TTL = Duration.ofMinutes(10);
+	private static final Duration SETTLEMENT_HEADER_CACHE_TTL = Duration.ofMinutes(5);
+	private static final Duration SETTLEMENT_LIST_CACHE_TTL = Duration.ofMinutes(5);
+
 	private final SettlementReader settlementReader;
 	private final SettlementValidator settlementValidator;
+	private final CacheExecutor cacheExecutor;
 
 	public SettlementDetailResponse findOne(Long settlementId, Long userId) {
 		Settlement settlement = settlementReader.read(settlementId);
@@ -33,12 +40,20 @@ public class QuerySettlementService {
 	}
 
 	public SettlementHeaderResponse findBySettlementHeader(Long settlementId) {
-		return settlementReader.findByHeader(settlementId);
+		return cacheExecutor.execute(
+			CacheKeys.settlementHeader(settlementId),
+			SETTLEMENT_HEADER_CACHE_TTL,
+			() -> settlementReader.findByHeader(settlementId)
+		);
 	}
 
-	@Cacheable(cacheNames = "settlements", key = "#code")
 	public Long findIdByCode(String code) {
-		return settlementReader.findIdByGroupCode(code);
+		Number settlementId = cacheExecutor.execute(
+			CacheKeys.settlementCode(code),
+			SETTLEMENT_ID_CACHE_TTL,
+			() -> settlementReader.findIdByGroupCode(code)
+		);
+		return settlementId == null ? null : settlementId.longValue();
 	}
 
 	public Long findIdByCodeNoCache(String code) {
@@ -61,6 +76,10 @@ public class QuerySettlementService {
 	}
 
 	public List<SettlementShareResponse> findSettlementList(Long userId) {
-		return settlementReader.findSettlementListByUserId(userId);
+		return cacheExecutor.execute(
+			CacheKeys.settlementList(userId),
+			SETTLEMENT_LIST_CACHE_TTL,
+			() -> settlementReader.findSettlementListByUserId(userId)
+		);
 	}
 }
