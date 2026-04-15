@@ -181,9 +181,16 @@ class AuthControllerTest extends RestDocsTestSupport {
 		mockMvc.perform(post("/api/v1/logout")
 				.cookie(new Cookie("accessToken", "access-token")))
 			.andExpect(status().isOk())
+			.andExpect(header().stringValues(HttpHeaders.SET_COOKIE,
+				hasItems(org.hamcrest.Matchers.startsWith("accessToken="),
+					org.hamcrest.Matchers.startsWith("refreshToken="))))
 			.andDo(document("logout",
 				requestCookies(
 					cookieWithName("accessToken").description("액세스 토큰")
+				),
+				responseCookies(
+					cookieWithName("accessToken").description("만료된 액세스 토큰"),
+					cookieWithName("refreshToken").description("만료된 리프레시 토큰")
 				),
 				responseFields(
 					fieldWithPath("message").type(JsonFieldType.STRING).description("로그아웃 성공 메시지")

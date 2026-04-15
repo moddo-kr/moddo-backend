@@ -23,6 +23,7 @@ import com.dnd.moddo.auth.presentation.AuthController;
 import com.dnd.moddo.auth.presentation.AuthCookieManager;
 import com.dnd.moddo.auth.presentation.AuthRedirectResolver;
 import com.dnd.moddo.common.config.CookieProperties;
+import com.dnd.moddo.common.config.FrontendProperties;
 import com.dnd.moddo.common.logging.ErrorNotifier;
 import com.dnd.moddo.event.application.command.CommandExpenseService;
 import com.dnd.moddo.event.application.command.CommandMemberService;
@@ -126,6 +127,9 @@ public abstract class ControllerTest {
 
 	@MockBean
 	protected CookieProperties cookieProperties;
+
+	@MockBean
+	protected FrontendProperties frontendProperties;
 	// Jwt
 	@MockBean
 	protected LoginUserArgumentResolver loginUserArgumentResolver;
@@ -146,6 +150,15 @@ public abstract class ControllerTest {
 		given(cookieProperties.path()).willReturn("/");
 		given(cookieProperties.sameSite()).willReturn("none");
 		given(cookieProperties.maxAge()).willReturn(Duration.ofDays(7));
+		given(frontendProperties.corsAllowedOrigins()).willReturn(
+			java.util.List.of("https://www.moddo.kr", "http://localhost:3000", "http://localhost:4173")
+		);
+		given(frontendProperties.redirectAllowedOrigins()).willReturn(
+			java.util.List.of("http://localhost:3000", "https://moddo-frontend.pages.dev", "https://www.moddo.kr",
+				"https://moddo.kr")
+		);
+		given(frontendProperties.defaultLocalRedirectUrl()).willReturn("http://localhost:3000");
+		given(frontendProperties.defaultProdRedirectUrl()).willReturn("https://www.moddo.kr");
 	}
 
 	protected String toJson(Object object) throws JsonProcessingException {

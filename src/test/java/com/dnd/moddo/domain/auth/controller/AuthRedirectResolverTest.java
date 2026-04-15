@@ -7,10 +7,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import com.dnd.moddo.auth.presentation.AuthRedirectResolver;
+import com.dnd.moddo.common.config.FrontendProperties;
 
 class AuthRedirectResolverTest {
 
-	private final AuthRedirectResolver authRedirectResolver = new AuthRedirectResolver();
+	private final AuthRedirectResolver authRedirectResolver = new AuthRedirectResolver(
+		new FrontendProperties(
+			java.util.List.of("https://www.moddo.kr", "http://localhost:3000", "http://localhost:4173"),
+			java.util.List.of("http://localhost:3000", "https://moddo-frontend.pages.dev", "https://www.moddo.kr",
+				"https://moddo.kr"),
+			"http://localhost:3000",
+			"https://www.moddo.kr"
+		)
+	);
 
 	@Test
 	@DisplayName("허용된 origin의 state는 그대로 리다이렉트한다.")

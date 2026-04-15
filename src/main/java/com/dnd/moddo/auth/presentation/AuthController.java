@@ -88,20 +88,22 @@ public class AuthController {
 	@PostMapping("/logout")
 	public ResponseEntity<?> kakaoLogout(@CookieValue(value = "accessToken") String token,
 		@LoginUser LoginUserInfo loginUser) {
-		String cookie = authCookieManager.expireCookie("accessToken");
+		String accessTokenCookie = authCookieManager.expireCookie("accessToken");
+		String refreshTokenCookie = authCookieManager.expireCookie("refreshToken");
 		authService.logout(loginUser.userId());
 		return ResponseEntity.ok()
-			.header(HttpHeaders.SET_COOKIE, cookie)
+			.header(HttpHeaders.SET_COOKIE, accessTokenCookie, refreshTokenCookie)
 			.body(Collections.singletonMap("message", "Logout successful"));
 	}
 
 	@DeleteMapping("/unlink")
 	public ResponseEntity<?> kakaoUnlink(@CookieValue(value = "accessToken") String token,
 		@LoginUser LoginUserInfo loginUser) {
-		String cookie = authCookieManager.expireCookie("accessToken");
+		String accessTokenCookie = authCookieManager.expireCookie("accessToken");
+		String refreshTokenCookie = authCookieManager.expireCookie("refreshToken");
 		authService.unlink(loginUser.userId());
 		return ResponseEntity.ok()
-			.header(HttpHeaders.SET_COOKIE, cookie)
+			.header(HttpHeaders.SET_COOKIE, accessTokenCookie, refreshTokenCookie)
 			.body(Collections.singletonMap("message", "Unlink successful"));
 	}
 

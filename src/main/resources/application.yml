@@ -41,6 +41,19 @@ cookie:
   same-site: none
   max-age: 7D
 
+frontend:
+  cors-allowed-origins:
+    - https://www.moddo.kr
+    - http://localhost:3000
+    - http://localhost:4173
+  redirect-allowed-origins:
+    - http://localhost:3000
+    - https://moddo-frontend.pages.dev
+    - https://www.moddo.kr
+    - https://moddo.kr
+  default-local-redirect-url: http://localhost:3000
+  default-prod-redirect-url: https://www.moddo.kr
+
 ---
 
 spring:
@@ -58,7 +71,6 @@ spring:
       on-profile: prod
 
 ---
-
 
 
 
