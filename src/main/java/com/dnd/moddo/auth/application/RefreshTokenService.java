@@ -21,24 +21,32 @@ public class RefreshTokenService {
 	private final JwtProvider jwtProvider;
 
 	public RefreshResponse execute(String token) {
-
-		Long userId;
-
 		try {
-			userId = jwtUtil.getJwt(token).getBody().get(JwtConstants.AUTH_ID.message, Long.class);
+			String tokenType = jwtProvider.getTokenType(token);
+			if (!JwtConstants.REFRESH_KEY.message.equals(tokenType)) {
+				throw new TokenInvalidException();
+			}
+
+			Long userId = jwtUtil.getJwt(token)
+				.getBody()
+				.get(JwtConstants.AUTH_ID.message, Long.class);
+
+			if (userId == null) {
+				throw new TokenInvalidException();
+			}
+
+			User user = userRepository.getById(userId);
+			String newAccessToken = jwtProvider.generateAccessToken(
+				user.getId(),
+				user.getAuthority().toString()
+			);
+
+			return RefreshResponse.builder()
+				.accessToken(newAccessToken)
+				.build();
 		} catch (Exception e) {
 			throw new TokenInvalidException();
 		}
-
-		if (userId == null) {
-			throw new TokenInvalidException();
-		}
-
-		User user = userRepository.getById(userId);
-		String newAccessToken = jwtProvider.generateAccessToken(user.getId(), user.getAuthority().toString());
-
-		return RefreshResponse.builder()
-			.accessToken(newAccessToken)
-			.build();
 	}
+
 }

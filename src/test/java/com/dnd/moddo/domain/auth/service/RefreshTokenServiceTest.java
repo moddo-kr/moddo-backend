@@ -54,6 +54,7 @@ public class RefreshTokenServiceTest {
 		Jws<Claims> mockJws = mock(Jws.class);
 		Claims mockClaims = mock(Claims.class);
 
+		when(jwtProvider.getTokenType(validToken)).thenReturn(JwtConstants.REFRESH_KEY.message);
 		when(jwtUtil.getJwt(any())).thenReturn(mockJws);
 		when(mockJws.getBody()).thenReturn(mockClaims);
 		when(mockClaims.get(JwtConstants.AUTH_ID.message, Long.class)).thenReturn(userId);
@@ -77,6 +78,7 @@ public class RefreshTokenServiceTest {
 	public void shouldThrowOnInvalidToken() {
 		// given
 		String invalidToken = "invalidToken";
+		when(jwtProvider.getTokenType(invalidToken)).thenReturn(JwtConstants.REFRESH_KEY.message);
 		when(jwtUtil.getJwt(any())).thenThrow(new JwtException("Invalid token"));
 
 		// when & then
@@ -92,6 +94,7 @@ public class RefreshTokenServiceTest {
 		Jws<Claims> mockJws = mock(Jws.class);
 		Claims mockClaims = mock(Claims.class);
 
+		when(jwtProvider.getTokenType(tokenWithoutUserId)).thenReturn(JwtConstants.REFRESH_KEY.message);
 		when(jwtUtil.getJwt(tokenWithoutUserId)).thenReturn(mockJws);
 		when(mockJws.getBody()).thenReturn(mockClaims);
 		when(mockClaims.get(JwtConstants.AUTH_ID.message, Long.class)).thenReturn(null);
@@ -100,6 +103,21 @@ public class RefreshTokenServiceTest {
 		thenThrownBy(() -> refreshTokenService.execute(tokenWithoutUserId))
 			.isInstanceOf(TokenInvalidException.class);
 
+		verify(userRepository, never()).getById(anyLong());
+		verify(jwtProvider, never()).generateAccessToken(anyLong(), anyString());
+	}
+
+	@Test
+	public void shouldThrowWhenTokenTypeIsNotRefreshToken() {
+		// given
+		String accessToken = "accessToken";
+		when(jwtProvider.getTokenType(accessToken)).thenReturn(JwtConstants.ACCESS_KEY.message);
+
+		// when & then
+		thenThrownBy(() -> refreshTokenService.execute(accessToken))
+			.isInstanceOf(TokenInvalidException.class);
+
+		verify(jwtUtil, never()).getJwt(anyString());
 		verify(userRepository, never()).getById(anyLong());
 		verify(jwtProvider, never()).generateAccessToken(anyLong(), anyString());
 	}
