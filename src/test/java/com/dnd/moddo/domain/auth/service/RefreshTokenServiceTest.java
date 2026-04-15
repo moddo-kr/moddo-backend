@@ -83,4 +83,24 @@ public class RefreshTokenServiceTest {
 		thenThrownBy(() -> refreshTokenService.execute(invalidToken))
 			.isInstanceOf(TokenInvalidException.class);
 	}
+
+	@Test
+	public void shouldThrowWhenUserIdIsMissingInToken() {
+		// given
+		String tokenWithoutUserId = "tokenWithoutUserId";
+
+		Jws<Claims> mockJws = mock(Jws.class);
+		Claims mockClaims = mock(Claims.class);
+
+		when(jwtUtil.getJwt(tokenWithoutUserId)).thenReturn(mockJws);
+		when(mockJws.getBody()).thenReturn(mockClaims);
+		when(mockClaims.get(JwtConstants.AUTH_ID.message, Long.class)).thenReturn(null);
+
+		// when & then
+		thenThrownBy(() -> refreshTokenService.execute(tokenWithoutUserId))
+			.isInstanceOf(TokenInvalidException.class);
+
+		verify(userRepository, never()).getById(anyLong());
+		verify(jwtProvider, never()).generateAccessToken(anyLong(), anyString());
+	}
 }
