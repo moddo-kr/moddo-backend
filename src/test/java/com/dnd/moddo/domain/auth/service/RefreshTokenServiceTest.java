@@ -47,7 +47,6 @@ public class RefreshTokenServiceTest {
 	public void reissueAccessToken() {
 		// given
 		String validToken = "validToken";
-		String email = "test@example.com";
 		Long userId = 1L;
 		String role = "USER";
 		String newAccessToken = "newAccessToken";
@@ -55,14 +54,15 @@ public class RefreshTokenServiceTest {
 		Jws<Claims> mockJws = mock(Jws.class);
 		Claims mockClaims = mock(Claims.class);
 
+		when(jwtProvider.getTokenType(validToken)).thenReturn(JwtConstants.REFRESH_KEY.message);
 		when(jwtUtil.getJwt(any())).thenReturn(mockJws);
 		when(mockJws.getBody()).thenReturn(mockClaims);
-		when(mockClaims.get(JwtConstants.EMAIL.message)).thenReturn(email);
+		when(mockClaims.get(JwtConstants.AUTH_ID.message, Long.class)).thenReturn(userId);
 
 		User user = createGuestDefault();
 		ReflectionTestUtils.setField(user, "id", userId);
 
-		when(userRepository.getByEmail(email)).thenReturn(user);
+		when(userRepository.getById(userId)).thenReturn(user);
 		when(jwtProvider.generateAccessToken(userId, role)).thenReturn(newAccessToken);
 
 		// when
@@ -70,7 +70,7 @@ public class RefreshTokenServiceTest {
 
 		// then
 		then(response.getAccessToken()).isEqualTo(newAccessToken);
-		verify(userRepository, times(1)).getByEmail(email);
+		verify(userRepository, times(1)).getById(userId);
 		verify(jwtProvider, times(1)).generateAccessToken(userId, role);
 	}
 
@@ -78,10 +78,47 @@ public class RefreshTokenServiceTest {
 	public void shouldThrowOnInvalidToken() {
 		// given
 		String invalidToken = "invalidToken";
+		when(jwtProvider.getTokenType(invalidToken)).thenReturn(JwtConstants.REFRESH_KEY.message);
 		when(jwtUtil.getJwt(any())).thenThrow(new JwtException("Invalid token"));
 
 		// when & then
 		thenThrownBy(() -> refreshTokenService.execute(invalidToken))
 			.isInstanceOf(TokenInvalidException.class);
+	}
+
+	@Test
+	public void shouldThrowWhenUserIdIsMissingInToken() {
+		// given
+		String tokenWithoutUserId = "tokenWithoutUserId";
+
+		Jws<Claims> mockJws = mock(Jws.class);
+		Claims mockClaims = mock(Claims.class);
+
+		when(jwtProvider.getTokenType(tokenWithoutUserId)).thenReturn(JwtConstants.REFRESH_KEY.message);
+		when(jwtUtil.getJwt(tokenWithoutUserId)).thenReturn(mockJws);
+		when(mockJws.getBody()).thenReturn(mockClaims);
+		when(mockClaims.get(JwtConstants.AUTH_ID.message, Long.class)).thenReturn(null);
+
+		// when & then
+		thenThrownBy(() -> refreshTokenService.execute(tokenWithoutUserId))
+			.isInstanceOf(TokenInvalidException.class);
+
+		verify(userRepository, never()).getById(anyLong());
+		verify(jwtProvider, never()).generateAccessToken(anyLong(), anyString());
+	}
+
+	@Test
+	public void shouldThrowWhenTokenTypeIsNotRefreshToken() {
+		// given
+		String accessToken = "accessToken";
+		when(jwtProvider.getTokenType(accessToken)).thenReturn(JwtConstants.ACCESS_KEY.message);
+
+		// when & then
+		thenThrownBy(() -> refreshTokenService.execute(accessToken))
+			.isInstanceOf(TokenInvalidException.class);
+
+		verify(jwtUtil, never()).getJwt(anyString());
+		verify(userRepository, never()).getById(anyLong());
+		verify(jwtProvider, never()).generateAccessToken(anyLong(), anyString());
 	}
 }

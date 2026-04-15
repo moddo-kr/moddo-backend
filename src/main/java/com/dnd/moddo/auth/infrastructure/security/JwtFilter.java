@@ -27,20 +27,15 @@ public class JwtFilter extends OncePerRequestFilter {
 		String token = jwtUtil.resolveToken(request);
 
 		if (token != null) {
-			String requestURI = request.getRequestURI();
-			String expectedTokenType = getExpectedTokenType(requestURI);
-
-			Authentication authentication = jwtAuth.getAuthentication(token, expectedTokenType);
+			Authentication authentication = jwtAuth.getAuthentication(token, JwtConstants.ACCESS_KEY.message);
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 		}
 
 		filterChain.doFilter(request, response);
 	}
 
-	private String getExpectedTokenType(String requestURI) {
-		if (requestURI.startsWith("/api/v1/user/reissue/token")) {
-			return JwtConstants.REFRESH_KEY.message;
-		}
-		return JwtConstants.ACCESS_KEY.message;
+	@Override
+	protected boolean shouldNotFilter(HttpServletRequest request) {
+		return request.getRequestURI().startsWith("/api/v1/user/reissue/token");
 	}
 }

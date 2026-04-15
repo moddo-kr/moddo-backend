@@ -15,11 +15,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 	private final LoginUserArgumentResolver loginUserArgumentResolver;
+	private final FrontendProperties frontendProperties;
 
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**")
-			.allowedOrigins("https://www.moddo.kr", "http://localhost:3000", "http://localhost:4173")
+			.allowedOrigins(frontendProperties.corsAllowedOrigins().toArray(String[]::new))
 			.allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
 			.allowedHeaders("*")
 			.exposedHeaders("Access-Control-Allow-Origin", "Access-Control-Allow-Credentials")
