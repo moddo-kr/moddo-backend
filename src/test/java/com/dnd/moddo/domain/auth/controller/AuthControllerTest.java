@@ -1,7 +1,9 @@
 package com.dnd.moddo.domain.auth.controller;
 
 import static com.dnd.moddo.auth.infrastructure.security.JwtConstants.*;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.any;
 import static org.springframework.restdocs.cookies.CookieDocumentation.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
@@ -14,6 +16,7 @@ import java.time.ZonedDateTime;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.restdocs.payload.JsonFieldType;
 
 import com.dnd.moddo.auth.presentation.response.KakaoTokenResponse;
@@ -44,18 +47,13 @@ class AuthControllerTest extends RestDocsTestSupport {
 		// when & then
 		mockMvc.perform(get("/api/v1/user/guest/token"))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.accessToken").value("access-token"))
-			.andExpect(jsonPath("$.refreshToken").value("refresh-token"))
-			.andExpect(jsonPath("$.isMember").value(false))
+			.andExpect(content().string(""))
+			.andExpect(cookie().exists("accessToken"))
+			.andExpect(cookie().exists("refreshToken"))
 			.andDo(restDocs.document(
 				responseCookies(
-					cookieWithName("accessToken").description("엑세스 토큰")
-				),
-				responseFields(
-					fieldWithPath("accessToken").type(JsonFieldType.STRING).description("액세스 토큰"),
-					fieldWithPath("refreshToken").type(JsonFieldType.STRING).description("리프레시 토큰"),
-					fieldWithPath("expiredAt").type(JsonFieldType.STRING).description("리프레시 토큰 만료 시간"),
-					fieldWithPath("isMember").type(JsonFieldType.BOOLEAN).description("회원 여부")
+					cookieWithName("accessToken").description("엑세스 토큰"),
+					cookieWithName("refreshToken").description("리프레시 토큰")
 				)
 			));
 	}
@@ -71,15 +69,16 @@ class AuthControllerTest extends RestDocsTestSupport {
 
 		// when & then
 		mockMvc.perform(put("/api/v1/user/reissue/token")
-				.header("Authorization", "Bearer refresh-token"))
+				.cookie(new Cookie("refreshToken", "refresh-token")))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.accessToken").value("new-access-token"))
+			.andExpect(content().string(""))
+			.andExpect(cookie().exists("accessToken"))
 			.andDo(restDocs.document(
-				requestHeaders(
-					headerWithName("Authorization").description("리프레시 토큰")
+				requestCookies(
+					cookieWithName("refreshToken").description("리프레시 토큰")
 				),
-				responseFields(
-					fieldWithPath("accessToken").type(JsonFieldType.STRING).description("새 액세스 토큰")
+				responseCookies(
+					cookieWithName("accessToken").description("새로 재발급된 액세스 토큰")
 				)
 			));
 	}
@@ -97,16 +96,73 @@ class AuthControllerTest extends RestDocsTestSupport {
 
 		//when & then
 		mockMvc.perform(get("/api/v1/login/oauth2/callback")
-				.param("code", "test code"))
+				.param("code", "test code")
+				.param("state", "http://localhost:3000/login/callback?next=%2Fhome"))
 			.andExpect(status().is3xxRedirection())
+			.andExpect(redirectedUrl("http://localhost:3000/login/callback?next=%2Fhome"))
+			.andExpect(header().stringValues(HttpHeaders.SET_COOKIE,
+				hasItems(org.hamcrest.Matchers.startsWith("accessToken="),
+					org.hamcrest.Matchers.startsWith("refreshToken="))))
 			.andDo(document("login",
 				queryParameters(
-					parameterWithName("code").description("카카오 인가 코드")
+					parameterWithName("code").description("카카오 인가 코드"),
+					parameterWithName("state").description(
+						"로그인 완료 후 이동할 URL. 허용된 origin만 리다이렉트되며, 그 외에는 요청 환경에 따라 localhost는 http://localhost:3000, 운영은 https://www.moddo.kr 로 대체됩니다.")
+				),
+				responseHeaders(
+					headerWithName(HttpHeaders.LOCATION).description("허용된 state URL 또는 fallback URL")
 				),
 				responseCookies(
-					cookieWithName("accessToken").description("엑세스 토큰")
+					cookieWithName("accessToken").description("엑세스 토큰"),
+					cookieWithName("refreshToken").description("리프레시 토큰")
 				)
 			));
+	}
+
+	@Test
+	@DisplayName("state의 origin이 허용 목록에 없으면 로컬 환경에서는 localhost:3000으로 리다이렉트한다.")
+	void kakaoLoginCallbackFallbackToLocalUrl() throws Exception {
+		// given
+		TokenResponse tokenResponse = new TokenResponse("access-token", "refresh-token",
+			ZonedDateTime.now().plusMonths(1), true);
+		given(authService.loginOrRegisterWithKakao(anyString())).willReturn(tokenResponse);
+
+		// when & then
+		mockMvc.perform(get("/api/v1/login/oauth2/callback")
+				.param("code", "test code")
+				.param("state", "https://malicious.example.com/login/callback")
+				.with(request -> {
+					request.setServerName("localhost");
+					request.setServerPort(8080);
+					return request;
+				}))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(redirectedUrl("http://localhost:3000"))
+			.andExpect(cookie().exists("accessToken"))
+			.andExpect(cookie().exists("refreshToken"));
+	}
+
+	@Test
+	@DisplayName("state의 origin이 허용 목록에 없으면 운영 환경에서는 www.moddo.kr로 리다이렉트한다.")
+	void kakaoLoginCallbackFallbackToProdUrl() throws Exception {
+		// given
+		TokenResponse tokenResponse = new TokenResponse("access-token", "refresh-token",
+			ZonedDateTime.now().plusMonths(1), true);
+		given(authService.loginOrRegisterWithKakao(anyString())).willReturn(tokenResponse);
+
+		// when & then
+		mockMvc.perform(get("/api/v1/login/oauth2/callback")
+				.param("code", "test code")
+				.param("state", "https://malicious.example.com/login/callback")
+				.with(request -> {
+					request.setServerName("api.moddo.kr");
+					request.setServerPort(443);
+					return request;
+				}))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(redirectedUrl("https://www.moddo.kr"))
+			.andExpect(cookie().exists("accessToken"))
+			.andExpect(cookie().exists("refreshToken"));
 	}
 
 	@Test
@@ -125,9 +181,16 @@ class AuthControllerTest extends RestDocsTestSupport {
 		mockMvc.perform(post("/api/v1/logout")
 				.cookie(new Cookie("accessToken", "access-token")))
 			.andExpect(status().isOk())
+			.andExpect(header().stringValues(HttpHeaders.SET_COOKIE,
+				hasItems(org.hamcrest.Matchers.startsWith("accessToken="),
+					org.hamcrest.Matchers.startsWith("refreshToken="))))
 			.andDo(document("logout",
 				requestCookies(
 					cookieWithName("accessToken").description("액세스 토큰")
+				),
+				responseCookies(
+					cookieWithName("accessToken").description("만료된 액세스 토큰"),
+					cookieWithName("refreshToken").description("만료된 리프레시 토큰")
 				),
 				responseFields(
 					fieldWithPath("message").type(JsonFieldType.STRING).description("로그아웃 성공 메시지")

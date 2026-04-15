@@ -41,7 +41,7 @@ aws:
 
 cookie:
   secure: true
-  http-only: false
+  http-only: true
   path: /
   same-site: none
   max-age: 7D
