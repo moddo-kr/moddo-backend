@@ -47,7 +47,6 @@ public class RefreshTokenServiceTest {
 	public void reissueAccessToken() {
 		// given
 		String validToken = "validToken";
-		String email = "test@example.com";
 		Long userId = 1L;
 		String role = "USER";
 		String newAccessToken = "newAccessToken";
@@ -57,12 +56,12 @@ public class RefreshTokenServiceTest {
 
 		when(jwtUtil.getJwt(any())).thenReturn(mockJws);
 		when(mockJws.getBody()).thenReturn(mockClaims);
-		when(mockClaims.get(JwtConstants.EMAIL.message)).thenReturn(email);
+		when(mockClaims.get(JwtConstants.AUTH_ID.message, Long.class)).thenReturn(userId);
 
 		User user = createGuestDefault();
 		ReflectionTestUtils.setField(user, "id", userId);
 
-		when(userRepository.getByEmail(email)).thenReturn(user);
+		when(userRepository.getById(userId)).thenReturn(user);
 		when(jwtProvider.generateAccessToken(userId, role)).thenReturn(newAccessToken);
 
 		// when
@@ -70,7 +69,7 @@ public class RefreshTokenServiceTest {
 
 		// then
 		then(response.getAccessToken()).isEqualTo(newAccessToken);
-		verify(userRepository, times(1)).getByEmail(email);
+		verify(userRepository, times(1)).getById(userId);
 		verify(jwtProvider, times(1)).generateAccessToken(userId, role);
 	}
 

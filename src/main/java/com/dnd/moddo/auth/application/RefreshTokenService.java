@@ -22,15 +22,19 @@ public class RefreshTokenService {
 
 	public RefreshResponse execute(String token) {
 
-		String email;
+		Long userId;
 
 		try {
-			email = jwtUtil.getJwt(jwtUtil.parseToken(token)).getBody().get(JwtConstants.EMAIL.message).toString();
+			userId = jwtUtil.getJwt(token).getBody().get(JwtConstants.AUTH_ID.message, Long.class);
 		} catch (Exception e) {
 			throw new TokenInvalidException();
 		}
 
-		User user = userRepository.getByEmail(email);
+		if (userId == null) {
+			throw new TokenInvalidException();
+		}
+
+		User user = userRepository.getById(userId);
 		String newAccessToken = jwtProvider.generateAccessToken(user.getId(), user.getAuthority().toString());
 
 		return RefreshResponse.builder()

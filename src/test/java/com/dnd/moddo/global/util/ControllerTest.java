@@ -1,9 +1,15 @@
 package com.dnd.moddo.global.util;
 
+import static org.mockito.BDDMockito.given;
+
+import java.time.Duration;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.dnd.moddo.auth.application.AuthService;
@@ -14,6 +20,8 @@ import com.dnd.moddo.auth.infrastructure.security.JwtFilter;
 import com.dnd.moddo.auth.infrastructure.security.JwtProvider;
 import com.dnd.moddo.auth.infrastructure.security.LoginUserArgumentResolver;
 import com.dnd.moddo.auth.presentation.AuthController;
+import com.dnd.moddo.auth.presentation.AuthCookieManager;
+import com.dnd.moddo.auth.presentation.AuthRedirectResolver;
 import com.dnd.moddo.common.config.CookieProperties;
 import com.dnd.moddo.common.logging.ErrorNotifier;
 import com.dnd.moddo.event.application.command.CommandExpenseService;
@@ -40,6 +48,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Disabled
+@Import({
+	AuthCookieManager.class,
+	AuthRedirectResolver.class
+})
 @WebMvcTest({
 	AuthController.class,
 	CharacterController.class,
@@ -126,6 +138,15 @@ public abstract class ControllerTest {
 
 	@MockBean
 	protected JwtProvider jwtProvider;
+
+	@BeforeEach
+	void setUpCookieProperties() {
+		given(cookieProperties.httpOnly()).willReturn(true);
+		given(cookieProperties.secure()).willReturn(true);
+		given(cookieProperties.path()).willReturn("/");
+		given(cookieProperties.sameSite()).willReturn("none");
+		given(cookieProperties.maxAge()).willReturn(Duration.ofDays(7));
+	}
 
 	protected String toJson(Object object) throws JsonProcessingException {
 		return objectMapper.writeValueAsString(object);
