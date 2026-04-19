@@ -5,6 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "kakao")
 public record KakaoProperties(
 	String redirectUri,
+	String localRedirectUri,
 	String clientId,
 	String adminKey,
 	String tokenRequestUri,

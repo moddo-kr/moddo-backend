@@ -42,8 +42,8 @@ public class AuthService {
 	}
 
 	@Transactional
-	public TokenResponse loginOrRegisterWithKakao(String code) {
-		KakaoTokenResponse tokenResponse = kakaoClient.join(code);
+	public TokenResponse loginOrRegisterWithKakao(String code, String state) {
+		KakaoTokenResponse tokenResponse = kakaoClient.join(code, state);
 		KakaoProfile kakaoProfile = kakaoClient.getKakaoProfile(tokenResponse.accessToken());
 
 		String email = kakaoProfile.kakaoAccount().email();

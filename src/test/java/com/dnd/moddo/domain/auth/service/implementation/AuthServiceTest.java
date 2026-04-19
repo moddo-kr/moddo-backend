@@ -72,6 +72,7 @@ public class AuthServiceTest {
 	void loginOrRegisterWithKakao_success() {
 		// given
 		String code = "kakao_code";
+		String state = "https://www.moddo.kr/login/callback";
 		KakaoTokenResponse kakaoToken = new KakaoTokenResponse("kakao_access", 3600);
 		KakaoProfile kakaoProfile = new KakaoProfile(
 			12345L,
@@ -81,17 +82,17 @@ public class AuthServiceTest {
 		User user = createWithEmail("test@kakao.com");
 		TokenResponse tokenResponse = new TokenResponse("access", "refresh", ZonedDateTime.now(), true);
 
-		when(kakaoClient.join(code)).thenReturn(kakaoToken);
+		when(kakaoClient.join(code, state)).thenReturn(kakaoToken);
 		when(kakaoClient.getKakaoProfile(kakaoToken.accessToken())).thenReturn(kakaoProfile);
 		when(commandUserService.getOrCreateUser(any(UserSaveRequest.class))).thenReturn(user);
 		when(jwtProvider.generateToken(user)).thenReturn(tokenResponse);
 
 		// when
-		TokenResponse result = authService.loginOrRegisterWithKakao(code);
+		TokenResponse result = authService.loginOrRegisterWithKakao(code, state);
 
 		// then
 		assertThat(result).isEqualTo(tokenResponse);
-		verify(kakaoClient).join(code);
+		verify(kakaoClient).join(code, state);
 		verify(kakaoClient).getKakaoProfile(kakaoToken.accessToken());
 		verify(commandUserService).getOrCreateUser(any(UserSaveRequest.class));
 		verify(jwtProvider).generateToken(user);
@@ -102,6 +103,7 @@ public class AuthServiceTest {
 	void loginOrRegisterWithKakao_fail_profileMissing() {
 		// given
 		String code = "kakao_code";
+		String state = "https://www.moddo.kr/login/callback";
 		KakaoTokenResponse kakaoToken = new KakaoTokenResponse("kakao_access", 3600);
 		// kakaoAccount가 null인 경우 NPE가 먼저 발생하므로, email, nickname, kakaoId 중 하나가 null인 상황을 테스트해야 함
 		KakaoProfile kakaoProfile = new KakaoProfile(
@@ -110,11 +112,11 @@ public class AuthServiceTest {
 			new KakaoProfile.Properties(null)
 		);
 
-		when(kakaoClient.join(code)).thenReturn(kakaoToken);
+		when(kakaoClient.join(code, state)).thenReturn(kakaoToken);
 		when(kakaoClient.getKakaoProfile(kakaoToken.accessToken())).thenReturn(kakaoProfile);
 
 		// when & then
-		assertThatThrownBy(() -> authService.loginOrRegisterWithKakao(code))
+		assertThatThrownBy(() -> authService.loginOrRegisterWithKakao(code, state))
 			.isInstanceOf(ModdoException.class)
 			.hasFieldOrPropertyWithValue("status", HttpStatus.BAD_REQUEST);
 	}

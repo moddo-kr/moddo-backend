@@ -55,6 +55,7 @@ public class AuthServiceTest {
 	void whenKakaoUserExists_thenTokenIsIssued() {
 		//given
 		String token = "test_token";
+		String state = "https://www.moddo.kr/login/callback";
 		KakaoProfile kakaoProfile = new KakaoProfile(
 			12345L,
 			new KakaoProfile.KakaoAccount(
@@ -71,12 +72,12 @@ public class AuthServiceTest {
 		String email = kakaoProfile.kakaoAccount().email();
 		User user = createWithEmail(email);
 
-		when(kakaoClient.join(anyString())).thenReturn(kakaoTokenResponse);
+		when(kakaoClient.join(anyString(), anyString())).thenReturn(kakaoTokenResponse);
 		when(kakaoClient.getKakaoProfile(anyString())).thenReturn(kakaoProfile);
 		when(commandUserService.getOrCreateUser(any())).thenReturn(user);
 
 		//when
-		TokenResponse response = authService.loginOrRegisterWithKakao(token);
+		TokenResponse response = authService.loginOrRegisterWithKakao(token, state);
 
 		//then
 		verify(jwtProvider, times(1)).generateToken(any());
