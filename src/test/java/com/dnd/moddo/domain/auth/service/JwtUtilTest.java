@@ -49,4 +49,18 @@ class JwtUtilTest {
 		// then
 		assertThat(token).isEqualTo("header-token");
 	}
+
+	@Test
+	void givenBlankAccessTokenCookie_thenResolveTokenFromHeader() {
+		// given
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setCookies(new Cookie("accessToken", " "));
+		request.addHeader("Authorization", "Bearer header-token");
+
+		// when
+		String token = jwtUtil.resolveToken(request);
+
+		// then
+		assertThat(token).isEqualTo("header-token");
+	}
 }

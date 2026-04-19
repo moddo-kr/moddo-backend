@@ -37,7 +37,11 @@ public class JwtUtil {
 
 		for (Cookie cookie : cookies) {
 			if (jwtProperties.getAccessCookieName().equals(cookie.getName())) {
-				return cookie.getValue();
+				String value = cookie.getValue();
+				if (value == null || value.isBlank()) {
+					return null;
+				}
+				return value;
 			}
 		}
 
