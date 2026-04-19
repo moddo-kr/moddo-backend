@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -127,6 +128,54 @@ public class KakaoClientTest {
 
 		// then
 		assertThat(result.accessToken()).isEqualTo("test_token");
+	}
+
+	@DisplayName("localRedirectUri가 없으면 기본 redirect_uri로 토큰을 요청한다")
+	@Test
+	void whenLocalRedirectUriIsNull_thenUseDefaultRedirectUri() {
+		// given
+		String code = "test_code";
+		String state = "http://localhost:3000/login/callback?next=%2Fhome";
+		KakaoProperties nullLocalRedirectProperties = new KakaoProperties(
+			kakaoProperties.redirectUri(),
+			null,
+			kakaoProperties.clientId(),
+			kakaoProperties.adminKey(),
+			kakaoProperties.tokenRequestUri(),
+			kakaoProperties.profileRequestUri(),
+			kakaoProperties.logoutRequestUri(),
+			kakaoProperties.unlinkRequestUri()
+		);
+
+		ReflectionTestUtils.setField(kakaoClient, "kakaoProperties", nullLocalRedirectProperties);
+		try {
+			MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+			params.add("grant_type", "authorization_code");
+			params.add("client_id", kakaoProperties.clientId());
+			params.add("redirect_uri", kakaoProperties.redirectUri());
+			params.add("code", code);
+
+			String expectResponse = """
+				{
+				  "access_token": "test_token",
+				  "expires_in": 3600
+				}
+				""";
+
+			mockServer.expect(requestTo(kakaoProperties.tokenRequestUri()))
+				.andExpect(method(HttpMethod.POST))
+				.andExpect(header("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8"))
+				.andExpect(content().formData(params))
+				.andRespond(withSuccess(expectResponse, MediaType.APPLICATION_JSON));
+
+			// when
+			KakaoTokenResponse result = kakaoClient.join(code, state);
+
+			// then
+			assertThat(result.accessToken()).isEqualTo("test_token");
+		} finally {
+			ReflectionTestUtils.setField(kakaoClient, "kakaoProperties", kakaoProperties);
+		}
 	}
 
 	@DisplayName("정상 토큰으로 카카오 프로필 요청 시 KakaoProfile이 반환된다")

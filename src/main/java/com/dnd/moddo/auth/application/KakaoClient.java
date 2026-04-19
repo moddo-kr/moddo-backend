@@ -59,12 +59,17 @@ public class KakaoClient {
 	}
 
 	private String resolveRedirectUri(String state) {
+		String localRedirectUri = kakaoProperties.localRedirectUri();
+		if (state == null || localRedirectUri == null) {
+			return kakaoProperties.redirectUri();
+		}
+
 		try {
 			URI stateUri = URI.create(state);
-			URI localRedirectUri = URI.create(kakaoProperties.localRedirectUri());
+			URI localUri = URI.create(localRedirectUri);
 
-			if (isSameOrigin(stateUri, localRedirectUri)) {
-				return kakaoProperties.localRedirectUri();
+			if (isSameOrigin(stateUri, localUri)) {
+				return localRedirectUri;
 			}
 		} catch (IllegalArgumentException e) {
 			log.warn("[KAKAO_LOGIN] state 파싱 실패, 기본 redirectUri 사용: state={}", state);
