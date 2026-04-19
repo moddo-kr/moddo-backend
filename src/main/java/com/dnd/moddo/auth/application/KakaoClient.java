@@ -1,5 +1,7 @@
 package com.dnd.moddo.auth.application;
 
+import java.net.URI;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -28,13 +30,14 @@ public class KakaoClient {
 		this.restClient = builder.build();
 	}
 
-	public KakaoTokenResponse join(String code) {
+	public KakaoTokenResponse join(String code, String state) {
 		String uri = kakaoProperties.tokenRequestUri();
+		String redirectUri = resolveRedirectUri(state);
 
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add("grant_type", "authorization_code");
 		params.add("client_id", kakaoProperties.clientId());
-		params.add("redirect_uri", kakaoProperties.redirectUri());
+		params.add("redirect_uri", redirectUri);
 		params.add("code", code);
 
 		try {
@@ -53,6 +56,38 @@ public class KakaoClient {
 			log.info("[USER_LOGIN_FAIL] 로그인 실패 : code = {}", code);
 			throw new IllegalArgumentException(e.getMessage());
 		}
+	}
+
+	private String resolveRedirectUri(String state) {
+		String localRedirectUri = kakaoProperties.localRedirectUri();
+		if (state == null || localRedirectUri == null) {
+			return kakaoProperties.redirectUri();
+		}
+
+		try {
+			URI stateUri = URI.create(state);
+			URI localUri = URI.create(localRedirectUri);
+
+			if (isSameOrigin(stateUri, localUri)) {
+				return localRedirectUri;
+			}
+		} catch (IllegalArgumentException e) {
+			log.warn("[KAKAO_LOGIN] state 파싱 실패, 기본 redirectUri 사용: state={}", state);
+		}
+
+		return kakaoProperties.redirectUri();
+	}
+
+	private boolean isSameOrigin(URI sourceUri, URI targetUri) {
+		return sourceUri.isAbsolute()
+			&& targetUri.isAbsolute()
+			&& sourceUri.getScheme() != null
+			&& targetUri.getScheme() != null
+			&& sourceUri.getHost() != null
+			&& targetUri.getHost() != null
+			&& sourceUri.getScheme().equalsIgnoreCase(targetUri.getScheme())
+			&& sourceUri.getHost().equalsIgnoreCase(targetUri.getHost())
+			&& sourceUri.getPort() == targetUri.getPort();
 	}
 
 	public KakaoProfile getKakaoProfile(String token) {

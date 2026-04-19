@@ -73,7 +73,7 @@ public class AuthController {
 		@RequestParam @NotBlank String state,
 		HttpServletRequest request) {
 
-		TokenResponse tokenResponse = authService.loginOrRegisterWithKakao(code);
+		TokenResponse tokenResponse = authService.loginOrRegisterWithKakao(code, state);
 		String redirectUrl = authRedirectResolver.resolve(state, request);
 
 		String accessTokenCookie = authCookieManager.createCookie("accessToken", tokenResponse.accessToken());
