@@ -8,6 +8,7 @@ import com.dnd.moddo.auth.infrastructure.security.exception.TokenInvalidExceptio
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
 @Component
@@ -19,8 +20,28 @@ public class JwtUtil {
 	}
 
 	public String resolveToken(HttpServletRequest request) {
+		String cookieToken = resolveTokenFromCookie(request);
+		if (cookieToken != null) {
+			return cookieToken;
+		}
+
 		String bearer = request.getHeader(jwtProperties.getHeader());
 		return parseToken(bearer);
+	}
+
+	private String resolveTokenFromCookie(HttpServletRequest request) {
+		Cookie[] cookies = request.getCookies();
+		if (cookies == null) {
+			return null;
+		}
+
+		for (Cookie cookie : cookies) {
+			if (jwtProperties.getAccessCookieName().equals(cookie.getName())) {
+				return cookie.getValue();
+			}
+		}
+
+		return null;
 	}
 
 	public String parseToken(String bearer) {
