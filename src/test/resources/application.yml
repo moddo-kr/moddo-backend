@@ -27,6 +27,7 @@ spring:
 jwt:
   header: Authorization
   prefix: prefix
+  access-cookie-name: accessToken
   secret-key: secretKeysecretKeysecretKeysecretKeysecretKeysecretKey
   access-expiration: 1
   refresh-expiration: 1
