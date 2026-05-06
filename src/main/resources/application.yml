@@ -44,6 +44,8 @@ cookie:
 frontend:
   cors-allowed-origins:
     - https://www.moddo.kr
+    - https://moddo-frontend.pages.dev
+    - https://*.moddo-frontend.pages.dev
     - http://localhost:3000
     - http://localhost:4173
   redirect-allowed-origins:
@@ -71,7 +73,6 @@ spring:
       on-profile: prod
 
 ---
-
 
 
 
