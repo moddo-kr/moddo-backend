@@ -151,8 +151,7 @@ public abstract class ControllerTest {
 		given(cookieProperties.sameSite()).willReturn("none");
 		given(cookieProperties.maxAge()).willReturn(Duration.ofDays(7));
 		given(frontendProperties.corsAllowedOrigins()).willReturn(
-			java.util.List.of("https://www.moddo.kr", "https://moddo-frontend.pages.dev",
-				"https://*.moddo-frontend.pages.dev", "http://localhost:3000", "http://localhost:4173")
+			java.util.List.of("https://www.moddo.kr", "http://localhost:3000", "http://localhost:4173")
 		);
 		given(frontendProperties.redirectAllowedOrigins()).willReturn(
 			java.util.List.of("http://localhost:3000", "https://moddo-frontend.pages.dev", "https://www.moddo.kr",
