@@ -15,6 +15,7 @@ import org.springframework.web.cors.CorsUtils;
 import com.dnd.moddo.auth.infrastructure.security.JwtAuth;
 import com.dnd.moddo.auth.infrastructure.security.JwtFilter;
 import com.dnd.moddo.auth.infrastructure.security.JwtUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,6 +26,7 @@ public class SecurityConfig {
 
 	private final JwtUtil jwtUtil;
 	private final JwtAuth jwtAuth;
+	private final ObjectMapper objectMapper;
 
 	@Bean
 	public BCryptPasswordEncoder passwordEncoder() {
@@ -43,7 +45,7 @@ public class SecurityConfig {
 				.requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
 				.anyRequest().permitAll()
 			)
-			.addFilterBefore(new JwtFilter(jwtAuth, jwtUtil), UsernamePasswordAuthenticationFilter.class);
+			.addFilterBefore(new JwtFilter(jwtAuth, jwtUtil, objectMapper), UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
 	}
