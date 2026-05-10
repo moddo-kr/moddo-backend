@@ -37,11 +37,12 @@ public class SettlementQueryRepositoryImpl
 		int limit
 	) {
 		QSettlement settlement = QSettlement.settlement;
-		QMember member = QMember.member;
+		QMember myMember = new QMember("myMember");
+		QMember settlementMember = new QMember("settlementMember");
 		QExpense expense = QExpense.expense;
 
 		BooleanExpression userCondition =
-			member.user.id.eq(userId);
+			myMember.user.id.eq(userId);
 
 		BooleanExpression statusCondition = null;
 
@@ -56,13 +57,13 @@ public class SettlementQueryRepositoryImpl
 				? userCondition.and(statusCondition)
 				: userCondition;
 
-		NumberExpression<Long> memberCount = member.id.count();
+		NumberExpression<Long> memberCount = settlementMember.id.count();
 
 		NumberExpression<Long> completedCount =
 			Expressions.numberTemplate(
 				Long.class,
 				"sum(case when {0} = true then 1 else 0 end)",
-				member.isPaid
+				settlementMember.isPaid
 			);
 
 		JPQLQuery<Long> totalAmount =
@@ -86,8 +87,9 @@ public class SettlementQueryRepositoryImpl
 				settlement.createdAt,
 				settlement.completedAt
 			))
-			.from(member)
-			.join(member.settlement, settlement)
+			.from(myMember)
+			.join(myMember.settlement, settlement)
+			.join(settlementMember).on(settlementMember.settlement.id.eq(settlement.id))
 			.where(finalCondition)
 			.groupBy(
 				settlement.id,

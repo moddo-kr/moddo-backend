@@ -44,7 +44,9 @@ public class SettlementReader {
 
 		return SettlementHeaderResponse.of(settlement.getName(), totalAmount, settlement.getDeadline(),
 			settlement.getBank(),
-			settlement.getAccountNumber());
+			settlement.getAccountNumber(),
+			settlement.getCreatedAt(),
+			settlement.getCompletedAt());
 	}
 
 	@Transactional(readOnly = true)
