@@ -123,7 +123,8 @@ class QuerySettlementServiceTest {
 	void FindBySettlementHeader_Success() {
 		// Given
 		SettlementHeaderResponse expectedResponse = new SettlementHeaderResponse(settlement.getName(), 1000L,
-			LocalDateTime.now().plusDays(1), settlement.getBank(), settlement.getAccountNumber());
+			LocalDateTime.now().plusDays(1), settlement.getBank(), settlement.getAccountNumber(),
+			settlement.getCreatedAt(), settlement.getCompletedAt());
 		when(cacheExecutor.execute(anyString(), any(), any())).thenReturn(expectedResponse);
 
 		// When

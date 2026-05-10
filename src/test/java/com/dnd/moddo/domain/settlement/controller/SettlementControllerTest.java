@@ -121,7 +121,7 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 		// given
 		SettlementHeaderResponse response = SettlementHeaderResponse.of("모또 모임", 10000L,
 			LocalDateTime.now().plusDays(1), "우리은행",
-			"1111-1111");
+			"1111-1111", LocalDateTime.now(), null);
 
 		given(querySettlementService.findIdByCode("code")).willReturn(100L);
 		given(querySettlementService.findBySettlementHeader(100L)).willReturn(response);
