@@ -95,6 +95,8 @@ class SettlementReaderTest {
 		when(mockSettlement.getName()).thenReturn("모임 이름");
 		when(mockSettlement.getBank()).thenReturn("은행");
 		when(mockSettlement.getAccountNumber()).thenReturn("1234-1234");
+		when(mockSettlement.getCreatedAt()).thenReturn(LocalDateTime.of(2026, 5, 10, 12, 0));
+		when(mockSettlement.getCompletedAt()).thenReturn(LocalDateTime.of(2026, 5, 11, 12, 0));
 		when(settlementRepository.getById(anyLong())).thenReturn(mockSettlement);
 
 		Long totalAmount = 1000L;
@@ -109,6 +111,8 @@ class SettlementReaderTest {
 		assertThat(result.totalAmount()).isEqualTo(1000L);
 		assertThat(result.bank()).isEqualTo("은행");
 		assertThat(result.accountNumber()).isEqualTo("1234-1234");
+		assertThat(result.createdAt()).isEqualTo(LocalDateTime.of(2026, 5, 10, 12, 0));
+		assertThat(result.completedAt()).isEqualTo(LocalDateTime.of(2026, 5, 11, 12, 0));
 		verify(settlementRepository, times(1)).getById(groupId);
 		verify(expenseRepository, times(1)).sumAmountBySettlement(mockSettlement);
 	}
