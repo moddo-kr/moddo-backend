@@ -32,4 +32,15 @@ public interface PaymentRequestRepository extends JpaRepository<PaymentRequest, 
 
 	@Query("select pr from PaymentRequest pr where pr.targetUser.id = :targetUserId")
 	List<PaymentRequest> findByTargetUserId(@Param("targetUserId") Long targetUserId);
+
+	@Query("""
+		select pr
+		from PaymentRequest pr
+		where pr.settlement.id = :settlementId
+		  and pr.status = :status
+		""")
+	List<PaymentRequest> findBySettlementIdAndStatus(
+		@Param("settlementId") Long settlementId,
+		@Param("status") PaymentRequestStatus status
+	);
 }

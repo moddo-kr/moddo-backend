@@ -2,11 +2,13 @@ package com.dnd.moddo.event.application.query;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
 import com.dnd.moddo.common.cache.CacheExecutor;
 import com.dnd.moddo.common.cache.CacheKeys;
+import com.dnd.moddo.event.application.impl.PaymentRequestReader;
 import com.dnd.moddo.event.application.impl.SettlementReader;
 import com.dnd.moddo.event.application.impl.SettlementValidator;
 import com.dnd.moddo.event.domain.member.Member;
@@ -29,6 +31,7 @@ public class QuerySettlementService {
 	private static final Duration SETTLEMENT_LIST_CACHE_TTL = Duration.ofMinutes(5);
 
 	private final SettlementReader settlementReader;
+	private final PaymentRequestReader paymentRequestReader;
 	private final SettlementValidator settlementValidator;
 	private final CacheExecutor cacheExecutor;
 
@@ -36,7 +39,8 @@ public class QuerySettlementService {
 		Settlement settlement = settlementReader.read(settlementId);
 		settlementValidator.checkSettlementAuthor(settlement, userId);
 		List<Member> members = settlementReader.findBySettlement(settlementId);
-		return SettlementDetailResponse.of(settlement, members);
+		Map<Long, Long> paymentRequestIdByMemberId = paymentRequestReader.findPendingRequestIdByMemberId(settlementId);
+		return SettlementDetailResponse.of(settlement, members, paymentRequestIdByMemberId);
 	}
 
 	public SettlementHeaderResponse findBySettlementHeader(Long settlementId) {

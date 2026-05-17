@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.dnd.moddo.common.cache.CacheExecutor;
+import com.dnd.moddo.event.application.impl.PaymentRequestReader;
 import com.dnd.moddo.event.application.impl.SettlementReader;
 import com.dnd.moddo.event.application.impl.SettlementValidator;
 import com.dnd.moddo.event.application.query.QuerySettlementService;
@@ -43,6 +44,9 @@ class QuerySettlementServiceTest {
 	private SettlementReader settlementReader;
 
 	@Mock
+	private PaymentRequestReader paymentRequestReader;
+
+	@Mock
 	private SettlementValidator settlementValidator;
 
 	@Mock
@@ -63,6 +67,7 @@ class QuerySettlementServiceTest {
 			.build();
 
 		setField(settlement, "id", 1L);
+		setField(member, "id", 10L);
 	}
 
 	@Test
@@ -71,6 +76,7 @@ class QuerySettlementServiceTest {
 		// Given
 		when(settlementReader.read(anyLong())).thenReturn(settlement);
 		when(settlementReader.findBySettlement(settlement.getId())).thenReturn(List.of(member));
+		when(paymentRequestReader.findPendingRequestIdByMemberId(settlement.getId())).thenReturn(java.util.Map.of(10L, 100L));
 		doNothing().when(settlementValidator).checkSettlementAuthor(settlement, 1L);
 
 		// When
@@ -82,9 +88,11 @@ class QuerySettlementServiceTest {
 		assertThat(response.groupName()).isEqualTo(settlement.getName());
 		assertThat(response.members()).hasSize(1);
 		assertThat(response.members().get(0).name()).isEqualTo(member.getName());
+		assertThat(response.members().get(0).paymentRequestId()).isEqualTo(100L);
 
 		verify(settlementReader, times(1)).read(1L);
 		verify(settlementReader, times(1)).findBySettlement(settlement.getId());
+		verify(paymentRequestReader, times(1)).findPendingRequestIdByMemberId(settlement.getId());
 		verify(settlementValidator, times(1)).checkSettlementAuthor(settlement, 1L);
 	}
 

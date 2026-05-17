@@ -2,6 +2,7 @@ package com.dnd.moddo.event.application.impl;
 
 import org.springframework.stereotype.Component;
 
+import com.dnd.moddo.auth.model.exception.UserPermissionException;
 import com.dnd.moddo.event.domain.member.Member;
 import com.dnd.moddo.event.domain.paymentRequest.PaymentRequest;
 import com.dnd.moddo.event.domain.paymentRequest.PaymentRequestStatus;
@@ -9,7 +10,6 @@ import com.dnd.moddo.event.domain.paymentRequest.exception.DuplicatePendingPayme
 import com.dnd.moddo.event.domain.paymentRequest.exception.ManagerPaymentRequestNotAllowedException;
 import com.dnd.moddo.event.domain.paymentRequest.exception.PaymentRequestAlreadyApprovedException;
 import com.dnd.moddo.event.domain.paymentRequest.exception.PaymentRequestNotPendingException;
-import com.dnd.moddo.event.domain.paymentRequest.exception.PaymentRequestUnauthorizedException;
 import com.dnd.moddo.event.infrastructure.PaymentRequestRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -26,8 +26,8 @@ public class PaymentRequestValidator {
 	}
 
 	public void validateProcessRequest(PaymentRequest paymentRequest, Long userId) {
+		validateManagerPermission(paymentRequest, userId);
 		validatePendingStatus(paymentRequest);
-		validateTargetUser(paymentRequest, userId);
 	}
 
 	private void validateDuplicateRequest(Long settlementId, Long requestMemberId) {
@@ -66,9 +66,9 @@ public class PaymentRequestValidator {
 		}
 	}
 
-	private void validateTargetUser(PaymentRequest paymentRequest, Long userId) {
-		if (!paymentRequest.getTargetUser().getId().equals(userId)) {
-			throw new PaymentRequestUnauthorizedException(paymentRequest.getId(), userId);
+	private void validateManagerPermission(PaymentRequest paymentRequest, Long userId) {
+		if (!paymentRequest.getSettlement().isWriter(userId)) {
+			throw new UserPermissionException();
 		}
 	}
 }
