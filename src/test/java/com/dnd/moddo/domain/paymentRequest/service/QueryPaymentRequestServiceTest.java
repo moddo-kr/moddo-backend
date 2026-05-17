@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.dnd.moddo.event.application.impl.PaymentRequestReader;
 import com.dnd.moddo.event.application.query.QueryPaymentRequestService;
+import com.dnd.moddo.event.presentation.response.PaymentRequestExistenceResponse;
 import com.dnd.moddo.event.presentation.response.PaymentRequestItemResponse;
 import com.dnd.moddo.event.presentation.response.PaymentRequestsResponse;
 
@@ -46,5 +47,16 @@ class QueryPaymentRequestServiceTest {
 
 		assertThat(result).isEqualTo(expected);
 		verify(paymentRequestReader).findByTargetUserId(1L);
+	}
+
+	@Test
+	@DisplayName("정산에 생성된 입금 확인 요청이 있는지 확인할 수 있다.")
+	void existsBySettlementId() {
+		when(paymentRequestReader.existsBySettlementId(1L)).thenReturn(true);
+
+		PaymentRequestExistenceResponse result = queryPaymentRequestService.existsBySettlementId(1L);
+
+		assertThat(result.exists()).isTrue();
+		verify(paymentRequestReader).existsBySettlementId(1L);
 	}
 }
