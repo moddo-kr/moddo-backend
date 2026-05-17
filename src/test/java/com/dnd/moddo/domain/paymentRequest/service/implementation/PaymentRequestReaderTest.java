@@ -100,6 +100,33 @@ class PaymentRequestReaderTest {
 		assertThat(second.totalAmount()).isEqualTo(5000L);
 	}
 
+	@Test
+	@DisplayName("정산의 대기 중인 입금 확인 요청 ID를 멤버 ID 기준으로 조회할 수 있다.")
+	void findPendingRequestIdByMemberId() {
+		Settlement settlement = mock(Settlement.class);
+		Member member = Member.builder()
+			.name("김반숙")
+			.profileId(1)
+			.settlement(settlement)
+			.role(ExpenseRole.PARTICIPANT)
+			.build();
+		PaymentRequest paymentRequest = PaymentRequest.builder()
+			.settlement(settlement)
+			.requestMember(member)
+			.targetUser(mock(com.dnd.moddo.user.domain.User.class))
+			.build();
+
+		setField(member, "id", 11L);
+		setField(paymentRequest, "id", 100L);
+
+		when(paymentRequestRepository.findBySettlementIdAndStatus(1L, PaymentRequestStatus.PENDING))
+			.thenReturn(List.of(paymentRequest));
+
+		java.util.Map<Long, Long> result = paymentRequestReader.findPendingRequestIdByMemberId(1L);
+
+		assertThat(result).containsEntry(11L, 100L);
+	}
+
 	private void setField(Object target, String fieldName, Object value) {
 		try {
 			java.lang.reflect.Field field = target.getClass().getDeclaredField(fieldName);

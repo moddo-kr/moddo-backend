@@ -61,4 +61,14 @@ public class PaymentRequestReader {
 		return PaymentRequestsResponse.of(responses);
 	}
 
+	public Map<Long, Long> findPendingRequestIdByMemberId(Long settlementId) {
+		return paymentRequestRepository.findBySettlementIdAndStatus(settlementId, PaymentRequestStatus.PENDING)
+			.stream()
+			.collect(Collectors.toMap(
+				PaymentRequest::getRequestMemberId,
+				PaymentRequest::getId,
+				(first, ignored) -> first
+			));
+	}
+
 }
