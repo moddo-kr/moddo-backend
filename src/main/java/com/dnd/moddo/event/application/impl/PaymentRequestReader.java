@@ -67,7 +67,9 @@ public class PaymentRequestReader {
 			.collect(Collectors.toMap(
 				PaymentRequest::getRequestMemberId,
 				PaymentRequest::getId,
-				(first, ignored) -> first
+				(first, duplicate) -> {
+					throw new IllegalStateException("중복된 PENDING 입금 확인 요청이 존재합니다.");
+				}
 			));
 	}
 

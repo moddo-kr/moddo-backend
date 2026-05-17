@@ -127,6 +127,39 @@ class PaymentRequestReaderTest {
 		assertThat(result).containsEntry(11L, 100L);
 	}
 
+	@Test
+	@DisplayName("같은 멤버의 대기 중인 입금 확인 요청이 중복되면 예외가 발생한다.")
+	void findPendingRequestIdByMemberIdFailWhenDuplicatePendingRequest() {
+		Settlement settlement = mock(Settlement.class);
+		Member member = Member.builder()
+			.name("김반숙")
+			.profileId(1)
+			.settlement(settlement)
+			.role(ExpenseRole.PARTICIPANT)
+			.build();
+		PaymentRequest first = PaymentRequest.builder()
+			.settlement(settlement)
+			.requestMember(member)
+			.targetUser(mock(com.dnd.moddo.user.domain.User.class))
+			.build();
+		PaymentRequest second = PaymentRequest.builder()
+			.settlement(settlement)
+			.requestMember(member)
+			.targetUser(mock(com.dnd.moddo.user.domain.User.class))
+			.build();
+
+		setField(member, "id", 11L);
+		setField(first, "id", 100L);
+		setField(second, "id", 101L);
+
+		when(paymentRequestRepository.findBySettlementIdAndStatus(1L, PaymentRequestStatus.PENDING))
+			.thenReturn(List.of(first, second));
+
+		assertThatThrownBy(() -> paymentRequestReader.findPendingRequestIdByMemberId(1L))
+			.isInstanceOf(IllegalStateException.class)
+			.hasMessage("중복된 PENDING 입금 확인 요청이 존재합니다.");
+	}
+
 	private void setField(Object target, String fieldName, Object value) {
 		try {
 			java.lang.reflect.Field field = target.getClass().getDeclaredField(fieldName);
