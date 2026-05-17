@@ -61,4 +61,16 @@ public class PaymentRequestReader {
 		return PaymentRequestsResponse.of(responses);
 	}
 
+	public Map<Long, Long> findPendingRequestIdByMemberId(Long settlementId) {
+		return paymentRequestRepository.findBySettlementIdAndStatus(settlementId, PaymentRequestStatus.PENDING)
+			.stream()
+			.collect(Collectors.toMap(
+				PaymentRequest::getRequestMemberId,
+				PaymentRequest::getId,
+				(first, duplicate) -> {
+					throw new IllegalStateException("중복된 PENDING 입금 확인 요청이 존재합니다.");
+				}
+			));
+	}
+
 }

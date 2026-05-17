@@ -74,14 +74,12 @@ class OutboxEventPublishExecutorTest {
 
 		ArgumentCaptor<List<EventTask>> captor = ArgumentCaptor.forClass(List.class);
 		verify(eventTaskCreator).createAll(captor.capture());
-		assertThat(captor.getValue()).hasSize(4);
+		assertThat(captor.getValue()).hasSize(2);
 		assertThat(captor.getValue())
 			.extracting(EventTask::getTaskType, EventTask::getTargetUserId)
 			.containsExactly(
 				tuple(EventTaskType.REWARD_GRANT, 20L),
-				tuple(EventTaskType.NOTIFICATION_SEND, 20L),
-				tuple(EventTaskType.REWARD_GRANT, 30L),
-				tuple(EventTaskType.NOTIFICATION_SEND, 30L)
+				tuple(EventTaskType.REWARD_GRANT, 30L)
 			);
 	}
 

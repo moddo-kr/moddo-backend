@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.dnd.moddo.auth.model.exception.UserPermissionException;
 import com.dnd.moddo.event.application.impl.PaymentRequestValidator;
 import com.dnd.moddo.event.domain.member.Member;
 import com.dnd.moddo.event.domain.paymentRequest.PaymentRequest;
@@ -18,9 +19,8 @@ import com.dnd.moddo.event.domain.paymentRequest.exception.DuplicatePendingPayme
 import com.dnd.moddo.event.domain.paymentRequest.exception.ManagerPaymentRequestNotAllowedException;
 import com.dnd.moddo.event.domain.paymentRequest.exception.PaymentRequestAlreadyApprovedException;
 import com.dnd.moddo.event.domain.paymentRequest.exception.PaymentRequestNotPendingException;
-import com.dnd.moddo.event.domain.paymentRequest.exception.PaymentRequestUnauthorizedException;
+import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.infrastructure.PaymentRequestRepository;
-import com.dnd.moddo.user.domain.User;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentRequestValidatorTest {
@@ -71,25 +71,41 @@ class PaymentRequestValidatorTest {
 	}
 
 	@Test
-	@DisplayName("처리 대상 유저가 아니면 승인 또는 거절할 수 없다.")
-	void validateProcessRequestFailWhenUnauthorized() {
+	@DisplayName("총무가 아니면 승인 또는 거절할 수 없다.")
+	void validateProcessRequestFailWhenNotManager() {
 		PaymentRequest paymentRequest = mock(PaymentRequest.class);
-		User targetUser = mock(User.class);
+		Settlement settlement = mock(Settlement.class);
 
-		when(paymentRequest.getStatus()).thenReturn(PaymentRequestStatus.PENDING);
-		when(paymentRequest.getTargetUser()).thenReturn(targetUser);
-		when(paymentRequest.getId()).thenReturn(1L);
-		when(targetUser.getId()).thenReturn(100L);
+		when(paymentRequest.getSettlement()).thenReturn(settlement);
+		when(settlement.isWriter(200L)).thenReturn(false);
 
 		assertThatThrownBy(() -> paymentRequestValidator.validateProcessRequest(paymentRequest, 200L))
-			.isInstanceOf(PaymentRequestUnauthorizedException.class);
+			.isInstanceOf(UserPermissionException.class);
+		verify(paymentRequest, never()).getStatus();
+	}
+
+	@Test
+	@DisplayName("총무이면 승인 또는 거절할 수 있다.")
+	void validateProcessRequestSuccessWhenManager() {
+		PaymentRequest paymentRequest = mock(PaymentRequest.class);
+		Settlement settlement = mock(Settlement.class);
+
+		when(paymentRequest.getStatus()).thenReturn(PaymentRequestStatus.PENDING);
+		when(paymentRequest.getSettlement()).thenReturn(settlement);
+		when(settlement.isWriter(100L)).thenReturn(true);
+
+		assertThatCode(() -> paymentRequestValidator.validateProcessRequest(paymentRequest, 100L))
+			.doesNotThrowAnyException();
 	}
 
 	@Test
 	@DisplayName("대기 상태가 아니면 승인 또는 거절할 수 없다.")
 	void validateProcessRequestFailWhenNotPending() {
 		PaymentRequest paymentRequest = mock(PaymentRequest.class);
+		Settlement settlement = mock(Settlement.class);
 
+		when(paymentRequest.getSettlement()).thenReturn(settlement);
+		when(settlement.isWriter(100L)).thenReturn(true);
 		when(paymentRequest.getStatus()).thenReturn(PaymentRequestStatus.APPROVED);
 		when(paymentRequest.getId()).thenReturn(1L);
 

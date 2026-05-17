@@ -24,6 +24,7 @@ import com.dnd.moddo.event.presentation.response.MemberResponse;
 import com.dnd.moddo.event.presentation.response.SettlementDetailResponse;
 import com.dnd.moddo.event.presentation.response.SettlementHeaderResponse;
 import com.dnd.moddo.event.presentation.response.SettlementListResponse;
+import com.dnd.moddo.event.presentation.response.SettlementMemberResponse;
 import com.dnd.moddo.event.presentation.response.SettlementResponse;
 import com.dnd.moddo.event.presentation.response.SettlementSaveResponse;
 import com.dnd.moddo.event.presentation.response.SettlementShareResponse;
@@ -90,10 +91,11 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 	void getSettlement() throws Exception {
 		// given
 		SettlementDetailResponse response = new SettlementDetailResponse(1L, "모또 모임", List.of(
-			new MemberResponse(1L, MANAGER, "김모또", "https://moddo-s3.s3.amazonaws.com/profile/MODDO.png",
+			new SettlementMemberResponse(1L, MANAGER, "김모또", "https://moddo-s3.s3.amazonaws.com/profile/MODDO.png",
 				1L,
 				true,
-				LocalDateTime.now())
+				LocalDateTime.now(),
+				null)
 		));
 
 		given(loginUserArgumentResolver.supportsParameter(any()))
@@ -108,6 +110,7 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 		// when & then
 		mockMvc.perform(get("/api/v1/groups/{code}", "code"))
 			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.members[0].paymentRequestId").value(Matchers.nullValue()))
 			.andDo(restDocs.document(
 				pathParameters(
 					parameterWithName("code").description("정산 코드")

@@ -62,7 +62,7 @@ public class OutboxEventPublishExecutor {
 		for (Member member : memberReader.findAssignedMembersBySettlementId(outboxEvent.getAggregateId())) {
 			Long targetUserId = member.getUserId();
 			eventTasks.add(EventTask.pending(outboxEvent, EventTaskType.REWARD_GRANT, targetUserId));
-			eventTasks.add(EventTask.pending(outboxEvent, EventTaskType.NOTIFICATION_SEND, targetUserId));
+			// eventTasks.add(EventTask.pending(outboxEvent, EventTaskType.NOTIFICATION_SEND, targetUserId));
 		}
 
 		if (!eventTasks.isEmpty()) {
