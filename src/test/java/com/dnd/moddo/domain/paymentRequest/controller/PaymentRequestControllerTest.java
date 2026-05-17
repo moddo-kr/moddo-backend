@@ -19,6 +19,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import com.dnd.moddo.auth.infrastructure.security.LoginUserArgumentResolver;
 import com.dnd.moddo.auth.presentation.response.LoginUserInfo;
 import com.dnd.moddo.event.domain.paymentRequest.PaymentRequestStatus;
+import com.dnd.moddo.event.presentation.response.PaymentRequestExistenceResponse;
 import com.dnd.moddo.event.presentation.response.PaymentRequestResponse;
 import com.dnd.moddo.event.presentation.response.PaymentRequestsResponse;
 import com.dnd.moddo.global.util.RestDocsTestSupport;
@@ -67,6 +68,29 @@ public class PaymentRequestControllerTest extends RestDocsTestSupport {
 					fieldWithPath("paymentRequests[].name").type(JsonFieldType.STRING).description("요청 참여자 이름"),
 					fieldWithPath("paymentRequests[].profileUrl").type(JsonFieldType.STRING).description("요청 참여자 프로필 URL"),
 					fieldWithPath("paymentRequests[].totalAmount").type(JsonFieldType.NUMBER).description("요청 금액")
+				)
+			));
+	}
+
+	@Test
+	@DisplayName("모임에 생성된 입금 확인 요청이 있는지 확인한다.")
+	void existsPaymentRequest() throws Exception {
+		String code = "code";
+		Long settlementId = 1L;
+		PaymentRequestExistenceResponse response = new PaymentRequestExistenceResponse(true);
+
+		when(querySettlementService.findIdByCode(code)).thenReturn(settlementId);
+		when(queryPaymentRequestService.existsBySettlementId(settlementId)).thenReturn(response);
+
+		mockMvc.perform(get("/api/v1/groups/{code}/payments/exists", code))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.exists").value(true))
+			.andDo(restDocs.document(
+				pathParameters(
+					parameterWithName("code").description("정산 코드")
+				),
+				responseFields(
+					fieldWithPath("exists").type(JsonFieldType.BOOLEAN).description("모임에 생성된 입금 확인 요청 존재 여부")
 				)
 			));
 	}

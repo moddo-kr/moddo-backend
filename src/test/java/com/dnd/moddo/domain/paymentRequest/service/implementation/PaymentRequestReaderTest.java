@@ -128,6 +128,17 @@ class PaymentRequestReaderTest {
 	}
 
 	@Test
+	@DisplayName("정산에 생성된 입금 확인 요청이 있는지 확인할 수 있다.")
+	void existsBySettlementId() {
+		when(paymentRequestRepository.existsBySettlementId(1L)).thenReturn(true);
+
+		boolean result = paymentRequestReader.existsBySettlementId(1L);
+
+		assertThat(result).isTrue();
+		verify(paymentRequestRepository).existsBySettlementId(1L);
+	}
+
+	@Test
 	@DisplayName("같은 멤버의 대기 중인 입금 확인 요청이 중복되면 예외가 발생한다.")
 	void findPendingRequestIdByMemberIdFailWhenDuplicatePendingRequest() {
 		Settlement settlement = mock(Settlement.class);

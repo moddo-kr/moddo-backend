@@ -3,6 +3,7 @@ package com.dnd.moddo.event.application.query;
 import org.springframework.stereotype.Service;
 
 import com.dnd.moddo.event.application.impl.PaymentRequestReader;
+import com.dnd.moddo.event.presentation.response.PaymentRequestExistenceResponse;
 import com.dnd.moddo.event.presentation.response.PaymentRequestsResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -14,5 +15,9 @@ public class QueryPaymentRequestService {
 
 	public PaymentRequestsResponse findByTargetUserId(Long targetUserId) {
 		return paymentRequestReader.findByTargetUserId(targetUserId);
+	}
+
+	public PaymentRequestExistenceResponse existsBySettlementId(Long settlementId) {
+		return PaymentRequestExistenceResponse.of(paymentRequestReader.existsBySettlementId(settlementId));
 	}
 }

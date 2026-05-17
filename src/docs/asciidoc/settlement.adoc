@@ -65,6 +65,26 @@ include::{snippets}/settlement-controller-test/update-account/request-body.adoc[
 
 include::{snippets}/settlement-controller-test/update-account/response-body.adoc[]
 
+== 정산 수동 완료
+
+총무가 정산을 수동으로 완료할 수 있습니다.
+
+=== Example
+
+include::{snippets}/settlement-controller-test/complete-settlement/curl-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/settlement-controller-test/complete-settlement/http-request.adoc[]
+
+include::{snippets}/settlement-controller-test/complete-settlement/path-parameters.adoc[]
+
+==== 응답
+
+include::{snippets}/settlement-controller-test/complete-settlement/http-response.adoc[]
+
 == 모임 조회
 
 모임 정보와 참여자 목록을 조회할 수 있습니다.
@@ -90,6 +110,10 @@ include::{snippets}/settlement-controller-test/get-settlement/http-response.adoc
 ==== 응답
 
 include::{snippets}/settlement-controller-test/get-settlement/response-body.adoc[]
+
+==== 응답 필드
+
+include::{snippets}/settlement-controller-test/get-settlement/response-fields.adoc[]
 
 == 모임 상단 조회
 
