@@ -26,8 +26,8 @@ public class PaymentRequestValidator {
 	}
 
 	public void validateProcessRequest(PaymentRequest paymentRequest, Long userId) {
-		validatePendingStatus(paymentRequest);
 		validateManagerPermission(paymentRequest, userId);
+		validatePendingStatus(paymentRequest);
 	}
 
 	private void validateDuplicateRequest(Long settlementId, Long requestMemberId) {

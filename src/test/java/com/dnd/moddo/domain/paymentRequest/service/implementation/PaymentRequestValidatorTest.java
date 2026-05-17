@@ -76,12 +76,12 @@ class PaymentRequestValidatorTest {
 		PaymentRequest paymentRequest = mock(PaymentRequest.class);
 		Settlement settlement = mock(Settlement.class);
 
-		when(paymentRequest.getStatus()).thenReturn(PaymentRequestStatus.PENDING);
 		when(paymentRequest.getSettlement()).thenReturn(settlement);
 		when(settlement.isWriter(200L)).thenReturn(false);
 
 		assertThatThrownBy(() -> paymentRequestValidator.validateProcessRequest(paymentRequest, 200L))
 			.isInstanceOf(UserPermissionException.class);
+		verify(paymentRequest, never()).getStatus();
 	}
 
 	@Test
@@ -102,7 +102,10 @@ class PaymentRequestValidatorTest {
 	@DisplayName("대기 상태가 아니면 승인 또는 거절할 수 없다.")
 	void validateProcessRequestFailWhenNotPending() {
 		PaymentRequest paymentRequest = mock(PaymentRequest.class);
+		Settlement settlement = mock(Settlement.class);
 
+		when(paymentRequest.getSettlement()).thenReturn(settlement);
+		when(settlement.isWriter(100L)).thenReturn(true);
 		when(paymentRequest.getStatus()).thenReturn(PaymentRequestStatus.APPROVED);
 		when(paymentRequest.getId()).thenReturn(1L);
 
