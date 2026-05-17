@@ -87,6 +87,28 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 	}
 
 	@Test
+	@DisplayName("정산을 수동 완료한다.")
+	void givenExistingSettlement_thenCompleteSettlement() throws Exception {
+		// given
+		given(loginUserArgumentResolver.supportsParameter(any()))
+			.willReturn(true);
+
+		given(loginUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+			.willReturn(new LoginUserInfo(1L, "USER"));
+		given(querySettlementService.findIdByCode("code")).willReturn(100L);
+		willDoNothing().given(commandSettlementService).completeSettlement(1L, 100L);
+
+		// when & then
+		mockMvc.perform(patch("/api/v1/groups/{code}/complete", "code"))
+			.andExpect(status().isOk())
+			.andDo(restDocs.document(
+				pathParameters(
+					parameterWithName("code").description("정산 코드")
+				)
+			));
+	}
+
+	@Test
 	@DisplayName("모임을 성공적으로 조회한다.")
 	void getSettlement() throws Exception {
 		// given

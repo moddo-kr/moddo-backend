@@ -1,5 +1,7 @@
 package com.dnd.moddo.event.application.impl;
 
+import java.time.LocalDateTime;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +23,7 @@ public class SettlementUpdater {
 		return settlement;
 	}
 
-	public boolean complete(Long settlementId) {
-		return settlementRepository.markCompletedIfNotCompleted(settlementId) == 1;
+	public boolean complete(Long settlementId, LocalDateTime completedAt) {
+		return settlementRepository.markCompletedIfNotCompleted(settlementId, completedAt) == 1;
 	}
 }
