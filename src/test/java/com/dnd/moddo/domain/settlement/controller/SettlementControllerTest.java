@@ -114,6 +114,19 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 			.andDo(restDocs.document(
 				pathParameters(
 					parameterWithName("code").description("정산 코드")
+				),
+				responseFields(
+					fieldWithPath("id").description("정산 ID"),
+					fieldWithPath("groupName").description("정산 이름"),
+					fieldWithPath("members").description("모임원 목록"),
+					fieldWithPath("members[].id").description("모임원 ID"),
+					fieldWithPath("members[].role").description("모임원 역할"),
+					fieldWithPath("members[].name").description("모임원 이름"),
+					fieldWithPath("members[].profile").description("프로필 이미지 URL"),
+					fieldWithPath("members[].userId").description("사용자 ID").optional(),
+					fieldWithPath("members[].isPaid").description("정산 완료 여부"),
+					fieldWithPath("members[].paidAt").description("정산 완료 시각").optional(),
+					fieldWithPath("members[].paymentRequestId").description("대기 중인 입금 확인 요청 ID").optional()
 				)
 			));
 	}

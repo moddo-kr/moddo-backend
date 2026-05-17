@@ -91,6 +91,10 @@ include::{snippets}/settlement-controller-test/get-settlement/http-response.adoc
 
 include::{snippets}/settlement-controller-test/get-settlement/response-body.adoc[]
 
+==== 응답 필드
+
+include::{snippets}/settlement-controller-test/get-settlement/response-fields.adoc[]
+
 == 모임 상단 조회
 
 지출 내역 화면의 상단 정보를 조회할 수 있습니다.
