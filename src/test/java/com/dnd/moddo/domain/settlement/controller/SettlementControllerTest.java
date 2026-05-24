@@ -2,6 +2,7 @@ package com.dnd.moddo.domain.settlement.controller;
 
 import static com.dnd.moddo.event.domain.member.ExpenseRole.*;
 import static org.mockito.BDDMockito.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
@@ -101,7 +102,7 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 		// when & then
 		mockMvc.perform(patch("/api/v1/groups/{code}/complete", "code"))
 			.andExpect(status().isOk())
-			.andDo(restDocs.document(
+			.andDo(document("settlement-controller-test/complete-settlement",
 				pathParameters(
 					parameterWithName("code").description("정산 코드")
 				)
