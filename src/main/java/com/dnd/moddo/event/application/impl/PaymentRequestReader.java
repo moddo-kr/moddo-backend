@@ -61,6 +61,10 @@ public class PaymentRequestReader {
 		return PaymentRequestsResponse.of(responses);
 	}
 
+	public boolean existsBySettlementId(Long settlementId) {
+		return paymentRequestRepository.existsBySettlementId(settlementId);
+	}
+
 	public Map<Long, Long> findPendingRequestIdByMemberId(Long settlementId) {
 		return paymentRequestRepository.findBySettlementIdAndStatus(settlementId, PaymentRequestStatus.PENDING)
 			.stream()

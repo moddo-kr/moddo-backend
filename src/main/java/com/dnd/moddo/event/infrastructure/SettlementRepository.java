@@ -66,11 +66,14 @@ public interface SettlementRepository extends JpaRepository<Settlement, Long> {
 	@Modifying
 	@Query("""
 			update Settlement s
-			   set s.completedAt = CURRENT_TIMESTAMP
+			   set s.completedAt = :completedAt
 			 where s.id = :settlementId
 			   and s.completedAt is null
-		""")
-	int markCompletedIfNotCompleted(@Param("settlementId") Long settlementId);
+	""")
+	int markCompletedIfNotCompleted(
+		@Param("settlementId") Long settlementId,
+		@Param("completedAt") LocalDateTime completedAt
+	);
 
 	default Long getIdByCode(String code) {
 		return findIdByCode(code).orElseThrow(() -> new GroupNotFoundException(code));

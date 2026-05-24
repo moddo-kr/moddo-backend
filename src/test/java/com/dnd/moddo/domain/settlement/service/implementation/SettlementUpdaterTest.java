@@ -3,6 +3,8 @@ package com.dnd.moddo.domain.settlement.service.implementation;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDateTime;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -59,24 +61,26 @@ class SettlementUpdaterTest {
 	@Test
 	void completeSuccess() {
 		Long settlementId = 1L;
-		when(settlementRepository.markCompletedIfNotCompleted(settlementId)).thenReturn(1);
+		LocalDateTime completedAt = LocalDateTime.now();
+		when(settlementRepository.markCompletedIfNotCompleted(settlementId, completedAt)).thenReturn(1);
 
-		boolean result = settlementUpdater.complete(settlementId);
+		boolean result = settlementUpdater.complete(settlementId, completedAt);
 
 		assertThat(result).isTrue();
-		verify(settlementRepository).markCompletedIfNotCompleted(settlementId);
+		verify(settlementRepository).markCompletedIfNotCompleted(settlementId, completedAt);
 	}
 
 	@DisplayName("이미 완료된 정산이면 다시 완료 처리하지 않는다.")
 	@Test
 	void completeAlreadyCompletedSettlement() {
 		Long settlementId = 1L;
-		when(settlementRepository.markCompletedIfNotCompleted(settlementId)).thenReturn(0);
+		LocalDateTime completedAt = LocalDateTime.now();
+		when(settlementRepository.markCompletedIfNotCompleted(settlementId, completedAt)).thenReturn(0);
 
-		boolean result = settlementUpdater.complete(settlementId);
+		boolean result = settlementUpdater.complete(settlementId, completedAt);
 
 		assertThat(result).isFalse();
-		verify(settlementRepository).markCompletedIfNotCompleted(settlementId);
+		verify(settlementRepository).markCompletedIfNotCompleted(settlementId, completedAt);
 	}
 
 }

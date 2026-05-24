@@ -13,6 +13,7 @@ import com.dnd.moddo.auth.presentation.response.LoginUserInfo;
 import com.dnd.moddo.event.application.command.CommandPaymentRequest;
 import com.dnd.moddo.event.application.query.QueryPaymentRequestService;
 import com.dnd.moddo.event.application.query.QuerySettlementService;
+import com.dnd.moddo.event.presentation.response.PaymentRequestExistenceResponse;
 import com.dnd.moddo.event.presentation.response.PaymentRequestResponse;
 import com.dnd.moddo.event.presentation.response.PaymentRequestsResponse;
 
@@ -41,6 +42,15 @@ public class PaymentRequestController {
 	) {
 		Long settlementId = querySettlementService.findIdByCode(code);
 		PaymentRequestResponse response = commandPaymentRequest.createPaymentRequest(settlementId, loginUser.userId());
+		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/groups/{code}/payments/exists")
+	public ResponseEntity<PaymentRequestExistenceResponse> existsPaymentRequest(
+		@PathVariable String code
+	) {
+		Long settlementId = querySettlementService.findIdByCode(code);
+		PaymentRequestExistenceResponse response = queryPaymentRequestService.existsBySettlementId(settlementId);
 		return ResponseEntity.ok(response);
 	}
 

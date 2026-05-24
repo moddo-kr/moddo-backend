@@ -19,6 +19,7 @@ import com.dnd.moddo.common.cache.CacheEvictor;
 import com.dnd.moddo.event.application.command.CommandSettlementService;
 import com.dnd.moddo.event.application.impl.MemberCreator;
 import com.dnd.moddo.event.application.impl.MemberReader;
+import com.dnd.moddo.event.application.impl.SettlementCompletionProcessor;
 import com.dnd.moddo.event.application.impl.SettlementCreator;
 import com.dnd.moddo.event.application.impl.SettlementReader;
 import com.dnd.moddo.event.application.impl.SettlementUpdater;
@@ -54,6 +55,8 @@ class CommandSettlementServiceTest {
 	private MemberReader memberReader;
 	@Mock
 	private CacheEvictor cacheEvictor;
+	@Mock
+	private SettlementCompletionProcessor settlementCompletionProcessor;
 	@InjectMocks
 	private CommandSettlementService commandSettlementService;
 
@@ -124,6 +127,25 @@ class CommandSettlementServiceTest {
 		verify(settlementValidator, times(1)).checkSettlementAuthor(any(Settlement.class), anyLong());
 		verify(settlementUpdater, times(1)).updateAccount(any(SettlementAccountRequest.class), anyLong());
 		verify(cacheEvictor).evictSettlementHeader(settlement.getId());
+	}
+
+	@Test
+	@DisplayName("그룹을 수동 완료할 수 있다.")
+	void givenExistingSettlement_thenCompleteSettlement() {
+		// given
+		when(settlementReader.read(anyLong())).thenReturn(settlement);
+		doNothing().when(settlementValidator).checkSettlementAuthor(any(Settlement.class), anyLong());
+		when(settlementCompletionProcessor.complete(1L)).thenReturn(true);
+
+		// when
+		commandSettlementService.completeSettlement(1L, 1L);
+
+		// then
+		verify(settlementReader, times(1)).read(1L);
+		verify(settlementValidator, times(1)).checkSettlementAuthor(settlement, 1L);
+		verify(settlementCompletionProcessor, times(1)).complete(1L);
+		verify(cacheEvictor, times(1)).evictSettlementHeader(1L);
+		verify(cacheEvictor, times(1)).evictSettlementListsBySettlement(1L);
 	}
 
 }

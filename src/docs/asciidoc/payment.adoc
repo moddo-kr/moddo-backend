@@ -26,6 +26,36 @@ include::{snippets}/payment-request-controller-test/get-payment-requests/http-re
 
 include::{snippets}/payment-request-controller-test/get-payment-requests/response-body.adoc[]
 
+== 모임 입금 확인 요청 존재 여부 조회
+
+모임에 생성된 입금 확인 요청이 하나라도 있는지 조회할 수 있습니다.
+
+=== Example
+
+include::{snippets}/payment-request-controller-test/exists-payment-request/curl-request.adoc[]
+
+=== HTTP
+
+==== 요청
+
+include::{snippets}/payment-request-controller-test/exists-payment-request/http-request.adoc[]
+
+include::{snippets}/payment-request-controller-test/exists-payment-request/path-parameters.adoc[]
+
+==== 응답
+
+include::{snippets}/payment-request-controller-test/exists-payment-request/http-response.adoc[]
+
+=== Body
+
+==== 응답
+
+include::{snippets}/payment-request-controller-test/exists-payment-request/response-body.adoc[]
+
+==== 응답 필드
+
+include::{snippets}/payment-request-controller-test/exists-payment-request/response-fields.adoc[]
+
 == 입금 확인 요청 생성
 
 정산 참여자가 총무에게 입금 확인 요청을 보낼 수 있습니다.

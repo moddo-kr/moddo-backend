@@ -85,6 +85,7 @@ class SettlementCreatorTest {
 		// then
 		assertThat(response).isNotNull();
 		assertThat(response.getName()).isEqualTo(request.name());
+		assertThat(response.getDeadline()).isNotNull();
 
 		verify(userRepository, times(1)).getById(userId);
 		verify(settlementRepository, times(1)).save(any(Settlement.class));

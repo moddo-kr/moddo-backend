@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.moddo.common.cache.CacheEvictor;
 import com.dnd.moddo.event.application.impl.MemberCreator;
+import com.dnd.moddo.event.application.impl.SettlementCompletionProcessor;
 import com.dnd.moddo.event.application.impl.SettlementCreator;
 import com.dnd.moddo.event.application.impl.SettlementReader;
 import com.dnd.moddo.event.application.impl.SettlementUpdater;
@@ -28,6 +29,7 @@ public class CommandSettlementService {
 	private final SettlementValidator settlementValidator;
 	private final SettlementReader settlementReader;
 	private final MemberCreator memberCreator;
+	private final SettlementCompletionProcessor settlementCompletionProcessor;
 
 	public SettlementSaveResponse createSettlement(SettlementRequest request, Long userId) {
 		Settlement settlement = settlementCreator.createSettlement(request, userId);
@@ -42,5 +44,13 @@ public class CommandSettlementService {
 		settlement = settlementUpdater.updateAccount(request, settlement.getId());
 		cacheEvictor.evictSettlementHeader(settlementId);
 		return SettlementResponse.of(settlement);
+	}
+
+	public void completeSettlement(Long userId, Long settlementId) {
+		Settlement settlement = settlementReader.read(settlementId);
+		settlementValidator.checkSettlementAuthor(settlement, userId);
+		settlementCompletionProcessor.complete(settlementId);
+		cacheEvictor.evictSettlementHeader(settlementId);
+		cacheEvictor.evictSettlementListsBySettlement(settlementId);
 	}
 }
