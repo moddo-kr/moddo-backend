@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -60,6 +61,16 @@ public class SettlementController {
 			loginUser.userId(),
 			settlementId);
 		return ResponseEntity.ok(response);
+	}
+
+	@PatchMapping("/{code}/complete")
+	public ResponseEntity<Void> completeSettlement(
+		@PathVariable("code") String code,
+		@LoginUser LoginUserInfo loginUser
+	) {
+		Long settlementId = querySettlementService.findIdByCode(code);
+		commandSettlementService.completeSettlement(loginUser.userId(), settlementId);
+		return ResponseEntity.ok().build();
 	}
 
 	@GetMapping("/{code}")

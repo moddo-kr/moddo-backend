@@ -54,12 +54,12 @@ public class Settlement {
 		String bank, String accountNumber, String code, LocalDateTime deadline) {
 		this.name = name;
 		this.writer = writer;
-		this.createdAt = createdAt;
+		this.createdAt = createdAt != null ? createdAt : LocalDateTime.now();
 		this.expiredAt = LocalDateTime.now().plusMonths(1);
 		this.bank = bank;
 		this.accountNumber = accountNumber;
 		this.code = code;
-		this.deadline = deadline;
+		this.deadline = deadline != null ? deadline : this.createdAt.plusDays(1);
 	}
 
 	public void updateAccount(SettlementAccountRequest request) {
@@ -78,5 +78,9 @@ public class Settlement {
 
 	public void complete() {
 		this.completedAt = LocalDateTime.now();
+	}
+
+	public boolean isCompletedWithinDeadline(LocalDateTime completedAt) {
+		return deadline != null && !completedAt.isAfter(deadline);
 	}
 }
