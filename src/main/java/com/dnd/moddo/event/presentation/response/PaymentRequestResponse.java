@@ -12,7 +12,8 @@ public record PaymentRequestResponse(
 	Long targetUserId,
 	LocalDateTime requestedAt,
 	LocalDateTime processedAt,
-	PaymentRequestStatus status
+	PaymentRequestStatus status,
+	String statusLabel
 ) {
 	public static PaymentRequestResponse of(PaymentRequest paymentRequest) {
 		return new PaymentRequestResponse(
@@ -22,7 +23,8 @@ public record PaymentRequestResponse(
 			paymentRequest.getTargetUserId(),
 			paymentRequest.getRequestedAt(),
 			paymentRequest.getProcessedAt(),
-			paymentRequest.getStatus()
+			paymentRequest.getStatus(),
+			paymentRequest.getStatus().getLabel()
 		);
 	}
 }

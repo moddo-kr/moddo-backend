@@ -44,10 +44,7 @@ public interface PaymentRequestRepository extends JpaRepository<PaymentRequest, 
 		select pr
 		from PaymentRequest pr
 		where pr.settlement.id = :settlementId
-		  and pr.status = :status
-		""")
-	List<PaymentRequest> findBySettlementIdAndStatus(
-		@Param("settlementId") Long settlementId,
-		@Param("status") PaymentRequestStatus status
-	);
+		order by pr.requestedAt desc, pr.id desc
+	""")
+	List<PaymentRequest> findBySettlementIdOrderByRequestedAtDesc(@Param("settlementId") Long settlementId);
 }

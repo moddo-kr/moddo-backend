@@ -25,9 +25,11 @@ import com.dnd.moddo.event.domain.expense.Expense;
 import com.dnd.moddo.event.domain.member.ExpenseRole;
 import com.dnd.moddo.event.domain.member.Member;
 import com.dnd.moddo.event.domain.memberExpense.MemberExpense;
+import com.dnd.moddo.event.domain.paymentRequest.PaymentRequestStatus;
 import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.presentation.response.MemberExpenseResponse;
 import com.dnd.moddo.event.presentation.response.MembersExpenseResponse;
+import com.dnd.moddo.event.presentation.response.PaymentRequestSummaryResponse;
 
 @ExtendWith(MockitoExtension.class)
 class QueryMemberExpenseServiceTest {
@@ -125,7 +127,9 @@ class QueryMemberExpenseServiceTest {
 		when(expense2.getId()).thenReturn(2L);
 
 		when(settlementReader.read(groupId)).thenReturn(mockSettlement);
-		when(paymentRequestReader.findPendingRequestIdByMemberId(groupId)).thenReturn(Map.of(2L, 100L));
+		when(paymentRequestReader.findLatestRequestByMemberId(groupId))
+			.thenReturn(Map.of(2L,
+				new PaymentRequestSummaryResponse(100L, PaymentRequestStatus.APPROVED, "승인완료")));
 		when(memberReader.findAllBySettlementId(eq(groupId))).thenReturn(members);
 		when(memberExpenseReader.findAllByAppointMemberIds(List.of(1L, 2L)))
 			.thenReturn(List.of(memberExpense1, memberExpense2));
@@ -139,10 +143,14 @@ class QueryMemberExpenseServiceTest {
 		assertThat(response).isNotNull();
 		assertThat(response.memberExpenses()).hasSize(2);
 		assertThat(response.memberExpenses().get(0).paymentRequestId()).isNull();
+		assertThat(response.memberExpenses().get(0).paymentRequestStatus()).isNull();
+		assertThat(response.memberExpenses().get(0).paymentRequestStatusLabel()).isNull();
 		assertThat(response.memberExpenses().get(1).paymentRequestId()).isEqualTo(100L);
+		assertThat(response.memberExpenses().get(1).paymentRequestStatus()).isEqualTo(PaymentRequestStatus.APPROVED);
+		assertThat(response.memberExpenses().get(1).paymentRequestStatusLabel()).isEqualTo("승인완료");
 
 		verify(settlementReader, times(1)).read(groupId);
-		verify(paymentRequestReader, times(1)).findPendingRequestIdByMemberId(groupId);
+		verify(paymentRequestReader, times(1)).findLatestRequestByMemberId(groupId);
 		verify(memberReader, times(1)).findAllBySettlementId(groupId);
 		verify(memberExpenseReader, times(1)).findAllByAppointMemberIds(anyList());
 		verify(expenseReader, times(1)).findAllBySettlementId(groupId);
@@ -170,9 +178,11 @@ class QueryMemberExpenseServiceTest {
 		assertThat(response).isNotNull();
 		assertThat(response.memberExpenses()).hasSize(1);
 		assertThat(response.memberExpenses().get(0).paymentRequestId()).isNull();
+		assertThat(response.memberExpenses().get(0).paymentRequestStatus()).isNull();
+		assertThat(response.memberExpenses().get(0).paymentRequestStatusLabel()).isNull();
 
 		verify(settlementReader, times(1)).read(groupId);
-		verify(paymentRequestReader, never()).findPendingRequestIdByMemberId(anyLong());
+		verify(paymentRequestReader, never()).findLatestRequestByMemberId(anyLong());
 		verify(memberReader, times(1)).findAllBySettlementId(groupId);
 	}
 

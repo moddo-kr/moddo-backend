@@ -118,6 +118,8 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 				1L,
 				true,
 				LocalDateTime.now(),
+				null,
+				null,
 				null)
 		));
 
@@ -134,6 +136,8 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 		mockMvc.perform(get("/api/v1/groups/{code}", "code"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.members[0].paymentRequestId").value(Matchers.nullValue()))
+			.andExpect(jsonPath("$.members[0].paymentRequestStatus").value(Matchers.nullValue()))
+			.andExpect(jsonPath("$.members[0].paymentRequestStatusLabel").value(Matchers.nullValue()))
 			.andDo(restDocs.document(
 				pathParameters(
 					parameterWithName("code").description("정산 코드")
@@ -149,7 +153,9 @@ public class SettlementControllerTest extends RestDocsTestSupport {
 					fieldWithPath("members[].userId").description("사용자 ID").optional(),
 					fieldWithPath("members[].isPaid").description("정산 완료 여부"),
 					fieldWithPath("members[].paidAt").description("정산 완료 시각").optional(),
-					fieldWithPath("members[].paymentRequestId").description("대기 중인 입금 확인 요청 ID").optional()
+					fieldWithPath("members[].paymentRequestId").description("입금 확인 요청 ID").optional(),
+					fieldWithPath("members[].paymentRequestStatus").description("입금 확인 요청 상태").optional(),
+					fieldWithPath("members[].paymentRequestStatusLabel").description("입금 확인 요청 상태 표시명").optional()
 				)
 			));
 	}

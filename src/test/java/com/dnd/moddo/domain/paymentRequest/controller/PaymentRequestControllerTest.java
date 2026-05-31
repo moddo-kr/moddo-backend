@@ -101,7 +101,8 @@ public class PaymentRequestControllerTest extends RestDocsTestSupport {
 		String code = "code";
 		Long settlementId = 1L;
 		PaymentRequestResponse response = new PaymentRequestResponse(
-			1L, settlementId, 2L, 3L, LocalDateTime.of(2026, 3, 13, 22, 0), null, PaymentRequestStatus.PENDING
+			1L, settlementId, 2L, 3L, LocalDateTime.of(2026, 3, 13, 22, 0), null,
+			PaymentRequestStatus.PENDING, "확인중"
 		);
 
 		when(querySettlementService.findIdByCode(code)).thenReturn(settlementId);
@@ -112,6 +113,7 @@ public class PaymentRequestControllerTest extends RestDocsTestSupport {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.id").value(1L))
 			.andExpect(jsonPath("$.settlementId").value(settlementId))
+			.andExpect(jsonPath("$.statusLabel").value("확인중"))
 			.andDo(restDocs.document(
 				pathParameters(
 					parameterWithName("code").description("정산 코드")
@@ -123,7 +125,8 @@ public class PaymentRequestControllerTest extends RestDocsTestSupport {
 					fieldWithPath("targetUserId").type(JsonFieldType.NUMBER).description("처리 대상 사용자 ID"),
 					fieldWithPath("requestedAt").type(JsonFieldType.STRING).description("요청 시각"),
 					fieldWithPath("processedAt").type(JsonFieldType.NULL).description("처리 시각").optional(),
-					fieldWithPath("status").type(JsonFieldType.STRING).description("요청 상태")
+					fieldWithPath("status").type(JsonFieldType.STRING).description("요청 상태"),
+					fieldWithPath("statusLabel").type(JsonFieldType.STRING).description("요청 상태 표시명")
 				)
 			));
 	}
@@ -135,7 +138,8 @@ public class PaymentRequestControllerTest extends RestDocsTestSupport {
 			1L, 1L, 2L, 1L,
 			LocalDateTime.of(2026, 3, 13, 22, 0),
 			LocalDateTime.of(2026, 3, 13, 22, 5),
-			com.dnd.moddo.event.domain.paymentRequest.PaymentRequestStatus.APPROVED
+			com.dnd.moddo.event.domain.paymentRequest.PaymentRequestStatus.APPROVED,
+			"승인완료"
 		);
 
 		when(commandPaymentRequest.approvePaymentRequest(1L, 1L)).thenReturn(response);
@@ -143,6 +147,7 @@ public class PaymentRequestControllerTest extends RestDocsTestSupport {
 		mockMvc.perform(patch("/api/v1/payments/{paymentRequestId}/approve", 1L))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.status").value("APPROVED"))
+			.andExpect(jsonPath("$.statusLabel").value("승인완료"))
 			.andDo(restDocs.document(
 				pathParameters(
 					parameterWithName("paymentRequestId").description("입금 확인 요청 ID")
@@ -154,7 +159,8 @@ public class PaymentRequestControllerTest extends RestDocsTestSupport {
 					fieldWithPath("targetUserId").type(JsonFieldType.NUMBER).description("처리 대상 사용자 ID"),
 					fieldWithPath("requestedAt").type(JsonFieldType.STRING).description("요청 시각"),
 					fieldWithPath("processedAt").type(JsonFieldType.STRING).description("처리 시각"),
-					fieldWithPath("status").type(JsonFieldType.STRING).description("요청 상태")
+					fieldWithPath("status").type(JsonFieldType.STRING).description("요청 상태"),
+					fieldWithPath("statusLabel").type(JsonFieldType.STRING).description("요청 상태 표시명")
 				)
 			));
 	}
@@ -166,7 +172,8 @@ public class PaymentRequestControllerTest extends RestDocsTestSupport {
 			1L, 1L, 2L, 1L,
 			LocalDateTime.of(2026, 3, 13, 22, 0),
 			LocalDateTime.of(2026, 3, 13, 22, 5),
-			com.dnd.moddo.event.domain.paymentRequest.PaymentRequestStatus.REJECTED
+			com.dnd.moddo.event.domain.paymentRequest.PaymentRequestStatus.REJECTED,
+			"거절"
 		);
 
 		when(commandPaymentRequest.rejectPaymentRequest(1L, 1L)).thenReturn(response);
@@ -174,6 +181,7 @@ public class PaymentRequestControllerTest extends RestDocsTestSupport {
 		mockMvc.perform(patch("/api/v1/payments/{paymentRequestId}/reject", 1L))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.status").value("REJECTED"))
+			.andExpect(jsonPath("$.statusLabel").value("거절"))
 			.andDo(restDocs.document(
 				pathParameters(
 					parameterWithName("paymentRequestId").description("입금 확인 요청 ID")
@@ -185,7 +193,8 @@ public class PaymentRequestControllerTest extends RestDocsTestSupport {
 					fieldWithPath("targetUserId").type(JsonFieldType.NUMBER).description("처리 대상 사용자 ID"),
 					fieldWithPath("requestedAt").type(JsonFieldType.STRING).description("요청 시각"),
 					fieldWithPath("processedAt").type(JsonFieldType.STRING).description("처리 시각"),
-					fieldWithPath("status").type(JsonFieldType.STRING).description("요청 상태")
+					fieldWithPath("status").type(JsonFieldType.STRING).description("요청 상태"),
+					fieldWithPath("statusLabel").type(JsonFieldType.STRING).description("요청 상태 표시명")
 				)
 			));
 	}

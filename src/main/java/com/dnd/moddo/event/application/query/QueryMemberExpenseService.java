@@ -22,6 +22,7 @@ import com.dnd.moddo.event.presentation.response.MemberExpenseDetailResponse;
 import com.dnd.moddo.event.presentation.response.MemberExpenseItemResponse;
 import com.dnd.moddo.event.presentation.response.MemberExpenseResponse;
 import com.dnd.moddo.event.presentation.response.MembersExpenseResponse;
+import com.dnd.moddo.event.presentation.response.PaymentRequestSummaryResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -44,8 +45,8 @@ public class QueryMemberExpenseService {
 
 	public MembersExpenseResponse findMemberExpenseDetailsBySettlementId(Long settlementId, Long userId) {
 		Settlement settlement = settlementReader.read(settlementId);
-		Map<Long, Long> paymentRequestIdByMemberId = settlement.isWriter(userId)
-			? paymentRequestReader.findPendingRequestIdByMemberId(settlementId)
+		Map<Long, PaymentRequestSummaryResponse> paymentRequestByMemberId = settlement.isWriter(userId)
+			? paymentRequestReader.findLatestRequestByMemberId(settlementId)
 			: Map.of();
 
 		List<Member> members = memberReader.findAllBySettlementId(settlementId);
@@ -66,7 +67,7 @@ public class QueryMemberExpenseService {
 				key -> findMemberExpenseDetailByAppointmentMember(appointmentMemberById.get(key),
 					memberExpenses.get(key),
 					expenses,
-					paymentRequestIdByMemberId)
+					paymentRequestByMemberId)
 			)
 			.filter(Objects::nonNull)
 			.toList();
@@ -84,18 +85,18 @@ public class QueryMemberExpenseService {
 
 	private MemberExpenseItemResponse findMemberExpenseDetailByAppointmentMember(
 		Member member, List<MemberExpense> memberExpenses, List<Expense> expenses,
-		Map<Long, Long> paymentRequestIdByMemberId) {
+		Map<Long, PaymentRequestSummaryResponse> paymentRequestByMemberId) {
 
-		Long paymentRequestId = paymentRequestIdByMemberId.get(member.getId());
+		PaymentRequestSummaryResponse paymentRequest = paymentRequestByMemberId.get(member.getId());
 
 		if (memberExpenses == null) {
-			return MemberExpenseItemResponse.of(member, 0L, new ArrayList<>(), paymentRequestId);
+			return MemberExpenseItemResponse.of(member, 0L, new ArrayList<>(), paymentRequest);
 		}
 
 		List<MemberExpenseDetailResponse> memberExpenseDetails = mapToMemberExpenseDetails(memberExpenses, expenses);
 		Long totalAmount = calculateTotalAmount(memberExpenses);
 
-		return MemberExpenseItemResponse.of(member, totalAmount, memberExpenseDetails, paymentRequestId);
+		return MemberExpenseItemResponse.of(member, totalAmount, memberExpenseDetails, paymentRequest);
 	}
 
 	private Long calculateTotalAmount(List<MemberExpense> memberExpenses) {
