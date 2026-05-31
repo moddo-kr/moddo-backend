@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dnd.moddo.auth.infrastructure.security.LoginUser;
+import com.dnd.moddo.auth.presentation.response.LoginUserInfo;
 import com.dnd.moddo.event.application.query.QueryMemberExpenseService;
 import com.dnd.moddo.event.application.query.QuerySettlementService;
 import com.dnd.moddo.event.presentation.response.MembersExpenseResponse;
@@ -22,12 +24,13 @@ public class MemberExpenseController {
 
 	@GetMapping
 	public ResponseEntity<MembersExpenseResponse> getMemberExpensesDetails(
-		@PathVariable String code
+		@PathVariable String code,
+		@LoginUser LoginUserInfo loginUser
 	) {
 		Long settlementId = querySettlementService.findIdByCode(code);
 
 		MembersExpenseResponse response =
-			queryMemberExpenseService.findMemberExpenseDetailsBySettlementId(settlementId);
+			queryMemberExpenseService.findMemberExpenseDetailsBySettlementId(settlementId, loginUser.userId());
 
 		return ResponseEntity.ok(response);
 	}

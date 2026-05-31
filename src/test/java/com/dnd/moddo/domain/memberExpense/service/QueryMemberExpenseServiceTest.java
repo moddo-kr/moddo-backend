@@ -17,6 +17,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.dnd.moddo.event.application.impl.ExpenseReader;
 import com.dnd.moddo.event.application.impl.MemberExpenseReader;
 import com.dnd.moddo.event.application.impl.MemberReader;
+import com.dnd.moddo.event.application.impl.PaymentRequestReader;
+import com.dnd.moddo.event.application.impl.SettlementReader;
 import com.dnd.moddo.event.application.query.QueryMemberExpenseService;
 import com.dnd.moddo.event.domain.expense.Expense;
 import com.dnd.moddo.event.domain.member.ExpenseRole;
@@ -35,6 +37,10 @@ class QueryMemberExpenseServiceTest {
 	private ExpenseReader expenseReader;
 	@Mock
 	private MemberReader memberReader;
+	@Mock
+	private SettlementReader settlementReader;
+	@Mock
+	private PaymentRequestReader paymentRequestReader;
 	@InjectMocks
 	private QueryMemberExpenseService queryMemberExpenseService;
 
@@ -91,6 +97,7 @@ class QueryMemberExpenseServiceTest {
 	void findMemberExpenseDetailsBySettlementId_Success() {
 		//given
 		Long groupId = 1L;
+		Long userId = 1L;
 		Member member1 = mock(Member.class);
 		Member member2 = mock(Member.class);
 
@@ -114,6 +121,8 @@ class QueryMemberExpenseServiceTest {
 		when(expense1.getId()).thenReturn(1L);
 		when(expense2.getId()).thenReturn(2L);
 
+		when(settlementReader.read(groupId)).thenReturn(mockSettlement);
+		when(paymentRequestReader.findPendingRequestIdByMemberId(groupId)).thenReturn(Map.of(2L, 100L));
 		when(memberReader.findAllBySettlementId(eq(groupId))).thenReturn(members);
 		when(memberExpenseReader.findAllByAppointMemberIds(List.of(1L, 2L)))
 			.thenReturn(List.of(memberExpense1, memberExpense2));
@@ -121,15 +130,47 @@ class QueryMemberExpenseServiceTest {
 
 		// when
 		MembersExpenseResponse response = queryMemberExpenseService.findMemberExpenseDetailsBySettlementId(
-			groupId);
+			groupId, userId);
 
 		// then
 		assertThat(response).isNotNull();
 		assertThat(response.memberExpenses()).hasSize(2);
+		assertThat(response.memberExpenses().get(0).paymentRequestId()).isNull();
+		assertThat(response.memberExpenses().get(1).paymentRequestId()).isEqualTo(100L);
 
+		verify(settlementReader, times(1)).read(groupId);
+		verify(paymentRequestReader, times(1)).findPendingRequestIdByMemberId(groupId);
 		verify(memberReader, times(1)).findAllBySettlementId(groupId);
 		verify(memberExpenseReader, times(1)).findAllByAppointMemberIds(anyList());
 		verify(expenseReader, times(1)).findAllBySettlementId(groupId);
+	}
+
+	@DisplayName("총무가 아닐 때 참여자별 정산내역 조회 시 입금 확인 요청 ID를 조회하지 않는다.")
+	@Test
+	void findMemberExpenseDetailsBySettlementId_Success_WhenNotManager() {
+		//given
+		Long groupId = 1L;
+		Long userId = 2L;
+		Member member = mock(Member.class);
+
+		when(member.getId()).thenReturn(1L);
+		when(settlementReader.read(groupId)).thenReturn(mockSettlement);
+		when(memberReader.findAllBySettlementId(eq(groupId))).thenReturn(List.of(member));
+		when(memberExpenseReader.findAllByAppointMemberIds(List.of(1L))).thenReturn(List.of());
+		when(expenseReader.findAllBySettlementId(groupId)).thenReturn(List.of());
+
+		// when
+		MembersExpenseResponse response = queryMemberExpenseService.findMemberExpenseDetailsBySettlementId(
+			groupId, userId);
+
+		// then
+		assertThat(response).isNotNull();
+		assertThat(response.memberExpenses()).hasSize(1);
+		assertThat(response.memberExpenses().get(0).paymentRequestId()).isNull();
+
+		verify(settlementReader, times(1)).read(groupId);
+		verify(paymentRequestReader, never()).findPendingRequestIdByMemberId(anyLong());
+		verify(memberReader, times(1)).findAllBySettlementId(groupId);
 	}
 
 	@DisplayName("지출내역 id를 통해 참여자 지출내역을 찾아 지출내역 id에 해당하는 참여자 이름들을 map으로 조회할 수 있다.")

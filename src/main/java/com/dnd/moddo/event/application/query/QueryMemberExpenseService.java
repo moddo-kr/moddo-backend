@@ -12,9 +12,12 @@ import org.springframework.stereotype.Service;
 import com.dnd.moddo.event.application.impl.ExpenseReader;
 import com.dnd.moddo.event.application.impl.MemberExpenseReader;
 import com.dnd.moddo.event.application.impl.MemberReader;
+import com.dnd.moddo.event.application.impl.PaymentRequestReader;
+import com.dnd.moddo.event.application.impl.SettlementReader;
 import com.dnd.moddo.event.domain.expense.Expense;
 import com.dnd.moddo.event.domain.member.Member;
 import com.dnd.moddo.event.domain.memberExpense.MemberExpense;
+import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.presentation.response.MemberExpenseDetailResponse;
 import com.dnd.moddo.event.presentation.response.MemberExpenseItemResponse;
 import com.dnd.moddo.event.presentation.response.MemberExpenseResponse;
@@ -28,6 +31,8 @@ public class QueryMemberExpenseService {
 	private final MemberExpenseReader memberExpenseReader;
 	private final MemberReader memberReader;
 	private final ExpenseReader expenseReader;
+	private final SettlementReader settlementReader;
+	private final PaymentRequestReader paymentRequestReader;
 
 	public List<MemberExpenseResponse> findAllByExpenseId(
 		Long expenseId) {
@@ -37,7 +42,12 @@ public class QueryMemberExpenseService {
 			.toList();
 	}
 
-	public MembersExpenseResponse findMemberExpenseDetailsBySettlementId(Long settlementId) {
+	public MembersExpenseResponse findMemberExpenseDetailsBySettlementId(Long settlementId, Long userId) {
+		Settlement settlement = settlementReader.read(settlementId);
+		Map<Long, Long> paymentRequestIdByMemberId = settlement.isWriter(userId)
+			? paymentRequestReader.findPendingRequestIdByMemberId(settlementId)
+			: Map.of();
+
 		List<Member> members = memberReader.findAllBySettlementId(settlementId);
 
 		Map<Long, Member> appointmentMemberById = convertAppointmentMembersToMap(members);
@@ -55,7 +65,8 @@ public class QueryMemberExpenseService {
 			.map(
 				key -> findMemberExpenseDetailByAppointmentMember(appointmentMemberById.get(key),
 					memberExpenses.get(key),
-					expenses)
+					expenses,
+					paymentRequestIdByMemberId)
 			)
 			.filter(Objects::nonNull)
 			.toList();
@@ -72,16 +83,19 @@ public class QueryMemberExpenseService {
 	}
 
 	private MemberExpenseItemResponse findMemberExpenseDetailByAppointmentMember(
-		Member member, List<MemberExpense> memberExpenses, List<Expense> expenses) {
+		Member member, List<MemberExpense> memberExpenses, List<Expense> expenses,
+		Map<Long, Long> paymentRequestIdByMemberId) {
+
+		Long paymentRequestId = paymentRequestIdByMemberId.get(member.getId());
 
 		if (memberExpenses == null) {
-			return MemberExpenseItemResponse.of(member, 0L, new ArrayList<>());
+			return MemberExpenseItemResponse.of(member, 0L, new ArrayList<>(), paymentRequestId);
 		}
 
 		List<MemberExpenseDetailResponse> memberExpenseDetails = mapToMemberExpenseDetails(memberExpenses, expenses);
 		Long totalAmount = calculateTotalAmount(memberExpenses);
 
-		return MemberExpenseItemResponse.of(member, totalAmount, memberExpenseDetails);
+		return MemberExpenseItemResponse.of(member, totalAmount, memberExpenseDetails, paymentRequestId);
 	}
 
 	private Long calculateTotalAmount(List<MemberExpense> memberExpenses) {
