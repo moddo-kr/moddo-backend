@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.dnd.moddo.event.domain.member.ExpenseRole;
 import com.dnd.moddo.event.domain.member.Member;
+import com.dnd.moddo.event.domain.paymentRequest.PaymentRequestStatus;
 
 import lombok.Builder;
 
@@ -16,10 +17,12 @@ public record SettlementMemberResponse(
 	Long userId,
 	Boolean isPaid,
 	LocalDateTime paidAt,
-	Long paymentRequestId
+	Long paymentRequestId,
+	PaymentRequestStatus paymentRequestStatus,
+	String paymentRequestStatusLabel
 ) {
 
-	public static SettlementMemberResponse of(Member member, Long paymentRequestId) {
+	public static SettlementMemberResponse of(Member member, PaymentRequestSummaryResponse paymentRequest) {
 		return SettlementMemberResponse.builder()
 			.id(member.getId())
 			.name(member.getName())
@@ -27,7 +30,9 @@ public record SettlementMemberResponse(
 			.userId(member.getUserId())
 			.isPaid(member.isPaid())
 			.paidAt(member.getPaidAt())
-			.paymentRequestId(paymentRequestId)
+			.paymentRequestId(paymentRequest == null ? null : paymentRequest.id())
+			.paymentRequestStatus(paymentRequest == null ? null : paymentRequest.status())
+			.paymentRequestStatusLabel(paymentRequest == null ? null : paymentRequest.statusLabel())
 			.profile(member.getProfileUrl())
 			.build();
 	}

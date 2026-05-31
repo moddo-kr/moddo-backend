@@ -19,10 +19,10 @@ public record SettlementDetailResponse(
 	public static SettlementDetailResponse of(
 		Settlement settlement,
 		List<Member> members,
-		Map<Long, Long> paymentRequestIdByMemberId
+		Map<Long, PaymentRequestSummaryResponse> paymentRequestByMemberId
 	) {
 		List<SettlementMemberResponse> memberResponses = members.stream()
-			.map(member -> SettlementMemberResponse.of(member, paymentRequestIdByMemberId.get(member.getId())))
+			.map(member -> SettlementMemberResponse.of(member, paymentRequestByMemberId.get(member.getId())))
 			.collect(Collectors.toList());
 		return new SettlementDetailResponse(
 			settlement.getId(),

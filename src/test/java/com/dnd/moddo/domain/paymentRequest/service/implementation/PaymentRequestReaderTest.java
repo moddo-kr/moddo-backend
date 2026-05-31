@@ -24,6 +24,7 @@ import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.infrastructure.PaymentRequestRepository;
 import com.dnd.moddo.event.presentation.response.PaymentRequestItemResponse;
 import com.dnd.moddo.event.presentation.response.PaymentRequestsResponse;
+import com.dnd.moddo.event.presentation.response.PaymentRequestSummaryResponse;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentRequestReaderTest {
@@ -101,8 +102,8 @@ class PaymentRequestReaderTest {
 	}
 
 	@Test
-	@DisplayName("정산의 대기 중인 입금 확인 요청 ID를 멤버 ID 기준으로 조회할 수 있다.")
-	void findPendingRequestIdByMemberId() {
+	@DisplayName("정산의 최신 입금 확인 요청 정보를 멤버 ID 기준으로 조회할 수 있다.")
+	void findLatestRequestByMemberId() {
 		Settlement settlement = mock(Settlement.class);
 		Member member = Member.builder()
 			.name("김반숙")
@@ -115,16 +116,19 @@ class PaymentRequestReaderTest {
 			.requestMember(member)
 			.targetUser(mock(com.dnd.moddo.user.domain.User.class))
 			.build();
+		paymentRequest.approve();
 
 		setField(member, "id", 11L);
 		setField(paymentRequest, "id", 100L);
 
-		when(paymentRequestRepository.findBySettlementIdAndStatus(1L, PaymentRequestStatus.PENDING))
+		when(paymentRequestRepository.findBySettlementIdOrderByRequestedAtDesc(1L))
 			.thenReturn(List.of(paymentRequest));
 
-		java.util.Map<Long, Long> result = paymentRequestReader.findPendingRequestIdByMemberId(1L);
+		java.util.Map<Long, PaymentRequestSummaryResponse> result = paymentRequestReader.findLatestRequestByMemberId(1L);
 
-		assertThat(result).containsEntry(11L, 100L);
+		assertThat(result.get(11L).id()).isEqualTo(100L);
+		assertThat(result.get(11L).status()).isEqualTo(PaymentRequestStatus.APPROVED);
+		assertThat(result.get(11L).statusLabel()).isEqualTo("승인완료");
 	}
 
 	@Test
@@ -139,8 +143,8 @@ class PaymentRequestReaderTest {
 	}
 
 	@Test
-	@DisplayName("같은 멤버의 대기 중인 입금 확인 요청이 중복되면 예외가 발생한다.")
-	void findPendingRequestIdByMemberIdFailWhenDuplicatePendingRequest() {
+	@DisplayName("같은 멤버의 입금 확인 요청이 여러 개면 최신 요청 정보를 조회한다.")
+	void findLatestRequestByMemberIdWhenMultipleRequests() {
 		Settlement settlement = mock(Settlement.class);
 		Member member = Member.builder()
 			.name("김반숙")
@@ -153,22 +157,26 @@ class PaymentRequestReaderTest {
 			.requestMember(member)
 			.targetUser(mock(com.dnd.moddo.user.domain.User.class))
 			.build();
+		first.reject();
 		PaymentRequest second = PaymentRequest.builder()
 			.settlement(settlement)
 			.requestMember(member)
 			.targetUser(mock(com.dnd.moddo.user.domain.User.class))
 			.build();
+		second.approve();
 
 		setField(member, "id", 11L);
 		setField(first, "id", 100L);
 		setField(second, "id", 101L);
 
-		when(paymentRequestRepository.findBySettlementIdAndStatus(1L, PaymentRequestStatus.PENDING))
-			.thenReturn(List.of(first, second));
+		when(paymentRequestRepository.findBySettlementIdOrderByRequestedAtDesc(1L))
+			.thenReturn(List.of(second, first));
 
-		assertThatThrownBy(() -> paymentRequestReader.findPendingRequestIdByMemberId(1L))
-			.isInstanceOf(IllegalStateException.class)
-			.hasMessage("중복된 PENDING 입금 확인 요청이 존재합니다.");
+		java.util.Map<Long, PaymentRequestSummaryResponse> result = paymentRequestReader.findLatestRequestByMemberId(1L);
+
+		assertThat(result.get(11L).id()).isEqualTo(101L);
+		assertThat(result.get(11L).status()).isEqualTo(PaymentRequestStatus.APPROVED);
+		assertThat(result.get(11L).statusLabel()).isEqualTo("승인완료");
 	}
 
 	private void setField(Object target, String fieldName, Object value) {

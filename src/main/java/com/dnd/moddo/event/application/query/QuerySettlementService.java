@@ -20,6 +20,7 @@ import com.dnd.moddo.event.presentation.response.SettlementDetailResponse;
 import com.dnd.moddo.event.presentation.response.SettlementHeaderResponse;
 import com.dnd.moddo.event.presentation.response.SettlementListResponse;
 import com.dnd.moddo.event.presentation.response.SettlementShareResponse;
+import com.dnd.moddo.event.presentation.response.PaymentRequestSummaryResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -39,8 +40,9 @@ public class QuerySettlementService {
 		Settlement settlement = settlementReader.read(settlementId);
 		settlementValidator.checkSettlementAuthor(settlement, userId);
 		List<Member> members = settlementReader.findBySettlement(settlementId);
-		Map<Long, Long> paymentRequestIdByMemberId = paymentRequestReader.findPendingRequestIdByMemberId(settlementId);
-		return SettlementDetailResponse.of(settlement, members, paymentRequestIdByMemberId);
+		Map<Long, PaymentRequestSummaryResponse> paymentRequestByMemberId =
+			paymentRequestReader.findLatestRequestByMemberId(settlementId);
+		return SettlementDetailResponse.of(settlement, members, paymentRequestByMemberId);
 	}
 
 	public SettlementHeaderResponse findBySettlementHeader(Long settlementId) {

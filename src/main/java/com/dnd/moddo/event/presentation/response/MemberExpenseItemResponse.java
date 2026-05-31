@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.dnd.moddo.event.domain.member.ExpenseRole;
 import com.dnd.moddo.event.domain.member.Member;
+import com.dnd.moddo.event.domain.paymentRequest.PaymentRequestStatus;
 
 import lombok.Builder;
 
@@ -18,10 +19,12 @@ public record MemberExpenseItemResponse(
 	boolean isPaid,
 	LocalDateTime paidAt,
 	Long paymentRequestId,
+	PaymentRequestStatus paymentRequestStatus,
+	String paymentRequestStatusLabel,
 	List<MemberExpenseDetailResponse> expenses
 ) {
 	public static MemberExpenseItemResponse of(Member member, Long totalAmount,
-		List<MemberExpenseDetailResponse> expenses, Long paymentRequestId) {
+		List<MemberExpenseDetailResponse> expenses, PaymentRequestSummaryResponse paymentRequest) {
 		return MemberExpenseItemResponse.builder()
 			.id(member.getId())
 			.role(member.getRole())
@@ -30,7 +33,9 @@ public record MemberExpenseItemResponse(
 			.profile(member.getProfileUrl())
 			.isPaid(member.isPaid())
 			.paidAt(member.getPaidAt())
-			.paymentRequestId(paymentRequestId)
+			.paymentRequestId(paymentRequest == null ? null : paymentRequest.id())
+			.paymentRequestStatus(paymentRequest == null ? null : paymentRequest.status())
+			.paymentRequestStatusLabel(paymentRequest == null ? null : paymentRequest.statusLabel())
 			.expenses(expenses).build();
 	}
 }

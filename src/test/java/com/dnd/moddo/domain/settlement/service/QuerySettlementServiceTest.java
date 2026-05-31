@@ -23,11 +23,13 @@ import com.dnd.moddo.event.application.impl.SettlementValidator;
 import com.dnd.moddo.event.application.query.QuerySettlementService;
 import com.dnd.moddo.event.domain.member.ExpenseRole;
 import com.dnd.moddo.event.domain.member.Member;
+import com.dnd.moddo.event.domain.paymentRequest.PaymentRequestStatus;
 import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.domain.settlement.exception.GroupNotFoundException;
 import com.dnd.moddo.event.domain.settlement.type.SettlementSortType;
 import com.dnd.moddo.event.domain.settlement.type.SettlementStatus;
 import com.dnd.moddo.event.presentation.request.SearchSettlementListRequest;
+import com.dnd.moddo.event.presentation.response.PaymentRequestSummaryResponse;
 import com.dnd.moddo.event.presentation.response.SettlementDetailResponse;
 import com.dnd.moddo.event.presentation.response.SettlementHeaderResponse;
 import com.dnd.moddo.event.presentation.response.SettlementListResponse;
@@ -76,7 +78,9 @@ class QuerySettlementServiceTest {
 		// Given
 		when(settlementReader.read(anyLong())).thenReturn(settlement);
 		when(settlementReader.findBySettlement(settlement.getId())).thenReturn(List.of(member));
-		when(paymentRequestReader.findPendingRequestIdByMemberId(settlement.getId())).thenReturn(java.util.Map.of(10L, 100L));
+		when(paymentRequestReader.findLatestRequestByMemberId(settlement.getId()))
+			.thenReturn(java.util.Map.of(10L,
+				new PaymentRequestSummaryResponse(100L, PaymentRequestStatus.APPROVED, "승인완료")));
 		doNothing().when(settlementValidator).checkSettlementAuthor(settlement, 1L);
 
 		// When
@@ -89,10 +93,12 @@ class QuerySettlementServiceTest {
 		assertThat(response.members()).hasSize(1);
 		assertThat(response.members().get(0).name()).isEqualTo(member.getName());
 		assertThat(response.members().get(0).paymentRequestId()).isEqualTo(100L);
+		assertThat(response.members().get(0).paymentRequestStatus()).isEqualTo(PaymentRequestStatus.APPROVED);
+		assertThat(response.members().get(0).paymentRequestStatusLabel()).isEqualTo("승인완료");
 
 		verify(settlementReader, times(1)).read(1L);
 		verify(settlementReader, times(1)).findBySettlement(settlement.getId());
-		verify(paymentRequestReader, times(1)).findPendingRequestIdByMemberId(settlement.getId());
+		verify(paymentRequestReader, times(1)).findLatestRequestByMemberId(settlement.getId());
 		verify(settlementValidator, times(1)).checkSettlementAuthor(settlement, 1L);
 	}
 
