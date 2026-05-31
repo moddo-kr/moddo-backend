@@ -3,6 +3,7 @@ package com.dnd.moddo.domain.memberExpense.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.dnd.moddo.event.application.impl.ExpenseReader;
 import com.dnd.moddo.event.application.impl.MemberExpenseReader;
 import com.dnd.moddo.event.application.impl.MemberReader;
+import com.dnd.moddo.event.application.impl.PaymentRequestReader;
+import com.dnd.moddo.event.application.impl.SettlementReader;
 import com.dnd.moddo.event.application.query.QueryMemberExpenseService;
 import com.dnd.moddo.event.domain.expense.Expense;
 import com.dnd.moddo.event.domain.member.ExpenseRole;
@@ -25,16 +28,22 @@ import com.dnd.moddo.event.domain.memberExpense.MemberExpense;
 import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.presentation.response.MemberExpenseResponse;
 import com.dnd.moddo.event.presentation.response.MembersExpenseResponse;
-import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)
 class QueryMemberExpenseServiceTest {
+	private static final Long MANAGER_USER_ID = 1L;
+	private static final Long PARTICIPANT_USER_ID = 2L;
+
 	@Mock
 	private MemberExpenseReader memberExpenseReader;
 	@Mock
 	private ExpenseReader expenseReader;
 	@Mock
 	private MemberReader memberReader;
+	@Mock
+	private SettlementReader settlementReader;
+	@Mock
+	private PaymentRequestReader paymentRequestReader;
 	@InjectMocks
 	private QueryMemberExpenseService queryMemberExpenseService;
 
@@ -44,7 +53,7 @@ class QueryMemberExpenseServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		mockSettlement = GroupTestFactory.createDefault();
+		mockSettlement = createSettlementWithWriter(MANAGER_USER_ID);
 
 		mockMember1 = Member.builder()
 			.name("김모또")
@@ -91,6 +100,7 @@ class QueryMemberExpenseServiceTest {
 	void findMemberExpenseDetailsBySettlementId_Success() {
 		//given
 		Long groupId = 1L;
+		Long userId = MANAGER_USER_ID;
 		Member member1 = mock(Member.class);
 		Member member2 = mock(Member.class);
 
@@ -114,6 +124,8 @@ class QueryMemberExpenseServiceTest {
 		when(expense1.getId()).thenReturn(1L);
 		when(expense2.getId()).thenReturn(2L);
 
+		when(settlementReader.read(groupId)).thenReturn(mockSettlement);
+		when(paymentRequestReader.findPendingRequestIdByMemberId(groupId)).thenReturn(Map.of(2L, 100L));
 		when(memberReader.findAllBySettlementId(eq(groupId))).thenReturn(members);
 		when(memberExpenseReader.findAllByAppointMemberIds(List.of(1L, 2L)))
 			.thenReturn(List.of(memberExpense1, memberExpense2));
@@ -121,15 +133,47 @@ class QueryMemberExpenseServiceTest {
 
 		// when
 		MembersExpenseResponse response = queryMemberExpenseService.findMemberExpenseDetailsBySettlementId(
-			groupId);
+			groupId, userId);
 
 		// then
 		assertThat(response).isNotNull();
 		assertThat(response.memberExpenses()).hasSize(2);
+		assertThat(response.memberExpenses().get(0).paymentRequestId()).isNull();
+		assertThat(response.memberExpenses().get(1).paymentRequestId()).isEqualTo(100L);
 
+		verify(settlementReader, times(1)).read(groupId);
+		verify(paymentRequestReader, times(1)).findPendingRequestIdByMemberId(groupId);
 		verify(memberReader, times(1)).findAllBySettlementId(groupId);
 		verify(memberExpenseReader, times(1)).findAllByAppointMemberIds(anyList());
 		verify(expenseReader, times(1)).findAllBySettlementId(groupId);
+	}
+
+	@DisplayName("총무가 아닐 때 참여자별 정산내역 조회 시 입금 확인 요청 ID를 조회하지 않는다.")
+	@Test
+	void findMemberExpenseDetailsBySettlementId_Success_WhenNotManager() {
+		//given
+		Long groupId = 1L;
+		Long userId = PARTICIPANT_USER_ID;
+		Member member = mock(Member.class);
+
+		when(member.getId()).thenReturn(1L);
+		when(settlementReader.read(groupId)).thenReturn(mockSettlement);
+		when(memberReader.findAllBySettlementId(eq(groupId))).thenReturn(List.of(member));
+		when(memberExpenseReader.findAllByAppointMemberIds(List.of(1L))).thenReturn(List.of());
+		when(expenseReader.findAllBySettlementId(groupId)).thenReturn(List.of());
+
+		// when
+		MembersExpenseResponse response = queryMemberExpenseService.findMemberExpenseDetailsBySettlementId(
+			groupId, userId);
+
+		// then
+		assertThat(response).isNotNull();
+		assertThat(response.memberExpenses()).hasSize(1);
+		assertThat(response.memberExpenses().get(0).paymentRequestId()).isNull();
+
+		verify(settlementReader, times(1)).read(groupId);
+		verify(paymentRequestReader, never()).findPendingRequestIdByMemberId(anyLong());
+		verify(memberReader, times(1)).findAllBySettlementId(groupId);
 	}
 
 	@DisplayName("지출내역 id를 통해 참여자 지출내역을 찾아 지출내역 id에 해당하는 참여자 이름들을 map으로 조회할 수 있다.")
@@ -167,5 +211,17 @@ class QueryMemberExpenseServiceTest {
 		assertThat(result.get(2L)).hasSize(1);
 
 		verify(memberExpenseReader, times(1)).findAllByExpenseIds(eq(expenseIds));
+	}
+
+	private Settlement createSettlementWithWriter(Long writerId) {
+		return new Settlement(
+			"group 1",
+			writerId,
+			LocalDateTime.now().plusMinutes(1),
+			"은행",
+			"계좌",
+			"code",
+			LocalDateTime.now().plusDays(1)
+		);
 	}
 }
