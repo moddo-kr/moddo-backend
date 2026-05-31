@@ -15,6 +15,7 @@ import com.dnd.moddo.event.domain.paymentRequest.PaymentRequestStatus;
 import com.dnd.moddo.event.infrastructure.PaymentRequestRepository;
 import com.dnd.moddo.event.presentation.response.PaymentRequestItemResponse;
 import com.dnd.moddo.event.presentation.response.PaymentRequestsResponse;
+import com.dnd.moddo.event.presentation.response.PaymentRequestSummaryResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -65,15 +66,13 @@ public class PaymentRequestReader {
 		return paymentRequestRepository.existsBySettlementId(settlementId);
 	}
 
-	public Map<Long, Long> findPendingRequestIdByMemberId(Long settlementId) {
-		return paymentRequestRepository.findBySettlementIdAndStatus(settlementId, PaymentRequestStatus.PENDING)
+	public Map<Long, PaymentRequestSummaryResponse> findLatestRequestByMemberId(Long settlementId) {
+		return paymentRequestRepository.findBySettlementIdOrderByRequestedAtDesc(settlementId)
 			.stream()
 			.collect(Collectors.toMap(
 				PaymentRequest::getRequestMemberId,
-				PaymentRequest::getId,
-				(first, duplicate) -> {
-					throw new IllegalStateException("중복된 PENDING 입금 확인 요청이 존재합니다.");
-				}
+				PaymentRequestSummaryResponse::of,
+				(first, duplicate) -> first
 			));
 	}
 

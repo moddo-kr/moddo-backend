@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
 import com.dnd.moddo.auth.presentation.response.LoginUserInfo;
+import com.dnd.moddo.event.domain.paymentRequest.PaymentRequestStatus;
 import com.dnd.moddo.event.presentation.response.MemberExpenseDetailResponse;
 import com.dnd.moddo.event.presentation.response.MemberExpenseItemResponse;
 import com.dnd.moddo.event.presentation.response.MembersExpenseResponse;
@@ -31,11 +32,12 @@ public class MemberExpenseControllerTest extends RestDocsTestSupport {
 			List.of(
 				new MemberExpenseItemResponse(1L, MANAGER, "김모또", 10000L,
 					"https://moddo-s3.s3.amazonaws.com/profile/MODDO.png", true, LocalDateTime.now(),
-					null, List.of(new MemberExpenseDetailResponse("카페", 10000L))
+					null, null, null, List.of(new MemberExpenseDetailResponse("카페", 10000L))
 				),
 				new MemberExpenseItemResponse(2L, PARTICIPANT, "군계란", 10000L,
 					"https://moddo-s3.s3.amazonaws.com/profile/1.png", false, null,
-					100L, List.of(new MemberExpenseDetailResponse("카페", 10000L))
+					100L, PaymentRequestStatus.APPROVED, "승인완료",
+					List.of(new MemberExpenseDetailResponse("카페", 10000L))
 				)
 			)
 		);
@@ -53,7 +55,9 @@ public class MemberExpenseControllerTest extends RestDocsTestSupport {
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.memberExpenses").isArray())
-			.andExpect(jsonPath("$.memberExpenses[1].paymentRequestId").value(100L));
+			.andExpect(jsonPath("$.memberExpenses[1].paymentRequestId").value(100L))
+			.andExpect(jsonPath("$.memberExpenses[1].paymentRequestStatus").value("APPROVED"))
+			.andExpect(jsonPath("$.memberExpenses[1].paymentRequestStatusLabel").value("승인완료"));
 
 		verify(querySettlementService, times(1)).findIdByCode(code);
 		verify(queryMemberExpenseService, times(1)).findMemberExpenseDetailsBySettlementId(groupId, 1L);
