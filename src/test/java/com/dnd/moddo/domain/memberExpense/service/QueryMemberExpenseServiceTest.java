@@ -3,6 +3,7 @@ package com.dnd.moddo.domain.memberExpense.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -27,10 +28,12 @@ import com.dnd.moddo.event.domain.memberExpense.MemberExpense;
 import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.presentation.response.MemberExpenseResponse;
 import com.dnd.moddo.event.presentation.response.MembersExpenseResponse;
-import com.dnd.moddo.global.support.GroupTestFactory;
 
 @ExtendWith(MockitoExtension.class)
 class QueryMemberExpenseServiceTest {
+	private static final Long MANAGER_USER_ID = 1L;
+	private static final Long PARTICIPANT_USER_ID = 2L;
+
 	@Mock
 	private MemberExpenseReader memberExpenseReader;
 	@Mock
@@ -50,7 +53,7 @@ class QueryMemberExpenseServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		mockSettlement = GroupTestFactory.createDefault();
+		mockSettlement = createSettlementWithWriter(MANAGER_USER_ID);
 
 		mockMember1 = Member.builder()
 			.name("김모또")
@@ -97,7 +100,7 @@ class QueryMemberExpenseServiceTest {
 	void findMemberExpenseDetailsBySettlementId_Success() {
 		//given
 		Long groupId = 1L;
-		Long userId = 1L;
+		Long userId = MANAGER_USER_ID;
 		Member member1 = mock(Member.class);
 		Member member2 = mock(Member.class);
 
@@ -150,7 +153,7 @@ class QueryMemberExpenseServiceTest {
 	void findMemberExpenseDetailsBySettlementId_Success_WhenNotManager() {
 		//given
 		Long groupId = 1L;
-		Long userId = 2L;
+		Long userId = PARTICIPANT_USER_ID;
 		Member member = mock(Member.class);
 
 		when(member.getId()).thenReturn(1L);
@@ -208,5 +211,17 @@ class QueryMemberExpenseServiceTest {
 		assertThat(result.get(2L)).hasSize(1);
 
 		verify(memberExpenseReader, times(1)).findAllByExpenseIds(eq(expenseIds));
+	}
+
+	private Settlement createSettlementWithWriter(Long writerId) {
+		return new Settlement(
+			"group 1",
+			writerId,
+			LocalDateTime.now().plusMinutes(1),
+			"은행",
+			"계좌",
+			"code",
+			LocalDateTime.now().plusDays(1)
+		);
 	}
 }
