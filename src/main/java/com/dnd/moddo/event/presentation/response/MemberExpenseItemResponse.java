@@ -17,10 +17,11 @@ public record MemberExpenseItemResponse(
 	String profile,
 	boolean isPaid,
 	LocalDateTime paidAt,
+	Long paymentRequestId,
 	List<MemberExpenseDetailResponse> expenses
 ) {
 	public static MemberExpenseItemResponse of(Member member, Long totalAmount,
-		List<MemberExpenseDetailResponse> expenses) {
+		List<MemberExpenseDetailResponse> expenses, Long paymentRequestId) {
 		return MemberExpenseItemResponse.builder()
 			.id(member.getId())
 			.role(member.getRole())
@@ -29,6 +30,7 @@ public record MemberExpenseItemResponse(
 			.profile(member.getProfileUrl())
 			.isPaid(member.isPaid())
 			.paidAt(member.getPaidAt())
+			.paymentRequestId(paymentRequestId)
 			.expenses(expenses).build();
 	}
 }
