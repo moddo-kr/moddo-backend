@@ -166,6 +166,8 @@ class QueryMemberExpenseServiceTest {
 
 		when(member.getId()).thenReturn(1L);
 		when(settlementReader.read(groupId)).thenReturn(mockSettlement);
+		when(paymentRequestReader.findLatestRequestByMemberId(groupId))
+			.thenReturn(Map.of(1L, new PaymentRequestSummaryResponse(100L, PaymentRequestStatus.PENDING, "확인중")));
 		when(memberReader.findAllBySettlementId(eq(groupId))).thenReturn(List.of(member));
 		when(memberExpenseReader.findAllByAppointMemberIds(List.of(1L))).thenReturn(List.of());
 		when(expenseReader.findAllBySettlementId(groupId)).thenReturn(List.of());
@@ -178,11 +180,11 @@ class QueryMemberExpenseServiceTest {
 		assertThat(response).isNotNull();
 		assertThat(response.memberExpenses()).hasSize(1);
 		assertThat(response.memberExpenses().get(0).paymentRequestId()).isNull();
-		assertThat(response.memberExpenses().get(0).paymentRequestStatus()).isNull();
-		assertThat(response.memberExpenses().get(0).paymentRequestStatusLabel()).isNull();
+		assertThat(response.memberExpenses().get(0).paymentRequestStatus()).isEqualTo(PaymentRequestStatus.PENDING);
+		assertThat(response.memberExpenses().get(0).paymentRequestStatusLabel()).isEqualTo("확인중");
 
 		verify(settlementReader, times(1)).read(groupId);
-		verify(paymentRequestReader, never()).findLatestRequestByMemberId(anyLong());
+		verify(paymentRequestReader, times(1)).findLatestRequestByMemberId(groupId);
 		verify(memberReader, times(1)).findAllBySettlementId(groupId);
 	}
 
