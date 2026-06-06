@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.dnd.moddo.auth.application.RefreshTokenService;
+import com.dnd.moddo.auth.application.RefreshTokenBlacklist;
 import com.dnd.moddo.auth.infrastructure.security.JwtConstants;
 import com.dnd.moddo.auth.infrastructure.security.JwtProvider;
 import com.dnd.moddo.auth.infrastructure.security.JwtUtil;
@@ -35,6 +36,9 @@ public class RefreshTokenServiceTest {
 
 	@Mock
 	private JwtProvider jwtProvider;
+
+	@Mock
+	private RefreshTokenBlacklist refreshTokenBlacklist;
 
 	@InjectMocks
 	private RefreshTokenService refreshTokenService;
@@ -84,6 +88,21 @@ public class RefreshTokenServiceTest {
 		// when & then
 		thenThrownBy(() -> refreshTokenService.execute(invalidToken))
 			.isInstanceOf(TokenInvalidException.class);
+	}
+
+	@Test
+	public void shouldThrowWhenRefreshTokenIsRevoked() {
+		// given
+		String revokedToken = "revokedToken";
+		when(refreshTokenBlacklist.isRevoked(revokedToken)).thenReturn(true);
+
+		// when & then
+		thenThrownBy(() -> refreshTokenService.execute(revokedToken))
+			.isInstanceOf(TokenInvalidException.class);
+
+		verify(jwtProvider, never()).getTokenType(anyString());
+		verify(jwtUtil, never()).getJwt(anyString());
+		verify(userRepository, never()).getById(anyLong());
 	}
 
 	@Test

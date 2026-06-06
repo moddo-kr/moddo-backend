@@ -30,6 +30,7 @@ public class AuthService {
 	private final QueryUserService queryUserService;
 	private final JwtProvider jwtProvider;
 	private final KakaoClient kakaoClient;
+	private final RefreshTokenBlacklist refreshTokenBlacklist;
 
 	@Transactional
 	public TokenResponse loginWithGuest() {
@@ -63,6 +64,11 @@ public class AuthService {
 	}
 
 	public void logout(Long userId) {
+		logout(userId, null);
+	}
+
+	public void logout(Long userId, String refreshToken) {
+		refreshTokenBlacklist.revoke(refreshToken);
 		queryUserService.findKakaoIdById(userId).ifPresent(kakaoId -> {
 			KakaoLogoutResponse logoutResponse = kakaoClient.logout(kakaoId);
 

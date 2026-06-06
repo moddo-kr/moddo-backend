@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.dnd.moddo.auth.application.AuthService;
 import com.dnd.moddo.auth.application.KakaoClient;
+import com.dnd.moddo.auth.application.RefreshTokenBlacklist;
 import com.dnd.moddo.auth.infrastructure.security.JwtProvider;
 import com.dnd.moddo.auth.presentation.response.KakaoLogoutResponse;
 import com.dnd.moddo.auth.presentation.response.KakaoProfile;
@@ -34,6 +35,8 @@ public class AuthServiceTest {
 	private QueryUserService queryUserService;
 	@Mock
 	private KakaoClient kakaoClient;
+	@Mock
+	private RefreshTokenBlacklist refreshTokenBlacklist;
 	@InjectMocks
 	private AuthService authService;
 
@@ -88,11 +91,13 @@ public class AuthServiceTest {
 	void whenKakaoIdMatches_thenKakaoLogoutSuccess() {
 		//given
 		Long kakaoId = 123456L;
+		String refreshToken = "refresh-token";
 		when(queryUserService.findKakaoIdById(any())).thenReturn(Optional.of(kakaoId));
 		when(kakaoClient.logout(any())).thenReturn(new KakaoLogoutResponse(kakaoId));
 		//when
-		authService.logout(1L);
+		authService.logout(1L, refreshToken);
 		//then
+		verify(refreshTokenBlacklist, times(1)).revoke(refreshToken);
 		verify(queryUserService, times(1)).findKakaoIdById(1L);
 		verify(kakaoClient, times(1)).logout(kakaoId);
 	}
