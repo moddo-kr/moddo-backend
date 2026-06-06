@@ -45,9 +45,9 @@ public class QueryMemberExpenseService {
 
 	public MembersExpenseResponse findMemberExpenseDetailsBySettlementId(Long settlementId, Long userId) {
 		Settlement settlement = settlementReader.read(settlementId);
-		Map<Long, PaymentRequestSummaryResponse> paymentRequestByMemberId = settlement.isWriter(userId)
-			? paymentRequestReader.findLatestRequestByMemberId(settlementId)
-			: Map.of();
+		boolean isManager = settlement.isWriter(userId);
+		Map<Long, PaymentRequestSummaryResponse> paymentRequestByMemberId =
+			paymentRequestReader.findLatestRequestByMemberId(settlementId);
 
 		List<Member> members = memberReader.findAllBySettlementId(settlementId);
 
@@ -67,7 +67,8 @@ public class QueryMemberExpenseService {
 				key -> findMemberExpenseDetailByAppointmentMember(appointmentMemberById.get(key),
 					memberExpenses.get(key),
 					expenses,
-					paymentRequestByMemberId)
+					paymentRequestByMemberId,
+					isManager)
 			)
 			.filter(Objects::nonNull)
 			.toList();
@@ -85,18 +86,18 @@ public class QueryMemberExpenseService {
 
 	private MemberExpenseItemResponse findMemberExpenseDetailByAppointmentMember(
 		Member member, List<MemberExpense> memberExpenses, List<Expense> expenses,
-		Map<Long, PaymentRequestSummaryResponse> paymentRequestByMemberId) {
+		Map<Long, PaymentRequestSummaryResponse> paymentRequestByMemberId, boolean isManager) {
 
 		PaymentRequestSummaryResponse paymentRequest = paymentRequestByMemberId.get(member.getId());
 
 		if (memberExpenses == null) {
-			return MemberExpenseItemResponse.of(member, 0L, new ArrayList<>(), paymentRequest);
+			return MemberExpenseItemResponse.of(member, 0L, new ArrayList<>(), paymentRequest, isManager);
 		}
 
 		List<MemberExpenseDetailResponse> memberExpenseDetails = mapToMemberExpenseDetails(memberExpenses, expenses);
 		Long totalAmount = calculateTotalAmount(memberExpenses);
 
-		return MemberExpenseItemResponse.of(member, totalAmount, memberExpenseDetails, paymentRequest);
+		return MemberExpenseItemResponse.of(member, totalAmount, memberExpenseDetails, paymentRequest, isManager);
 	}
 
 	private Long calculateTotalAmount(List<MemberExpense> memberExpenses) {
