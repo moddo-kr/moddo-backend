@@ -24,7 +24,7 @@ public record MemberExpenseItemResponse(
 	List<MemberExpenseDetailResponse> expenses
 ) {
 	public static MemberExpenseItemResponse of(Member member, Long totalAmount,
-		List<MemberExpenseDetailResponse> expenses, PaymentRequestSummaryResponse paymentRequest) {
+		List<MemberExpenseDetailResponse> expenses, PaymentRequestSummaryResponse paymentRequest, boolean isManager) {
 		return MemberExpenseItemResponse.builder()
 			.id(member.getId())
 			.role(member.getRole())
@@ -33,7 +33,7 @@ public record MemberExpenseItemResponse(
 			.profile(member.getProfileUrl())
 			.isPaid(member.isPaid())
 			.paidAt(member.getPaidAt())
-			.paymentRequestId(paymentRequest == null ? null : paymentRequest.id())
+			.paymentRequestId(paymentRequest == null || !isManager ? null : paymentRequest.id())
 			.paymentRequestStatus(paymentRequest == null ? null : paymentRequest.status())
 			.paymentRequestStatusLabel(paymentRequest == null ? null : paymentRequest.statusLabel())
 			.expenses(expenses).build();
