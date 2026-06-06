@@ -19,9 +19,14 @@ public class RefreshTokenService {
 	private final JwtUtil jwtUtil;
 	private final UserRepository userRepository;
 	private final JwtProvider jwtProvider;
+	private final RefreshTokenBlacklist refreshTokenBlacklist;
 
 	public RefreshResponse execute(String token) {
 		try {
+			if (refreshTokenBlacklist.isRevoked(token)) {
+				throw new TokenInvalidException();
+			}
+
 			String tokenType = jwtProvider.getTokenType(token);
 			if (!JwtConstants.REFRESH_KEY.message.equals(tokenType)) {
 				throw new TokenInvalidException();
