@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 
 import com.dnd.moddo.auth.application.AuthService;
 import com.dnd.moddo.auth.application.KakaoClient;
+import com.dnd.moddo.auth.application.RefreshTokenBlacklist;
 import com.dnd.moddo.auth.infrastructure.security.JwtProvider;
 import com.dnd.moddo.auth.presentation.response.KakaoLogoutResponse;
 import com.dnd.moddo.auth.presentation.response.KakaoProfile;
@@ -44,6 +45,9 @@ public class AuthServiceTest {
 
 	@Mock
 	private KakaoClient kakaoClient;
+
+	@Mock
+	private RefreshTokenBlacklist refreshTokenBlacklist;
 
 	@InjectMocks
 	private AuthService authService;
@@ -127,13 +131,15 @@ public class AuthServiceTest {
 		// given
 		Long userId = 1L;
 		Long kakaoId = 12345L;
+		String refreshToken = "refresh-token";
 		when(queryUserService.findKakaoIdById(userId)).thenReturn(Optional.of(kakaoId));
 		when(kakaoClient.logout(kakaoId)).thenReturn(new KakaoLogoutResponse(kakaoId));
 
 		// when
-		authService.logout(userId);
+		authService.logout(userId, refreshToken);
 
 		// then
+		verify(refreshTokenBlacklist).revoke(refreshToken);
 		verify(queryUserService).findKakaoIdById(userId);
 		verify(kakaoClient).logout(kakaoId);
 	}

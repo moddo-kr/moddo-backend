@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -39,13 +40,26 @@ public class CacheConfig {
 	@Value("${spring.data.redis.password:}")
 	private String password;
 
+	@Value("${spring.data.redis.ssl.enabled:false}")
+	private boolean sslEnabled;
+
+	@Value("${spring.data.redis.timeout:300ms}")
+	private Duration commandTimeout;
+
 	@Bean
 	public RedisConnectionFactory redisConnectionFactory() {
 		RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(host, port);
 		if (password != null && !password.isBlank()) {
 			config.setPassword(password);
 		}
-		LettuceConnectionFactory factory = new LettuceConnectionFactory(config);
+
+		LettuceClientConfiguration.LettuceClientConfigurationBuilder builder = LettuceClientConfiguration.builder()
+			.commandTimeout(commandTimeout);
+		if (sslEnabled) {
+			builder.useSsl();
+		}
+
+		LettuceConnectionFactory factory = new LettuceConnectionFactory(config, builder.build());
 		factory.afterPropertiesSet();
 		factory.setValidateConnection(false);
 		return factory;

@@ -171,18 +171,20 @@ class AuthControllerTest extends RestDocsTestSupport {
 		given(loginUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
 			.willReturn(new LoginUserInfo(1L, "USER"));
 
-		doNothing().when(authService).logout(any());
+		doNothing().when(authService).logout(any(), any());
 
 		//when & then
 		mockMvc.perform(post("/api/v1/logout")
-				.cookie(new Cookie("accessToken", "access-token")))
+				.cookie(new Cookie("accessToken", "access-token"))
+				.cookie(new Cookie("refreshToken", "refresh-token")))
 			.andExpect(status().isOk())
 			.andExpect(header().stringValues(HttpHeaders.SET_COOKIE,
 				hasItems(org.hamcrest.Matchers.startsWith("accessToken="),
 					org.hamcrest.Matchers.startsWith("refreshToken="))))
 			.andDo(document("logout",
 				requestCookies(
-					cookieWithName("accessToken").description("액세스 토큰")
+					cookieWithName("accessToken").description("액세스 토큰"),
+					cookieWithName("refreshToken").description("리프레시 토큰")
 				),
 				responseCookies(
 					cookieWithName("accessToken").description("만료된 액세스 토큰"),

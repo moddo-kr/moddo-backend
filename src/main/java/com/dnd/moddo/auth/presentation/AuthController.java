@@ -87,10 +87,11 @@ public class AuthController {
 
 	@PostMapping("/logout")
 	public ResponseEntity<?> kakaoLogout(@CookieValue(value = "accessToken") String token,
+		@CookieValue(value = "refreshToken", required = false) String refreshToken,
 		@LoginUser LoginUserInfo loginUser) {
 		String accessTokenCookie = authCookieManager.expireCookie("accessToken");
 		String refreshTokenCookie = authCookieManager.expireCookie("refreshToken");
-		authService.logout(loginUser.userId());
+		authService.logout(loginUser.userId(), refreshToken);
 		return ResponseEntity.ok()
 			.header(HttpHeaders.SET_COOKIE, accessTokenCookie, refreshTokenCookie)
 			.body(Collections.singletonMap("message", "Logout successful"));
