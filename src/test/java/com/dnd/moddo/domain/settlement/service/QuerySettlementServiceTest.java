@@ -139,7 +139,8 @@ class QuerySettlementServiceTest {
 		SettlementHeaderResponse expectedResponse = new SettlementHeaderResponse(settlement.getName(), 1000L,
 			LocalDateTime.now().plusDays(1), settlement.getBank(), settlement.getAccountNumber(),
 			settlement.getCreatedAt(), settlement.getCompletedAt());
-		when(cacheExecutor.execute(anyString(), any(), any())).thenReturn(expectedResponse);
+		when(cacheExecutor.execute(anyString(), any(), eq(SettlementHeaderResponse.class), any()))
+			.thenReturn(expectedResponse);
 
 		// When
 		SettlementHeaderResponse response = querySettlementService.findBySettlementHeader(settlement.getId());
@@ -150,21 +151,22 @@ class QuerySettlementServiceTest {
 		assertThat(response.bank()).isEqualTo(settlement.getBank());
 		assertThat(response.accountNumber()).isEqualTo(settlement.getAccountNumber());
 
-		verify(cacheExecutor, times(1)).execute(anyString(), any(), any());
+		verify(cacheExecutor, times(1)).execute(anyString(), any(), eq(SettlementHeaderResponse.class), any());
 	}
 
 	@Test
 	@DisplayName("그룹 헤더를 찾을 수 없을 경우 예외가 발생한다.")
 	void FindBySettlementHeader_Failure_WhenHeaderNotFound() {
 		// Given
-		when(cacheExecutor.execute(anyString(), any(), any())).thenThrow(new RuntimeException("Header not found"));
+		when(cacheExecutor.execute(anyString(), any(), eq(SettlementHeaderResponse.class), any()))
+			.thenThrow(new RuntimeException("Header not found"));
 
 		// When & Then
 		assertThatThrownBy(() -> querySettlementService.findBySettlementHeader(1L))
 			.isInstanceOf(RuntimeException.class)
 			.hasMessageContaining("Header not found");
 
-		verify(cacheExecutor, times(1)).execute(anyString(), any(), any());
+		verify(cacheExecutor, times(1)).execute(anyString(), any(), eq(SettlementHeaderResponse.class), any());
 	}
 
 	@DisplayName("group code가 유효할 때 group Id를 찾을 수 있다.")

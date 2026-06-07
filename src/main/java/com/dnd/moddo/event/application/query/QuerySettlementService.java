@@ -49,6 +49,7 @@ public class QuerySettlementService {
 		return cacheExecutor.execute(
 			CacheKeys.settlementHeader(settlementId),
 			SETTLEMENT_HEADER_CACHE_TTL,
+			SettlementHeaderResponse.class,
 			() -> settlementReader.findByHeader(settlementId)
 		);
 	}
