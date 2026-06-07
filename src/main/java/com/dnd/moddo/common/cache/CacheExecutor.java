@@ -10,6 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.Cache;
 
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CacheExecutor {
 	private final RedisTemplate<String, Object> redisTemplate;
 	private final Cache<String, Object> localCache;
+	private final ObjectMapper objectMapper;
 
 	@SuppressWarnings("unchecked")
 	public <T> T execute(String key, Duration ttl, Supplier<T> dbFallback) {
@@ -50,6 +52,44 @@ public class CacheExecutor {
 		T localValue = (T)localCache.getIfPresent(key);
 		if (localValue != null) {
 			return localValue;
+		}
+
+		T dbValue = dbFallback.get();
+		if (dbValue != null) {
+			localCache.put(key, dbValue);
+		}
+		return dbValue;
+	}
+
+	public <T> T execute(String key, Duration ttl, Class<T> type, Supplier<T> dbFallback) {
+		try {
+			Object redisValue = redisTemplate.opsForValue().get(key);
+			T convertedRedisValue = convertValue(redisValue, type);
+			if (convertedRedisValue != null) {
+				return convertedRedisValue;
+			}
+
+			T dbValue = dbFallback.get();
+			if (dbValue == null) {
+				return null;
+			}
+
+			try {
+				redisTemplate.opsForValue().set(key, dbValue, ttl);
+			} catch (Exception exception) {
+				log.warn("Redis write failed for key={}, storing fallback value locally", key, exception);
+				localCache.put(key, dbValue);
+			}
+
+			return dbValue;
+		} catch (Exception exception) {
+			log.warn("Redis read failed for key={}, switching to local fallback", key, exception);
+		}
+
+		Object localValue = localCache.getIfPresent(key);
+		T convertedLocalValue = convertValue(localValue, type);
+		if (convertedLocalValue != null) {
+			return convertedLocalValue;
 		}
 
 		T dbValue = dbFallback.get();
@@ -91,5 +131,15 @@ public class CacheExecutor {
 		} catch (Exception exception) {
 			log.warn("Redis prefix evict failed for prefix={}", prefix, exception);
 		}
+	}
+
+	private <T> T convertValue(Object value, Class<T> type) {
+		if (value == null) {
+			return null;
+		}
+		if (type.isInstance(value)) {
+			return type.cast(value);
+		}
+		return objectMapper.convertValue(value, type);
 	}
 }
