@@ -22,9 +22,11 @@ import com.dnd.moddo.event.application.impl.ExpenseCreator;
 import com.dnd.moddo.event.application.impl.ExpenseDeleter;
 import com.dnd.moddo.event.application.impl.ExpenseReader;
 import com.dnd.moddo.event.application.impl.ExpenseUpdater;
+import com.dnd.moddo.event.application.impl.PaymentRequestReader;
 import com.dnd.moddo.event.application.impl.SettlementReader;
 import com.dnd.moddo.event.application.impl.SettlementValidator;
 import com.dnd.moddo.event.domain.expense.Expense;
+import com.dnd.moddo.event.domain.expense.exception.ExpenseModificationLockedException;
 import com.dnd.moddo.event.domain.expense.exception.ExpenseNotFoundException;
 import com.dnd.moddo.event.domain.expense.exception.ExpenseNotSettlementException;
 import com.dnd.moddo.event.domain.settlement.Settlement;
@@ -52,6 +54,8 @@ class CommandExpenseServiceTest {
 	private SettlementReader settlementReader;
 	@Mock
 	private SettlementValidator settlementValidator;
+	@Mock
+	private PaymentRequestReader paymentRequestReader;
 	@Mock
 	private CommandMemberExpenseService commandMemberExpenseService;
 	@Mock
@@ -117,6 +121,7 @@ class CommandExpenseServiceTest {
 		when(expenseReader.findByExpenseId(eq(expenseId))).thenReturn(mockExpense);
 		when(settlementReader.read(eq(groupId))).thenReturn(mockSettlement);
 		doNothing().when(settlementValidator).checkSettlementAuthor(eq(mockSettlement), eq(userId));
+		when(paymentRequestReader.existsBySettlementId(groupId)).thenReturn(false);
 
 		when(expenseUpdater.update(eq(expenseId), eq(expenseRequest))).thenReturn(mockExpense);
 		when(commandMemberExpenseService.update(eq(expenseId), any())).thenReturn(
@@ -128,8 +133,34 @@ class CommandExpenseServiceTest {
 		//then
 		assertThat(response).isNotNull();
 		verify(mockExpense, times(1)).validateSettlement(groupId);
+		verify(paymentRequestReader, times(1)).existsBySettlementId(groupId);
 		verify(expenseUpdater, times(1)).update(expenseId, expenseRequest);
 		verify(cacheEvictor, times(1)).evictSettlementHeader(groupId);
+	}
+
+	@DisplayName("입금 확인 요청 또는 입금 완료 참여자가 있으면 지출내역을 수정할 수 없다.")
+	@Test
+	void updateLockedByPaymentProgress() {
+		// given
+		Long userId = 1L;
+		Long settlementId = 1L;
+		Long expenseId = 10L;
+		ExpenseRequest expenseRequest = mock(ExpenseRequest.class);
+		Settlement mockSettlement = new Settlement(settlementId, userId, "정산", null, null, null, null, null, null, 1L,
+			"code");
+		Expense mockExpense = mock(Expense.class);
+
+		when(expenseReader.findByExpenseId(expenseId)).thenReturn(mockExpense);
+		when(settlementReader.read(settlementId)).thenReturn(mockSettlement);
+		when(paymentRequestReader.existsBySettlementId(settlementId)).thenReturn(true);
+
+		// when & then
+		assertThatThrownBy(() -> commandExpenseService.update(userId, expenseId, settlementId, expenseRequest))
+			.isInstanceOf(ExpenseModificationLockedException.class);
+
+		verify(expenseUpdater, never()).update(anyLong(), any());
+		verify(commandMemberExpenseService, never()).update(anyLong(), any());
+		verify(cacheEvictor, never()).evictSettlementHeader(anyLong());
 	}
 
 	@DisplayName("업데이트하려는 지출 내역을 찾을 수 없을때 예외를 발생시킨다.")
@@ -164,6 +195,7 @@ class CommandExpenseServiceTest {
 		when(expenseReader.findByExpenseId(eq(expenseId))).thenReturn(mockExpense);
 		when(settlementReader.read(eq(settlementId))).thenReturn(mockSettlement);
 		doNothing().when(settlementValidator).checkSettlementAuthor(eq(mockSettlement), eq(userId));
+		when(paymentRequestReader.existsBySettlementId(settlementId)).thenReturn(false);
 
 		doNothing().when(commandMemberExpenseService).deleteAllByExpenseId(eq(expenseId));
 		doNothing().when(expenseDeleter).delete(eq(mockExpense));
@@ -173,9 +205,34 @@ class CommandExpenseServiceTest {
 
 		//then
 		verify(mockExpense, times(1)).validateSettlement(settlementId);
+		verify(paymentRequestReader, times(1)).existsBySettlementId(settlementId);
 		verify(commandMemberExpenseService, times(1)).deleteAllByExpenseId(eq(expenseId));
 		verify(expenseDeleter, times(1)).delete(eq(mockExpense));
 		verify(cacheEvictor, times(1)).evictSettlementHeader(settlementId);
+	}
+
+	@DisplayName("입금 확인 요청 또는 입금 완료 참여자가 있으면 지출내역을 삭제할 수 없다.")
+	@Test
+	void deleteLockedByPaymentProgress() {
+		// given
+		Long userId = 1L;
+		Long settlementId = 1L;
+		Long expenseId = 10L;
+		Settlement mockSettlement = new Settlement(settlementId, userId, "정산", null, null, null, null, null, null, 1L,
+			"code");
+		Expense mockExpense = mock(Expense.class);
+
+		when(expenseReader.findByExpenseId(expenseId)).thenReturn(mockExpense);
+		when(settlementReader.read(settlementId)).thenReturn(mockSettlement);
+		when(paymentRequestReader.existsBySettlementId(settlementId)).thenReturn(true);
+
+		// when & then
+		assertThatThrownBy(() -> commandExpenseService.delete(userId, expenseId, settlementId))
+			.isInstanceOf(ExpenseModificationLockedException.class);
+
+		verify(commandMemberExpenseService, never()).deleteAllByExpenseId(anyLong());
+		verify(expenseDeleter, never()).delete(any());
+		verify(cacheEvictor, never()).evictSettlementHeader(anyLong());
 	}
 
 	@DisplayName("삭제하려는 지출내역이 해당 정산에 속하지 않으면 예외가 발생한다.")
@@ -251,6 +308,7 @@ class CommandExpenseServiceTest {
 
 		when(settlementReader.read(groupId)).thenReturn(mockSettlement);
 		doNothing().when(settlementValidator).checkSettlementAuthor(mockSettlement, userId);
+		when(paymentRequestReader.existsBySettlementId(groupId)).thenReturn(false);
 
 		// when
 		commandExpenseService.updateImgUrl(userId, groupId, expenseId, request);
@@ -258,6 +316,7 @@ class CommandExpenseServiceTest {
 		// then
 		verify(settlementReader, times(1)).read(groupId);
 		verify(settlementValidator, times(1)).checkSettlementAuthor(mockSettlement, userId);
+		verify(paymentRequestReader, times(1)).existsBySettlementId(groupId);
 		verify(expenseUpdater, times(1)).updateImgUrl(expenseId, request);
 	}
 
