@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MultipartException;
 
 import com.dnd.moddo.common.logging.DiscordMessage;
 import com.dnd.moddo.common.logging.ErrorNotifier;
@@ -85,6 +86,14 @@ public class GlobalExceptionHandler {
 
 		return ResponseEntity.badRequest()
 			.body(new ErrorResponse(400, e.getMessage()));
+	}
+
+	@ExceptionHandler(MultipartException.class)
+	public ResponseEntity<ErrorResponse> handleMultipartException(MultipartException exception) {
+		LoggingUtils.warn(exception);
+
+		return ResponseEntity.badRequest()
+			.body(new ErrorResponse(400, "잘못된 multipart 요청입니다."));
 	}
 
 	@ExceptionHandler({ModdoException.class})

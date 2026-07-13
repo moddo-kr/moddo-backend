@@ -9,9 +9,11 @@ import com.dnd.moddo.event.application.impl.ExpenseCreator;
 import com.dnd.moddo.event.application.impl.ExpenseDeleter;
 import com.dnd.moddo.event.application.impl.ExpenseReader;
 import com.dnd.moddo.event.application.impl.ExpenseUpdater;
+import com.dnd.moddo.event.application.impl.PaymentRequestReader;
 import com.dnd.moddo.event.application.impl.SettlementReader;
 import com.dnd.moddo.event.application.impl.SettlementValidator;
 import com.dnd.moddo.event.domain.expense.Expense;
+import com.dnd.moddo.event.domain.expense.exception.ExpenseModificationLockedException;
 import com.dnd.moddo.event.domain.settlement.Settlement;
 import com.dnd.moddo.event.presentation.request.ExpenseImageRequest;
 import com.dnd.moddo.event.presentation.request.ExpenseRequest;
@@ -33,8 +35,11 @@ public class CommandExpenseService {
 	private final CommandMemberExpenseService commandMemberExpenseService;
 	private final SettlementReader settlementReader;
 	private final SettlementValidator settlementValidator;
+	private final PaymentRequestReader paymentRequestReader;
 
 	public ExpensesResponse createExpenses(Long groupId, ExpensesRequest request) {
+		validateExpenseModifiable(groupId);
+
 		List<ExpenseResponse> expenses = request.expenses()
 			.stream()
 			.map(e -> createExpense(groupId, e))
@@ -58,6 +63,7 @@ public class CommandExpenseService {
 
 		Settlement settlement = settlementReader.read(settlementId);
 		settlementValidator.checkSettlementAuthor(settlement, userId);
+		validateExpenseModifiable(settlementId);
 
 		expense = expenseUpdater.update(expenseId, request);
 		List<MemberExpenseResponse> memberExpenseResponses = commandMemberExpenseService.update(expenseId,
@@ -70,6 +76,7 @@ public class CommandExpenseService {
 	public void updateImgUrl(Long userId, Long groupId, Long expenseId, ExpenseImageRequest request) {
 		Settlement settlement = settlementReader.read(groupId);
 		settlementValidator.checkSettlementAuthor(settlement, userId);
+		validateExpenseModifiable(groupId);
 		expenseUpdater.updateImgUrl(expenseId, request);
 	}
 
@@ -80,9 +87,16 @@ public class CommandExpenseService {
 
 		Settlement settlement = settlementReader.read(settlementId);
 		settlementValidator.checkSettlementAuthor(settlement, userId);
+		validateExpenseModifiable(settlementId);
 
 		commandMemberExpenseService.deleteAllByExpenseId(expenseId);
 		expenseDeleter.delete(expense);
 		cacheEvictor.evictSettlementHeader(settlementId);
+	}
+
+	private void validateExpenseModifiable(Long settlementId) {
+		if (paymentRequestReader.existsBySettlementId(settlementId)) {
+			throw new ExpenseModificationLockedException(settlementId);
+		}
 	}
 }

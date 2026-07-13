@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.dnd.moddo.event.application.impl.MemberExpenseReader;
+import com.dnd.moddo.event.application.impl.MemberReader;
 import com.dnd.moddo.event.application.impl.PaymentRequestReader;
 import com.dnd.moddo.event.domain.member.ExpenseRole;
 import com.dnd.moddo.event.domain.member.Member;
@@ -34,6 +35,9 @@ class PaymentRequestReaderTest {
 
 	@Mock
 	private MemberExpenseReader memberExpenseReader;
+
+	@Mock
+	private MemberReader memberReader;
 
 	@InjectMocks
 	private PaymentRequestReader paymentRequestReader;
@@ -140,6 +144,20 @@ class PaymentRequestReaderTest {
 
 		assertThat(result).isTrue();
 		verify(paymentRequestRepository).existsBySettlementId(1L);
+		verify(memberReader, never()).existsPaidParticipant(1L);
+	}
+
+	@Test
+	@DisplayName("입금 확인 요청이 없어도 입금 완료 참여자가 있으면 수정 잠금 상태로 판단한다.")
+	void existsBySettlementIdWhenPaidParticipantExists() {
+		when(paymentRequestRepository.existsBySettlementId(1L)).thenReturn(false);
+		when(memberReader.existsPaidParticipant(1L)).thenReturn(true);
+
+		boolean result = paymentRequestReader.existsBySettlementId(1L);
+
+		assertThat(result).isTrue();
+		verify(paymentRequestRepository).existsBySettlementId(1L);
+		verify(memberReader).existsPaidParticipant(1L);
 	}
 
 	@Test

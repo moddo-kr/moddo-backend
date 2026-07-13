@@ -2,6 +2,7 @@ package com.dnd.moddo.common.logging;
 
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MultipartException;
 
 import com.dnd.moddo.common.exception.ModdoException;
 
@@ -20,6 +21,11 @@ public class LoggingUtils {
 	}
 
 	public static void warn(MethodArgumentTypeMismatchException exception) {
+		String message = getExceptionMessage(exception.getMessage());
+		log.warn(message + "\n \t {}", exception);
+	}
+
+	public static void warn(MultipartException exception) {
 		String message = getExceptionMessage(exception.getMessage());
 		log.warn(message + "\n \t {}", exception);
 	}
