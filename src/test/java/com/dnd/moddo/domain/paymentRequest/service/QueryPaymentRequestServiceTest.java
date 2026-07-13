@@ -50,7 +50,7 @@ class QueryPaymentRequestServiceTest {
 	}
 
 	@Test
-	@DisplayName("정산에 생성된 입금 확인 요청이 있는지 확인할 수 있다.")
+	@DisplayName("정산에 생성된 입금 확인 요청 또는 입금 완료 참여자가 있는지 확인할 수 있다.")
 	void existsBySettlementId() {
 		when(paymentRequestReader.existsBySettlementId(1L)).thenReturn(true);
 

@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class PaymentRequestReader {
 	private final PaymentRequestRepository paymentRequestRepository;
 	private final MemberExpenseReader memberExpenseReader;
+	private final MemberReader memberReader;
 
 	public PaymentRequestsResponse findByTargetUserId(Long targetUserId) {
 		List<PaymentRequest> paymentRequests = paymentRequestRepository.findByTargetUserId(targetUserId)
@@ -63,7 +64,8 @@ public class PaymentRequestReader {
 	}
 
 	public boolean existsBySettlementId(Long settlementId) {
-		return paymentRequestRepository.existsBySettlementId(settlementId);
+		return paymentRequestRepository.existsBySettlementId(settlementId)
+			|| memberReader.existsPaidParticipant(settlementId);
 	}
 
 	public Map<Long, PaymentRequestSummaryResponse> findLatestRequestByMemberId(Long settlementId) {

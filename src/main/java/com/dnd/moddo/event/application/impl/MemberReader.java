@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dnd.moddo.event.domain.member.Member;
+import com.dnd.moddo.event.domain.member.ExpenseRole;
 import com.dnd.moddo.event.domain.member.exception.MemberNotFoundException;
 import com.dnd.moddo.event.domain.member.type.MemberSortType;
 import com.dnd.moddo.event.infrastructure.MemberQueryRepository;
@@ -43,6 +44,10 @@ public class MemberReader {
 
 	public boolean existsUnpaidMember(Long settlementId) {
 		return memberRepository.existsBySettlementIdAndIsPaidFalse(settlementId);
+	}
+
+	public boolean existsPaidParticipant(Long settlementId) {
+		return memberRepository.existsBySettlementIdAndRoleAndIsPaidTrue(settlementId, ExpenseRole.PARTICIPANT);
 	}
 
 	public List<Member> findAssignedMembersBySettlementId(Long settlementId) {

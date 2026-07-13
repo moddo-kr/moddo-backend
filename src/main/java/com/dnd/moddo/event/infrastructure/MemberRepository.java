@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.dnd.moddo.event.domain.member.Member;
 import com.dnd.moddo.event.domain.member.exception.MemberNotFoundException;
+import com.dnd.moddo.event.domain.member.ExpenseRole;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
@@ -38,6 +39,18 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 			  and gm.isPaid = false
 		""")
 	boolean existsBySettlementIdAndIsPaidFalse(@Param("settlementId") Long settlementId);
+
+	@Query("""
+			select count(gm) > 0
+			from Member gm
+			where gm.settlement.id = :settlementId
+			  and gm.role = :role
+			  and gm.isPaid = true
+		""")
+	boolean existsBySettlementIdAndRoleAndIsPaidTrue(
+		@Param("settlementId") Long settlementId,
+		@Param("role") ExpenseRole role
+	);
 
 	default Member getById(Long id) {
 		return findById(id)
